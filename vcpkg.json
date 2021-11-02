@@ -1,0 +1,14 @@
+{
+	"$schema": "https://raw.githubusercontent.com/microsoft/vcpkg/master/scripts/vcpkg.schema.json",
+	"name": "purpl-engine",
+	"version": "0.0.0",
+	"dependencies": [
+		"glm",
+		{
+			"name": "sdl2",
+			"features": ["vulkan"]
+		},
+		"spdlog",
+		"stb"
+	]
+}
