@@ -158,7 +158,6 @@ void window::set_fullscreen(bool fullscreen)
 	} else {
 		this->set_resizeable(this->fullscreen_resizeable);
 		glfwSetWindowMonitor(this->wnd, nullptr, this->fullscreen_x, this->fullscreen_y, this->fullscreen_width, this->fullscreen_height, GLFW_DONT_CARE);
-		this->set_position(this->fullscreen_x, this->fullscreen_y);
 	}
 
 	// Re-show the window
