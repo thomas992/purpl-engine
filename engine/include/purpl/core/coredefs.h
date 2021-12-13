@@ -17,19 +17,20 @@
 
 #pragma once
 
+#include "features.h"
+#include "types.h"
+
 // Mark a function as external/imported
 #ifdef PURPL_BUILD
-#ifdef _WIN32
+#ifdef PURPL_MSVC
 #define PURPL_API __declspec(dllexport)
 #else
 #define PURPL_API
-#endif // _WIN32
+#endif // PURPL_MSVC
 #else // !PURPL_BUILD
-#ifdef _WIN32
+#ifdef PURPL_MSVC
 #define PURPL_API __declspec(dllimport)
 #else
 #define PURPL_API
-#endif // _WIN32
+#endif // PURPL_MSVC
 #endif // PURPL_BUILD
-
-

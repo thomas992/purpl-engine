@@ -3,12 +3,14 @@
 	"name": "purpl-engine",
 	"version": "0.0.0",
 	"dependencies": [
+		"fmt",
+		"glew",
+		"glfw3",
 		"glm",
-		{
-			"name": "sdl2",
-			"features": ["vulkan"]
-		},
+		"opengl",
 		"spdlog",
-		"stb"
+		"stb",
+		"tomlplusplus",
+		"vulkan"
 	]
 }

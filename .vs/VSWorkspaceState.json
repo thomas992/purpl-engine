@@ -1,0 +1,17 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\demo",
+    "\\engine",
+    "\\engine\\include",
+    "\\engine\\include\\purpl",
+    "\\engine\\include\\purpl\\core",
+    "\\engine\\include\\purpl\\graphics",
+    "\\engine\\include\\purpl\\graphics\\vulkan",
+    "\\engine\\src",
+    "\\engine\\src\\graphics",
+    "\\engine\\src\\graphics\\vulkan"
+  ],
+  "SelectedNode": "\\engine\\include\\purpl\\graphics\\vulkan",
+  "PreviewInSolutionExplorer": false
+}
