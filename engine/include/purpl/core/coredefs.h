@@ -1,4 +1,4 @@
-// Important definitions
+// Core definitions for the engine
 //
 // Copyright 2021 MobSlicer152
 // This file is part of Purpl Engine
@@ -17,20 +17,19 @@
 
 #pragma once
 
-#include "features.h"
 #include "types.h"
 
 // Mark a function as external/imported
 #ifdef PURPL_BUILD
-#ifdef PURPL_MSVC
+#ifdef _MSC_VER
 #define PURPL_API __declspec(dllexport)
 #else
 #define PURPL_API
-#endif // PURPL_MSVC
+#endif // _MSC_VER
 #else // !PURPL_BUILD
-#ifdef PURPL_MSVC
+#ifdef _MSC_VER
 #define PURPL_API __declspec(dllimport)
 #else
 #define PURPL_API
-#endif // PURPL_MSVC
+#endif // _MSC_VER
 #endif // PURPL_BUILD

@@ -1,4 +1,8 @@
-**/build/**
-**/out/**
+**/.vs
 
-**/vcpkg_installed/**
+**/build
+**/out
+
+deps/bin
+deps/include
+deps/tmp

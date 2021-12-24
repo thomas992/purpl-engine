@@ -2,6 +2,6 @@
 
 call tools\buildenv.bat
 
-cmake -S%~dp0\.. -B%~dp0\..\build
+gn gen %~dp0\..\out
 pause
 
