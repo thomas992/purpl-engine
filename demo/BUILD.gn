@@ -18,5 +18,7 @@
 executable("main") {
   deps = [ "//engine:engine" ]
 
+  include_dirs = [ "//engine/include" ]
+
   sources = [ "src/main.c" ]
 }

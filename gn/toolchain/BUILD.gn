@@ -99,6 +99,9 @@ if (current_cpu == "x64") {
 }
 
 toolchain("msvc") {
+  lib_switch = ""
+  lib_dir_switch = "/LIBPATH:"
+
   tool("cc") {
     depfile = "{{output}}.d"
     command = "cl /nologo /FS /sourceDependencies $depfile {{defines}} {{include_dirs}} {{cflags}} {{cflags_c}} /c /Tc {{source}} /FS /Fo{{output}}"
@@ -190,4 +193,3 @@ toolchain("msvc") {
     description = "COPY {{source}} {{output}}"
   }
 }
-

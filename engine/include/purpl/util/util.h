@@ -1,4 +1,4 @@
-// Core definitions for the engine
+// Header that includes all the other utilities
 //
 // Copyright 2021 MobSlicer152
 // This file is part of Purpl Engine
@@ -17,22 +17,4 @@
 
 #pragma once
 
-#include "types.h"
-
-// Mark a function as external/imported
-#ifdef PURPL_BUILD
-#ifdef _MSC_VER
-#define PURPL_API __declspec(dllexport)
-#else
-#define PURPL_API
-#endif // _MSC_VER
-#else // !PURPL_BUILD
-#ifdef _MSC_VER
-#define PURPL_API __declspec(dllimport)
-#else
-#define PURPL_API
-#endif // _MSC_VER
-#endif // PURPL_BUILD
-
-// Returns the size of a stack array
-#define PURPL_SIZEOF_ARRAY(a) (sizeof((a)) / sizeof((a)[0]))
+#include "string.h"

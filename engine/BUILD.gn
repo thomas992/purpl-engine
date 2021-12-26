@@ -22,10 +22,20 @@ shared_library("engine") {
     "//deps/sdl2/include",
     "include",
   ]
+
+  lib_dirs = [ "//deps/build/" ]
   defines = [ "PURPL_BUILD" ]
   ldflags = []
 
-  sources = [ "src/init.c" ]
+  sources = [
+    "include/core/coredefs.h",
+    "include/core/features.h",
+    "include/core/types.h",
+    "include/util/string.h",
+    "include/util/util.h",
+    "src/core/init.c",
+    "src/util/string.c",
+  ]
 
   if (current_cpu == "x64") {
     defines += [

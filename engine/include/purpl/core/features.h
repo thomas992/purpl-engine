@@ -1,7 +1,4 @@
-// Core definitions for the engine
-//
-// Copyright 2021 MobSlicer152
-// This file is part of Purpl Engine
+// Preprocessor maze to detect features like 128-bit integers
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,22 +14,8 @@
 
 #pragma once
 
-#include "types.h"
-
-// Mark a function as external/imported
-#ifdef PURPL_BUILD
-#ifdef _MSC_VER
-#define PURPL_API __declspec(dllexport)
-#else
-#define PURPL_API
-#endif // _MSC_VER
-#else // !PURPL_BUILD
-#ifdef _MSC_VER
-#define PURPL_API __declspec(dllimport)
-#else
-#define PURPL_API
-#endif // _MSC_VER
-#endif // PURPL_BUILD
-
-// Returns the size of a stack array
-#define PURPL_SIZEOF_ARRAY(a) (sizeof((a)) / sizeof((a)[0]))
+// Clang supports these and has for like a decade
+#ifdef __clang__
+// Defined if 128-bit integers are available
+#define PURPL_INT128_AVAILABLE 1
+#endif

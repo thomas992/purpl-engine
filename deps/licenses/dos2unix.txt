@@ -1,4 +1,4 @@
-﻿The dos2unix package is distributed under FreeBSD style license.
+The dos2unix package is distributed under FreeBSD style license.
 See also http://www.freebsd.org/copyright/freebsd-license.html
 --------
 

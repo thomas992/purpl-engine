@@ -1,8 +1,8 @@
 @echo off
 
-@rem I kinda wanted to call this script Razzle, but that's an honour only Microsoft is worthy of
+:: I kinda wanted to call this script Razzle, but that's an honour only Microsoft is worthy of
 
-@rem Try to set up a Visual C++ environment (copied from a script on my development drive)
+:: Try to set up a Visual C++ environment (copied from a script on my development drive)
 if "%COMPAT%"=="1" (
 	set "vs2019_install=C:\Program Files (x86)\Microsoft Visual Studio\2019\Community"
 ) else (

@@ -21,42 +21,38 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#ifdef PURPL_BUILD
-#define PURPL_PREFIX(x)
-#else // PURPL_BUILD
-#define PURPL_PREFIX(x) purpl_##x
-#endif // PURPL_BUILD
+#include "features.h"
 
 // Integers
-typedef int8_t PURPL_PREFIX(s8);
-typedef int16_t PURPL_PREFIX(s16);
-typedef int32_t PURPL_PREFIX(s32);
-typedef int64_t PURPL_PREFIX(s64);
-#ifdef __clang__
-typedef __int128_t PURPL_PREFIX(s128);
-#endif // __clang__
+typedef int8_t s8; // Signed 8-bit integer
+typedef int16_t s16; // Signed 16-bit integer
+typedef int32_t s32; // Signed 32-bit integer
+typedef int64_t s64; // Signed 64-bit integer
+#ifdef PURPL_INT128_AVAILABLE
+typedef __int128 s128; // Signed 128-bit integer
+#endif // PURPL_INT128_AVAILABLE
 
 // Unsigned integers
-typedef uint8_t PURPL_PREFIX(u8);
-typedef uint16_t PURPL_PREFIX(u16);
-typedef uint32_t PURPL_PREFIX(u32);
-typedef uint64_t PURPL_PREFIX(u64);
-#ifdef  __clang__
-typedef __uint128_t PURPL_PREFIX(u128);
-#endif // __clang__
+typedef uint8_t u8; // Unsigned 8-bit integer
+typedef uint16_t u16; // Unsigned 16-bit integer
+typedef uint32_t u32; // Unsigned 32-bit integer
+typedef uint64_t u64; // Unsigned 64-bit integer
+#ifdef  PURPL_INT128_AVAILABLE
+typedef unsigned __int128 u128; // Unsigned 128-bit integer
+#endif // PURPL_INT128_AVAILABLE
 
 // Bytes/words
-typedef PURPL_PREFIX(u8) PURPL_PREFIX(byte);
+typedef u8 byte; // Byte
 #ifdef PURPL_X86
-typedef PURPL_PREFIX(byte) PURPL_PREFIX(hword);
-typedef PURPL_PREFIX(u16) PURPL_PREFIX(word);
-typedef PURPL_PREFIX(u32) PURPL_PREFIX(dword);
-typedef PURPL_PREFIX(u64) PURPL_PREFIX(qword);
+typedef byte hword; // Halfword
+typedef u16 word; // Word
+typedef u32 dword; // Doubleword
+typedef u64 qword; // Quadword
 #elif defined PURPL_ARM // PURPL_X86
-typedef PURPL_PREFIX(u16) PURPL_PREFIX(hword);
-typedef PURPL_PREFIX(u32) PURPL_PREFIX(word);
-typedef PURPL_PREFIX(u64) PURPL_PREFIX(dword);
-#ifdef __clang__
-typedef u128 PURPL_PREFIX(qword);
-#endif // __clang__
+typedef u16 hword; // Halfword
+typedef u32 word; // Word
+typedef u64 dword; // Doubleword
+#ifdef PURPL_INT128_AVAILABLE
+typedef u128 qword; // Quadword
+#endif // PURPL_INT128_AVAILABLE
 #endif // PURPL_X86

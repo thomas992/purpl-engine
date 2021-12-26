@@ -1,7 +1,4 @@
-// Core definitions for the engine
-//
-// Copyright 2021 MobSlicer152
-// This file is part of Purpl Engine
+// Initialization functions
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,22 +14,16 @@
 
 #pragma once
 
+#include <stdbool.h>
+#include <stdint.h>
+#include <stdlib.h>
+
+#include "coredefs.h"
 #include "types.h"
 
-// Mark a function as external/imported
-#ifdef PURPL_BUILD
-#ifdef _MSC_VER
-#define PURPL_API __declspec(dllexport)
-#else
-#define PURPL_API
-#endif // _MSC_VER
-#else // !PURPL_BUILD
-#ifdef _MSC_VER
-#define PURPL_API __declspec(dllimport)
-#else
-#define PURPL_API
-#endif // _MSC_VER
-#endif // PURPL_BUILD
-
-// Returns the size of a stack array
-#define PURPL_SIZEOF_ARRAY(a) (sizeof((a)) / sizeof((a)[0]))
+/// Initialize the engine
+///
+/// \param log_name Specifies the name of the log file. The string <date> will
+/// be replaced with the date in the format <dd>-<mm>-<yyyy>. Can be NULL, in
+/// which case the log file will be named purpl-<date>.log
+PURPL_API bool purpl_init(const char *log_name);
