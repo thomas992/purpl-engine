@@ -19,10 +19,10 @@
 
 int32_t main(int32_t argc, char *argv[])
 {
-	char str[] = "test string";
-	char dst[20];
+	struct purpl_logger *logger;
 
-	printf("Contents of str before strrplc: %s\n", str);
-	purpl_strrplc(dst, str, "test ", "");
-	printf("Contents of str after strrplc: %s\n", dst);
+	logger = purpl_log_create("test.log", PURPL_LOG_LEVEL_DEBUG, PURPL_LOG_LEVEL_MAX, "#def");
+	PURPL_LOG_CURRENT(logger, "asdf %s", "fdsa");
+
+	return 0;
 }

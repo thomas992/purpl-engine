@@ -24,6 +24,7 @@
 #include "core/coredefs.h"
 #include "core/features.h"
 #include "core/init.h"
+#include "core/inst.h"
 #include "core/types.h"
 
 #include "util/util.h"

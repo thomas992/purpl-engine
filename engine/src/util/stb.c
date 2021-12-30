@@ -1,4 +1,4 @@
-// Initialization functions
+// This file includes all the stb headers used in the engine so they get compiled
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,18 +12,5 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#pragma once
-
-#include <stdbool.h>
-#include <stdint.h>
-#include <stdlib.h>
-
-#include "coredefs.h"
-#include "types.h"
-
-/// Initialize the engine
-///
-/// \param log_name Specifies the name of the log file. The string <date> will
-/// be replaced with the date in the format <dd>-<mm>-<yyyy>. Can be NULL, in
-/// which case the log file will be named purpl-<date>.log
-extern PURPL_API bool purpl_init(const char *log_name);
+#define STB_SPRINTF_IMPLEMENTATION
+#include "stb_sprintf.h"

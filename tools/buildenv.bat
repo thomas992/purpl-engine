@@ -22,4 +22,4 @@ call vcvarsall.bat x64
 popd
 %~d0
 
-set PATH=%CD%\tools;%PATH%
+set PATH=%CD%\tools;%CD%\out;%CD%\deps\bin;%PATH%

@@ -24,3 +24,12 @@ tools/gn gen out
 ninja -C out
 ```
 GN can also generate IDE projects with `--ide=vs` or `--ide=xcode` (XCode and macOS are not tested because I deleted my Hackintosh install, but they might work with some modifications to the GN scripts), and compilation databases with `--export-compile-commands`.
+
+To run the demo, do the following on Windows:
+```batch
+out\main :: buildenv already sets the path so that the DLLs are found for the engine and dependencies
+```
+On Linux, run this command:
+```sh
+LD_LIBRARY_PATH=deps/bin:out out/main
+```

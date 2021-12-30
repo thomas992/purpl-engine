@@ -17,23 +17,29 @@
 
 shared_library("engine") {
   include_dirs = [
-    "//deps/cglm/include",
-    "//deps/glew/include",
-    "//deps/sdl2/include",
+    "//deps/include",
     "include",
   ]
 
-  lib_dirs = [ "//deps/build/" ]
+  lib_dirs = [ "//deps/bin/" ]
   defines = [ "PURPL_BUILD" ]
   ldflags = []
 
   sources = [
     "include/core/coredefs.h",
     "include/core/features.h",
+    "include/core/init.h",
+    "include/core/inst.h",
+    "include/core/log.h",
     "include/core/types.h",
+
     "include/util/string.h",
     "include/util/util.h",
+    
     "src/core/init.c",
+    "src/core/log.c",
+    
+    "src/util/stb.c",
     "src/util/string.c",
   ]
 
@@ -44,5 +50,15 @@ shared_library("engine") {
     ]
   } else if (current_cpu == "x86") {
     defines += [ "PURPL_X86=1" ]
+  }
+
+  if (enable_meming) {
+    defines += [ "PURPL_ENABLE_MEMING" ]
+  }
+
+  if (is_win) {
+    libs = ["clgm-0", "glew32", "SDL2"]
+  } else {
+    libs = ["cglm", "GLEW", "SDL2-2.0"]
   }
 }

@@ -1,4 +1,4 @@
-// Initialization functions
+// Definition of the engine instance structure
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,16 +14,16 @@
 
 #pragma once
 
-#include <stdbool.h>
-#include <stdint.h>
-#include <stdlib.h>
+#include <time.h>
 
 #include "coredefs.h"
+#include "log.h"
 #include "types.h"
 
-/// Initialize the engine
-///
-/// \param log_name Specifies the name of the log file. The string <date> will
-/// be replaced with the date in the format <dd>-<mm>-<yyyy>. Can be NULL, in
-/// which case the log file will be named purpl-<date>.log
-extern PURPL_API bool purpl_init(const char *log_name);
+#ifdef PURPL_BUILD
+// Structure to hold information about the current instance of the engine
+struct purpl_instance {
+	struct purpl_logger *logger; // The logger for this instance
+	time_t start_time; // When the engine started
+};
+#endif

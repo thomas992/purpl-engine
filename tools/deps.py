@@ -24,6 +24,8 @@ import sys
 
 
 def shutil_nuke_git(e: Exception, path: str, info: Exception):
+    # I get that this is good when you're working in a repository,
+    # but it makes it annoying to clean them up in scripts like this
     if path.__contains__(".git"):
         os.chmod(path, stat.S_IWRITE)
         os.remove(path)
@@ -33,7 +35,7 @@ def shutil_nuke_git(e: Exception, path: str, info: Exception):
 
 def sub_cmd(cmd: str, deps: str = "deps") -> str:
     return cmd.replace("<deps>", deps).replace(
-        "<move>", "cmd /c move" if os.name == "nt" else "mv"
+        "<move>", "move" if os.name == "nt" else "mv"
     )
 
 
@@ -47,15 +49,15 @@ def download_dep(
         stp_cmds.append(sub_cmd(setup_cmd, deps))
     bld_cmd = sub_cmd(build_cmd, deps)
 
-    # Run the commands
+    # Run the commands (using shell=True is fine because all the commands are in the script)
     try:
         print(f"Running {dl_cmd}...")
-        subprocess.call(dl_cmd)
+        subprocess.run(dl_cmd, shell=True)
         for stp_cmd in stp_cmds:
             print(f"Running {stp_cmd}...")
-            subprocess.call(stp_cmd)
+            subprocess.run(stp_cmd, shell=True)
         print(f"Running {bld_cmd}...")
-        subprocess.call(bld_cmd)
+        subprocess.run(bld_cmd, shell=True)
     except Exception as e:
         print(f"Failed to run command: {e}")
         exit(1)
@@ -82,6 +84,11 @@ deps = {
         ],
         "cmake --build <deps>/build/glew",
     ],
+    "phnt": [
+        "git clone https://github.com/processhacker/processhacker <deps>/processhacker",
+        [""],
+        "",
+    ],
     "sdl2": [
         "git clone https://github.com/libsdl-org/SDL <deps>/sdl2",
         [
@@ -89,13 +96,20 @@ deps = {
         ],
         "cmake --build <deps>/build/sdl2",
     ],
+    "stb": [
+        "git clone https://github.com/nothings/stb <deps>/stb",
+        [""],
+        "",
+    ],
 }
 
 # Folders to get headers from
 include_dirs = {
     "cglm": ["deps/tmp/cglm/include"],
     "glew": ["deps/tmp/glew/include"],
+    "phnt": ["deps/tmp/processhacker/phnt/include"],
     "sdl2": ["deps/tmp/sdl2/include", "deps/tmp/build/sdl2/include"],
+    "stb": ["deps/tmp/stb$$"],
 }
 
 # Output files that get kept
@@ -107,6 +121,8 @@ if os.name == "nt":
             ("deps/tmp/build/cglm/cglm-0.pdb", "deps/bin/cglm-0.pdb"),
         ],
         "glew": [
+            ("deps/tmp/build/glew/bin/glewinfo.exe", "deps/bin/glewinfo.exe"),
+            ("deps/tmp/build/glew/bin/visualinfo.exe", "deps/bin/visualinfo.exe"),
             ("deps/tmp/build/glew/bin/glew32.dll", "deps/bin/glew32.dll"),
             ("deps/tmp/build/glew/lib/glew32.lib", "deps/bin/glew.lib"),
             ("deps/tmp/build/glew/bin/glew32.pdb", "deps/bin/glew32.pdb"),
@@ -118,9 +134,24 @@ if os.name == "nt":
         ],
     }
 elif os.name == "posix":
-    outputs = {"cglm"}
+    outputs = {
+        "cglm": [
+            ("deps/tmp/build/cglm/libcglm.so", "deps/bin/libcglm.so"),
+            ("deps/tmp/build/cglm/libcglm.so.0", "deps/bin/libcglm.so.0"),
+        ],
+        "glew": [
+            ("deps/tmp/build/glew/bin/glewinfo", "deps/bin/glewinfo"),
+            ("deps/tmp/build/glew/bin/visualinfo", "deps/bin/visualinfo"),
+            ("deps/tmp/build/glew/lib/libGLEW.so", "deps/bin/libGLEW.so"),
+            ("deps/tmp/build/glew/lib/libGLEW.so.2.2", "deps/bin/libGLEW.so.2.2"),
+        ],
+        "sdl2": [
+            ("deps/tmp/build/sdl2/libSDL2-2.0.so", "deps/bin/libSDL2-2.0.so"),
+            ("deps/tmp/build/sdl2/libSDL2-2.0.so.0", "deps/bin/libSDL2-2.0.so.0"),
+        ],
+    }
 
-# Make a folder for the dependencies to be tmpd into
+# Make a folder for the dependencies to be cloned into
 shutil.rmtree("deps/bin", onerror=shutil_nuke_git)
 shutil.rmtree("deps/tmp", onerror=shutil_nuke_git)
 shutil.rmtree("deps/include", onerror=shutil_nuke_git)
@@ -132,7 +163,7 @@ try:
 except Exception as e:
     pass
 
-# Download the dependencies
+# Download and build the dependencies
 print("Downloading dependencies...")
 for name, cmds in deps.items():
     print(f"Downloading {name}...")
@@ -142,17 +173,23 @@ for name, cmds in deps.items():
 for dep, dirs in include_dirs.items():
     print(f"Copying {dep} headers to deps/include...")
     for dir in dirs:
-        for f in os.listdir(dir):
-            if os.path.isdir(f"{dir}/{f}"):
-                shutil.copytree(f"{dir}/{f}", f"deps/include/{f}")
+        # Check if only one level needs to be copied
+        onelevel = False
+        if dir.endswith("$$"):
+            onelevel = True
+        dirname = dir.replace("$$", "")
+
+        for f in os.listdir(dirname):
+            if os.path.isdir(f"{dirname}/{f}") and not onelevel:
+                shutil.copytree(f"{dirname}/{f}", f"deps/include/{f}")
             else:
                 if f.endswith(".h"):
-                    shutil.copy(f"{dir}/{f}", f"deps/include/{f}")
+                    shutil.copy(f"{dirname}/{f}", f"deps/include/{f}")
 
 for dep, outs in outputs.items():
     for out in outs:
         print(f"Copying {dep} output {out[0]} to {out[1]}...")
-        shutil.copy(out[0], out[1])
+        shutil.copy(out[0], out[1], follow_symlinks=(out[0][-1] in "1234567890"))
 
 # Clean up the other files
 shutil.rmtree("deps/tmp", onerror=shutil_nuke_git)

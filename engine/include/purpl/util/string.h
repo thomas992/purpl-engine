@@ -2,13 +2,13 @@
 //
 // Copyright 2021 MobSlicer152
 // This file is part of Purpl Engine
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,30 +17,56 @@
 
 #pragma once
 
+#include <stdarg.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include "purpl/core/coredefs.h"
 #include "purpl/core/types.h"
 
-/// Replace all instances of old with new in src and store the result in dst
+/// Count all instances of sub in str
 ///
-/// \param dst The destination buffer
-/// \param src The source string
-/// \param old The string to replace
-/// \param new The string to replace old with
+/// \param str The string to search
+/// \param sub The substring to count instances of
 ///
-/// \return Returns dst
-extern PURPL_API char *purpl_strrplc(char *dst, const char *src, const char *old, const char *new);
+/// \return Returns the number of instances
+extern PURPL_API size_t purpl_strcount(const char *str, const char *sub);
 
-/// Like purpl_strrplc, but only process up to n characters
+/// Replace all instances of old in str with new and place the result in a new
+/// buffer
 ///
-/// \param dst The destination buffer
-/// \param src The source string
-/// \param n The maximum number of characters to put in dst
-/// \param old The string to replace
-/// \param new The string to replace old with
+/// \param str The string to process
+/// \param old The substring to replace
+/// \param new The substring to replace old with
 ///
-/// \return Returns dst
-extern PURPL_API char *purpl_strnrplc(char *dst, const char *src, size_t n, const char *old, const char *new);
+/// \return Returns the new string, which can be freed with free
+extern PURPL_API char *purpl_strrplc(const char *str, const char *old,
+				     const char *new, size_t *size);
+
+/// Replace the next instance of old with new
+extern PURPL_API char *purpl_strrplcn(const char *str, const char *old,
+				      const char *new, size_t *size);
+
+/// Formats a string into a buffer and takes care of determining the needed
+/// size of the buffer
+///
+/// \param size A pointer in which the size of the buffer is returned if it
+/// isn't NULL
+/// \param fmt The printf format string to use
+///
+/// \return Returns a string which can be freed using free
+extern PURPL_API char *purpl_strfmt(size_t *size, const char *fmt, ...);
+
+/// Formats a string into a buffer and takes care of determining the needed
+/// size of the buffer
+///
+/// \param size A pointer in which the size of the buffer is returned if it
+/// isn't NULL
+/// \param fmt The printf format string to use
+/// \param args The varargs list to use
+///
+/// \return Returns a string which can be freed using free
+extern PURPL_API char *purpl_vstrfmt(size_t *size, const char *fmt,
+				     va_list args);

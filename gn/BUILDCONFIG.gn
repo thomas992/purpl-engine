@@ -37,8 +37,11 @@ is_mac = host_os == "mac" && current_os == "mac" && target_os == "mac"
 is_linux = host_os == "linux" && current_os == "linux" && target_os == "linux"
 
 declare_args() {
-  is_debug = true # Default to debug
-  use_clang = false # Default to MSVC on Windows
+  is_debug = true # Default to debug builds
+}
+
+declare_args() {
+  enable_meming = is_debug # If certain joke features (such as changes to logging functions on April 1st) should be enabled
 }
 
 _shared_binary_flags = [ "//gn:compiler_defaults" ]
@@ -55,9 +58,7 @@ set_defaults("static_library") {
   configs = _shared_binary_flags
 }
 
-if (is_win && use_clang) {
-  set_default_toolchain("//gn/toolchain:clang")
-} else if (is_win) {
+if (is_win) {
   set_default_toolchain("//gn/toolchain:msvc")
 } else {
   set_default_toolchain("//gn/toolchain:clang")
