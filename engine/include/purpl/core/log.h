@@ -77,7 +77,7 @@ struct purpl_logger {
 ///	#P	- The process ID of the engine
 ///	#T	- The thread ID of the current thread
 ///	#W	- The location of this call to whatever logging function was
-///		  used in the format #F:#f@#sl
+///		  used in the format #F:#sl@#f
 ///	#F	- The source file the logger was called from
 ///	#f	- The function the logger was called from
 ///	#sl	- The line the logger was called from

@@ -21,7 +21,7 @@ int32_t main(int32_t argc, char *argv[])
 {
 	struct purpl_logger *logger;
 
-	logger = purpl_log_create("test.log", PURPL_LOG_LEVEL_DEBUG, PURPL_LOG_LEVEL_MAX, "#def");
+	logger = purpl_log_create("test-<date>.log", PURPL_LOG_LEVEL_DEBUG, PURPL_LOG_LEVEL_MAX, "#def");
 	PURPL_LOG_CURRENT(logger, "asdf %s", "fdsa");
 
 	return 0;

@@ -110,10 +110,10 @@ static char *purpl_log_format(struct purpl_logger *logger,
 
 	va_copy(args, a);
 
-	// Unfourtunately, doing several replacements in sequence is a pain
-	// in the ass, but I think the tradeoff for singular ones being
-	// convenient is worth it, and this is the only case where this
-	// should be necessary, at least within the engine
+	// Unfourtunately, doing several replacements in sequence is a pain in
+	// the ass, but I think the tradeoff for singular ones being convenient
+	// is worth it, and this is the only case where this should be
+	// necessary, at least within the engine
 
 	p1 = purpl_vstrfmt(NULL, msg, args);
 	p2 = purpl_strrplc(logger->format, "#msg", p1, NULL);
@@ -195,17 +195,17 @@ static char *purpl_log_format(struct purpl_logger *logger,
 	free(p2);
 	free(p3);
 
-	p3 = purpl_strfmt(NULL, "%ul", PURPL_PROCESS_ID);
+	p3 = purpl_strfmt(NULL, "%lu", PURPL_PROCESS_ID);
 	p2 = purpl_strrplc(p1, "#P", p3, NULL);
 	free(p1);
 	free(p3);
 
-	p3 = purpl_strfmt(NULL, "%ul", SDL_ThreadID());
+	p3 = purpl_strfmt(NULL, "%lu", SDL_ThreadID());
 	p1 = purpl_strrplc(p2, "#T", p3, NULL);
 	free(p2);
 	free(p3);
 
-	p2 = purpl_strrplc(p1, "#W", "#F:#f@#sl", NULL);
+	p2 = purpl_strrplc(p1, "#W", "#F:#sl@#f", NULL);
 	free(p1);
 
 	p1 = purpl_strrplc(p2, "#F", file, NULL);
@@ -250,6 +250,9 @@ PURPL_API void purpl_log_write(struct purpl_logger *logger,
 		effective_level = logger->max_level;
 	else if (effective_level <= PURPL_LOG_LEVEL_CURRENT)
 		effective_level = logger->level;
+
+	if (effective_level > logger->max_level)
+		return;
 
 	va_start(args, msg);
 	buf = purpl_log_format(logger, effective_level, file, line, function,
