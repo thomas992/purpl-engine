@@ -1,4 +1,4 @@
-// This file includes all the stb headers used in the engine so they get compiled
+// Functions for Vulkan-based graphics contexts
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#define STB_DS_IMPLEMENTATION
-#define STB_SPRINTF_IMPLEMENTATION
-#include "stb_ds.h"
-#include "stb_sprintf.h"
+#include <SDL.h>
+#include <vulkan/vulkan.h>
+
+/// A structure representing the data for a Vulkan context
+struct purpl_vulkan_context {
+	
+};
+

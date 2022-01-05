@@ -101,6 +101,15 @@ deps = {
         [""],
         "",
     ],
+    "vulkan": [
+        "curl -fGL https://sdk.lunarg.com/sdk/download/latest/windows/vulkan-sdk.exe -o <deps>/vulkan-sdk.exe",
+        ["echo Running the Vulkan SDK installer"],
+        "<deps>/vulkan-sdk.exe"
+    ] if os.name == "nt" else [
+        f"curl -fGL https://sdk.lunarg.com/sdk/download/latest/linux/vulkan-sdk.tar.gz -o <deps>/vulkan-sdk.tar.gz",
+        [""],
+        f"echo \"The latest Vulkan SDK has been downloaded to <deps>/vulkan-sdk.tar.gz\""
+    ]
 }
 
 # Folders to get headers from
@@ -132,6 +141,9 @@ if os.name == "nt":
             ("deps/tmp/build/sdl2/SDL2.lib", "deps/bin/SDL2.lib"),
             ("deps/tmp/build/sdl2/SDL2.pdb", "deps/bin/SDL2.pdb"),
         ],
+        "vulkan": [
+            ("deps/tmp/vulkan-sdk.exe", "deps/bin/vulkan-sdk.exe")
+        ]
     }
 elif os.name == "posix":
     outputs = {
@@ -149,6 +161,9 @@ elif os.name == "posix":
             ("deps/tmp/build/sdl2/libSDL2-2.0.so", "deps/bin/libSDL2-2.0.so"),
             ("deps/tmp/build/sdl2/libSDL2-2.0.so.0", "deps/bin/libSDL2-2.0.so.0"),
         ],
+        "vulkan": [
+            ("deps/tmp/vulkan-sdk.tar.gz", "deps/bin/vulkan-sdk.tar.gz")
+        ]
     }
 
 # Make a folder for the dependencies to be cloned into

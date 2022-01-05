@@ -10,20 +10,20 @@ To build the engine, run the following commands on Windows:
 tools\buildenv
 python tools\deps.py
 
-rem This is more intended to be run from Explorer, it generates a compilation database and a Visual Studio solution too
+:: This is more intended to be run from Explorer, it generates a compilation database and a Visual Studio solution too
 tools\mkprojects
 
-rem This is the better way for a Command Prompt shell
+:: This is the better way for a Command Prompt shell
 gn gen out
 ninja -C out
 ```
 On Linux, run these commands instead:
 ```sh
-tools/deps.py
+tools/deps.py # After running this script, you may want to install the Vulkan SDK (for convenience, the latest source tarball is downloaded into deps/bin)
 tools/gn gen out
 ninja -C out
 ```
-GN can also generate IDE projects with `--ide=vs` or `--ide=xcode` (XCode and macOS are not tested because I deleted my Hackintosh install, but they might work with some modifications to the GN scripts), and compilation databases with `--export-compile-commands`.
+GN can also generate IDE projects with `--ide=vs` or `--ide=xcode` (XCode and macOS are not tested because I deleted my Hackintosh install {though I am planning to buy an M1 Mac}, but they might work with some modifications to the GN scripts and the `tools/deps.py` script), and compilation databases with `--export-compile-commands` for language servers in (Neo)vim and Visual Studio Code. To set options for the build such as debugging info, meming (various small Easter Eggs such as April 1st being reported as March 32nd and years being relative to 1970 on April 1st only), and verbose logging.
 
 To run the demo, do the following on Windows:
 ```batch

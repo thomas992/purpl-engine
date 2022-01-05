@@ -15,14 +15,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <errno.h>
+
 #include <purpl/purpl.h>
 
 int32_t main(int32_t argc, char *argv[])
 {
-	struct purpl_logger *logger;
+	// Initialize the engine
+	if (!purpl_init("purpl-demo", PURPL_DEFAULT_GRAPHICS_API)) {
+		fprintf(stderr, "Error: failed to initialize the engine: %s",
+			purpl_strerror());
+		exit(errno);
+	}
 
-	logger = purpl_log_create("test-<date>.log", PURPL_LOG_LEVEL_DEBUG, PURPL_LOG_LEVEL_MAX, "#def");
-	PURPL_LOG_CURRENT(logger, "asdf %s", "fdsa");
+	// Shut down the engine
+	purpl_shutdown();
 
 	return 0;
 }

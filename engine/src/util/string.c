@@ -35,23 +35,22 @@ PURPL_API size_t purpl_strcount(const char *str, const char *sub)
 	return count;
 }
 
-PURPL_API char *purpl_strrplc(const char *str, const char *old, const char *new,
-			      size_t *size)
+PURPL_API char *purpl_strrplc(const char *str, const char *old,
+			      const char *new, size_t *size)
 {
 	char *buf;
 	char *tmp;
 	char *p;
 	size_t buf_size;
 	size_t occurences;
-	size_t idx;
 
 	if (!str)
 		return NULL;
 
 	occurences = purpl_strcount(str, old);
 	buf_size = strlen(str) + 2;
-	buf_size = buf_size - (occurences * strlen(old)) +
-		   (occurences * strlen(new));
+	buf_size = buf_size - (occurences * strlen(old) + 1) +
+		   (occurences * strlen(new) + 1);
 
 	buf = calloc(buf_size, sizeof(char));
 	if (!buf)
@@ -64,15 +63,10 @@ PURPL_API char *purpl_strrplc(const char *str, const char *old, const char *new,
 	}
 
 	strncpy(buf, str, buf_size);
-	buf[buf_size - 1] = 0;
 	p = buf;
 
 	while ((p = strstr(p, old))) {
-		idx = p - buf;
-		strncpy(tmp, buf, idx);
-		tmp[idx] = 0;
-		strncat(tmp, new, buf_size);
-		strncat(tmp, p + strlen(old), buf_size);
+		stbsp_snprintf(tmp, buf_size, "%.*s%s%s", p - buf, buf, new, p + strlen(old));
 		strncpy(buf, tmp, buf_size);
 	}
 
@@ -138,7 +132,7 @@ PURPL_API char *purpl_vstrfmt(size_t *size, const char *fmt, va_list args)
 	va_copy(_args, args);
 
 	// Returns the number of characters that would be written
-	buf_size = stbsp_vsnprintf(NULL, 0, fmt, _args);
+	buf_size = stbsp_vsnprintf(NULL, 0, fmt, _args) + 2;
 
 	buf = calloc(buf_size, sizeof(char));
 	if (!buf) {
@@ -149,11 +143,23 @@ PURPL_API char *purpl_vstrfmt(size_t *size, const char *fmt, va_list args)
 
 	va_copy(_args, args);
 
-	stbsp_vsprintf(buf, fmt, _args);
+	stbsp_vsnprintf(buf, buf_size, fmt, _args);
 
 	va_end(_args);
 
 	if (size)
 		*size = buf_size;
+	return buf;
+}
+
+PURPL_API const char *purpl_strerror(void)
+{
+	static char buf[PURPL_STRERROR_BUF_MAX]; // This is an arbitrarily
+						 // large size that should be
+						 // fine, will be increased if
+						 // an edge case is encountered
+
+	sprintf(buf, "%s (errno %d)", strerror(errno), errno);
+
 	return buf;
 }

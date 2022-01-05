@@ -1,6 +1,23 @@
 {
 	"python.formatting.provider": "black",
 	"files.associations": {
-		"unistd.h": "c"
+		"unistd.h": "c",
+		"stb_ds.h": "c",
+		"types.h": "c",
+		"features.h": "c",
+		"init.h": "c",
+		"coredefs.h": "c",
+		"functional": "c",
+		"fstream": "c",
+		"sstream": "c",
+		"stdexcept": "c",
+		"tuple": "c",
+		"typeinfo": "c",
+		"stdlib.h": "c",
+		"inst.h": "c",
+		"errno.h": "c",
+		"stdio_lim.h": "c",
+		"exception": "c",
+		"context.h": "c"
 	}
 }

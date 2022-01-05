@@ -22,6 +22,10 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#ifdef __linux__
+#include <sys/types.h>
+#endif
+
 #include "features.h"
 
 // Integers

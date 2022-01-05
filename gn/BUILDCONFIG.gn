@@ -38,6 +38,7 @@ is_linux = host_os == "linux" && current_os == "linux" && target_os == "linux"
 
 declare_args() {
   is_debug = true # Default to debug builds
+  verbose_log = false # Print all logged messages to stdout, not just debug ones (in debug mode)
 }
 
 declare_args() {

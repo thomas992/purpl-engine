@@ -24,14 +24,12 @@
 #include <phnt.h>
 #include <phnt_windows.h>
 #else
-// Get all the things
-#define _ALL_SOURCE
 #include <unistd.h>
 #endif
 
 #include "types.h"
 
-/// Mark a function as external/imported
+/// Mark a function as external/imported on Windows
 #ifdef PURPL_BUILD
 #ifdef _MSC_VER
 #define PURPL_API __declspec(dllexport)
@@ -59,10 +57,22 @@
 #define PURPL_CURRENT_FUNCTION __func__
 #endif
 
-/// The current process ID
 #ifdef _WIN32
+/// The current process ID
 #define PURPL_PROCESS_ID \
 	((uint32_t)(size_t)(NtCurrentTeb()->ClientId.UniqueProcess))
+
+/// The current thread ID
+#define PURPL_THREAD_ID \
+	((uint32_t)(size_t)(NtCurrentTeb()->ClientId.UniqueThread))
 #else
+/// The current process ID
 #define PURPL_PROCESS_ID getpid()
+
+#ifdef __linux__
+extern pid_t gettid(void);
+
+/// The current thread ID
+#define PURPL_THREAD_ID gettid()
+#endif
 #endif

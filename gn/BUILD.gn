@@ -32,16 +32,15 @@ config("compiler_defaults") {
       "/subsystem:console",
     ]
   } else {
-    cflags = [
+    cflags = [ 
+      "-fPIC",
+      "-fPIE",
       "-Wall",
       "-Wextra",
+      "-Wno-incompatible-pointer-types-discards-qualifiers", # Pointer bullshitery is the whole point of C
       "-std=c2x",
     ]
     ldflags = []
-  }
-
-  if (is_linux) {
-    cflags += [ "-fPIC", "-fPIE" ]
   }
 
   if (is_debug) {

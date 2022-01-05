@@ -1,4 +1,9 @@
-// This file includes all the stb headers used in the engine so they get compiled
+// Global variables. The few of these that are needed cause the linker to
+// complain about relocations and moving them here fixes said errors for
+// unknown reasons
+//
+// Copyright 2021 MobSlicer152
+// This file is part of Purpl Engine
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +17,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#define STB_DS_IMPLEMENTATION
-#define STB_SPRINTF_IMPLEMENTATION
-#include "stb_ds.h"
-#include "stb_sprintf.h"
+#include "purpl/core/inst.h"
+
+struct purpl_instance *purpl_inst;
+

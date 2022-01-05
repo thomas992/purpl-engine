@@ -26,18 +26,25 @@ shared_library("engine") {
   ldflags = []
 
   sources = [
-    "include/core/coredefs.h",
-    "include/core/features.h",
-    "include/core/init.h",
-    "include/core/inst.h",
-    "include/core/log.h",
-    "include/core/types.h",
+    "include/purpl/core/coredefs.h",
+    "include/purpl/core/features.h",
+    "include/purpl/core/init.h",
+    "include/purpl/core/inst.h",
+    "include/purpl/core/log.h",
+    "include/purpl/core/types.h",
+
+    "include/purpl/graphics/context.h",
+    "include/purpl/graphics/vulkan/context.h",
 
     "include/util/string.h",
     "include/util/util.h",
     
+    "src/core/globals.c",
     "src/core/init.c",
     "src/core/log.c",
+    
+    "src/graphics/context.c",
+    "src/graphics/vulkan/context.c",
     
     "src/util/stb.c",
     "src/util/string.c",
@@ -50,10 +57,16 @@ shared_library("engine") {
     ]
   } else if (current_cpu == "x86") {
     defines += [ "PURPL_X86=1" ]
+  } else if (current_cpu == "arm64") {
+    defines += [ "PURPL_ARM=1" ]
   }
 
   if (enable_meming) {
-    defines += [ "PURPL_ENABLE_MEMING" ]
+    defines += [ "PURPL_ENABLE_MEMING=1" ]
+  }
+
+  if (verbose_log) {
+    defines += [ "PURPL_DEBUG_VERBOSE_LOG=1" ]
   }
 
   if (is_win) {

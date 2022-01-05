@@ -19,11 +19,21 @@
 #include <stdlib.h>
 
 #include "coredefs.h"
+#include "inst.h"
 #include "types.h"
 
 /// Initialize the engine
 ///
-/// \param log_name Specifies the name of the log file. The string <date> will
-/// be replaced with the date in the format <dd>-<mm>-<yyyy>. Can be NULL, in
-/// which case the log file will be named purpl-<date>.log
-extern PURPL_API bool purpl_init(const char *log_name);
+/// \param app_name The name of the application (used for the window title,
+///		    among other things)
+/// \param graphics_api The graphics API to use for rendering (pass
+///			PURPL_DEFAULT_GRAPHICS_API to use the default, or the
+///			API in the config file once those are implemented)
+///
+/// \return Returns true if the engine initialized. Unless otherwise stated,
+/// 	    this means that any functions not from the headers in purpl/util
+//	    will not work.
+extern PURPL_API bool purpl_init(const char *app_name, enum purpl_graphics_api graphics_api);
+
+/// Shut down the engine
+extern PURPL_API void purpl_shutdown(void);

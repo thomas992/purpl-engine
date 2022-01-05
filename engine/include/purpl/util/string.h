@@ -17,6 +17,7 @@
 
 #pragma once
 
+#include <errno.h>
 #include <stdarg.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -46,6 +47,12 @@ extern PURPL_API char *purpl_strrplc(const char *str, const char *old,
 				     const char *new, size_t *size);
 
 /// Replace the next instance of old with new
+///
+/// \param str The string to process
+/// \param old The substring to replace
+/// \param new The substring to replace the first instance of old with
+///
+/// \return Returns the new string, which can be freed with free
 extern PURPL_API char *purpl_strrplcn(const char *str, const char *old,
 				      const char *new, size_t *size);
 
@@ -70,3 +77,12 @@ extern PURPL_API char *purpl_strfmt(size_t *size, const char *fmt, ...);
 /// \return Returns a string which can be freed using free
 extern PURPL_API char *purpl_vstrfmt(size_t *size, const char *fmt,
 				     va_list args);
+
+/// The size of the (read only) buffer returned by purpl_strerror
+#define PURPL_STRERROR_BUF_MAX 128
+
+/// Gets an error string from the current errno value
+///
+/// \return Returns an error string in a static buffer with
+///	    PURPL_STRERROR_BUF_MAX bytes of space
+extern PURPL_API const char *purpl_strerror(void);
