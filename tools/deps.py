@@ -161,9 +161,6 @@ elif os.name == "posix":
         "sdl2": [
             ("deps/tmp/build/sdl2/libSDL2-2.0.so", "deps/bin/libSDL2-2.0.so"),
             ("deps/tmp/build/sdl2/libSDL2-2.0.so.0", "deps/bin/libSDL2-2.0.so.0"),
-        ],
-        "vulkan": [
-            ("deps/tmp/vulkan-sdk.tar.gz", "deps/bin/vulkan-sdk.tar.gz")
         ]
     }
 
