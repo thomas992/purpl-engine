@@ -26,11 +26,8 @@ jobs:
 
       - uses: ilammy/msvc-dev-cmd@v1.10.0
 
-      - name: Setup Vulkan
-        run: |
-            Invoke-WebRequest -Uri "https://sdk.lunarg.com/sdk/download/latest/windows/vulkan-sdk.exe" -OutFile vulkan-sdk.exe
-            $installer = Start-Process -FilePath vulkan-sdk.exe -Wait -PassThru -ArgumentList @("/S");
-            $installer.WaitForExit();
+      - name: Install Vulkan SDK
+        uses: humbletim/setup-vulkan-sdk@v1.0.3
 
       - name: Build dependencies
         run: python tools\deps.py
@@ -70,6 +67,9 @@ jobs:
           sudo apt-get update -qq
           sudo apt-get install -y ninja-build gcc-multilib python3 curl
           sudo apt-get install -y --no-install-recommends libx11-dev libxcursor-dev libxrandr-dev libxinerama-dev libxi-dev libxext-dev libxfixes-dev libgl1-mesa-dev
+
+      - name: Install Vulkan SDK
+        uses: humbletim/setup-vulkan-sdk@v1.0.3
 
       - name: Set permissions on executables
         run: |
