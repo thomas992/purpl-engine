@@ -47,10 +47,12 @@ jobs:
         run: ninja -C out -j$[`nproc` + 2]
 
       - name: Add artifacts to archive
-        run: 7z a -tzip build.zip out/{engine.so,main} deps/bin/*
+        run: |
+          mkdir build
+          mv out/{engine.so,main} deps/bin/* build
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
           name: build
-          path: build.zip
+          path: build
