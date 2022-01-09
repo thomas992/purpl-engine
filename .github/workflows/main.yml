@@ -31,6 +31,12 @@ jobs:
           # ninja version to download. Default: 1.10.0
           version: 1.10.0
 
+      - name: Setup OpenGL
+        uses: openrndr/setup-opengl@v1.1
+
+      - name: Install Vulkan SDK
+        uses: humbletim/setup-vulkan-sdk@v1.0.3
+
       - name: Build dependencies
         run: python $GITHUB_WORKSPACE/tools/deps.py
 
