@@ -71,7 +71,7 @@ deps = {
     "cglm": [
         "git clone https://github.com/recp/cglm <deps>/cglm",
         [
-            "cmake -S <deps>/cglm -B <deps>/build/cglm -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCGLM_STATIC=OFF"
+            "cmake -S <deps>/cglm -B <deps>/build/cglm -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCGLM_STATIC=OFF"
         ],
         "cmake --build <deps>/build/cglm",
     ],
@@ -80,7 +80,7 @@ deps = {
         [
             "tar xf <deps>/glew.tar.gz -C <deps>",
             f"<move> <deps>/glew-{glew_ver} <deps>/glew",
-            "cmake -S <deps>/glew/build/cmake -B <deps>/build/glew -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo",
+            "cmake -S <deps>/glew/build/cmake -B <deps>/build/glew -DCMAKE_BUILD_TYPE=RelWithDebInfo",
         ],
         "cmake --build <deps>/build/glew",
     ],
@@ -92,7 +92,7 @@ deps = {
     "sdl2": [
         "git clone https://github.com/libsdl-org/SDL <deps>/sdl2",
         [
-            "cmake -S <deps>/sdl2 -B <deps>/build/sdl2 -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo -DSDL_VULKAN=ON -DSDL_KMSDRM=ON -DSDL_STATIC=OFF"
+            "cmake -S <deps>/sdl2 -B <deps>/build/sdl2 -DCMAKE_BUILD_TYPE=RelWithDebInfo -DSDL_VULKAN=ON -DSDL_KMSDRM=ON -DSDL_STATIC=OFF"
         ],
         "cmake --build <deps>/build/sdl2",
     ],
