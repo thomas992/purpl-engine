@@ -1,4 +1,4 @@
-// Header that includes all the other utilities
+// Utility functions for Vulkan
 //
 // Copyright 2022 MobSlicer152
 // This file is part of Purpl Engine
@@ -17,5 +17,18 @@
 
 #pragma once
 
-#include "misc.h"
-#include "string.h"
+#include <string.h>
+
+#include <stb_sprintf.h>
+#include <vulkan/vulkan.h>
+
+#include "purpl/core/coredefs.h"
+#include "purpl/core/types.h"
+
+/// Convert a VkResult to a string
+///
+/// \param result The result code to convert
+///
+/// \return Returns a static buffer of PURPL_STATIC_BUF_MAX bytes containing
+/// the translated error code
+extern const char *purpl_vulkan_strerror(VkResult result);

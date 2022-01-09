@@ -1,5 +1,8 @@
 // Definition of the engine instance structure
 //
+// Copyright 2022 MobSlicer152
+// This file is part of Purpl Engine
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -18,9 +21,10 @@
 #include <stdlib.h>
 #include <time.h>
 
-#include "purpl/util/string.h"
+#include "purpl/util/util.h"
 
 #include "coredefs.h"
+#include "inst.h"
 #include "types.h"
 
 /// Levels for the logging functions
@@ -31,11 +35,15 @@ enum purpl_log_level {
 	PURPL_LOG_LEVEL_ERROR, // Minor errors (like most of them)
 	PURPL_LOG_LEVEL_WARNING, // Minor errors unlikely to impact anything
 	PURPL_LOG_LEVEL_INFO, // Information
-#ifdef PURPL_DEBUG
 	PURPL_LOG_LEVEL_DEBUG, // Debugging messages
-#endif
-	PURPL_LOG_LEVEL_MAX, // Use this to use the logger's maximum level
 };
+
+// Use this to use the logger's maximum level
+#ifdef PURPL_DEBUG
+#define PURPL_LOG_LEVEL_MAX PURPL_LOG_LEVEL_DEBUG + 1
+#else
+#define PURPL_LOG_LEVEL_MAX PURPL_LOG_LEVEL_INFO + 1
+#endif
 
 /// A logger
 struct purpl_logger {
@@ -69,8 +77,7 @@ struct purpl_logger {
 ///
 ///	#d	- The current date in the format #WD, #D/#M/#Y, or #jd if it's
 /// 		  April 1st and PURPL_ENABLE_MEMING is defined (enable_meming
-/// in
-///		  GN args)
+/// 		  in GN args)
 ///	#jd	- The current date in the format #WD, #JD/#JM/#JY
 ///	#D	- The current day of the month
 ///	#JD	- The current day of the month, but 32 if it's April 1st
@@ -90,11 +97,15 @@ struct purpl_logger {
 ///	#L	- The current log level in all caps
 ///	#l	- The current log level in lowercase
 ///
+///	#V	- The version of the engine
+///	#n	- The name of the application
+///	#v	- The version of the application
+///
 ///	#msg	- The message logged (can be used multiple times, but don't do
 ///		  that)
 ///	#def	- The default pattern (passing NULL for format also gives
-///		  this), which is equivalent to the following:
-///		  "[ PID #P TID #T ] [ #d ] [ #t ] [ #W ] [ #L ]: #msg"
+///		  this), which is equivalent to 
+///		  or "[ #d ] [ #t ] [ #n #v ] [ #L ] #msg" otherwise
 ///
 /// 	The sequences can also be used in purpl_log_write (and the macros
 ///	wrapping it), as they are processed by that function and #msg is
@@ -190,8 +201,6 @@ extern PURPL_API void purpl_log_close(struct purpl_logger *logger,
 #define PURPL_LOG_INFO(logger, msg, ...) \
 	PURPL_LOG_WRITE(logger, INFO, msg __VA_OPT__(, ) __VA_ARGS__)
 
-#ifdef PURPL_DEBUG
 /// Log a message at PURPL_LOG_LEVEL_DEBUG
 #define PURPL_LOG_DEBUG(logger, msg, ...) \
 	PURPL_LOG_WRITE(logger, DEBUG, msg __VA_OPT__(, ) __VA_ARGS__)
-#endif

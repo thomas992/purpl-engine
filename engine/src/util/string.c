@@ -1,6 +1,6 @@
 // Definitions of the functions in purpl/util/string.h
 //
-// Copyright 2021 MobSlicer152
+// Copyright 2022 MobSlicer152
 // This file is part of Purpl Engine
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -66,7 +66,8 @@ PURPL_API char *purpl_strrplc(const char *str, const char *old,
 	p = buf;
 
 	while ((p = strstr(p, old))) {
-		stbsp_snprintf(tmp, buf_size, "%.*s%s%s", p - buf, buf, new, p + strlen(old));
+		stbsp_snprintf(tmp, buf_size, "%.*s%s%s", (s32)(p - buf), buf, new,
+			       p + strlen(old));
 		strncpy(buf, tmp, buf_size);
 	}
 
@@ -154,12 +155,21 @@ PURPL_API char *purpl_vstrfmt(size_t *size, const char *fmt, va_list args)
 
 PURPL_API const char *purpl_strerror(void)
 {
-	static char buf[PURPL_STRERROR_BUF_MAX]; // This is an arbitrarily
-						 // large size that should be
-						 // fine, will be increased if
-						 // an edge case is encountered
+	static char buf[PURPL_STATIC_BUF_MAX]; // This is an arbitrarily
+					       // large size that should be
+					       // fine, will be increased if
+					       // an edge case is encountered
 
-	sprintf(buf, "%s (errno %d)", strerror(errno), errno);
+	stbsp_snprintf(buf, PURPL_STATIC_BUF_MAX, "%s (errno %d)", strerror(errno), errno);
+
+	return buf;
+}
+
+PURPL_API const char *purpl_format_version(u32 version)
+{
+	static char buf[PURPL_STATIC_BUF_MAX];
+
+	stbsp_snprintf(buf, PURPL_STATIC_BUF_MAX, "v%d.%d.%d", (version >> 16) & 0xFF, (version >> 8) & 0xFF, version & 0xFF);
 
 	return buf;
 }

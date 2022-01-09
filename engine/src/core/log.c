@@ -1,6 +1,6 @@
 // Logging functions
 //
-// Copyright 2021 MobSlicer152
+// Copyright 2022 MobSlicer152
 // This file is part of Purpl Engine
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,6 +30,9 @@ PURPL_API struct purpl_logger *purpl_log_create(const char *file,
 	char *date;
 	char *filename;
 	char *message_format;
+
+	if (!purpl_inst)
+		return NULL;
 
 	logger = calloc(1, sizeof(struct purpl_logger));
 	if (!logger)
@@ -61,9 +64,15 @@ PURPL_API struct purpl_logger *purpl_log_create(const char *file,
 	logger->level = level > logger->max_level ? logger->max_level : level;
 
 	message_format = purpl_strfmt(NULL, "%s", format ? format : "#def");
+#ifdef PURPL_DEBUG
+	logger->format =
+		purpl_strrplc(message_format, "#def",
+			      "[PID #P TID #T] [#d #t] [#W] [#L] #msg", NULL);
+#else
 	logger->format = purpl_strrplc(message_format, "#def",
-				       "[PID #P TID #T] [#d #t] [#W] [#L] #msg",
+				       "[ #d ] [ #t ] [ #n #v ] [ #L ] #msg",
 				       NULL);
+#endif
 
 	free(message_format);
 
@@ -100,12 +109,12 @@ static char *purpl_log_format(struct purpl_logger *logger,
 	va_list args;
 
 	const char *days[] = { "Sunday",   "Monday", "Tuesday", "Wednesday",
-			 "Thursday", "Friday", "Saturday" };
+			       "Thursday", "Friday", "Saturday" };
 
 	const char *levels_upper[] = { "CRITICAL", "ERROR", "WARNING", "INFO",
-				 "DEBUG" };
+				       "DEBUG" };
 	const char *levels_lower[] = { "critical", "error", "warning", "info",
-				 "debug" };
+				       "debug" };
 
 	// This function is only ever called by purpl_log_write (which checks
 	// its parameters), so no parameter validation is necessary
@@ -230,9 +239,18 @@ static char *purpl_log_format(struct purpl_logger *logger,
 	p1 = purpl_strrplc(p2, "#l", p3, NULL);
 	free(p2);
 
+	p2 = purpl_strrplc(p1, "#V", purpl_format_version(PURPL_VERSION), NULL);
+	free(p1);
+
+	p1 = purpl_strrplc(p2, "#n", purpl_inst->app_name, NULL);
+	free(p2);
+
+	p2 = purpl_strrplc(p1, "#v", purpl_format_version(purpl_inst->app_version), NULL);
+	free(p1);
+
 	va_end(args);
 
-	return p1;
+	return p2;
 }
 
 PURPL_API void purpl_log_write(struct purpl_logger *logger,
@@ -252,6 +270,11 @@ PURPL_API void purpl_log_write(struct purpl_logger *logger,
 		effective_level = logger->max_level;
 	else if (effective_level <= PURPL_LOG_LEVEL_CURRENT)
 		effective_level = logger->level;
+
+#ifndef PURPL_DEBUG
+	if (effective_level == PURPL_LOG_LEVEL_DEBUG)
+		effective_level = PURPL_LOG_LEVEL_INFO;
+#endif
 
 	if (effective_level > logger->max_level)
 		return;
@@ -299,7 +322,8 @@ purpl_log_get_max_level(struct purpl_logger *logger)
 }
 
 PURPL_API enum purpl_log_level
-purpl_log_set_max_level(struct purpl_logger *logger, enum purpl_log_level level)
+purpl_log_set_max_level(struct purpl_logger *logger,
+			enum purpl_log_level level)
 {
 	enum purpl_log_level old;
 
@@ -336,10 +360,10 @@ PURPL_API void purpl_log_close(struct purpl_logger *logger, bool last_message)
 		else if (t->tm_hour >= 18)
 			time_of_day = "night";
 
-		srand((u32)(u64)logger);
-		msg = purpl_strfmt(
-			NULL, "This logger is shutting down. Have a %s %s.",
-			adjectives[rand() % 1], time_of_day);
+		msg = purpl_strfmt(NULL,
+				   "This logger is shutting down. Have a %s "
+				   "%s.",
+				   adjectives[PURPL_RANDOM(1)], time_of_day);
 		PURPL_LOG_INFO(logger, "%s", msg);
 		free(msg);
 	}

@@ -1,6 +1,6 @@
 // Extra string manipulation functions
 //
-// Copyright 2021 MobSlicer152
+// Copyright 2022 MobSlicer152
 // This file is part of Purpl Engine
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -78,11 +78,15 @@ extern PURPL_API char *purpl_strfmt(size_t *size, const char *fmt, ...);
 extern PURPL_API char *purpl_vstrfmt(size_t *size, const char *fmt,
 				     va_list args);
 
-/// The size of the (read only) buffer returned by purpl_strerror
-#define PURPL_STRERROR_BUF_MAX 128
-
 /// Gets an error string from the current errno value
 ///
 /// \return Returns an error string in a static buffer with
-///	    PURPL_STRERROR_BUF_MAX bytes of space
+///	    PURPL_STATIC_BUF_MAX bytes of space
 extern PURPL_API const char *purpl_strerror(void);
+
+/// Converts a version number into a string in the format "vmajor.minor.patch"
+///
+/// \param version The version number (from PURPL_MAKE_VERSION) to format
+///
+/// \return Returns a static buffer with PURPL_STATIC_BUF_MAX bytes of space
+extern PURPL_API const char *purpl_format_version(u32 version);

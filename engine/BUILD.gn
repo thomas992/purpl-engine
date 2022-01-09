@@ -1,6 +1,6 @@
 #  Targets for the main engine library
 #
-#  Copyright 2021 MobSlicer152
+#  Copyright 2022 MobSlicer152
 #  This file is part of Purpl Engine
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
@@ -32,9 +32,12 @@ shared_library("engine") {
     "include/purpl/core/inst.h",
     "include/purpl/core/log.h",
     "include/purpl/core/types.h",
+    "include/purpl/util/string.h",
+    "include/purpl/util/util.h",
 
     "include/purpl/graphics/context.h",
     "include/purpl/graphics/vulkan/context.h",
+    "include/purpl/graphics/vulkan/misc.h",
 
     "include/util/string.h",
     "include/util/util.h",
@@ -45,6 +48,7 @@ shared_library("engine") {
     
     "src/graphics/context.c",
     "src/graphics/vulkan/context.c",
+    "src/graphics/vulkan/misc.c",
     
     "src/util/stb.c",
     "src/util/string.c",

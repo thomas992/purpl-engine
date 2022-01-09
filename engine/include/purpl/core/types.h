@@ -1,6 +1,6 @@
 // Types
 //
-// Copyright 2021 MobSlicer152
+// Copyright 2022 MobSlicer152
 // This file is part of Purpl Engine
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");

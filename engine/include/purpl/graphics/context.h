@@ -1,5 +1,8 @@
 // Functions for graphics contexts
 //
+// Copyright 2022 MobSlicer152
+// This file is part of Purpl Engine
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -19,27 +22,24 @@
 #include "purpl/core/coredefs.h"
 #include "purpl/core/types.h"
 
-#include "vulkan/context.h"
+#include "./vulkan/context.h"
 
-/// Graphics APIs for graphics contexts to use
-enum purpl_graphics_api {
-	PURPL_GRAPHICS_API_SOFTWARE = 0, // Software rendering, will be
-					 // implemented eventually
-	PURPL_GRAPHICS_API_OPENGL, // OpenGL, will be worked on
-	PURPL_GRAPHICS_API_VULKAN, // Vulkan, being worked on currently
-};
+#include "api.h"
 
 #ifndef PURPL_DEFAULT_GRAPHICS_API
 #define PURPL_DEFAULT_GRAPHICS_API PURPL_GRAPHICS_API_VULKAN
 #endif // !PURPL_DEFAULT_GRAPHICS_API
 
 /// Structure representing a graphics context
-struct purpl_graphics_context {
-	SDL_Surface *surf; // The surface for this context to render to
-			   // (typically a window)
-	enum purpl_graphics_api api; // The graphics API used for this
-				     // context's rendering
-	void *specific; // API specific data
+union purpl_graphics_context {
+	// Needs to be a struct so they don't get merged
+	struct {
+		enum purpl_graphics_api api; // The graphics API used for this
+					     // context's rendering
+		SDL_Surface *surface; // The surface for this context to render
+				      // to (typically a window)
+	};
+	struct purpl_vulkan_context vulkan;
 };
 
 /// Create a graphics context
@@ -48,12 +48,20 @@ struct purpl_graphics_context {
 /// \param surface The surface to render to
 ///
 /// \return Returns the new context
-extern PURPL_API struct purpl_graphics_context *
+extern PURPL_API union purpl_graphics_context *
 purpl_graphics_create_context(enum purpl_graphics_api api,
 			      SDL_Surface *surface);
+
+/// Update a graphics context
+///
+/// \param context The context to update
+///
+/// \return Returns whether the update was successful
+extern PURPL_API bool
+purpl_graphics_update_context(union purpl_graphics_context *context);
 
 /// Destroy a graphics context
 ///
 /// \param context The context to destroy
 extern PURPL_API void
-purpl_graphics_destroy_context(struct purpl_graphics_context *context);
+purpl_graphics_destroy_context(union purpl_graphics_context *context);

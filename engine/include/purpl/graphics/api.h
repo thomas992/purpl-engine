@@ -1,4 +1,4 @@
-// Header that includes all the other utilities
+// Functions for graphics contexts
 //
 // Copyright 2022 MobSlicer152
 // This file is part of Purpl Engine
@@ -17,5 +17,12 @@
 
 #pragma once
 
-#include "misc.h"
-#include "string.h"
+#include <SDL.h>
+
+/// Graphics APIs for graphics contexts to use
+enum purpl_graphics_api {
+	PURPL_GRAPHICS_API_SOFTWARE = 0, // Software rendering, will be
+					 // implemented eventually
+	PURPL_GRAPHICS_API_OPENGL = SDL_WINDOW_OPENGL, // OpenGL, will be worked on
+	PURPL_GRAPHICS_API_VULKAN = SDL_WINDOW_VULKAN, // Vulkan, being worked on currently
+};

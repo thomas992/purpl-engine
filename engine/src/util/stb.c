@@ -1,4 +1,8 @@
-// This file includes all the stb headers used in the engine so they get compiled
+// This file includes all the stb headers used in the engine so they get
+// compiled
+//
+// Copyright 2022 MobSlicer152
+// This file is part of Purpl Engine
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.

@@ -1,6 +1,6 @@
 // A demo of the engine's features
 //
-// Copyright 2021 MobSlicer152
+// Copyright 2022 MobSlicer152
 // This file is part of Purpl Engine
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,17 +19,28 @@
 
 #include <purpl/purpl.h>
 
+// This will be called each frame by the engine
+bool frame_func(s32 delta, void *data);
+
 int32_t main(int32_t argc, char *argv[])
 {
 	// Initialize the engine
-	if (!purpl_init("purpl-demo", PURPL_DEFAULT_GRAPHICS_API)) {
+	if (!purpl_init("purpl-demo", PURPL_MAKE_VERSION(1, 0, 0), PURPL_DEFAULT_GRAPHICS_API)) {
 		fprintf(stderr, "Error: failed to initialize the engine: %s",
 			purpl_strerror());
 		exit(errno);
 	}
 
+	// Run the main loop
+	purpl_run(frame_func, NULL);
+
 	// Shut down the engine
 	purpl_shutdown();
 
 	return 0;
+}
+
+bool frame_func(s32 delta, void *data)
+{
+	return true;
 }

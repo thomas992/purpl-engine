@@ -1,7 +1,7 @@
 #!/usr/bin/env python
-#  Downloads and builds dependencies in a semi-reusable process
+#  Downloads and builds dependencies
 #
-#  Copyright 2021 MobSlicer152
+#  Copyright 2022 MobSlicer152
 #  This file is part of Purpl Engine
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
@@ -92,7 +92,7 @@ deps = {
     "sdl2": [
         "git clone https://github.com/libsdl-org/SDL <deps>/sdl2",
         [
-            "cmake -S <deps>/sdl2 -B <deps>/build/sdl2 -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo -DSDL_VULKAN=ON -DSDL_STATIC=OFF"
+            "cmake -S <deps>/sdl2 -B <deps>/build/sdl2 -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo -DSDL_VULKAN=ON -DSDL_KMSDRM=ON -DSDL_STATIC=OFF"
         ],
         "cmake --build <deps>/build/sdl2",
     ],

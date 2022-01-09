@@ -1,6 +1,6 @@
 // Core definitions for the engine
 //
-// Copyright 2021 MobSlicer152
+// Copyright 2022 MobSlicer152
 // This file is part of Purpl Engine
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,16 +16,6 @@
 // limitations under the License.
 
 #pragma once
-
-#ifdef _WIN32
-// Windows 7 is the earliest version of Windows supported (at least as long as
-// it works on my laptop)
-#define PHNT_VERSION PHNT_WIN7
-#include <phnt.h>
-#include <phnt_windows.h>
-#else
-#include <unistd.h>
-#endif
 
 #include "types.h"
 
@@ -44,35 +34,21 @@
 #endif // _MSC_VER
 #endif // PURPL_BUILD
 
-/// Returns the size of a stack array
-#define PURPL_SIZEOF_ARRAY(a) (sizeof((a)) / sizeof((a)[0]))
+/// Make a version number from major, minor, and patch numbers
+#define PURPL_MAKE_VERSION(major, minor, patch) \
+	(((major)&0xFF) << 16 | ((minor)&0xFF) << 8 | (patch)&0xFF)
 
-/// Expands to __PRETTY_FUNCTION__, __FUNCSIG__, or __func__ (unfourtunately,
-/// this means it can't always be concatenated with other string literals)
-#ifdef __clang__
-#define PURPL_CURRENT_FUNCTION __PRETTY_FUNCTION__
-#elif defined _MSC_VER
-#define PURPL_CURRENT_FUNCTION __FUNCSIG__
-#else
-#define PURPL_CURRENT_FUNCTION __func__
-#endif
+/// The current major version of the engine
+#define PURPL_MAJOR_VERSION 1
 
-#ifdef _WIN32
-/// The current process ID
-#define PURPL_PROCESS_ID \
-	((uint32_t)(size_t)(NtCurrentTeb()->ClientId.UniqueProcess))
+/// The current minor version of the engine
+#define PURPL_MINOR_VERSION 0
 
-/// The current thread ID
-#define PURPL_THREAD_ID \
-	((uint32_t)(size_t)(NtCurrentTeb()->ClientId.UniqueThread))
-#else
-/// The current process ID
-#define PURPL_PROCESS_ID getpid()
+/// The current patch version of the engine
+#define PURPL_PATCH_VERSION 0
 
-#ifdef __linux__
-extern pid_t gettid(void);
+/// The full version of the engine
+#define PURPL_VERSION PURPL_MAKE_VERSION(PURPL_MAJOR_VERSION, PURPL_MINOR_VERSION, PURPL_PATCH_VERSION)
 
-/// The current thread ID
-#define PURPL_THREAD_ID gettid()
-#endif
-#endif
+/// The size of the static buffers returned by some string functions
+#define PURPL_STATIC_BUF_MAX 128
