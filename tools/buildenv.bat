@@ -8,7 +8,7 @@ if not exist "%vs2019_install%" (
 	set "vs2019_install=C:\Program Files\Microsoft Visual Studio\2022\Community"
 )
 if not exist "%vs2019_install%" (
-	set "vs2019_install=C:\Program Files\Microsoft Visual Studio\2019\Enterprise" :: Github Actions gives enterprise installs
+	set "vs2019_install=C:\Program Files\Microsoft Visual Studio\2022\Enterprise" :: Github Actions gives enterprise installs
 )
 
 for /F "tokens=* USEBACKQ" %%F in (`type "%vs2019_install%\VC\Auxiliary\Build\Microsoft.VCToolsVersion.default.txt"`) do (
