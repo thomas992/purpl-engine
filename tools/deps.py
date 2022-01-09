@@ -66,8 +66,10 @@ def download_dep(
 # Versions
 glew_ver = "2.2.0"
 
-# CMake is officially the worst build system other than literally just throwing together a bunch of random shell scripts
-cmake_ninja_bullshit = "-DCMAKE_MAKE_PROGRAM=tools\\ninja.exe" if os.name == "nt" else ""
+# CMake is officially the worst build system other than literally just throwing
+# together a bunch of random shell scripts and praying to whatever ancient
+# Lovecraftian deity is in charge of terrible build systems
+cmake_ninja_bullshit = f"-DCMAKE_MAKE_PROGRAM={os.getcwd()}\\tools\\ninja.exe" if os.name == "nt" else ""
 
 # Dependencies
 deps = {
