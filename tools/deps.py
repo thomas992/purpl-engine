@@ -121,7 +121,7 @@ deps = {
     "vulkan": [
         "curl -fGL https://sdk.lunarg.com/sdk/download/latest/windows/vulkan-sdk.exe -o <deps>/vulkan-sdk.exe",
         ["<deps>\\vulkan-sdk.exe /S"],
-        "",
+        f"echo Vulkan SDK installed to {os.getenv('VULKAN_SDK')}",
     ]
     if os.name == "nt"
     else ["", [""], ""],
