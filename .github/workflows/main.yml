@@ -28,7 +28,7 @@ jobs:
       - name: Setup APT packages
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y p7zip ninja gcc-multilib python3 curl zip unzip
+          sudo apt-get install -y p7zip ninja-build gcc-multilib python3 curl zip unzip
           sudo apt-get install -y --no-install-recommends libx11-dev libxcursor-dev libxrandr-dev libxinerama-dev libxi-dev libxext-dev libxfixes-dev libgl1-mesa-dev
 
       - name: Install Vulkan SDK
