@@ -18,7 +18,7 @@
 executable("main") {
   deps = [ "//engine:engine" ]
 
-  include_dirs = [ "//deps/include", "//engine/include" ]
+  include_dirs = [ "//deps/include", getenv("VULKAN_SDK") + "/include", "//engine/include" ]
   lib_dirs = [ "//deps/bin" ]
 
   sources = [ "src/main.c" ]
