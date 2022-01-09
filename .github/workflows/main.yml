@@ -26,6 +26,12 @@ jobs:
 
       - uses: ilammy/msvc-dev-cmd@v1.10.0
 
+      - name: Setup Vulkan
+        run: |
+            Invoke-WebRequest -Uri "https://sdk.lunarg.com/sdk/download/latest/windows/vulkan-sdk.exe" -OutFile vulkan-sdk.exe
+            $installer = Start-Process -FilePath vulkan-sdk.exe -Wait -PassThru -ArgumentList @("/S");
+            $installer.WaitForExit();
+
       - name: Build dependencies
         run: python tools\deps.py
 
