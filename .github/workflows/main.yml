@@ -31,15 +31,6 @@ jobs:
           sudo apt-get install -y p7zip ninja-build gcc-multilib python3 curl zip unzip
           sudo apt-get install -y --no-install-recommends libx11-dev libxcursor-dev libxrandr-dev libxinerama-dev libxi-dev libxext-dev libxfixes-dev libgl1-mesa-dev
 
-      - name: Install Vulkan SDK
-        run: |
-          curl -fGL https://sdk.lunarg.com/sdk/download/latest/linux/vulkan-sdk.tar.gz -o $GITHUB_WORKSPACE/vulkan-sdk.tar.gz
-          mkdir -p $GITHUB_WORKSPACE/vulkan-sdk
-          tar -xvf $GITHUB_WORKSPACE/vulkan-sdk.tar.gz -C $GITHUB_WORKSPACE/vulkan-sdk
-          pushd $GITHUB_WORKSPACE/vulkan-sdk/`ls $GITHUB_WORKSPACE/vulkan-sdk`
-          ./vulkansdk
-          popd
-
       - name: Set permissions on executables
         run: |
           chmod a+x $GITHUB_WORKSPACE/tools/deps.py
