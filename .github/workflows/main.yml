@@ -39,13 +39,13 @@ jobs:
       - name: Add artifacts to folder
         run: |
           cmd /c mkdir build
-          cmd /c copy %GITHUB_WORKSPACE% build
+          cmd /c copy deps out build
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
           name: build-windows
-          path: $GITHUB_WORKSPACE
+          path: build
 
   build-linux:
     # The type of runner that the job will run on
