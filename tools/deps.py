@@ -22,6 +22,7 @@ import stat
 import subprocess
 import sys
 
+
 def shutil_nuke_git(e: Exception, path: str, info: Exception):
     # I get that this is good when you're working in a repository,
     # but it makes it annoying to clean them up in scripts like this
@@ -42,8 +43,9 @@ def sub_cmd(cmd: str, deps: str = "deps") -> str:
         final = final.replace(deps, deps.replace("/", "\\"))
     else:
         final = final.replace(deps, deps.replace("\\", "/"))
-    
+
     return final
+
 
 def download_dep(
     download_cmd: str, setup_cmds: list, build_cmd: str, deps: str = "deps"
@@ -75,7 +77,11 @@ glew_ver = "2.2.0"
 # CMake is officially the worst build system other than literally just throwing
 # together a bunch of random shell scripts and praying to whatever ancient
 # Lovecraftian deity is in charge of terrible build systems that it works
-cmake_ninja_bullshit = f"-DCMAKE_MAKE_PROGRAM={os.getcwd()}\\tools\\ninja.exe -DCMAKE_C_COMPILER=cl" if os.name == "nt" else ""
+cmake_ninja_bullshit = (
+    f"-DCMAKE_MAKE_PROGRAM={os.getcwd()}\\tools\\ninja.exe -DCMAKE_C_COMPILER=cl"
+    if os.name == "nt"
+    else ""
+)
 
 # Dependencies
 deps = {
@@ -113,10 +119,16 @@ deps = {
         "",
     ],
     "vulkan": [
+        "curl -fGL https://sdk.lunarg.com/sdk/download/latest/windows/vulkan-sdk.exe -o <deps>/vulkan-sdk.exe",
+        ["<deps>\\vulkan-sdk.exe /S"],
+        "",
+    ]
+    if os.name == "nt"
+    else [
         f"git clone https://github.com/KhronosGroup/Vulkan-Headers <deps>/vulkan-headers",
         [""],
-        f""
-    ]
+        f"",
+    ],
 }
 
 # Folders to get headers from
@@ -126,7 +138,7 @@ include_dirs = {
     "phnt": ["deps/tmp/processhacker/phnt/include"],
     "sdl2": ["deps/tmp/sdl2/include", "deps/tmp/build/sdl2/include"],
     "stb": ["deps/tmp/stb$$"],
-    "vulkan": ["deps/tmp/vulkan-headers/include"]
+    "vulkan": ["deps/tmp/vulkan-headers/include"],
 }
 
 # Output files that get kept
@@ -148,7 +160,7 @@ if os.name == "nt":
             ("deps/tmp/build/sdl2/SDL2.dll", "deps/bin/SDL2.dll"),
             ("deps/tmp/build/sdl2/SDL2.lib", "deps/bin/SDL2.lib"),
             ("deps/tmp/build/sdl2/SDL2.pdb", "deps/bin/SDL2.pdb"),
-        ]
+        ],
     }
 elif os.name == "posix":
     outputs = {
@@ -165,7 +177,7 @@ elif os.name == "posix":
         "sdl2": [
             ("deps/tmp/build/sdl2/libSDL2-2.0.so", "deps/bin/libSDL2-2.0.so"),
             ("deps/tmp/build/sdl2/libSDL2-2.0.so.0", "deps/bin/libSDL2-2.0.so.0"),
-        ]
+        ],
     }
 
 # Make a folder for the dependencies to be cloned into

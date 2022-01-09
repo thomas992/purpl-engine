@@ -42,6 +42,7 @@ jobs:
           xcopy /y out\engine.dll build
           xcopy /y out\main.exe build
           xcopy /y deps\bin\* build
+          xcopy /i/y deps\licenses build\licenses
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
