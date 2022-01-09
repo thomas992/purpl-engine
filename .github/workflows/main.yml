@@ -45,7 +45,7 @@ jobs:
 
       # Runs a single command using the runners shell
       - name: Generate build files
-        run: $GITHUB_WORKSPACE/tools/gn gen $GITHUB_WORKSPACE/out
+        run: sh -c $GITHUB_WORKSPACE/tools/gn gen $GITHUB_WORKSPACE/out
         
       - name: Build
         run: ninja -C $GITHUB_WORKSPACE/out -j$[`nproc` + 2]
