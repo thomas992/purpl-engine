@@ -138,7 +138,7 @@ if os.name == "nt":
     outputs = {
         "cglm": [
             ("deps/tmp/build/cglm/cglm-0.dll", "deps/bin/cglm-0.dll"),
-            ("deps/tmp/build/cglm/cglm-0.lib", "deps/bin/cglm.lib"),
+            ("deps/tmp/build/cglm/cglm.lib", "deps/bin/cglm.lib"),
             ("deps/tmp/build/cglm/cglm-0.pdb", "deps/bin/cglm-0.pdb"),
         ],
         "glew": [
