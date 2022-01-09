@@ -1,5 +1,5 @@
---- a/deps/include/phnt_ntdef.h	2022-01-09 11:34:35.108916000 -0500
-+++ b/deps/include/phnt_ntdef.h	2022-01-09 12:01:55.526403800 -0500
+--- a/deps/tmp/processhacker/phnt/include/phnt_ntdef.h	2022-01-09 11:34:35.108916000 -0500
++++ b/deps/tmp/processhacker/phnt/include/phnt_ntdef.h	2022-01-09 12:01:55.526403800 -0500
 @@ -43,11 +43,11 @@
  } QUAD, *PQUAD;
  
