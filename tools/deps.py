@@ -75,7 +75,7 @@ glew_ver = "2.2.0"
 # CMake is officially the worst build system other than literally just throwing
 # together a bunch of random shell scripts and praying to whatever ancient
 # Lovecraftian deity is in charge of terrible build systems that it works
-cmake_ninja_bullshit = f"-DCMAKE_MAKE_PROGRAM={os.getcwd()}\\tools\\ninja.exe" if os.name == "nt" else ""
+cmake_ninja_bullshit = f"-DCMAKE_MAKE_PROGRAM={os.getcwd()}\\tools\\ninja.exe -DCMAKE_C_COMPILER=cl" if os.name == "nt" else ""
 
 # Dependencies
 deps = {
@@ -137,9 +137,9 @@ include_dirs = {
 if os.name == "nt":
     outputs = {
         "cglm": [
-            ("deps/tmp/build/cglm/libcglm-0.dll", "deps/bin/libcglm-0.dll"),
-            ("deps/tmp/build/cglm/libcglm-0.lib", "deps/bin/libcglm-0.lib"),
-            ("deps/tmp/build/cglm/libcglm-0.pdb", "deps/bin/libcglm-0.pdb"),
+            ("deps/tmp/build/cglm/cglm-0.dll", "deps/bin/cglm-0.dll"),
+            ("deps/tmp/build/cglm/cglm-0.lib", "deps/bin/cglm-0.lib"),
+            ("deps/tmp/build/cglm/cglm-0.pdb", "deps/bin/cglm-0.pdb"),
         ],
         "glew": [
             ("deps/tmp/build/glew/bin/glewinfo.exe", "deps/bin/glewinfo.exe"),
