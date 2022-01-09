@@ -122,13 +122,7 @@ deps = {
         "curl -fGL https://sdk.lunarg.com/sdk/download/latest/windows/vulkan-sdk.exe -o <deps>/vulkan-sdk.exe",
         ["<deps>\\vulkan-sdk.exe /S"],
         "",
-    ]
-    if os.name == "nt"
-    else [
-        f"git clone https://github.com/KhronosGroup/Vulkan-Headers <deps>/vulkan-headers",
-        [""],
-        f"",
-    ],
+    ] if os.name == "nt"
 }
 
 # Folders to get headers from
@@ -138,7 +132,6 @@ include_dirs = {
     "phnt": ["deps/tmp/processhacker/phnt/include"],
     "sdl2": ["deps/tmp/sdl2/include", "deps/tmp/build/sdl2/include"],
     "stb": ["deps/tmp/stb$$"],
-    "vulkan": ["deps/tmp/vulkan-headers/include"],
 }
 
 # Output files that get kept

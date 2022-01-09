@@ -18,6 +18,7 @@
 shared_library("engine") {
   include_dirs = [
     "//deps/include",
+    getenv("VULKAN_SDK") + "/include",
     "include",
   ]
 
