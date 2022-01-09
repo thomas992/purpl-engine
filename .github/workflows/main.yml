@@ -36,8 +36,7 @@ jobs:
 
       - name: Build
         run: |
-          set /a njobs="%NUMBER_OF_PROCESSORS%+2"
-          tools\ninja -C out -j%njobs%
+          tools\ninja -C out -j%NUMBER_OF_PROCESSORS%
 
       - name: Add artifacts to archive
         run: |

@@ -115,7 +115,7 @@ deps = {
     "vulkan": [
         "curl -fGL https://sdk.lunarg.com/sdk/download/latest/windows/vulkan-sdk.exe -o <deps>/vulkan-sdk.exe",
         ["git clone https://github.com/KhronosGroup/Vulkan-Headers <deps>/vulkan-headers"],
-        "<deps>/vulkan-sdk.exe"
+        "<deps>\\vulkan-sdk.exe"
     ] if os.name == "nt" else [
         f"git clone https://github.com/KhronosGroup/Vulkan-Headers <deps>/vulkan-headers",
         [""],
