@@ -122,7 +122,9 @@ deps = {
         "curl -fGL https://sdk.lunarg.com/sdk/download/latest/windows/vulkan-sdk.exe -o <deps>/vulkan-sdk.exe",
         ["<deps>\\vulkan-sdk.exe /S"],
         "",
-    ] if os.name == "nt"
+    ]
+    if os.name == "nt"
+    else ["", [""], ""],
 }
 
 # Folders to get headers from
