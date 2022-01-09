@@ -39,7 +39,8 @@ jobs:
       - name: Add artifacts to folder
         run: |
           mkdir build
-          xcopy /s deps out build
+          xcopy /s/y deps build
+          xcopy /s/y out build
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
