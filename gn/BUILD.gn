@@ -37,7 +37,9 @@ config("compiler_defaults") {
       "-fPIE",
       "-Wall",
       "-Wextra",
-      "-Wno-incompatible-pointer-types-discards-qualifiers", # Pointer bullshitery is the whole point of C
+      # Pointer bullshitery is the whole point of C
+      "-Wno-incompatible-pointer-types",
+      "-Wno-incompatible-pointer-types-discards-qualifiers",
       "-std=c2x",
     ]
     ldflags = []
