@@ -141,7 +141,7 @@ if os.name == "nt":
             ("deps/tmp/build/glew/bin/glewinfo.exe", "deps/bin/glewinfo.exe"),
             ("deps/tmp/build/glew/bin/visualinfo.exe", "deps/bin/visualinfo.exe"),
             ("deps/tmp/build/glew/bin/glew32.dll", "deps/bin/glew32.dll"),
-            ("deps/tmp/build/glew/lib/glew32.lib", "deps/bin/glew.lib"),
+            ("deps/tmp/build/glew/lib/glew32.lib", "deps/bin/glew32.lib"),
             ("deps/tmp/build/glew/bin/glew32.pdb", "deps/bin/glew32.pdb"),
         ],
         "sdl2": [

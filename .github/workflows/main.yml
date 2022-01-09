@@ -39,9 +39,8 @@ jobs:
       - name: Add artifacts to folder
         run: |
           mkdir build
-          xcopy /y out\*.dll build
-          xcopy /y out\*.exe build
-          xcopy /y out\*.pdb build
+          xcopy /y out\engine.dll build
+          xcopy /y out\main.exe build
           xcopy /y deps\bin\* build
 
       - name: Upload artifacts
