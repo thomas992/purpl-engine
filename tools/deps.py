@@ -39,9 +39,9 @@ def sub_cmd(cmd: str, deps: str = "deps") -> str:
 
     # Flip slashes
     if os.name == "nt":
-        final = final.replace("/", "\\")
+        final = final.replace(deps, deps.replace("/", "\\"))
     else:
-        final = final.replace("\\", "/")
+        final = final.replace(deps, deps.replace("\\", "/"))
     
     return final
 
