@@ -176,31 +176,30 @@ extern PURPL_API void purpl_log_close(struct purpl_logger *logger,
 				      bool last_message);
 
 /// Log a message at level (without the PURPL_LOG_LEVEL_ prefix)
-#define PURPL_LOG_WRITE(logger, level, msg, ...)                             \
+#define PURPL_LOG_WRITE(logger, level, ...)                             \
 	purpl_log_write(logger, PURPL_LOG_LEVEL_##level, __FILE__, __LINE__, \
-			PURPL_CURRENT_FUNCTION,                              \
-			msg __VA_OPT__(, ) __VA_ARGS__)
+			PURPL_CURRENT_FUNCTION, __VA_ARGS__)
 
 /// Log a message at the current log level
-#define PURPL_LOG_CURRENT(logger, msg, ...) \
-	PURPL_LOG_WRITE(logger, CURRENT, msg __VA_OPT__(, ) __VA_ARGS__)
+#define PURPL_LOG_CURRENT(logger, ...) \
+	PURPL_LOG_WRITE(logger, CURRENT, __VA_ARGS__)
 
 /// Log a message at PURPL_LOG_LEVEL_CRITICAL
-#define PURPL_LOG_CRITICAL(logger, msg, ...) \
-	PURPL_LOG_WRITE(logger, CRITICAL, msg __VA_OPT__(, ) __VA_ARGS__)
+#define PURPL_LOG_CRITICAL(logger, ...) \
+	PURPL_LOG_WRITE(logger, CRITICAL, __VA_ARGS__)
 
 /// Log a message at PURPL_LOG_LEVEL_ERROR
-#define PURPL_LOG_ERROR(logger, msg, ...) \
-	PURPL_LOG_WRITE(logger, ERROR, msg __VA_OPT__(, ) __VA_ARGS__)
+#define PURPL_LOG_ERROR(logger, ...) \
+	PURPL_LOG_WRITE(logger, ERROR, __VA_ARGS__)
 
 /// Log a message at PURPL_LOG_LEVEL_WARNING
-#define PURPL_LOG_WARNING(logger, msg, ...) \
-	PURPL_LOG_WRITE(logger, WARNING, msg __VA_OPT__(, ) __VA_ARGS__)
+#define PURPL_LOG_WARNING(logger, ...) \
+	PURPL_LOG_WRITE(logger, WARNING, __VA_ARGS__)
 
 /// Log a message at PURPL_LOG_LEVEL_INFO
-#define PURPL_LOG_INFO(logger, msg, ...) \
-	PURPL_LOG_WRITE(logger, INFO, msg __VA_OPT__(, ) __VA_ARGS__)
+#define PURPL_LOG_INFO(logger, ...) \
+	PURPL_LOG_WRITE(logger, INFO, __VA_ARGS__)
 
 /// Log a message at PURPL_LOG_LEVEL_DEBUG
-#define PURPL_LOG_DEBUG(logger, msg, ...) \
-	PURPL_LOG_WRITE(logger, DEBUG, msg __VA_OPT__(, ) __VA_ARGS__)
+#define PURPL_LOG_DEBUG(logger, ...) \
+	PURPL_LOG_WRITE(logger, DEBUG, __VA_ARGS__)
