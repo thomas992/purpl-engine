@@ -38,7 +38,7 @@ jobs:
 
       - name: Add artifacts to archive
         run: |
-          mkdir build
+          cmd /c mkdir build
           cmd /c copy out\engine.dll out\main.exe deps\bin\* deps\licenses build
 
       - name: Upload artifacts
