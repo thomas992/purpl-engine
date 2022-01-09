@@ -113,10 +113,6 @@ deps = {
         "",
     ],
     "vulkan": [
-        "curl -fGL https://sdk.lunarg.com/sdk/download/latest/windows/vulkan-sdk.exe -o <deps>/vulkan-sdk.exe",
-        ["git clone https://github.com/KhronosGroup/Vulkan-Headers <deps>/vulkan-headers"],
-        "<deps>\\vulkan-sdk.exe"
-    ] if os.name == "nt" else [
         f"git clone https://github.com/KhronosGroup/Vulkan-Headers <deps>/vulkan-headers",
         [""],
         f""
@@ -152,9 +148,6 @@ if os.name == "nt":
             ("deps/tmp/build/sdl2/SDL2.dll", "deps/bin/SDL2.dll"),
             ("deps/tmp/build/sdl2/SDL2.lib", "deps/bin/SDL2.lib"),
             ("deps/tmp/build/sdl2/SDL2.pdb", "deps/bin/SDL2.pdb"),
-        ],
-        "vulkan": [
-            ("deps/tmp/vulkan-sdk.exe", "deps/bin/vulkan-sdk.exe")
         ]
     }
 elif os.name == "posix":
