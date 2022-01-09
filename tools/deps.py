@@ -179,13 +179,11 @@ elif os.name == "posix":
 shutil.rmtree("deps/bin", onerror=shutil_nuke_git)
 shutil.rmtree("deps/tmp", onerror=shutil_nuke_git)
 shutil.rmtree("deps/include", onerror=shutil_nuke_git)
-try:
-    os.mkdir("deps/tmp")
-    os.mkdir("deps/tmp/build")
-    os.mkdir("deps/bin")
-    os.mkdir("deps/include")
-except Exception as e:
-    pass
+
+os.mkdir("deps/tmp")
+os.mkdir("deps/tmp/build")
+os.mkdir("deps/bin")
+os.mkdir("deps/include")
 
 # Download and build the dependencies
 print("Downloading dependencies...")

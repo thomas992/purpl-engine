@@ -21,10 +21,18 @@
 #error "Don't include purpl/purpl.h in engine files, only programs using the engine"
 #endif
 
+#define SDL_MAIN_HANDLED
+
 #include "core/coredefs.h"
 #include "core/features.h"
 #include "core/init.h"
 #include "core/inst.h"
 #include "core/types.h"
+
+#include "graphics/api.h"
+#include "graphics/context.h"
+
+#include "graphics/vulkan/context.h"
+#include "graphics/vulkan/misc.h"
 
 #include "util/util.h"

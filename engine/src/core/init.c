@@ -52,6 +52,9 @@ PURPL_API bool purpl_init(const char *app_name, u32 app_version,
 	purpl_inst->app_name = purpl_strfmt(NULL, "%s", app_name);
 	purpl_inst->app_version = app_version;
 
+	// SDL is annoying about this
+	SDL_SetMainReady();
+
 	// Initialize libraries
 	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
 		PURPL_LOG_CRITICAL(purpl_inst->logger,
