@@ -74,7 +74,7 @@ shared_library("engine") {
   }
 
   if (is_win) {
-    libs = ["clgm.lib", "glew32.lib", "SDL2.lib"]
+    libs = ["cglm.lib", "glew32.lib", "SDL2.lib"]
   } else {
     libs = ["cglm", "GLEW", "SDL2-2.0"]
   }
