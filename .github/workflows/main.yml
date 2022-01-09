@@ -28,20 +28,29 @@ jobs:
       - name: Setup APT packages
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y p7zip ninja-build gcc-multilib python3 curl zip unzip
+          sudo apt-get install -y p7zip ninja-build gcc-multilib python3 curl
           sudo apt-get install -y --no-install-recommends libx11-dev libxcursor-dev libxrandr-dev libxinerama-dev libxi-dev libxext-dev libxfixes-dev libgl1-mesa-dev
 
       - name: Set permissions on executables
         run: |
-          chmod a+x $GITHUB_WORKSPACE/tools/deps.py
-          chmod a+x $GITHUB_WORKSPACE/tools/gn
+          chmod a+x tools/deps.py
+          chmod a+x tools/gn
 
       - name: Build dependencies
-        run: $GITHUB_WORKSPACE/tools/deps.py
+        run: tools/deps.py
 
       # Runs a single command using the runners shell
       - name: Generate build files
-        run: $GITHUB_WORKSPACE/tools/gn gen $GITHUB_WORKSPACE/out
+        run: tools/gn gen out
         
       - name: Build
-        run: ninja -C $GITHUB_WORKSPACE/out -j$[`nproc` + 2]
+        run: ninja -C out -j$[`nproc` + 2]
+
+      - name: Add artifacts to archive
+        run: 7z a -tzip build.zip out/{engine.so,main} deps/bin/*
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: build
+          path: build.zip
