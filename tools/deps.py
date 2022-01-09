@@ -75,7 +75,7 @@ glew_ver = "2.2.0"
 # CMake is officially the worst build system other than literally just throwing
 # together a bunch of random shell scripts and praying to whatever ancient
 # Lovecraftian deity is in charge of terrible build systems that it works
-cmake_ninja_bullshit = f"-DCMAKE_MAKE_PROGRAM={os.getcwd()}\\tools\\ninja.exe -DCMAKE_C_COMPILER=" + shutil.which("cl") if os.name == "nt" else ""
+cmake_ninja_bullshit = f"-DCMAKE_MAKE_PROGRAM={os.getcwd()}\\tools\\ninja.exe -DCMAKE_C_COMPILER=cl" if os.name == "nt" else ""
 
 # Dependencies
 deps = {
