@@ -38,8 +38,8 @@ jobs:
 
       - name: Add artifacts to folder
         run: |
-          cmd /c "mkdir build"
-          cmd /c "copy deps out build"
+          mkdir build
+          xcopy deps out build
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
