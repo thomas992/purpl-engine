@@ -37,12 +37,12 @@ config("compiler_defaults") {
       "-fPIE",
       "-Wall",
       "-Wextra",
-      # Pointer bullshitery is the whole point of C
+      # Pointer bullshittery is the whole point of C
       "-Wno-incompatible-pointer-types",
       "-Wno-incompatible-pointer-types-discards-qualifiers",
       "-std=c2x",
     ]
-    ldflags = []
+    ldflags = ["-fuse-ld=lld"]
   }
 
   if (is_debug) {

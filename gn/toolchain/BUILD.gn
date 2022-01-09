@@ -50,7 +50,7 @@ toolchain("clang") {
       rspfile_content = "{{inputs}} {{solibs}} {{libs}}"
     } else {
       os_specific_option = "-Wl,-soname=$soname"
-      rspfile_content = "-Wl,--whole-archive {{inputs}} {{solibs}} -Wl,--no-whole-archive {{libs}}"
+      rspfile_content = "-Wl,--whole-archive {{inputs}} {{solibs}} -Wl,--no-whole-archive {{libs}} {{rlibs}}"
     }
     command =
         "clang -shared {{ldflags}} -o $sofile $os_specific_option @$rspfile"
