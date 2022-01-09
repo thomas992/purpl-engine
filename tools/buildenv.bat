@@ -11,6 +11,8 @@ if not exist "%vs2019_install%" (
 	set "vs2019_install=C:\Program Files\Microsoft Visual Studio\2022\Enterprise" :: Github Actions gives enterprise installs
 )
 
+echo %vs2019_install%
+dir "C:\Program Files\Microsoft Visual Studio"
 dir %vs2019_install%
 
 for /F "tokens=* USEBACKQ" %%F in (`type "%vs2019_install%\VC\Auxiliary\Build\Microsoft.VCToolsVersion.default.txt"`) do (
