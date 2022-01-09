@@ -36,16 +36,16 @@ jobs:
       - name: Build
         run: tools\ninja -C out
 
-      - name: Add artifacts to archive
-        run: |
-          cmd /c mkdir build
-          cmd /c copy out\engine.dll out\main.exe deps\bin\* deps\licenses build
+      # - name: Add artifacts to archive
+      #   run: |
+      #     cmd /c mkdir build
+      #     cmd /c copy out\engine.dll out\main.exe deps\bin\* deps\licenses build
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
           name: build-windows
-          path: build
+          path: $GITHUB_WORKSPACE
 
   build-linux:
     # The type of runner that the job will run on
