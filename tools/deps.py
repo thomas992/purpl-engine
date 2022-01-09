@@ -66,12 +66,15 @@ def download_dep(
 # Versions
 glew_ver = "2.2.0"
 
+# CMake is officially the worst build system other than literally just throwing together a bunch of random shell scripts
+cmake_ninja_bullshit = "-DCMAKE_MAKE_PROGRAM=tools\\ninja.exe" if os.name == "nt" else ""
+
 # Dependencies
 deps = {
     "cglm": [
         "git clone https://github.com/recp/cglm <deps>/cglm",
         [
-            "cmake -S <deps>/cglm -B <deps>/build/cglm -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCGLM_STATIC=OFF"
+            f"cmake -S <deps>/cglm -B <deps>/build/cglm {cmake_ninja_bullshit} -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCGLM_STATIC=OFF"
         ],
         "cmake --build <deps>/build/cglm",
     ],
@@ -80,7 +83,7 @@ deps = {
         [
             "tar xf <deps>/glew.tar.gz -C <deps>",
             f"<move> <deps>/glew-{glew_ver} <deps>/glew",
-            "cmake -S <deps>/glew/build/cmake -B <deps>/build/glew -DCMAKE_BUILD_TYPE=RelWithDebInfo",
+            f"cmake -S <deps>/glew/build/cmake -B <deps>/build/glew {cmake_ninja_bullshit} -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo",
         ],
         "cmake --build <deps>/build/glew",
     ],
@@ -92,7 +95,7 @@ deps = {
     "sdl2": [
         "git clone https://github.com/libsdl-org/SDL <deps>/sdl2",
         [
-            "cmake -S <deps>/sdl2 -B <deps>/build/sdl2 -DCMAKE_BUILD_TYPE=RelWithDebInfo -DSDL_VULKAN=ON -DSDL_KMSDRM=ON -DSDL_STATIC=OFF"
+            f"cmake -S <deps>/sdl2 -B <deps>/build/sdl2 {cmake_ninja_bullshit} -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo -DSDL_VULKAN=ON -DSDL_KMSDRM=ON -DSDL_STATIC=OFF"
         ],
         "cmake --build <deps>/build/sdl2",
     ],
@@ -103,8 +106,8 @@ deps = {
     ],
     "vulkan": [
         "curl -fGL https://sdk.lunarg.com/sdk/download/latest/windows/vulkan-sdk.exe -o <deps>/vulkan-sdk.exe",
-        ["echo Running the Vulkan SDK installer"],
-        "<deps>/vulkan-sdk.exe"
+        ["git clone https://github.com/KhronosGroup/Vulkan-Headers <deps>/vulkan-headers"],
+        "<deps>\\vulkan-sdk.exe"
     ] if os.name == "nt" else [
         f"git clone https://github.com/KhronosGroup/Vulkan-Headers <deps>/vulkan-headers",
         [""],
