@@ -33,9 +33,17 @@ def shutil_nuke_git(e: Exception, path: str, info: Exception):
 
 
 def sub_cmd(cmd: str, deps: str = "deps") -> str:
-    return cmd.replace("<deps>", deps).replace(
+    final = cmd.replace("<deps>", deps).replace(
         "<move>", "move" if os.name == "nt" else "mv"
     )
+
+    # Flip slashes
+    if os.name == "nt":
+        final = final.replace("/", "\\")
+    else
+        final = final.replace("\\", "/")
+    
+    return final
 
 def download_dep(
     download_cmd: str, setup_cmds: list, build_cmd: str, deps: str = "deps"
@@ -107,7 +115,7 @@ deps = {
     "vulkan": [
         "curl -fGL https://sdk.lunarg.com/sdk/download/latest/windows/vulkan-sdk.exe -o <deps>/vulkan-sdk.exe",
         ["git clone https://github.com/KhronosGroup/Vulkan-Headers <deps>/vulkan-headers"],
-        "<deps>\\vulkan-sdk.exe"
+        "<deps>/vulkan-sdk.exe"
     ] if os.name == "nt" else [
         f"git clone https://github.com/KhronosGroup/Vulkan-Headers <deps>/vulkan-headers",
         [""],
@@ -129,9 +137,9 @@ include_dirs = {
 if os.name == "nt":
     outputs = {
         "cglm": [
-            ("deps/tmp/build/cglm/cglm-0.dll", "deps/bin/cglm-0.dll"),
-            ("deps/tmp/build/cglm/cglm.lib", "deps/bin/cglm.lib"),
-            ("deps/tmp/build/cglm/cglm-0.pdb", "deps/bin/cglm-0.pdb"),
+            ("deps/tmp/build/cglm/libcglm-0.dll", "deps/bin/libcglm-0.dll"),
+            ("deps/tmp/build/cglm/libcglm.lib", "deps/bin/libcglm.lib"),
+            ("deps/tmp/build/cglm/libcglm-0.pdb", "deps/bin/libcglm-0.pdb"),
         ],
         "glew": [
             ("deps/tmp/build/glew/bin/glewinfo.exe", "deps/bin/glewinfo.exe"),
@@ -183,7 +191,7 @@ except Exception as e:
 print("Downloading dependencies...")
 for name, cmds in deps.items():
     print(f"Downloading {name}...")
-    download_dep(cmds[0], cmds[1], cmds[2], "deps\\tmp" if os.name == "nt" else "deps/tmp")
+    download_dep(cmds[0], cmds[1], cmds[2], "deps/tmp")
 
 # Copy the needed outputs and headers
 for dep, dirs in include_dirs.items():
