@@ -1,0 +1,14 @@
+[PID 654268 TID 654268] [Saturday, 08/01/2022 20:18:22] [../engine/src/core/init.c:48@_Bool purpl_init(const char *, u32, enum purpl_graphics_api)] [INFO] Logger created. Engine initialization started.
+[PID 654268 TID 654268] [Saturday, 08/01/2022 20:18:22] [../engine/src/graphics/context.c:50@union purpl_graphics_context *purpl_graphics_create_context(enum purpl_graphics_api, SDL_Surface *)] [INFO] Creating a Vulkan context
+[PID 654268 TID 654268] [Saturday, 08/01/2022 20:18:22] [../engine/src/graphics/vulkan/context.c:41@_Bool purpl_vulkan_create_context(struct purpl_vulkan_context *)] [INFO] Getting required Vulkan extensions
+[PID 654268 TID 654268] [Saturday, 08/01/2022 20:18:22] [../engine/src/graphics/vulkan/context.c:53@_Bool purpl_vulkan_create_context(struct purpl_vulkan_context *)] [INFO] Found 2 required extensions:
+[PID 654268 TID 654268] [Saturday, 08/01/2022 20:18:22] [../engine/src/graphics/vulkan/context.c:55@_Bool purpl_vulkan_create_context(struct purpl_vulkan_context *)] [INFO] Extension 1: VK_KHR_surface
+[PID 654268 TID 654268] [Saturday, 08/01/2022 20:18:22] [../engine/src/graphics/vulkan/context.c:55@_Bool purpl_vulkan_create_context(struct purpl_vulkan_context *)] [INFO] Extension 2: VK_KHR_xlib_surface
+[PID 654268 TID 654268] [Saturday, 08/01/2022 20:18:22] [../engine/src/graphics/vulkan/context.c:68@_Bool purpl_vulkan_create_context(struct purpl_vulkan_context *)] [INFO] Successfully created a Vulkan instance
+[PID 654268 TID 654268] [Saturday, 08/01/2022 20:18:22] [../engine/src/core/init.c:91@_Bool purpl_init(const char *, u32, enum purpl_graphics_api)] [INFO] Engine v1.0.0 initialized for application purpl-demo v1.0.0
+[PID 654268 TID 654268] [Saturday, 08/01/2022 20:18:22] [../engine/src/core/init.c:114@_Bool purpl_handle_events(void)] [DEBUG] Window moved to (2368, 1265)
+[PID 654268 TID 654268] [Saturday, 08/01/2022 20:18:22] [../engine/src/core/init.c:124@_Bool purpl_handle_events(void)] [DEBUG] Window closed
+[PID 654268 TID 654268] [Saturday, 08/01/2022 20:18:22] [../engine/src/core/init.c:155@void purpl_run(purpl_frame_func, void *)] [WARNING] Received quit event, exiting loop
+[PID 654268 TID 654268] [Saturday, 08/01/2022 20:18:22] [../engine/src/core/init.c:166@void purpl_shutdown(void)] [WARNING] Engine shutting down
+[PID 654268 TID 654268] [Saturday, 08/01/2022 20:18:22] [../engine/src/graphics/context.c:92@void purpl_graphics_destroy_context(union purpl_graphics_context *)] [INFO] Destroyed context at 0x556B35189C30
+[PID 654268 TID 654268] [Saturday, 08/01/2022 20:18:22] [../engine/src/core/log.c:370@void purpl_log_close(struct purpl_logger *, _Bool)] [INFO] This logger is shutting down. Have a nice night.
