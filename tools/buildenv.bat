@@ -11,8 +11,9 @@ if not exist "%vs2019_install%" (
 	set "vs2019_install=C:\Program Files\Microsoft Visual Studio\2022\Enterprise" :: Github Actions gives enterprise installs
 )
 
+dir %vs2019_install%
+dir %vs2019_install%\VC\Auxiliary\Build
 echo Reading default MSVC version from %vs2019_install%\VC\Auxiliary\Build\Microsoft.VCToolsVersion.default.txt
-type %vs2019_install%\VC\Auxiliary\Build\Microsoft.VCToolsVersion.default.txt
 
 for /F "tokens=* USEBACKQ" %%F in (`type "%vs2019_install%\VC\Auxiliary\Build\Microsoft.VCToolsVersion.default.txt"`) do (
     set msvc_defaultver=%%F
