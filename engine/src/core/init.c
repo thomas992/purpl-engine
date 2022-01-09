@@ -45,6 +45,8 @@ PURPL_API bool purpl_init(const char *app_name, u32 app_version,
 		return false;
 	}
 
+	PURPL_LOG_INFO(purpl_inst->logger, "Logger created. Engine initialization started.");
+
 	purpl_inst->start_time = time(NULL);
 
 	purpl_inst->app_name = purpl_strfmt(NULL, "%s", app_name);

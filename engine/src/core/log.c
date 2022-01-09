@@ -242,11 +242,14 @@ static char *purpl_log_format(struct purpl_logger *logger,
 	p2 = purpl_strrplc(p1, "#V", purpl_format_version(PURPL_VERSION), NULL);
 	free(p1);
 
-	p1 = purpl_strrplc(p2, "#n", purpl_inst->app_name, NULL);
-	free(p2);
+	if (purpl_inst->app_name) {
+		p1 = purpl_strrplc(p2, "#n", purpl_inst->app_name, NULL);
+		free(p2);
 
-	p2 = purpl_strrplc(p1, "#v", purpl_format_version(purpl_inst->app_version), NULL);
-	free(p1);
+
+		p2 = purpl_strrplc(p1, "#v", purpl_format_version(purpl_inst->app_version), NULL);
+		free(p1);
+	}
 
 	va_end(args);
 

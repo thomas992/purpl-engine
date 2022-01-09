@@ -44,7 +44,7 @@ PURPL_API char *purpl_strrplc(const char *str, const char *old,
 	size_t buf_size;
 	size_t occurences;
 
-	if (!str)
+	if (!str || !old || !new)
 		return NULL;
 
 	occurences = purpl_strcount(str, old);
