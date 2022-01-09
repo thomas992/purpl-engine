@@ -1,0 +1,19 @@
+--- a/deps/include/phnt_ntdef.h	2022-01-09 11:34:35.108916000 -0500
++++ b/deps/include/phnt_ntdef.h	2022-01-09 12:01:55.526403800 -0500
+@@ -43,11 +43,11 @@
+ } QUAD, *PQUAD;
+ 
+ // This isn't in NT, but it's useful.
+-typedef struct DECLSPEC_ALIGN(MEMORY_ALLOCATION_ALIGNMENT) _QUAD_PTR
+-{
+-    ULONG_PTR DoNotUseThisField1;
+-    ULONG_PTR DoNotUseThisField2;
+-} QUAD_PTR, *PQUAD_PTR;
++// typedef struct DECLSPEC_ALIGN(MEMORY_ALLOCATION_ALIGNMENT) _QUAD_PTR
++// {
++//     ULONG_PTR DoNotUseThisField1;
++//     ULONG_PTR DoNotUseThisField2;
++// } QUAD_PTR, *PQUAD_PTR;
+ 
+ typedef ULONG LOGICAL;
+ typedef ULONG *PLOGICAL;

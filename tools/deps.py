@@ -97,7 +97,7 @@ deps = {
     ],
     "phnt": [
         "git clone https://github.com/processhacker/processhacker <deps>/processhacker",
-        [""],
+        ["patch --binary -uN -p1 -i deps/patches/phnt_ntdef.patch"],
         "",
     ],
     "sdl2": [
