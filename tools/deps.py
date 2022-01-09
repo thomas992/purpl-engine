@@ -22,7 +22,6 @@ import stat
 import subprocess
 import sys
 
-
 def shutil_nuke_git(e: Exception, path: str, info: Exception):
     # I get that this is good when you're working in a repository,
     # but it makes it annoying to clean them up in scripts like this
@@ -37,7 +36,6 @@ def sub_cmd(cmd: str, deps: str = "deps") -> str:
     return cmd.replace("<deps>", deps).replace(
         "<move>", "move" if os.name == "nt" else "mv"
     )
-
 
 def download_dep(
     download_cmd: str, setup_cmds: list, build_cmd: str, deps: str = "deps"
@@ -68,7 +66,7 @@ glew_ver = "2.2.0"
 
 # CMake is officially the worst build system other than literally just throwing
 # together a bunch of random shell scripts and praying to whatever ancient
-# Lovecraftian deity is in charge of terrible build systems
+# Lovecraftian deity is in charge of terrible build systems that it works
 cmake_ninja_bullshit = f"-DCMAKE_MAKE_PROGRAM={os.getcwd()}\\tools\\ninja.exe" if os.name == "nt" else ""
 
 # Dependencies
@@ -185,7 +183,7 @@ except Exception as e:
 print("Downloading dependencies...")
 for name, cmds in deps.items():
     print(f"Downloading {name}...")
-    download_dep(cmds[0], cmds[1], cmds[2], "deps/tmp")
+    download_dep(cmds[0], cmds[1], cmds[2], "deps\\tmp" if os.name == "nt" else "deps/tmp")
 
 # Copy the needed outputs and headers
 for dep, dirs in include_dirs.items():
