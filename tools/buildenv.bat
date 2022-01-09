@@ -12,7 +12,7 @@ if not exist "%vs2019_install%" (
 )
 
 echo %vs2019_install%
-dir "C:\Program Files\Microsoft Visual Studio"
+dir "C:\Program Files"
 dir %vs2019_install%
 
 for /F "tokens=* USEBACKQ" %%F in (`type "%vs2019_install%\VC\Auxiliary\Build\Microsoft.VCToolsVersion.default.txt"`) do (
