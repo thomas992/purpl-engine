@@ -21,8 +21,8 @@
 // Windows 7 is the earliest version of Windows supported (at least as long as
 // it works on my laptop)
 #define PHNT_VERSION PHNT_WIN7
-#include <phnt.h>
 #include <phnt_windows.h>
+#include <phnt.h>
 #else
 #include <unistd.h>
 #endif

@@ -101,7 +101,7 @@ PointerAlignment: Right
 #QualifierOrder: ['volatile', 'const', 'constexpr', 'static', 'inline', 'type', 'restrict'] # Only in clang-format-14.0 and above
 #ReferenceAlignment: Pointer # Only in clang-format-14.0 and above
 ReflowComments: true
-SortIncludes: true
+SortIncludes: false
 SortUsingDeclarations: false # Unknown to clang-format-4.0
 SpaceAfterCStyleCast: false
 SpaceAfterTemplateKeyword: true
