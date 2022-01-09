@@ -25,9 +25,12 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
+      - name: Build dependencies
+        run: $GITHUB_WORKSPACE/tools/deps.py
+
       # Runs a single command using the runners shell
       - name: Generate build files
-        run: gn gen out
+        run: $GITHUB_WORKSPACE/tools/gn gen $GITHUB_WORKSPACE/out
         
       - name: Build
-        run: ninja -C out -j$[`nproc` + 2]
+        run: ninja -C $GITHUB_WORKSPACE/out -j$[`nproc` + 2]
