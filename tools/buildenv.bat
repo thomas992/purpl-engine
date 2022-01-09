@@ -24,6 +24,3 @@ popd
 
 set PATH=%CD%\tools;%CD%\out;%CD%\deps\bin;%PATH%
 
-echo %PATH%
-cl /version
-
