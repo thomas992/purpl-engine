@@ -40,7 +40,7 @@ def sub_cmd(cmd: str, deps: str = "deps") -> str:
 
 
 def download_dep(
-    download_cmd: str, setup_cmds: list[str], build_cmd: str, deps: str = "deps"
+    download_cmd: str, setup_cmds: list, build_cmd: str, deps: str = "deps"
 ):
     # Fix the commands
     dl_cmd = sub_cmd(download_cmd, deps)
