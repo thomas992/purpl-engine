@@ -106,9 +106,9 @@ deps = {
         ["echo Running the Vulkan SDK installer"],
         "<deps>/vulkan-sdk.exe"
     ] if os.name == "nt" else [
-        f"curl -fGL https://sdk.lunarg.com/sdk/download/latest/linux/vulkan-sdk.tar.gz -o <deps>/vulkan-sdk.tar.gz",
+        f"git clone https://github.com/KhronosGroup/Vulkan-Headers <deps>/vulkan-headers",
         [""],
-        f"echo \"The latest Vulkan SDK has been downloaded to <deps>/vulkan-sdk.tar.gz\""
+        f""
     ]
 }
 
@@ -119,6 +119,7 @@ include_dirs = {
     "phnt": ["deps/tmp/processhacker/phnt/include"],
     "sdl2": ["deps/tmp/sdl2/include", "deps/tmp/build/sdl2/include"],
     "stb": ["deps/tmp/stb$$"],
+    "vulkan": ["deps/tmp/vulkan-headers/include"]
 }
 
 # Output files that get kept
