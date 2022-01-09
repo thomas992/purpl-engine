@@ -15,8 +15,39 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  build:
+  build-windows:
+    # The type of runner that the job will run on
+    runs-on: windows-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      - name: Build dependencies
+        run: python tools\deps.py
+
+      # Runs a single command using the runners shell
+      - name: Generate build files
+        run: tools\gn gen out
+        
+      - name: Build
+        run: |
+          set /a njobs="%NUMBER_OF_PROCESSORS%+2"
+          tools\ninja -C out -j%njobs%
+
+      - name: Add artifacts to archive
+        run: |
+          mkdir build
+          copy out\engine.dll out\main.exe deps\bin\* build
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: build-windows
+          path: build
+
+  build-linux:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
@@ -28,7 +59,7 @@ jobs:
       - name: Setup APT packages
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y p7zip ninja-build gcc-multilib python3 curl
+          sudo apt-get install -y ninja-build gcc-multilib python3 curl
           sudo apt-get install -y --no-install-recommends libx11-dev libxcursor-dev libxrandr-dev libxinerama-dev libxi-dev libxext-dev libxfixes-dev libgl1-mesa-dev
 
       - name: Set permissions on executables
@@ -49,10 +80,11 @@ jobs:
       - name: Add artifacts to archive
         run: |
           mkdir build
-          mv out/{engine.so,main} deps/bin/* build
+          printf '#!/usr/bin/env bash\nLD_LIBRARY_PATH=. ./main\n' > build/purpl-demo
+          cp out/{engine.so,main} deps/bin/* build
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: build
+          name: build-linux
           path: build
