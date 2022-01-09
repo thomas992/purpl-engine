@@ -239,15 +239,17 @@ static char *purpl_log_format(struct purpl_logger *logger,
 	p1 = purpl_strrplc(p2, "#l", p3, NULL);
 	free(p2);
 
-	p2 = purpl_strrplc(p1, "#V", purpl_format_version(PURPL_VERSION), NULL);
+	p2 = purpl_strrplc(p1, "#V", purpl_format_version(PURPL_VERSION),
+			   NULL);
 	free(p1);
 
 	if (purpl_inst->app_name) {
 		p1 = purpl_strrplc(p2, "#n", purpl_inst->app_name, NULL);
 		free(p2);
 
-
-		p2 = purpl_strrplc(p1, "#v", purpl_format_version(purpl_inst->app_version), NULL);
+		p2 = purpl_strrplc(
+			p1, "#v",
+			purpl_format_version(purpl_inst->app_version), NULL);
 		free(p1);
 	}
 
@@ -289,6 +291,8 @@ PURPL_API void purpl_log_write(struct purpl_logger *logger,
 
 	fprintf(logger->file, "%s\n", buf);
 #ifdef PURPL_DEBUG
+	// This if statement is ugly, but in this case I don't think I should
+	// fix it
 #ifndef PURPL_DEBUG_VERBOSE_LOG
 	if (level == PURPL_LOG_LEVEL_DEBUG)
 #endif
