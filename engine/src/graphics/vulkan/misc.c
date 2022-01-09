@@ -17,8 +17,6 @@
 
 #include "purpl/graphics/vulkan/misc.h"
 
-extern const char *SDL_Vulkan_GetResultString(VkResult result);
-
 const char *purpl_vulkan_strerror(VkResult result)
 {
 	static char buf[PURPL_STATIC_BUF_MAX];
@@ -141,7 +139,7 @@ const char *purpl_vulkan_strerror(VkResult result)
 	}
 
 	stbsp_snprintf(buf + strlen(buf), PURPL_STATIC_BUF_MAX,
-		       " (VkResult %s, which is %d)", SDL_Vulkan_GetResultString(result), result);
+		       " (VkResult %d)", result);
 
 	return buf;
 }
