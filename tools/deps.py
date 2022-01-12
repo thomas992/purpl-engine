@@ -72,8 +72,8 @@ def download_dep(
 
 
 # Platform (replacements are for compatibility with GN's OS and architecture naming scheme)
-plat = f"{platform.system().lower()}-{platform.machine()}".replace("x86_64",
-                                                                   "x64").replace("aarch64", "arm64").replace("windows", "win")
+plat = f"{platform.system()}-{platform.machine()}".lower().replace("x86_64",
+                                                                   "x64").replace("amd64", "x64").replace("aarch64", "arm64").replace("windows", "win")
 
 # Versions
 glew_ver = "2.2.0"

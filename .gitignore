@@ -5,8 +5,7 @@
 **/build
 **/out
 
-deps/bin
-deps/include
-deps/tmp
+# This is the pattern used for the platform-specific dependency builds
+deps/*-*
 
 compile_commands.json.user

@@ -44,7 +44,7 @@ jobs:
           mkdir build
           xcopy /y out\engine.dll build
           xcopy /y out\main.exe build
-          xcopy /y deps\bin\* build
+          xcopy /y deps\win-x64\bin\* build
           xcopy /i/y deps\licenses build\licenses
 
       - name: Upload artifacts
