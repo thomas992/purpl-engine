@@ -15,7 +15,11 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-print(getenv("VULKAN_SDK"))
+if (getenv("VULKAN_SDK") != "") {
+  print("Using Vulkan SDK at " + getenv("VULKAN_SDK"))
+} else {
+  print("The VULKAN_SDK environment variable was not detected")
+}
 
 group("all") {
   deps = [

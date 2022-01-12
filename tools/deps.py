@@ -17,10 +17,10 @@
 #  limitations under the License.
 
 import os
+import platform
 import shutil
 import stat
 import subprocess
-import sys
 
 
 def shutil_nuke_git(e: Exception, path: str, info: Exception):
@@ -70,6 +70,8 @@ def download_dep(
         print(f"Failed to run command: {e}")
         exit(1)
 
+# Platform
+plat = f"{platform.system().lower()}-{platform.machine()}".replace("x86_64", "x64").replace("aarch64", "arm64")
 
 # Versions
 glew_ver = "2.2.0"
@@ -129,71 +131,70 @@ deps = {
 
 # Folders to get headers from
 include_dirs = {
-    "cglm": ["deps/tmp/cglm/include"],
-    "glew": ["deps/tmp/glew/include"],
-    "phnt": ["deps/tmp/processhacker/phnt/include"],
-    "sdl2": ["deps/tmp/sdl2/include", "deps/tmp/build/sdl2/include"],
-    "stb": ["deps/tmp/stb$$"],
+    "cglm": [f"deps/{plat}/tmp/cglm/include"],
+    "glew": [f"deps/{plat}/tmp/glew/include"],
+    "phnt": [f"deps/{plat}/tmp/processhacker/phnt/include"],
+    "sdl2": [f"deps/{plat}/tmp/sdl2/include", f"deps/{plat}/tmp/build/sdl2/include"],
+    "stb": [f"deps/{plat}/tmp/stb$$"],
 }
 
 # Output files that get kept
 if os.name == "nt":
     outputs = {
         "cglm": [
-            ("deps/tmp/build/cglm/cglm-0.dll", "deps/bin/cglm-0.dll"),
-            ("deps/tmp/build/cglm/cglm.lib", "deps/bin/cglm.lib"),
-            ("deps/tmp/build/cglm/cglm-0.pdb", "deps/bin/cglm-0.pdb"),
+            (f"deps/{plat}/tmp/build/cglm/cglm-0.dll", f"deps/{plat}/bin/cglm-0.dll"),
+            (f"deps/{plat}/tmp/build/cglm/cglm.lib", f"deps/{plat}/bin/cglm.lib"),
+            (f"deps/{plat}/tmp/build/cglm/cglm-0.pdb", f"deps/{plat}/bin/cglm-0.pdb"),
         ],
         "glew": [
-            ("deps/tmp/build/glew/bin/glewinfo.exe", "deps/bin/glewinfo.exe"),
-            ("deps/tmp/build/glew/bin/visualinfo.exe", "deps/bin/visualinfo.exe"),
-            ("deps/tmp/build/glew/bin/glew32.dll", "deps/bin/glew32.dll"),
-            ("deps/tmp/build/glew/lib/glew32.lib", "deps/bin/glew32.lib"),
-            ("deps/tmp/build/glew/bin/glew32.pdb", "deps/bin/glew32.pdb"),
+            (f"deps/{plat}/tmp/build/glew/bin/glewinfo.exe", f"deps/{plat}/bin/glewinfo.exe"),
+            (f"deps/{plat}/tmp/build/glew/bin/visualinfo.exe", f"deps/{plat}/bin/visualinfo.exe"),
+            (f"deps/{plat}/tmp/build/glew/bin/glew32.dll", f"deps/{plat}/bin/glew32.dll"),
+            (f"deps/{plat}/tmp/build/glew/lib/glew32.lib", f"deps/{plat}/bin/glew32.lib"),
+            (f"deps/{plat}/tmp/build/glew/bin/glew32.pdb", f"deps/{plat}/bin/glew32.pdb"),
         ],
         "sdl2": [
-            ("deps/tmp/build/sdl2/SDL2.dll", "deps/bin/SDL2.dll"),
-            ("deps/tmp/build/sdl2/SDL2.lib", "deps/bin/SDL2.lib"),
-            ("deps/tmp/build/sdl2/SDL2.pdb", "deps/bin/SDL2.pdb"),
+            (f"deps/{plat}/tmp/build/sdl2/SDL2.dll", f"deps/{plat}/bin/SDL2.dll"),
+            (f"deps/{plat}/tmp/build/sdl2/SDL2.lib", f"deps/{plat}/bin/SDL2.lib"),
+            (f"deps/{plat}/tmp/build/sdl2/SDL2.pdb", f"deps/{plat}/bin/SDL2.pdb"),
         ],
     }
 elif os.name == "posix":
     outputs = {
         "cglm": [
-            ("deps/tmp/build/cglm/libcglm.so", "deps/bin/libcglm.so"),
-            ("deps/tmp/build/cglm/libcglm.so.0", "deps/bin/libcglm.so.0"),
+            (f"deps/{plat}/tmp/build/cglm/libcglm.so", f"deps/{plat}/bin/libcglm.so"),
+            (f"deps/{plat}/tmp/build/cglm/libcglm.so.0", f"deps/{plat}/bin/libcglm.so.0"),
         ],
         "glew": [
-            ("deps/tmp/build/glew/bin/glewinfo", "deps/bin/glewinfo"),
-            ("deps/tmp/build/glew/bin/visualinfo", "deps/bin/visualinfo"),
-            ("deps/tmp/build/glew/lib/libGLEW.so", "deps/bin/libGLEW.so"),
-            ("deps/tmp/build/glew/lib/libGLEW.so.2.2", "deps/bin/libGLEW.so.2.2"),
+            (f"deps/{plat}/tmp/build/glew/bin/glewinfo", f"deps/{plat}/bin/glewinfo"),
+            (f"deps/{plat}/tmp/build/glew/bin/visualinfo", f"deps/{plat}/bin/visualinfo"),
+            (f"deps/{plat}/tmp/build/glew/lib/libGLEW.so", f"deps/{plat}/bin/libGLEW.so"),
+            (f"deps/{plat}/tmp/build/glew/lib/libGLEW.so.2.2", f"deps/{plat}/bin/libGLEW.so.2.2"),
         ],
         "sdl2": [
-            ("deps/tmp/build/sdl2/libSDL2-2.0.so", "deps/bin/libSDL2-2.0.so"),
-            ("deps/tmp/build/sdl2/libSDL2-2.0.so.0", "deps/bin/libSDL2-2.0.so.0"),
+            (f"deps/{plat}/tmp/build/sdl2/libSDL2-2.0.so", f"deps/{plat}/bin/libSDL2-2.0.so"),
+            (f"deps/{plat}/tmp/build/sdl2/libSDL2-2.0.so.0", f"deps/{plat}/bin/libSDL2-2.0.so.0"),
         ],
     }
 
 # Make a folder for the dependencies to be cloned into
-shutil.rmtree("deps/bin", onerror=shutil_nuke_git)
-shutil.rmtree("deps/tmp", onerror=shutil_nuke_git)
-shutil.rmtree("deps/include", onerror=shutil_nuke_git)
+shutil.rmtree(f"deps/{plat}", onerror=shutil_nuke_git)
 
-os.mkdir("deps/tmp")
-os.mkdir("deps/tmp/build")
-os.mkdir("deps/bin")
-os.mkdir("deps/include")
+os.mkdir(f"deps/{plat}")
+os.mkdir(f"deps/{plat}/tmp")
+os.mkdir(f"deps/{plat}/tmp/build")
+os.mkdir(f"deps/{plat}/bin")
+os.mkdir(f"deps/{plat}/include")
 
 # Download and build the dependencies
 print("Downloading dependencies...")
 for name, cmds in deps.items():
     print(f"Downloading {name}...")
-    download_dep(cmds[0], cmds[1], cmds[2], "deps/tmp")
+    download_dep(cmds[0], cmds[1], cmds[2], f"deps/{plat}/tmp")
 
 # Copy the needed outputs and headers
 for dep, dirs in include_dirs.items():
-    print(f"Copying {dep} headers to deps/include...")
+    print(f"Copying {dep} headers to deps/{plat}/include...")
     for dir in dirs:
         # Check if only one level needs to be copied
         onelevel = False
@@ -203,10 +204,10 @@ for dep, dirs in include_dirs.items():
 
         for f in os.listdir(dirname):
             if os.path.isdir(f"{dirname}/{f}") and not onelevel:
-                shutil.copytree(f"{dirname}/{f}", f"deps/include/{f}")
+                shutil.copytree(f"{dirname}/{f}", f"deps/{plat}/include/{f}")
             else:
                 if f.endswith(".h"):
-                    shutil.copy(f"{dirname}/{f}", f"deps/include/{f}")
+                    shutil.copy(f"{dirname}/{f}", f"deps/{plat}/include/{f}")
 
 for dep, outs in outputs.items():
     for out in outs:
@@ -214,6 +215,6 @@ for dep, outs in outputs.items():
         shutil.copy(out[0], out[1], follow_symlinks=(out[0][-1] in "1234567890"))
 
 # Clean up the other files
-shutil.rmtree("deps/tmp", onerror=shutil_nuke_git)
+shutil.rmtree(f"deps/{plat}/tmp", onerror=shutil_nuke_git)
 
 print("Done!")

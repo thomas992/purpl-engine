@@ -17,12 +17,12 @@
 
 shared_library("engine") {
   include_dirs = [
-    "//deps/include",
+    "//deps/" + current_os + "-" + current_cpu + "/include",
     getenv("VULKAN_SDK") + "/include",
     "include",
   ]
 
-  lib_dirs = [ "//deps/bin/", getenv("VULKAN_SDK") + "/lib" ]
+  lib_dirs = [ "//deps/" + current_os + "-" + current_cpu + "/bin/", getenv("VULKAN_SDK") + "/lib" ]
   defines = [ "PURPL_BUILD" ]
   ldflags = []
 

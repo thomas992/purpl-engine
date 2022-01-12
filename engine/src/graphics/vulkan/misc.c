@@ -32,8 +32,7 @@ const char *purpl_vulkan_strerror(VkResult result)
 	case VK_TIMEOUT:
 		stbsp_snprintf(buf, PURPL_STATIC_BUF_MAX,
 			       "A wait operation has not completed in the "
-			       "specified "
-			       "time");
+			       "specified time");
 		break;
 	case VK_EVENT_SET:
 		stbsp_snprintf(buf, PURPL_STATIC_BUF_MAX,
@@ -59,8 +58,8 @@ const char *purpl_vulkan_strerror(VkResult result)
 	case VK_ERROR_INITIALIZATION_FAILED:
 		stbsp_snprintf(buf, PURPL_STATIC_BUF_MAX,
 			       "Initialization of an object could not be "
-			       "completed "
-			       "for implementation-specific reasons");
+			       "completed for implementation-specific "
+			       "reasons");
 		break;
 	case VK_ERROR_DEVICE_LOST:
 		stbsp_snprintf(buf, PURPL_STATIC_BUF_MAX,
@@ -73,8 +72,7 @@ const char *purpl_vulkan_strerror(VkResult result)
 	case VK_ERROR_LAYER_NOT_PRESENT:
 		stbsp_snprintf(buf, PURPL_STATIC_BUF_MAX,
 			       "A requested layer is not present or could not "
-			       "be "
-			       "loaded");
+			       "be loaded");
 		break;
 	case VK_ERROR_EXTENSION_NOT_PRESENT:
 		stbsp_snprintf(buf, PURPL_STATIC_BUF_MAX,
@@ -87,14 +85,13 @@ const char *purpl_vulkan_strerror(VkResult result)
 	case VK_ERROR_INCOMPATIBLE_DRIVER:
 		stbsp_snprintf(buf, PURPL_STATIC_BUF_MAX,
 			       "The requested version of Vulkan is not "
-			       "supported by "
-			       "the driver or is otherwise incompatible");
+			       "supported by the driver or is otherwise "
+			       "incompatible");
 		break;
 	case VK_ERROR_TOO_MANY_OBJECTS:
 		stbsp_snprintf(buf, PURPL_STATIC_BUF_MAX,
 			       "Too many objects of the type have already "
-			       "been "
-			       "created");
+			       "been created");
 		break;
 	case VK_ERROR_FORMAT_NOT_SUPPORTED:
 		stbsp_snprintf(buf, PURPL_STATIC_BUF_MAX,
@@ -108,26 +105,22 @@ const char *purpl_vulkan_strerror(VkResult result)
 	case VK_SUBOPTIMAL_KHR:
 		stbsp_snprintf(buf, PURPL_STATIC_BUF_MAX,
 			       "A swapchain no longer matches the surface "
-			       "properties "
-			       "exactly, but can still be used");
+			       "properties exactly, but can still be used");
 		break;
 	case VK_ERROR_OUT_OF_DATE_KHR:
 		stbsp_snprintf(buf, PURPL_STATIC_BUF_MAX,
 			       "A surface has changed in such a way that it "
-			       "is no "
-			       "longer compatible with the swapchain");
+			       "is no longer compatible with the swapchain");
 		break;
 	case VK_ERROR_INCOMPATIBLE_DISPLAY_KHR:
 		stbsp_snprintf(buf, PURPL_STATIC_BUF_MAX,
 			       "The display used by a swapchain does not use "
-			       "the same "
-			       "presentable image layout");
+			       "the same presentable image layout");
 		break;
 	case VK_ERROR_NATIVE_WINDOW_IN_USE_KHR:
 		stbsp_snprintf(buf, PURPL_STATIC_BUF_MAX,
 			       "The requested window is already connected to "
-			       "a "
-			       "VkSurfaceKHR, or to some other non-Vulkan "
+			       "a VkSurfaceKHR, or to some other non-Vulkan "
 			       "API");
 		break;
 	case VK_ERROR_VALIDATION_FAILED_EXT:
