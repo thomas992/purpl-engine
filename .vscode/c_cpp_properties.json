@@ -3,11 +3,21 @@
         {
             "name": "Linux",
             "includePath": [
-                "${workspaceFolder}/**"
+                "${workspaceFolder}/deps/linux-x64/include",
+                "${workspaceFolder}/engine/include"
             ],
             "defines": [],
-            "compilerPath": "/usr/bin/clang",
             "intelliSenseMode": "linux-clang-x64",
+            "compileCommands": "${workspaceFolder}/out/compile_commands.json"
+        },
+        {
+            "name": "Windows",
+            "includePath": [
+                "${workspaceFolder}/deps/win-x64/include",
+                "${workspaceFolder}/engine/include"
+            ],
+            "defines": [],
+            "intelliSenseMode": "windows-msvc-x64",
             "compileCommands": "${workspaceFolder}/out/compile_commands.json"
         }
     ],

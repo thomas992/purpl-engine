@@ -70,8 +70,10 @@ def download_dep(
         print(f"Failed to run command: {e}")
         exit(1)
 
-# Platform
-plat = f"{platform.system().lower()}-{platform.machine()}".replace("x86_64", "x64").replace("aarch64", "arm64")
+
+# Platform (replacements are for compatibility with GN's OS and architecture naming scheme)
+plat = f"{platform.system().lower()}-{platform.machine()}".replace("x86_64",
+                                                                   "x64").replace("aarch64", "arm64").replace("windows", "win")
 
 # Versions
 glew_ver = "2.2.0"
@@ -142,38 +144,57 @@ include_dirs = {
 if os.name == "nt":
     outputs = {
         "cglm": [
-            (f"deps/{plat}/tmp/build/cglm/cglm-0.dll", f"deps/{plat}/bin/cglm-0.dll"),
-            (f"deps/{plat}/tmp/build/cglm/cglm.lib", f"deps/{plat}/bin/cglm.lib"),
-            (f"deps/{plat}/tmp/build/cglm/cglm-0.pdb", f"deps/{plat}/bin/cglm-0.pdb"),
+            (f"deps/{plat}/tmp/build/cglm/cglm-0.dll",
+             f"deps/{plat}/bin/cglm-0.dll"),
+            (f"deps/{plat}/tmp/build/cglm/cglm.lib",
+             f"deps/{plat}/bin/cglm.lib"),
+            (f"deps/{plat}/tmp/build/cglm/cglm-0.pdb",
+             f"deps/{plat}/bin/cglm-0.pdb"),
         ],
         "glew": [
-            (f"deps/{plat}/tmp/build/glew/bin/glewinfo.exe", f"deps/{plat}/bin/glewinfo.exe"),
-            (f"deps/{plat}/tmp/build/glew/bin/visualinfo.exe", f"deps/{plat}/bin/visualinfo.exe"),
-            (f"deps/{plat}/tmp/build/glew/bin/glew32.dll", f"deps/{plat}/bin/glew32.dll"),
-            (f"deps/{plat}/tmp/build/glew/lib/glew32.lib", f"deps/{plat}/bin/glew32.lib"),
-            (f"deps/{plat}/tmp/build/glew/bin/glew32.pdb", f"deps/{plat}/bin/glew32.pdb"),
+            (f"deps/{plat}/tmp/build/glew/bin/glewinfo.exe",
+             f"deps/{plat}/bin/glewinfo.exe"),
+            (f"deps/{plat}/tmp/build/glew/bin/visualinfo.exe",
+             f"deps/{plat}/bin/visualinfo.exe"),
+            (f"deps/{plat}/tmp/build/glew/bin/glew32.dll",
+             f"deps/{plat}/bin/glew32.dll"),
+            (f"deps/{plat}/tmp/build/glew/lib/glew32.lib",
+             f"deps/{plat}/bin/glew32.lib"),
+            (f"deps/{plat}/tmp/build/glew/bin/glew32.pdb",
+             f"deps/{plat}/bin/glew32.pdb"),
         ],
         "sdl2": [
-            (f"deps/{plat}/tmp/build/sdl2/SDL2.dll", f"deps/{plat}/bin/SDL2.dll"),
-            (f"deps/{plat}/tmp/build/sdl2/SDL2.lib", f"deps/{plat}/bin/SDL2.lib"),
-            (f"deps/{plat}/tmp/build/sdl2/SDL2.pdb", f"deps/{plat}/bin/SDL2.pdb"),
+            (f"deps/{plat}/tmp/build/sdl2/SDL2.dll",
+             f"deps/{plat}/bin/SDL2.dll"),
+            (f"deps/{plat}/tmp/build/sdl2/SDL2.lib",
+             f"deps/{plat}/bin/SDL2.lib"),
+            (f"deps/{plat}/tmp/build/sdl2/SDL2.pdb",
+             f"deps/{plat}/bin/SDL2.pdb"),
         ],
     }
 elif os.name == "posix":
     outputs = {
         "cglm": [
-            (f"deps/{plat}/tmp/build/cglm/libcglm.so", f"deps/{plat}/bin/libcglm.so"),
-            (f"deps/{plat}/tmp/build/cglm/libcglm.so.0", f"deps/{plat}/bin/libcglm.so.0"),
+            (f"deps/{plat}/tmp/build/cglm/libcglm.so",
+             f"deps/{plat}/bin/libcglm.so"),
+            (f"deps/{plat}/tmp/build/cglm/libcglm.so.0",
+             f"deps/{plat}/bin/libcglm.so.0"),
         ],
         "glew": [
-            (f"deps/{plat}/tmp/build/glew/bin/glewinfo", f"deps/{plat}/bin/glewinfo"),
-            (f"deps/{plat}/tmp/build/glew/bin/visualinfo", f"deps/{plat}/bin/visualinfo"),
-            (f"deps/{plat}/tmp/build/glew/lib/libGLEW.so", f"deps/{plat}/bin/libGLEW.so"),
-            (f"deps/{plat}/tmp/build/glew/lib/libGLEW.so.2.2", f"deps/{plat}/bin/libGLEW.so.2.2"),
+            (f"deps/{plat}/tmp/build/glew/bin/glewinfo",
+             f"deps/{plat}/bin/glewinfo"),
+            (f"deps/{plat}/tmp/build/glew/bin/visualinfo",
+             f"deps/{plat}/bin/visualinfo"),
+            (f"deps/{plat}/tmp/build/glew/lib/libGLEW.so",
+             f"deps/{plat}/bin/libGLEW.so"),
+            (f"deps/{plat}/tmp/build/glew/lib/libGLEW.so.2.2",
+             f"deps/{plat}/bin/libGLEW.so.2.2"),
         ],
         "sdl2": [
-            (f"deps/{plat}/tmp/build/sdl2/libSDL2-2.0.so", f"deps/{plat}/bin/libSDL2-2.0.so"),
-            (f"deps/{plat}/tmp/build/sdl2/libSDL2-2.0.so.0", f"deps/{plat}/bin/libSDL2-2.0.so.0"),
+            (f"deps/{plat}/tmp/build/sdl2/libSDL2-2.0.so",
+             f"deps/{plat}/bin/libSDL2-2.0.so"),
+            (f"deps/{plat}/tmp/build/sdl2/libSDL2-2.0.so.0",
+             f"deps/{plat}/bin/libSDL2-2.0.so.0"),
         ],
     }
 
@@ -212,7 +233,8 @@ for dep, dirs in include_dirs.items():
 for dep, outs in outputs.items():
     for out in outs:
         print(f"Copying {dep} output {out[0]} to {out[1]}...")
-        shutil.copy(out[0], out[1], follow_symlinks=(out[0][-1] in "1234567890"))
+        shutil.copy(out[0], out[1], follow_symlinks=(
+            out[0][-1] in "1234567890"))
 
 # Clean up the other files
 shutil.rmtree(f"deps/{plat}/tmp", onerror=shutil_nuke_git)

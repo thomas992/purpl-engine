@@ -90,7 +90,7 @@ jobs:
         run: |
           mkdir build
           printf '#!/usr/bin/env bash\nLD_LIBRARY_PATH=. ./main\n' > build/purpl-demo
-          cp -r out/{engine.so,main} deps/bin/* deps/licenses build
+          cp -r out/{engine.so,main} deps/linux-x64/* deps/licenses build
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v2

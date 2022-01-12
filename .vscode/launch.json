@@ -5,6 +5,22 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
+			"name": "(Windows) Launch",
+			"type": "cppvsdbg",
+			"request": "launch",
+			"program": "${workspaceFolder}/out/main.exe",
+			"args": [],
+			"stopAtEntry": false,
+			"cwd": "${workspaceFolder}",
+			"environment": [
+				{
+					"name": "PATH",
+					"value": "${workspaceFolder}/out;${workspaceFolder}/deps/bin"
+				}
+			],
+			"console": "externalTerminal"
+		},
+		{
 			"name": "(gdb) Launch",
 			"type": "cppdbg",
 			"request": "launch",
