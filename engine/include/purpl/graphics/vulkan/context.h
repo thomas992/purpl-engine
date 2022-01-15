@@ -18,7 +18,7 @@
 #pragma once
 
 #include <SDL.h>
-#include <vulkan/vulkan.h>
+
 
 #include "purpl/core/coredefs.h"
 #include "purpl/core/types.h"

@@ -15,7 +15,7 @@
 			"environment": [
 				{
 					"name": "PATH",
-					"value": "${workspaceFolder}/out;${workspaceFolder}/deps/bin"
+					"value": "${workspaceFolder}/out;${workspaceFolder}/deps/win-x64/bin"
 				}
 			],
 			"console": "externalTerminal"
@@ -31,7 +31,7 @@
 			"environment": [
 				{
 					"name": "LD_LIBRARY_PATH",
-					"value": "${workspaceFolder}/out:${workspaceFolder}/deps/bin"
+					"value": "${workspaceFolder}/out:${workspaceFolder}/deps/linux-x64/bin"
 				}
 			],
 			"externalConsole": false,

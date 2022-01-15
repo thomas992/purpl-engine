@@ -82,12 +82,22 @@ bool purpl_vulkan_create_context(struct purpl_vulkan_context *context)
 					       avail_extension_properties);
 
 	for (i = 0; i < avail_extension_count; i++) {
+		bool required = false;
+
 		for (j = 0; j < required_extension_count; j++) {
 			if (strcmp(required_extension_names[j],
 				   avail_extension_properties[i]
-					   .extensionName) == 0)
+					   .extensionName) == 0) {
 				found_extension_count++;
+				required = true;
+				break;
+			}
 		}
+
+		PURPL_LOG_INFO(purpl_inst->logger,
+			       "Found Vulkan extension %s%s",
+			       avail_extension_properties[i].extensionName,
+			       required ? " (required)" : "");
 	}
 
 	if (found_extension_count < required_extension_count)
@@ -118,4 +128,7 @@ bool purpl_vulkan_create_context(struct purpl_vulkan_context *context)
 	return true;
 }
 
-void purpl_vulkan_destroy_context(struct purpl_vulkan_context *context) {}
+void purpl_vulkan_destroy_context(struct purpl_vulkan_context *context) 
+{
+	vkDestroyInstance(context->inst, NULL);
+}

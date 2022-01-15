@@ -16,6 +16,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+import multiprocessing
 import os
 import platform
 import shutil
@@ -73,10 +74,13 @@ def download_dep(
 
 # Platform (replacements are for compatibility with GN's OS and architecture naming scheme)
 plat = f"{platform.system()}-{platform.machine()}".lower().replace("x86_64",
-                                                                   "x64").replace("amd64", "x64").replace("aarch64", "arm64").replace("windows", "win")
+                                                                   "x64").replace("amd64", "x64").replace("aarch64", "arm64").replace("windows", "win").replace("darwin", "mac")
 
 # Versions
 glew_ver = "2.2.0"
+
+# Number of processors
+nproc = multiprocessing.cpu_count() + 2
 
 # CMake is officially the worst build system other than literally just throwing
 # together a bunch of random shell scripts and praying to whatever ancient
@@ -89,12 +93,20 @@ cmake_ninja_bullshit = (
 
 # Dependencies
 deps = {
+    "bgfx": [
+        "git clone https://github.com/bkaradzic/bgfx <deps>/bgfx",
+        ["git clone https://github.com/bkaradzic/bx <deps>/bx", "git clone https://github.com/bkaradzic/bimg <deps>/bimg",
+            "pushd <deps>\\bgfx && ..\\bx\\tools\\bin\\windows\\genie --platform=x64 --with-sdl --with-tools vs2022 && popd" if os.name == "nt"
+            else "pushd <deps>/bgfx && ../bx/tools/bin/linux/genie --gcc=linux-clang --platform=x64 --with-sdl --with-tools gmake && popd"],
+        f"msbuild -m:{nproc} -p:Configuration=Release <deps>\\bgfx\\.build\\projects\\vs2022\\bgfx.sln" if os.name == "nt"
+        else f"make -C <deps>/bgfx/.build/projects/gmake-linux-clang -j{nproc} config=release"
+    ],
     "cglm": [
         "git clone https://github.com/recp/cglm <deps>/cglm",
         [
             f"cmake -S <deps>/cglm -B <deps>/build/cglm {cmake_ninja_bullshit} -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCGLM_STATIC=OFF"
         ],
-        "cmake --build <deps>/build/cglm",
+        f"cmake --build <deps>/build/cglm -j{nproc}",
     ],
     "glew": [
         f"curl -fGL https://github.com/nigels-com/glew/releases/download/glew-{glew_ver}/glew-{glew_ver}.tgz -o <deps>/glew.tar.gz",
@@ -103,10 +115,10 @@ deps = {
             f"<move> <deps>/glew-{glew_ver} <deps>/glew",
             f"cmake -S <deps>/glew/build/cmake -B <deps>/build/glew {cmake_ninja_bullshit} -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo",
         ],
-        "cmake --build <deps>/build/glew",
+        f"cmake --build <deps>/build/glew -j{nproc}",
     ],
     "phnt": [
-        "git clone https://github.com/processhacker/processhacker <deps>/processhacker",
+        "git clone https://github.com/processhacker/processhacker <deps>/processhacker" if os.name == "nt" else "",
         [""],
         "",
     ],
@@ -115,7 +127,7 @@ deps = {
         [
             f"cmake -S <deps>/sdl2 -B <deps>/build/sdl2 {cmake_ninja_bullshit} -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo -DSDL_VULKAN=ON -DSDL_KMSDRM=ON -DSDL_STATIC=OFF"
         ],
-        "cmake --build <deps>/build/sdl2",
+        f"cmake --build <deps>/build/sdl2 -j{nproc}",
     ],
     "stb": [
         "git clone https://github.com/nothings/stb <deps>/stb",
@@ -124,8 +136,8 @@ deps = {
     ],
     "vulkan": [
         "curl -fGL https://sdk.lunarg.com/sdk/download/latest/windows/vulkan-sdk.exe -o <deps>/vulkan-sdk.exe",
-        ["<deps>\\vulkan-sdk.exe /S"],
-        "",
+        ["echo Installing Vulkan SDK"],
+        "if not exist C:\\VulkanSDK <deps>\\vulkan-sdk.exe /S",
     ]
     if os.name == "nt"
     else ["", [""], ""],
@@ -133,9 +145,10 @@ deps = {
 
 # Folders to get headers from
 include_dirs = {
+    "bgfx": [f"deps/{plat}/tmp/bgfx/include", f"deps/{plat}/tmp/bx/include", f"deps/{plat}/tmp/bimg/include"],
     "cglm": [f"deps/{plat}/tmp/cglm/include"],
     "glew": [f"deps/{plat}/tmp/glew/include"],
-    "phnt": [f"deps/{plat}/tmp/processhacker/phnt/include"],
+    "phnt": [f"deps/{plat}/tmp/processhacker/phnt/include"] if os.name == "nt" else [],
     "sdl2": [f"deps/{plat}/tmp/sdl2/include", f"deps/{plat}/tmp/build/sdl2/include"],
     "stb": [f"deps/{plat}/tmp/stb$$"],
 }
@@ -174,6 +187,28 @@ if os.name == "nt":
     }
 elif os.name == "posix":
     outputs = {
+        "bgfx": [
+            (f"deps/{plat}/tmp/bgfx/.build/linux64_clang/bin/geometrycRelease",
+             f"deps/{plat}/bin/geometryc"),
+            (f"deps/{plat}/tmp/bgfx/.build/linux64_clang/bin/geometryvRelease",
+             f"deps/{plat}/bin/geometryv"),
+            (f"deps/{plat}/tmp/bgfx/.build/linux64_clang/bin/libbgfxRelease.a",
+             f"deps/{plat}/bin/libbgfx.a"),
+            (f"deps/{plat}/tmp/bgfx/.build/linux64_clang/bin/libbimg_decodeRelease.a",
+             f"deps/{plat}/bin/libbimg_decode.a"),
+            (f"deps/{plat}/tmp/bgfx/.build/linux64_clang/bin/libbimg_encodeRelease.a",
+             f"deps/{plat}/bin/libbimg_encode.a"),
+            (f"deps/{plat}/tmp/bgfx/.build/linux64_clang/bin/libbimgRelease.a",
+             f"deps/{plat}/bin/libbimg.a"),
+            (f"deps/{plat}/tmp/bgfx/.build/linux64_clang/bin/libbxRelease.a",
+             f"deps/{plat}/bin/libbx.a"),
+            (f"deps/{plat}/tmp/bgfx/.build/linux64_clang/bin/shadercRelease",
+             f"deps/{plat}/bin/shaderc"),
+            (f"deps/{plat}/tmp/bgfx/.build/linux64_clang/bin/texturecRelease",
+             f"deps/{plat}/bin/texturec"),
+            (f"deps/{plat}/tmp/bgfx/.build/linux64_clang/bin/texturevRelease",
+             f"deps/{plat}/bin/texturev"),
+        ],
         "cglm": [
             (f"deps/{plat}/tmp/build/cglm/libcglm.so",
              f"deps/{plat}/bin/libcglm.so"),
