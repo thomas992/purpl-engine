@@ -29,10 +29,4 @@
 #include "core/inst.h"
 #include "core/types.h"
 
-#include "graphics/api.h"
-#include "graphics/context.h"
-
-#include "graphics/vulkan/context.h"
-#include "graphics/vulkan/misc.h"
-
 #include "util/util.h"

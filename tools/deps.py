@@ -36,11 +36,11 @@ def shutil_nuke_git(e: Exception, path: str, info: Exception):
 
 def sub_cmd(cmd: str, deps: str = "deps") -> str:
     final = cmd.replace("<deps>", deps).replace(
-        "<move>", "move" if os.name == "nt" else "mv"
+        "<move>", "move" if platform.system() == "Windows" else "mv"
     )
 
     # Flip slashes
-    if os.name == "nt":
+    if platform.system() == "Windows":
         final = final.replace(deps, deps.replace("/", "\\"))
     else:
         final = final.replace(deps, deps.replace("\\", "/"))
@@ -87,7 +87,7 @@ nproc = multiprocessing.cpu_count() + 2
 # Lovecraftian deity is in charge of terrible build systems that it works
 cmake_ninja_bullshit = (
     f"-DCMAKE_MAKE_PROGRAM={os.getcwd()}\\tools\\ninja.exe -DCMAKE_C_COMPILER=cl"
-    if os.name == "nt"
+    if platform.system() == "Windows"
     else ""
 )
 
@@ -96,10 +96,10 @@ deps = {
     "bgfx": [
         "git clone https://github.com/bkaradzic/bgfx <deps>/bgfx",
         ["git clone https://github.com/bkaradzic/bx <deps>/bx", "git clone https://github.com/bkaradzic/bimg <deps>/bimg",
-            "pushd <deps>\\bgfx && ..\\bx\\tools\\bin\\windows\\genie --platform=x64 --with-sdl --with-tools vs2022 && popd" if os.name == "nt"
-            else "pushd <deps>/bgfx && ../bx/tools/bin/linux/genie --gcc=linux-clang --platform=x64 --with-sdl --with-tools gmake && popd"],
-        f"msbuild -m:{nproc} -p:Configuration=Release <deps>\\bgfx\\.build\\projects\\vs2022\\bgfx.sln" if os.name == "nt"
-        else f"make -C <deps>/bgfx/.build/projects/gmake-linux-clang -j{nproc} config=release"
+            "pushd <deps>\\bgfx && ..\\bx\\tools\\bin\\windows\\genie --platform=x64 --with-sdl --with-shared-lib --with-tools vs2022 && popd" if platform.system() == "Windows"
+            else f"cd <deps>/bgfx && ../bx/tools/bin/linux/genie --gcc=linux-clang --platform=x64 --with-sdl --with-shared-lib --with-tools gmake && cd {os.getcwd()}" if platform.system() == "Linux" else ""],
+        f"msbuild -m:{nproc} -p:Configuration=Release <deps>\\bgfx\\.build\\projects\\vs2022\\bgfx.sln" if platform.system() == "Windows"
+        else f"make -C <deps>/bgfx/.build/projects/gmake-linux-clang -j{nproc} config=release64" if platform.system() == "Linux" else ""
     ],
     "cglm": [
         "git clone https://github.com/recp/cglm <deps>/cglm",
@@ -118,14 +118,14 @@ deps = {
         f"cmake --build <deps>/build/glew -j{nproc}",
     ],
     "phnt": [
-        "git clone https://github.com/processhacker/processhacker <deps>/processhacker" if os.name == "nt" else "",
+        "git clone https://github.com/processhacker/processhacker <deps>/processhacker" if platform.system() == "Windows" else "",
         [""],
         "",
     ],
     "sdl2": [
         "git clone https://github.com/libsdl-org/SDL <deps>/sdl2",
         [
-            f"cmake -S <deps>/sdl2 -B <deps>/build/sdl2 {cmake_ninja_bullshit} -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo -DSDL_VULKAN=ON -DSDL_KMSDRM=ON -DSDL_STATIC=OFF"
+            f"cmake -S <deps>/sdl2 -B <deps>/build/sdl2 {cmake_ninja_bullshit} -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo -DSDL_VULKAN=ON -DSDL_STATIC=OFF"
         ],
         f"cmake --build <deps>/build/sdl2 -j{nproc}",
     ],
@@ -139,7 +139,7 @@ deps = {
         ["echo Installing Vulkan SDK"],
         "if not exist C:\\VulkanSDK <deps>\\vulkan-sdk.exe /S",
     ]
-    if os.name == "nt"
+    if platform.system() == "Windows"
     else ["", [""], ""],
 }
 
@@ -148,13 +148,13 @@ include_dirs = {
     "bgfx": [f"deps/{plat}/tmp/bgfx/include", f"deps/{plat}/tmp/bx/include", f"deps/{plat}/tmp/bimg/include"],
     "cglm": [f"deps/{plat}/tmp/cglm/include"],
     "glew": [f"deps/{plat}/tmp/glew/include"],
-    "phnt": [f"deps/{plat}/tmp/processhacker/phnt/include"] if os.name == "nt" else [],
+    "phnt": [f"deps/{plat}/tmp/processhacker/phnt/include"] if platform.system() == "Windows" else [] if platform.system() == "Linux" else [],
     "sdl2": [f"deps/{plat}/tmp/sdl2/include", f"deps/{plat}/tmp/build/sdl2/include"],
     "stb": [f"deps/{plat}/tmp/stb$$"],
 }
 
 # Output files that get kept
-if os.name == "nt":
+if platform.system() == "Windows":
     outputs = {
         "cglm": [
             (f"deps/{plat}/tmp/build/cglm/cglm-0.dll",
@@ -185,23 +185,15 @@ if os.name == "nt":
              f"deps/{plat}/bin/SDL2.pdb"),
         ],
     }
-elif os.name == "posix":
+elif platform.system() == "Linux":
     outputs = {
         "bgfx": [
             (f"deps/{plat}/tmp/bgfx/.build/linux64_clang/bin/geometrycRelease",
              f"deps/{plat}/bin/geometryc"),
             (f"deps/{plat}/tmp/bgfx/.build/linux64_clang/bin/geometryvRelease",
              f"deps/{plat}/bin/geometryv"),
-            (f"deps/{plat}/tmp/bgfx/.build/linux64_clang/bin/libbgfxRelease.a",
-             f"deps/{plat}/bin/libbgfx.a"),
-            (f"deps/{plat}/tmp/bgfx/.build/linux64_clang/bin/libbimg_decodeRelease.a",
-             f"deps/{plat}/bin/libbimg_decode.a"),
-            (f"deps/{plat}/tmp/bgfx/.build/linux64_clang/bin/libbimg_encodeRelease.a",
-             f"deps/{plat}/bin/libbimg_encode.a"),
-            (f"deps/{plat}/tmp/bgfx/.build/linux64_clang/bin/libbimgRelease.a",
-             f"deps/{plat}/bin/libbimg.a"),
-            (f"deps/{plat}/tmp/bgfx/.build/linux64_clang/bin/libbxRelease.a",
-             f"deps/{plat}/bin/libbx.a"),
+            (f"deps/{plat}/tmp/bgfx/.build/linux64_clang/bin/libbgfx-shared-libRelease.so",
+             f"deps/{plat}/bin/libbgfx-shared-lib.so"),
             (f"deps/{plat}/tmp/bgfx/.build/linux64_clang/bin/shadercRelease",
              f"deps/{plat}/bin/shaderc"),
             (f"deps/{plat}/tmp/bgfx/.build/linux64_clang/bin/texturecRelease",
@@ -262,7 +254,7 @@ for dep, dirs in include_dirs.items():
             if os.path.isdir(f"{dirname}/{f}") and not onelevel:
                 shutil.copytree(f"{dirname}/{f}", f"deps/{plat}/include/{f}")
             else:
-                if f.endswith(".h"):
+                if f.endswith(".h") or f.endswith(".inl"):
                     shutil.copy(f"{dirname}/{f}", f"deps/{plat}/include/{f}")
 
 for dep, outs in outputs.items():

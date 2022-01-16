@@ -17,7 +17,8 @@
 
 #pragma once
 
-// Clang supports these and has for like a decade
+// Clang supports these and has for like a decade, while MSVC is still too lazy
+// to implement them
 #ifdef __clang__
 // Defined if 128-bit integers are available
 #define PURPL_INT128_AVAILABLE 1

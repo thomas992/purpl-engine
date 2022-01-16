@@ -20,7 +20,6 @@
 #include <inttypes.h>
 #include <stdbool.h>
 #include <stddef.h>
-#include <stdint.h>
 
 #ifdef __linux__
 #include <sys/types.h>

@@ -25,7 +25,7 @@ bool frame_func(s32 delta, void *data);
 int32_t main(int32_t argc, char *argv[])
 {
 	// Initialize the engine
-	if (!purpl_init("purpl-demo", PURPL_MAKE_VERSION(1, 0, 0), PURPL_DEFAULT_GRAPHICS_API)) {
+	if (!purpl_init("purpl-demo", PURPL_MAKE_VERSION(1, 0, 0))) {
 		fprintf(stderr, "Error: failed to initialize the engine: %s",
 			purpl_strerror());
 		exit(errno);

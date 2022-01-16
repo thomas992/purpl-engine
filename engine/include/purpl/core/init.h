@@ -17,9 +17,14 @@
 
 #pragma once
 
+#include <inttypes.h>
 #include <stdbool.h>
-#include <stdint.h>
 #include <stdlib.h>
+
+#include <bgfx/c99/bgfx.h>
+
+#include <SDL.h>
+#include <SDL_syswm.h>
 
 #include "coredefs.h"
 #include "inst.h"
@@ -47,8 +52,7 @@ typedef bool (*purpl_frame_func)(s32 delta, void *user_data);
 /// \return Returns true if the engine initialized. Unless otherwise stated,
 /// 	    this means that any functions not from the headers in purpl/util
 ///	    will not work.
-extern PURPL_API bool purpl_init(const char *app_name, u32 app_version,
-				 enum purpl_graphics_api graphics_api);
+extern PURPL_API bool purpl_init(const char *app_name, u32 app_version);
 
 /// Enter the engine's main loop
 ///

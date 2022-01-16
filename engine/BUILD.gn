@@ -37,10 +37,6 @@ shared_library("engine") {
     "include/purpl/util/string.h",
     "include/purpl/util/util.h",
 
-    "include/purpl/graphics/context.h",
-    "include/purpl/graphics/vulkan/context.h",
-    "include/purpl/graphics/vulkan/misc.h",
-
     "include/util/string.h",
     "include/util/util.h",
     
@@ -48,14 +44,11 @@ shared_library("engine") {
     "src/core/init.c",
     "src/core/log.c",
     
-    "src/graphics/context.c",
-    "src/graphics/vulkan/context.c",
-    "src/graphics/vulkan/misc.c",
-    
     "src/util/stb.c",
     "src/util/string.c",
   ]
 
+  defines += [ "BGFX_SHARED_LIB_USE=1" ]
   if (current_cpu == "x64") {
     defines += [
       "PURPL_X86=1",
@@ -78,6 +71,6 @@ shared_library("engine") {
   if (is_win) {
     libs = ["bgfx.lib", "cglm.lib", "glew32.lib", "SDL2.lib", "vulkan-1.lib"]
   } else {
-    libs = ["bgfx", "cglm", "GLEW", "SDL2-2.0"]
+    libs = ["bgfx-shared-lib", "cglm", "GLEW", "SDL2-2.0"]
   }
 }

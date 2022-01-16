@@ -48,7 +48,9 @@
 #define PURPL_PATCH_VERSION 0
 
 /// The full version of the engine
-#define PURPL_VERSION PURPL_MAKE_VERSION(PURPL_MAJOR_VERSION, PURPL_MINOR_VERSION, PURPL_PATCH_VERSION)
+#define PURPL_VERSION                                                \
+	PURPL_MAKE_VERSION(PURPL_MAJOR_VERSION, PURPL_MINOR_VERSION, \
+			   PURPL_PATCH_VERSION)
 
 /// The size of the static buffers returned by some string functions
 #define PURPL_STATIC_BUF_MAX 128

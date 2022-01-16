@@ -25,8 +25,6 @@
 #include "log.h"
 #include "types.h"
 
-#include "purpl/graphics/context.h"
-
 #ifdef PURPL_BUILD
 /// Structure to hold information about the current instance of the engine
 struct purpl_instance {
@@ -37,11 +35,10 @@ struct purpl_instance {
 	time_t start_time; // When the engine started
 	
 	SDL_Window *wnd; // The main window for the engine
-	union purpl_graphics_context *wnd_ctx; // The graphics context for the window
-	s32 wnd_width; // The width of the window
-	s32 wnd_height; // The height of the window
-	s32 wnd_x; // The X position of the window
-	s32 wnd_y; // The Y position of the window
+	s16 wnd_width; // The width of the window
+	u16 wnd_height; // The height of the window
+	u16 wnd_x; // The X position of the window
+	u16 wnd_y; // The Y position of the window
 };
 
 extern struct purpl_instance *purpl_inst;
