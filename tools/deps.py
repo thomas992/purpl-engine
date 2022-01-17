@@ -84,7 +84,8 @@ nproc = multiprocessing.cpu_count() + 2
 
 # CMake is officially the worst build system other than literally just throwing
 # together a bunch of random shell scripts and praying to whatever ancient
-# Lovecraftian deity is in charge of terrible build systems that it works
+# Lovecraftian deity is in charge of terrible build systems that it works. Oh
+# wait no CMake is still worse
 cmake_ninja_bullshit = (
     f"-DCMAKE_MAKE_PROGRAM={os.getcwd()}\\tools\\ninja.exe -DCMAKE_C_COMPILER=cl"
     if platform.system() == "Windows"
@@ -96,10 +97,10 @@ deps = {
     "bgfx": [
         "git clone https://github.com/bkaradzic/bgfx <deps>/bgfx",
         ["git clone https://github.com/bkaradzic/bx <deps>/bx", "git clone https://github.com/bkaradzic/bimg <deps>/bimg",
-            "pushd <deps>\\bgfx && ..\\bx\\tools\\bin\\windows\\genie --platform=x64 --with-sdl --with-shared-lib --with-tools vs2022 && popd" if platform.system() == "Windows"
-            else f"cd <deps>/bgfx && ../bx/tools/bin/linux/genie --gcc=linux-clang --platform=x64 --with-sdl --with-shared-lib --with-tools gmake && cd {os.getcwd()}" if platform.system() == "Linux" else ""],
+            "pushd <deps>\\bgfx && ..\\bx\\tools\\bin\\windows\\genie --platform=x64 --with-shared-lib --with-tools vs2022 && popd" if platform.system() == "Windows"
+            else f"cd <deps>/bgfx && ../bx/tools/bin/linux/genie --gcc=linux-clang --platform=x64 --with-shared-lib --with-tools gmake && cd {os.getcwd()}" if platform.system() == "Linux" else ""],
         f"msbuild -m:{nproc} -p:Configuration=Release <deps>\\bgfx\\.build\\projects\\vs2022\\bgfx.sln" if platform.system() == "Windows"
-        else f"make -C <deps>/bgfx/.build/projects/gmake-linux-clang -j{nproc} config=release64" if platform.system() == "Linux" else ""
+        else f"make -C <deps>/bgfx/.build/projects/gmake-linux-clang -j{nproc} config=release64 bgfx-shared-lib shaderc texturec texturev geometryc geometryv" if platform.system() == "Linux" else ""
     ],
     "cglm": [
         "git clone https://github.com/recp/cglm <deps>/cglm",
@@ -156,6 +157,22 @@ include_dirs = {
 # Output files that get kept
 if platform.system() == "Windows":
     outputs = {
+        "bgfx": [
+            (f"deps/{plat}/tmp/bgfx/.build/win64_vs2022/bin/geometrycRelease.exe",
+             f"deps/{plat}/bin/geometryc.exe"),
+            (f"deps/{plat}/tmp/bgfx/.build/win64_vs2022/bin/geometryvRelease.exe",
+             f"deps/{plat}/bin/geometryv.exe"),
+            (f"deps/{plat}/tmp/bgfx/.build/win64_vs2022/bin/libbgfx-shared-libRelease.dll",
+             f"deps/{plat}/bin/bgfx-shared-lib.dll"),
+            (f"deps/{plat}/tmp/bgfx/.build/win64_vs2022/bin/libbgfx-shared-libRelease.lib",
+             f"deps/{plat}/bin/bgfx-shared-lib.lib"),
+            (f"deps/{plat}/tmp/bgfx/.build/win64_vs2022/bin/shadercRelease.exe",
+             f"deps/{plat}/bin/shaderc.exe"),
+            (f"deps/{plat}/tmp/bgfx/.build/win64_vs2022/bin/texturecRelease.exe",
+             f"deps/{plat}/bin/texturec.exe"),
+            (f"deps/{plat}/tmp/bgfx/.build/win64_vs2022/bin/texturevRelease.exe",
+             f"deps/{plat}/bin/texturev.exe"),
+        ],
         "cglm": [
             (f"deps/{plat}/tmp/build/cglm/cglm-0.dll",
              f"deps/{plat}/bin/cglm-0.dll"),

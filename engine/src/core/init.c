@@ -107,7 +107,7 @@ PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 	}
 
 	switch (wm_info.subsystem) {
-#ifdef PURPL_WIN32
+#ifdef _WIN32
 	case SDL_SYSWM_WINDOWS:
 		bgfx_plat.nwh = wm_info.info.win.window;
 		break;

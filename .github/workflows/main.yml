@@ -53,6 +53,15 @@ jobs:
           name: build-windows
           path: build
 
+      - name: Create zip of artifacts for release
+        run: |
+          "C:\Program Files\7-Zip\7z.exe" a -tzip build-windows.zip build\*
+
+      - name: Create release with artifacts
+        uses: softprops/action-gh-release@v1
+        with:
+          files: build-windows.zip
+
   build-linux:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
@@ -97,3 +106,12 @@ jobs:
         with:
           name: build-linux
           path: build
+
+      - name: Create zip of artifacts for release
+        run: |
+          7z a -tzip build-linux.zip build/*
+
+      - name: Create release with artifacts
+        uses: softprops/action-gh-release@v1
+        with:
+          files: build-windows.zip
