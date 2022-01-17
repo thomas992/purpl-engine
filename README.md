@@ -36,7 +36,7 @@ On Linux, run this command:
 LD_LIBRARY_PATH=deps/bin:out out/main
 ```
 
-## Using the CI artifacts
+## Using the releases and CI artifacts
 You can download artifacts from the actions sections for a build of the latest commit of the engine. To use these builds, do the following if you're on Linux:
 ```sh
 chmod +x purpl-demo main
