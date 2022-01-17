@@ -111,9 +111,11 @@ PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 	case SDL_SYSWM_WINDOWS:
 		bgfx_plat.nwh = wm_info.info.win.window;
 		break;
+#ifdef __WINRT__
 	case SDL_SYSWM_WINRT:
 		bgfx_plat.nwh = wm_info.info.winrt.window;
 		break;
+#endif
 #else
 	case SDL_SYSWM_X11: // X11 supports every OS in use other than Windows
 		bgfx_plat.ndt = wm_info.info.x11.display;
