@@ -119,7 +119,7 @@ deps = {
         f"cmake --build <deps>/build/glew -j{nproc}",
     ],
     "phnt": [
-        "git clone https://github.com/processhacker/processhacker <deps>/processhacker" if platform.system() == "Windows" else "",
+        "git clone https://github.com/processhacker/phnt <deps>/phnt" if platform.system() == "Windows" else "",
         [""],
         "",
     ],
@@ -149,7 +149,7 @@ include_dirs = {
     "bgfx": [f"deps/{plat}/tmp/bgfx/include", f"deps/{plat}/tmp/bx/include", f"deps/{plat}/tmp/bimg/include"],
     "cglm": [f"deps/{plat}/tmp/cglm/include"],
     "glew": [f"deps/{plat}/tmp/glew/include"],
-    "phnt": [f"deps/{plat}/tmp/processhacker/phnt/include"] if platform.system() == "Windows" else [] if platform.system() == "Linux" else [],
+    "phnt": [f"deps/{plat}/tmp/phnt/include"] if platform.system() == "Windows" else [] if platform.system() == "Linux" else [],
     "sdl2": [f"deps/{plat}/tmp/sdl2/include", f"deps/{plat}/tmp/build/sdl2/include"],
     "stb": [f"deps/{plat}/tmp/stb$$"],
 }
