@@ -8,4 +8,4 @@
 # This is the pattern used for the platform-specific dependency builds
 deps/*-*
 
-compile_commands.json.user
+*.log

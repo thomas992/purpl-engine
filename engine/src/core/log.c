@@ -46,16 +46,15 @@ PURPL_API struct purpl_logger *purpl_log_create(const char *file,
 	else
 		date = purpl_strfmt(NULL, "?\?-?\?-????");
 
-	filename = purpl_strrplc(file ? file : "purpl-<date>.log", "<date>",
+	filename = purpl_strrplc(file ? file : PURPL_LOG_DEFAULT_NAME, "<date>",
 				 date, NULL);
+	free(date);
 
 	logger->file = fopen(filename, "ab+");
 	if (!logger->file) {
-		free(date);
 		free(filename);
 		return NULL;
 	}
-	free(date);
 	free(filename);
 
 	logger->max_level = max_level >= PURPL_LOG_LEVEL_MAX ?
@@ -121,7 +120,7 @@ static char *purpl_log_format(struct purpl_logger *logger,
 
 	va_copy(args, a);
 
-	// Unfourtunately, doing several replacements in sequence is a pain in
+	// Unfortunately, doing several replacements in sequence is a pain in
 	// the ass, but I think the tradeoff for singular ones being convenient
 	// is worth it, and this is the only case where this should be
 	// necessary, at least within the engine
@@ -243,15 +242,14 @@ static char *purpl_log_format(struct purpl_logger *logger,
 			   NULL);
 	free(p1);
 
-	if (purpl_inst->app_name) {
-		p1 = purpl_strrplc(p2, "#n", purpl_inst->app_name, NULL);
-		free(p2);
+	p1 = purpl_strrplc(p2, "#n",
+			   purpl_inst->app_name ? purpl_inst->app_name : "unknown",
+			   NULL);
+	free(p2);
 
-		p2 = purpl_strrplc(
-			p1, "#v",
-			purpl_format_version(purpl_inst->app_version), NULL);
-		free(p1);
-	}
+	p2 = purpl_strrplc(
+		p1, "#v", purpl_format_version(purpl_inst->app_version), NULL);
+	free(p1);
 
 	va_end(args);
 

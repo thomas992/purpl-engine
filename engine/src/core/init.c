@@ -35,7 +35,7 @@ PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 		return false;
 	}
 
-	purpl_inst->logger = purpl_log_create("purpl-<date>.log",
+	purpl_inst->logger = purpl_log_create(NULL,
 					      PURPL_LOG_LEVEL_INFO,
 					      PURPL_LOG_LEVEL_MAX, NULL);
 	if (!purpl_inst->logger) {
