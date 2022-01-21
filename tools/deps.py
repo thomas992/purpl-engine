@@ -166,6 +166,8 @@ if platform.system() == "Windows":
              f"deps/{plat}/bin/bgfx-shared-libRelease.dll"),
             (f"deps/{plat}/tmp/bgfx/.build/win64_vs2022/bin/bgfx-shared-libRelease.lib",
              f"deps/{plat}/bin/bgfx-shared-libRelease.lib"),
+            (f"deps/{plat}/tmp/bgfx/.build/win64_vs2022/bin/bgfx-shared-libRelease.pdb",
+             f"deps/{plat}/bin/bgfx-shared-libRelease.pdb"),
             (f"deps/{plat}/tmp/bgfx/.build/win64_vs2022/bin/shadercRelease.exe",
              f"deps/{plat}/bin/shaderc.exe"),
             (f"deps/{plat}/tmp/bgfx/.build/win64_vs2022/bin/texturecRelease.exe",

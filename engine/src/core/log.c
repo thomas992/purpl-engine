@@ -368,8 +368,8 @@ PURPL_API void purpl_log_close(struct purpl_logger *logger, bool last_message)
 		msg = purpl_strfmt(NULL,
 				   "This logger is shutting down. Have a %s "
 				   "%s.",
-				   adjectives[PURPL_RANDOM(1)], time_of_day);
-		PURPL_LOG_INFO(logger, "%s", msg);
+				   adjectives[PURPL_RANDOM(100) % 2 == 0 ? 0 : 1], time_of_day);
+		PURPL_LOG_INFO(purpl_inst->logger, "%s", msg);
 		free(msg);
 	}
 

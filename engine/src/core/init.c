@@ -94,7 +94,7 @@ PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 	SDL_GetWindowSize(purpl_inst->wnd, &purpl_inst->wnd_width,
 			  &purpl_inst->wnd_height);
 
-	// Get the native window handle NULLfor bgfx
+	// Get the native window handle for bgfx
 	SDL_GetVersion(&wm_info.version);
 	if (!SDL_GetWindowWMInfo(purpl_inst->wnd, &wm_info)) {
 		PURPL_LOG_ERROR(purpl_inst->logger, "Failed to get native "
@@ -159,8 +159,7 @@ PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 	bgfx_set_view_clear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0, 1.0f,
 			    0);
 
-	// Random bitwise operations on narrowed pointers should be OK for this
-	srand((u32)((u64)purpl_inst ^ ((u64)purpl_inst->logger & (u64)title)));
+	srand((u32)((u64)purpl_inst ^ ((u64)purpl_inst->logger & (u64)title)) * time(NULL));
 
 	PURPL_LOG_INFO(purpl_inst->logger, "Engine #V initialized for "
 					   "application #n #v");
