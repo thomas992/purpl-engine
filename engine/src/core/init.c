@@ -138,11 +138,13 @@ PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 	bgfx_render_frame(0);
 
 	bgfx_init_ctor(&bgfx_init_data);
-#ifndef __APPLE__
+#ifdef __APPLE__
 	// macOS is the only OS I intend to support any time soon that doesn't
 	// support Vulkan directly
+	bgfx_init_data.type = BGFX_RENDERER_TYPE_METAL;
+#else // __APPLE__
 	bgfx_init_data.type = BGFX_RENDERER_TYPE_VULKAN;
-#endif // !__APPLE__
+#endif // __APPLE__
 	bgfx_init_data.resolution.width = purpl_inst->wnd_width;
 	bgfx_init_data.resolution.width = purpl_inst->wnd_height;
 	bgfx_init_data.resolution.reset = BGFX_RESET_VSYNC;
