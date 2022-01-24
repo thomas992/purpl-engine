@@ -41,6 +41,7 @@ config("compiler_defaults") {
       "-Wall",
       "-Wextra",
       # Pointer bullshittery is the whole point of C
+      "-Wno-pointer-sign",
       "-Wno-incompatible-pointer-types",
       "-Wno-incompatible-pointer-types-discards-qualifiers",
       "-std=c2x",
