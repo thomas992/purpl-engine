@@ -27,6 +27,9 @@ config("compiler_defaults") {
     cflags = [
       "/Zo",
       "/std:c17",
+      "/wd4005",
+      "/wd4090",
+      "/wd4133",
     ]
     ldflags = [
       "/subsystem:console",

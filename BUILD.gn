@@ -21,7 +21,7 @@ if (getenv("VULKAN_SDK") != "") {
   print("The VULKAN_SDK environment variable was not detected")
 }
 
-group("all") {
+group("purpl") {
   deps = [
     "//engine:engine",
     "//demo:main",

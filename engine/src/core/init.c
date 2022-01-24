@@ -35,8 +35,7 @@ PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 		return false;
 	}
 
-	purpl_inst->logger = purpl_log_create(NULL,
-					      PURPL_LOG_LEVEL_INFO,
+	purpl_inst->logger = purpl_log_create(NULL, PURPL_LOG_LEVEL_INFO,
 					      PURPL_LOG_LEVEL_MAX, NULL);
 	if (!purpl_inst->logger) {
 #ifdef PURPL_DEBUG
@@ -139,27 +138,47 @@ PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 	bgfx_render_frame(0);
 
 	bgfx_init_ctor(&bgfx_init_data);
-	bgfx_init_data.type = BGFX_RENDERER_TYPE_COUNT;
+#ifndef __APPLE__
+	// macOS is the only OS I intend to support any time soon that doesn't
+	// support Vulkan directly
+	bgfx_init_data.type = BGFX_RENDERER_TYPE_VULKAN;
+#endif // !__APPLE__
 	bgfx_init_data.resolution.width = purpl_inst->wnd_width;
 	bgfx_init_data.resolution.width = purpl_inst->wnd_height;
 	bgfx_init_data.resolution.reset = BGFX_RESET_VSYNC;
 
 	if (!bgfx_init(&bgfx_init_data)) {
-		PURPL_LOG_ERROR(purpl_inst->logger, "Failed to initialize "
-						    "bgfx.");
-		SDL_DestroyWindow(purpl_inst->wnd);
-		purpl_log_close(purpl_inst->logger, true);
-		free(purpl_inst->app_name);
-		free(purpl_inst);
-		return false;
+#ifdef PURPL_ARM
+		PURPL_LOG_WARNING(purpl_inst->logger, "Failed to initialize "
+						      "bgfx, retrying with "
+						      "OpenGL ES");
+		bgfx_init_data.type = BGFX_RENDERER_TYPE_OPENGLES;
+#else
+		PURPL_LOG_WARNING(purpl_inst->logger, "Failed to initialize "
+						      "bgfx, retrying with "
+						      "OpenGL");
+		bgfx_init_data.type = BGFX_RENDERER_TYPE_OPENGL;
+#endif
+		if (!bgfx_init(&bgfx_init_data)) {
+			PURPL_LOG_ERROR(purpl_inst->logger, "Failed to "
+							    "initialize "
+							    "bgfx");
+			SDL_DestroyWindow(purpl_inst->wnd);
+			purpl_log_close(purpl_inst->logger, true);
+			free(purpl_inst->app_name);
+			free(purpl_inst);
+			return false;
+		}
 	}
+
 	bgfx_set_debug(BGFX_DEBUG_TEXT);
 	bgfx_reset(purpl_inst->wnd_width, purpl_inst->wnd_height,
 		   BGFX_RESET_VSYNC, bgfx_init_data.resolution.format);
 	bgfx_set_view_clear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0, 1.0f,
 			    0);
 
-	srand((u32)((u64)purpl_inst ^ ((u64)purpl_inst->logger & (u64)title)) * time(NULL));
+	srand((u32)((u64)purpl_inst ^ ((u64)purpl_inst->logger & (u64)title)) *
+	      time(NULL));
 
 	PURPL_LOG_INFO(purpl_inst->logger, "Engine #V initialized for "
 					   "application #n #v");
