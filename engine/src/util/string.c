@@ -66,8 +66,8 @@ PURPL_API char *purpl_strrplc(const char *str, const char *old,
 	p = buf;
 
 	while ((p = strstr(p, old))) {
-		stbsp_snprintf(tmp, buf_size, "%.*s%s%s", (s32)(p - buf), buf, new,
-			       p + strlen(old));
+		stbsp_snprintf(tmp, buf_size, "%.*s%s%s", (s32)(p - buf), buf,
+			       new, p + strlen(old));
 		strncpy(buf, tmp, buf_size);
 	}
 
@@ -160,7 +160,8 @@ PURPL_API const char *purpl_strerror(void)
 					       // fine, will be increased if
 					       // an edge case is encountered
 
-	stbsp_snprintf(buf, PURPL_STATIC_BUF_MAX, "%s (errno %d)", strerror(errno), errno);
+	stbsp_snprintf(buf, PURPL_STATIC_BUF_MAX, "%s (errno %d)",
+		       strerror(errno), errno);
 
 	return buf;
 }
@@ -169,7 +170,9 @@ PURPL_API const char *purpl_format_version(u32 version)
 {
 	static char buf[PURPL_STATIC_BUF_MAX];
 
-	stbsp_snprintf(buf, PURPL_STATIC_BUF_MAX, "v%d.%d.%d", (version >> 16) & 0xFF, (version >> 8) & 0xFF, version & 0xFF);
+	stbsp_snprintf(buf, PURPL_STATIC_BUF_MAX, "v%d.%d.%d",
+		       (version >> 16) & 0xFF, (version >> 8) & 0xFF,
+		       version & 0xFF);
 
 	return buf;
 }

@@ -135,7 +135,7 @@ PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 	PURPL_LOG_INFO(purpl_inst->logger, "Initializing bgfx");
 
 	bgfx_set_platform_data(&bgfx_plat);
-	bgfx_render_frame(0);
+	bgfx_render_frame(BGFX_RENDER_FRAME_NO_CONTEXT);
 
 	bgfx_init_ctor(&bgfx_init_data);
 #ifdef __APPLE__
@@ -173,9 +173,10 @@ PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 		}
 	}
 
+	purpl_inst->bgfx_display_format = bgfx_init_data.resolution.format;
 	bgfx_set_debug(BGFX_DEBUG_TEXT);
 	bgfx_reset(purpl_inst->wnd_width, purpl_inst->wnd_height,
-		   BGFX_RESET_VSYNC, bgfx_init_data.resolution.format);
+		   BGFX_RESET_VSYNC, purpl_inst->bgfx_display_format);
 	bgfx_set_view_clear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0, 1.0f,
 			    0);
 
@@ -215,6 +216,8 @@ static bool purpl_handle_events(void)
 					purpl_inst->wnd_width = e.window.data1;
 					purpl_inst->wnd_height =
 						e.window.data2;
+					bgfx_reset(purpl_inst->wnd_width, purpl_inst->wnd_height,
+						   BGFX_RESET_VSYNC, purpl_inst->bgfx_display_format);
 					PURPL_LOG_DEBUG(purpl_inst->logger, "Window resized to %dx%d", purpl_inst->wnd_width,
 						purpl_inst->wnd_height);
 					break;
