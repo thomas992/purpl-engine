@@ -17,13 +17,8 @@
 
 #pragma once
 
-#ifdef _WIN32
-#define PHNT_VERSION PHNT_THRESHOLD
-#include <phnt_windows.h>
-#include <phnt.h>
-#else
-#include <unistd.h>
-#endif
+#include "purpl/core/coredefs.h"
+#include "purpl/core/types.h"
 
 /// Determines the size of a stack array
 #define PURPL_SIZEOF_ARRAY(a) (sizeof((a)) / sizeof((a)[0]))
@@ -38,25 +33,11 @@
 #define PURPL_CURRENT_FUNCTION __func__
 #endif
 
-#ifdef _WIN32
-/// The current process ID
-#define PURPL_PROCESS_ID \
-	((uint32_t)(size_t)(NtCurrentTeb()->ClientId.UniqueProcess))
-
-/// The current thread ID
-#define PURPL_THREAD_ID \
-	((uint32_t)(size_t)(NtCurrentTeb()->ClientId.UniqueThread))
-#else
-/// The current process ID
-#define PURPL_PROCESS_ID getpid()
-
-#ifdef __linux__
-extern pid_t gettid(void);
-
-/// The current thread ID
-#define PURPL_THREAD_ID gettid()
-#endif // __linux__
-#endif // _WIN32
-
 /// Generates a random number
 #define PURPL_RANDOM(limit) (rand() % (limit))
+
+/// The current process ID
+extern u32 purpl_get_pid(void);
+
+/// The current thread ID
+extern u32 purpl_get_tid(void);

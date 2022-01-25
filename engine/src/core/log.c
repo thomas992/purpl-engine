@@ -206,12 +206,12 @@ static char *purpl_log_format(struct purpl_logger *logger,
 	free(p2);
 	free(p3);
 
-	p3 = purpl_strfmt(NULL, "%lu", PURPL_PROCESS_ID);
+	p3 = purpl_strfmt(NULL, "%lu", purpl_get_pid());
 	p2 = purpl_strrplc(p1, "#P", p3, NULL);
 	free(p1);
 	free(p3);
 
-	p3 = purpl_strfmt(NULL, "%lu", PURPL_THREAD_ID);
+	p3 = purpl_strfmt(NULL, "%lu", purpl_get_tid());
 	p1 = purpl_strrplc(p2, "#T", p3, NULL);
 	free(p2);
 	free(p3);

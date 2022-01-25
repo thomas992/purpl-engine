@@ -19,13 +19,15 @@
 
 #include <time.h>
 
-#include <SDL.h>
-
 #include "coredefs.h"
 #include "log.h"
 #include "types.h"
 
 #ifdef PURPL_BUILD
+#include <bgfx/c99/bgfx.h>
+
+#include <SDL.h>
+
 /// Structure to hold information about the current instance of the engine
 struct purpl_instance {
 	char *app_name; // The name of the application that initialized the

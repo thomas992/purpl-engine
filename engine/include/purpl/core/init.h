@@ -21,11 +21,6 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
-#include <bgfx/c99/bgfx.h>
-
-#include <SDL.h>
-#include <SDL_syswm.h>
-
 #include "coredefs.h"
 #include "inst.h"
 #include "types.h"

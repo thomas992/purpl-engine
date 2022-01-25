@@ -15,6 +15,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <bgfx/c99/bgfx.h>
+
+#include <SDL.h>
+#include <SDL_syswm.h>
+
 #include "purpl/core/init.h"
 
 PURPL_API bool purpl_init(const char *app_name, u32 app_version)
