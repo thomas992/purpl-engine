@@ -18,11 +18,10 @@
 shared_library("engine") {
   include_dirs = [
     "//deps/" + current_os + "-" + current_cpu + "/include",
-    getenv("VULKAN_SDK") + "/include",
     "include",
   ]
 
-  lib_dirs = [ "//deps/" + current_os + "-" + current_cpu + "/bin/", getenv("VULKAN_SDK") + "/lib" ]
+  lib_dirs = [ "//deps/" + current_os + "-" + current_cpu + "/bin/" ]
   defines = [ "PURPL_BUILD" ]
   ldflags = []
 
@@ -70,8 +69,8 @@ shared_library("engine") {
   }
 
   if (is_win) {
-    libs = ["bgfx-shared-libRelease.lib", "cglm.lib", "glew32.lib", "SDL2.lib", "vulkan-1.lib"]
+    libs = ["bgfx.lib", "cglm.lib", "glew32.lib", "SDL2.lib"]
   } else {
-    libs = ["bgfx-shared-lib", "cglm", "GLEW", "SDL2-2.0"]
+    libs = ["bgfx", "cglm", "GLEW", "SDL2-2.0"]
   }
 }

@@ -4,5 +4,6 @@
 	},
 	"cSpell.words": [
 		"purpl"
-	]
+	],
+	"python.formatting.provider": "black"
 }

@@ -127,7 +127,7 @@ PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 		break;
 #endif
 	default:
-		PURPL_LOG_ERROR(purpl_inst->logger, "Unknown window manager %d"
+		PURPL_LOG_ERROR(purpl_inst->logger, "Unknown window manager 0x%X"
 						    ". Unable to initialize "
 						    "bgfx.");
 		SDL_DestroyWindow(purpl_inst->wnd);
@@ -143,13 +143,13 @@ PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 	bgfx_render_frame(BGFX_RENDER_FRAME_NO_CONTEXT);
 
 	bgfx_init_ctor(&bgfx_init_data);
-#ifdef __APPLE__
-	// macOS is the only OS I intend to support any time soon that doesn't
-	// support Vulkan directly
+#ifdef _WIN32
+	bgfx_init_data.type = BGFX_RENDERER_TYPE_DIRECT3D11;
+#elif defined __APPLE__ // _WIN32
 	bgfx_init_data.type = BGFX_RENDERER_TYPE_METAL;
-#else // __APPLE__
+#else // _WIN32
 	bgfx_init_data.type = BGFX_RENDERER_TYPE_VULKAN;
-#endif // __APPLE__
+#endif // _WIN32
 	bgfx_init_data.resolution.width = purpl_inst->wnd_width;
 	bgfx_init_data.resolution.width = purpl_inst->wnd_height;
 	bgfx_init_data.resolution.reset = BGFX_RESET_VSYNC;
