@@ -8,14 +8,14 @@
 			"name": "(Windows) Launch",
 			"type": "cppvsdbg",
 			"request": "launch",
-			"program": "${workspaceFolder}/out/main.exe",
+			"program": "${workspaceFolder}/out/win/main.exe",
 			"args": [],
 			"stopAtEntry": false,
 			"cwd": "${workspaceFolder}",
 			"environment": [
 				{
 					"name": "PATH",
-					"value": "${workspaceFolder}/out;${workspaceFolder}/deps/win-x64/bin"
+					"value": "${workspaceFolder}/out/win;${workspaceFolder}/deps/win-x64/bin"
 				}
 			],
 			"console": "externalTerminal"
@@ -24,14 +24,14 @@
 			"name": "(gdb) Launch",
 			"type": "cppdbg",
 			"request": "launch",
-			"program": "${workspaceFolder}/out/main",
+			"program": "${workspaceFolder}/out/linux/main",
 			"args": [],
 			"stopAtEntry": false,
 			"cwd": "${workspaceFolder}",
 			"environment": [
 				{
 					"name": "LD_LIBRARY_PATH",
-					"value": "${workspaceFolder}/out:${workspaceFolder}/deps/linux-x64/bin"
+					"value": "${workspaceFolder}/linux/out:${workspaceFolder}/deps/linux-x64/bin"
 				}
 			],
 			"externalConsole": false,

@@ -33,6 +33,8 @@ shared_library("engine") {
     "include/purpl/core/log.h",
     "include/purpl/core/types.h",
     
+    "include/purpl/graphics/private/callbacks.h",
+
     "include/purpl/util/string.h",
     "include/purpl/util/util.h",
 
@@ -42,6 +44,8 @@ shared_library("engine") {
     "src/core/globals.c",
     "src/core/init.c",
     "src/core/log.c",
+
+    "src/graphics/callbacks.c",
     
     "src/util/misc.c",
     "src/util/stb.c",
@@ -62,6 +66,10 @@ shared_library("engine") {
 
   if (enable_meming) {
     defines += [ "PURPL_ENABLE_MEMING=1" ]
+  }
+
+  if (is_win && enable_directx) {
+    defines += [ "PURPL_ENABLE_DIRECTX=1" ]
   }
 
   if (verbose_log) {

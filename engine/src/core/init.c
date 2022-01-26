@@ -15,6 +15,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#define BGFX_SHARED_LIB_USE 1
 #include <bgfx/c99/bgfx.h>
 
 #include <SDL.h>
@@ -143,8 +144,8 @@ PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 	bgfx_render_frame(BGFX_RENDER_FRAME_NO_CONTEXT);
 
 	bgfx_init_ctor(&bgfx_init_data);
-#ifdef _WIN32
-	bgfx_init_data.type = BGFX_RENDERER_TYPE_DIRECT3D11;
+#if defined _WIN32 && defined PURPL_ENABLE_DIRECTX
+	bgfx_init_data.type = BGFX_RENDERER_TYPE_DIRECT3D12;
 #elif defined __APPLE__ // _WIN32
 	bgfx_init_data.type = BGFX_RENDERER_TYPE_METAL;
 #else // _WIN32

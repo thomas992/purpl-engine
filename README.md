@@ -18,16 +18,16 @@ python tools\deps.py
 tools\mkprojects
 
 :: This is the better way for a Command Prompt shell
-gn gen out
+gn gen out\win
 ninja -C out
 ```
 On Linux, run these commands instead:
 ```sh
-tools/deps.py # After running this script, you may want to install the Vulkan SDK (for convenience, the latest source tarball is downloaded into deps/bin)
-tools/gn gen out
+tools/deps.py
+tools/gn gen out/linux
 ninja -C out
 ```
-GN can also generate IDE projects with `--ide=vs` or `--ide=xcode` (XCode and macOS are not tested because I deleted my Hackintosh install {though I am planning to buy an M1 Mac}, but they might work with some modifications to the GN scripts and the `tools/deps.py` script), and compilation databases with `--export-compile-commands` for language servers in (Neo)vim and Visual Studio Code. To set options for the build such as debugging info, meming (various small Easter Eggs such as April 1st being reported as March 32nd and years being relative to 1970 on April 1st only), and verbose logging.
+GN can also generate IDE projects with `--ide=vs`, `--ide=qtcreator`, or `--ide=xcode` (XCode and macOS are not tested because I deleted my Hackintosh install {though I am planning to buy an M1 Mac}, but they might work with some modifications to the GN scripts and the `tools/deps.py` script), and compilation databases with `--export-compile-commands` for language servers in (Neo)vim and Visual Studio Code. To set options for the build such as debugging info, meming (various small Easter Eggs such as April 1st being reported as March 32nd and years being relative to 1970 on April 1st only), and verbose logging, you can use `gn args out/<platform>`.
 
 To run the demo, do the following on Windows:
 ```batch
