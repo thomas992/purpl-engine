@@ -343,9 +343,10 @@ elif platform.system() == "Linux":
 if not dry_run:
     # Prompt to overwrite
     if os.path.exists(deps_path):
-        keep = input(f"Dependency folder {deps_path} exists, overwrite it (y/N) ").lower().split()
+        sys.stderr.write(f"Dependency folder {deps_path} exists, overwrite it (y/N) ")
+        keep = input().lower().split()
         if not len(keep) or keep[0] in ["", "n", "no", "keep"]:
-            print("Not overwriting")
+            sys.stderr.write("Not overwriting\n")
             exit()
     
     # Make a folder for the dependencies to be cloned into
