@@ -18,5 +18,5 @@ call vcvarsall.bat x64
 popd
 %~d0
 
-set PATH=%~dp0;%~dp0..\out;%~dp0..\deps\win-x64\bin;%PATH%
+set PATH=%~dp0;%~dp0..\out\win;%~dp0..\deps\win-x64\bin;%PATH%
 

@@ -25,7 +25,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: MSVC environment
-        run: cmd /c tools\buildenv.bat
+        uses: ilammy/msvc-dev-cmd@v1
 
       - name: Build dependencies
         run: python tools\deps.py
