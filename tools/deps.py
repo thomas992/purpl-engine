@@ -112,9 +112,6 @@ for arg in sys.argv:
 # Log path
 log_path = os.path.join(os.path.abspath(sys.argv[0][0 : sys.argv[0].rfind(os.path.sep)]), "deps.log")
 
-if silent:
-    sys.stdout = open(log_path, "w+", encoding="utf-8")
-
 # Print a status message
 print(f"Building for {plat} with {nproc} jobs")
 if debug:
@@ -125,19 +122,19 @@ if keep_src:
     print("Keeping source code")
 if silent:
     print(f"Saving output to {log_path}")
+    sys.stdout = open(log_path, "w+", encoding="utf-8")
 
 # CMake is officially the worst build system other than literally just throwing
 # together a bunch of random shell scripts and praying to whatever ancient
 # Lovecraftian deity is in charge of terrible build systems that it works. Oh
-# wait no CMake is still worse
-cmake_ninja_bullshit = (
-    f"-DCMAKE_MAKE_PROGRAM={os.getcwd()}\\tools\\ninja.exe -DCMAKE_C_COMPILER=cl"
-    if platform.system() == "Windows"
-    else ""
-)
-
-# Dependencies
+# wait no CMake is still worse, because this script works better.
 vs_version = "vs2019" if os.getenv("COMPAT") == "1" else "vs2022"
+vs_generator = "Visual Studio 17 2022" if vs_version == "vs2022" else "Visual Studio 16 2019"
+cmake_flags = (
+    f"-DCMAKE_C_COMPILER=cl -G\"{vs_generator}\""
+    if platform.system() == "Windows"
+    else "-GNinja"
+)
 bgfx_config = "Debug" if keep_src else "Release"
 deps = {
     "bgfx": [
@@ -160,7 +157,7 @@ deps = {
     "cglm": [
         "git clone https://github.com/recp/cglm <deps>/cglm",
         [
-            f"cmake -S <deps>/cglm -B <deps>/build/cglm {cmake_ninja_bullshit} -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCGLM_STATIC=OFF"
+            f"cmake -S <deps>/cglm -B <deps>/build/cglm {cmake_flags} -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCGLM_STATIC=OFF"
         ],
         f"cmake --build <deps>/build/cglm -j{nproc}",
     ],
@@ -169,7 +166,7 @@ deps = {
         [
             "tar xf <deps>/glew.tar.gz -C <deps>",
             f"<move> <deps>/glew-{glew_ver} <deps>/glew",
-            f"cmake -S <deps>/glew/build/cmake -B <deps>/build/glew {cmake_ninja_bullshit} -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo",
+            f"cmake -S <deps>/glew/build/cmake -B <deps>/build/glew {cmake_flags} -DCMAKE_BUILD_TYPE=RelWithDebInfo",
         ],
         f"cmake --build <deps>/build/glew -j{nproc}",
     ],
@@ -183,7 +180,7 @@ deps = {
     "sdl2": [
         "git clone https://github.com/libsdl-org/SDL <deps>/sdl2",
         [
-            f"cmake -S <deps>/sdl2 -B <deps>/build/sdl2 {cmake_ninja_bullshit} -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo -DSDL_VULKAN=ON -DSDL_STATIC=OFF"
+            f"cmake -S <deps>/sdl2 -B <deps>/build/sdl2 {cmake_flags} -DCMAKE_BUILD_TYPE=RelWithDebInfo -DSDL_STATIC=OFF"
         ],
         f"cmake --build <deps>/build/sdl2 -j{nproc}",
     ],

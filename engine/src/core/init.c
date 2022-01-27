@@ -130,7 +130,7 @@ PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 	default:
 		PURPL_LOG_ERROR(purpl_inst->logger, "Unknown window manager 0x%X"
 						    ". Unable to initialize "
-						    "bgfx.");
+						    "bgfx.", wm_info.subsystem);
 		SDL_DestroyWindow(purpl_inst->wnd);
 		purpl_log_close(purpl_inst->logger, true);
 		free(purpl_inst->app_name);
