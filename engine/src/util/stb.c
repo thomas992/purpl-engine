@@ -17,6 +17,8 @@
 // limitations under the License.
 
 #define STB_DS_IMPLEMENTATION
-#define STB_SPRINTF_IMPLEMENTATION
+#define STBDS_NO_SHORT_NAMES
 #include "stb_ds.h"
+
+#define STB_SPRINTF_IMPLEMENTATION
 #include "stb_sprintf.h"

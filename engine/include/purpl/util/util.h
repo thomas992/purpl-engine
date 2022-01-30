@@ -17,5 +17,11 @@
 
 #pragma once
 
+#if defined PURPL_BUILD && defined _WIN32
+#include "private/win/ntdll.h"
+#endif // PURPL_BUILD && _WIN32
+
+#include "error.h"
+#include "fs.h"
 #include "misc.h"
 #include "string.h"

@@ -46,8 +46,8 @@ PURPL_API struct purpl_logger *purpl_log_create(const char *file,
 	else
 		date = purpl_strfmt(NULL, "?\?-?\?-????");
 
-	filename = purpl_strrplc(file ? file : PURPL_LOG_DEFAULT_NAME, "<date>",
-				 date, NULL);
+	filename = purpl_strrplc(file ? file : PURPL_LOG_DEFAULT_NAME,
+				 "<date>", date, NULL);
 	free(date);
 
 	logger->file = fopen(filename, "ab+");
@@ -242,9 +242,9 @@ static char *purpl_log_format(struct purpl_logger *logger,
 			   NULL);
 	free(p1);
 
-	p1 = purpl_strrplc(p2, "#n",
-			   purpl_inst->app_name ? purpl_inst->app_name : "unknown",
-			   NULL);
+	p1 = purpl_strrplc(
+		p2, "#n",
+		purpl_inst->app_name ? purpl_inst->app_name : "unknown", NULL);
 	free(p2);
 
 	p2 = purpl_strrplc(
@@ -292,10 +292,16 @@ PURPL_API void purpl_log_write(struct purpl_logger *logger,
 	// This if statement is ugly, but in this case I don't think I should
 	// fix it
 #ifndef PURPL_DEBUG_VERBOSE_LOG
-	if (level == PURPL_LOG_LEVEL_DEBUG)
-#endif
+	if (level == PURPL_LOG_LEVEL_DEBUG) {
+#endif // PURPL_DEBUG_VERBOSE_LOG
 		printf("%s\n", buf);
-#endif
+#ifdef _WIN32
+		DbgPrint_l("%s\n", buf);
+#endif // _WIN32
+#ifndef PURPL_DEBUG_VERBOSE_LOG
+	}
+#endif // PURPL_DEBUG_VERBOSE_LOG
+#endif // PURPL_DEBUG
 
 	free(buf);
 }
@@ -365,10 +371,10 @@ PURPL_API void purpl_log_close(struct purpl_logger *logger, bool last_message)
 		else if (t->tm_hour >= 18)
 			time_of_day = "night";
 
-		msg = purpl_strfmt(NULL,
-				   "This logger is shutting down. Have a %s "
-				   "%s.",
-				   adjectives[PURPL_RANDOM(100) % 2 == 0 ? 0 : 1], time_of_day);
+		msg = purpl_strfmt(
+			NULL, "This logger is shutting down. Have a %s %s.",
+			adjectives[PURPL_RANDOM(100) % 2 == 0 ? 0 : 1],
+			time_of_day);
 		PURPL_LOG_INFO(purpl_inst->logger, "%s", msg);
 		free(msg);
 	}

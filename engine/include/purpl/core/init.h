@@ -25,6 +25,8 @@
 #include "inst.h"
 #include "types.h"
 
+#include "purpl/util/util.h"
+
 /// A user-supplied function to be called each frame
 ///
 /// \param delta The number of milliseconds that have passed since the last

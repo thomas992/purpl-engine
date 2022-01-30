@@ -153,17 +153,22 @@ PURPL_API char *purpl_vstrfmt(size_t *size, const char *fmt, va_list args)
 	return buf;
 }
 
-PURPL_API const char *purpl_strerror(void)
+PURPL_API s8 purpl_wcscasecmp(const wchar_t *s1, const wchar_t *s2)
 {
-	static char buf[PURPL_STATIC_BUF_MAX]; // This is an arbitrarily
-					       // large size that should be
-					       // fine, will be increased if
-					       // an edge case is encountered
+	wchar_t c1 = towlower(*s1);
+	wchar_t c2 = towlower(*s2);
 
-	stbsp_snprintf(buf, PURPL_STATIC_BUF_MAX, "%s (errno %d)",
-		       strerror(errno), errno);
+	while (*s1 != L'\0' && *s2 != L'\0') {
+		// Compare
+		if (c1 != c2)
+			break;
 
-	return buf;
+		// Advance the pointers
+		c1 = towlower(*s1++);
+		c2 = towlower(*s2++);
+	}
+
+	return c1 - c2;
 }
 
 PURPL_API const char *purpl_format_version(u32 version)

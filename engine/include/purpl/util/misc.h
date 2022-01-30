@@ -20,7 +20,8 @@
 #include "purpl/core/coredefs.h"
 #include "purpl/core/types.h"
 
-/// Determines the size of a stack array
+/// Determines the size of a stack array (for heap arrays, this will be between
+/// 1 and the pointer size, which is of no use)
 #define PURPL_SIZEOF_ARRAY(a) (sizeof((a)) / sizeof((a)[0]))
 
 /// Expands to __PRETTY_FUNCTION__, __FUNCSIG__, or __func__ (unfortunately,
@@ -37,7 +38,14 @@
 #define PURPL_RANDOM(limit) (rand() % (limit))
 
 /// The current process ID
-extern u32 purpl_get_pid(void);
+///
+/// \return Returns the current process ID
+extern PURPL_API u32 purpl_get_pid(void);
 
 /// The current thread ID
-extern u32 purpl_get_tid(void);
+///
+/// \return Returns the current thread ID
+extern PURPL_API u32 purpl_get_tid(void);
+
+/// Trigger a debug breakpoint (debug builds only)
+extern PURPL_API void purpl_debug_break(void);

@@ -1,4 +1,4 @@
-// Miscellaneous utility functions
+// Functions to make use of NTDLL
 //
 // Copyright 2022 MobSlicer152
 // This file is part of Purpl Engine
@@ -15,42 +15,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifdef _WIN32
+#pragma once
+
+#ifndef PURPL_BUILD
+#error This file is only meant to be included by the engine
+#endif // PURPL_BUILD
+
 #define PHNT_VERSION PHNT_THRESHOLD
 #include <phnt_windows.h>
 #include <phnt.h>
-#else
-#define _GNU_SOURCE
-#include <unistd.h>
-#endif
 
-#include "purpl/util/misc.h"
+#include "purpl/core/coredefs.h"
+#include "purpl/core/types.h"
 
-PURPL_API u32 purpl_get_pid(void)
-{
-#ifdef _WIN32
-	return (u32)(size_t)(NtCurrentTeb()->ClientId.UniqueProcess);
-#else
-	return getpid();
-#endif // _WIN32
-}
+#include "purpl/util/string.h"
 
-PURPL_API u32 purpl_get_tid(void)
-{
-#ifdef _WIN32
-	return (u32)(size_t)(NtCurrentTeb()->ClientId.UniqueThread);
-#else
-	return gettid();
-#endif // _WIN32
-}
+/// The base address of NTDLL
+extern void *ntdll_base;
 
-PURPL_API void purpl_debug_break(void)
-{
-#ifdef PURPL_DEBUG
-#ifdef _MSC_VER
-	__debugbreak();
-#else // _MSC_VER
-	__builtin_debugtrap();
-#endif // _MSC_VER
-#endif // PURPL_DEBUG
-}
+/// Functions loaded
+extern u32 (*DbgPrint_l)(const char *fmt, ...); /// DbgPrint
+
+/// Finds NTDLL's base address in the PEB
+extern void purpl_load_ntdll(void);

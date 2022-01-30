@@ -129,9 +129,8 @@ if silent:
 # Lovecraftian deity is in charge of terrible build systems that it works. Oh
 # wait no CMake is still worse, because this script works better.
 vs_version = "vs2019" if os.getenv("COMPAT") == "1" else "vs2022"
-vs_generator = "Visual Studio 17 2022" if vs_version == "vs2022" else "Visual Studio 16 2019"
 cmake_flags = (
-    f"-DCMAKE_C_COMPILER=cl -G\"{vs_generator}\""
+    f"-GNinja -DCMAKE_MAKE_PROGRAM={os.getcwd()}/tools/ninja.exe -DCMAKE_C_COMPILER=cl"
     if platform.system() == "Windows"
     else "-GNinja"
 )
@@ -340,7 +339,7 @@ elif platform.system() == "Linux":
 if not dry_run:
     # Prompt to overwrite
     if os.path.exists(deps_path):
-        sys.stderr.write(f"Dependency folder {deps_path} exists, overwrite it (y/N) ")
+        sys.stderr.write(f"Dependency folder {deps_path} exists, overwrite it? (y/N) ")
         keep = input().lower().split()
         if not len(keep) or keep[0] in ["", "n", "no", "keep"]:
             sys.stderr.write("Not overwriting\n")

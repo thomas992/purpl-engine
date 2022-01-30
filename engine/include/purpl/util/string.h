@@ -22,6 +22,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <wchar.h>
+#include <wctype.h>
 
 #include "purpl/core/coredefs.h"
 #include "purpl/core/types.h"
@@ -77,11 +79,14 @@ extern PURPL_API char *purpl_strfmt(size_t *size, const char *fmt, ...);
 extern PURPL_API char *purpl_vstrfmt(size_t *size, const char *fmt,
 				     va_list args);
 
-/// Gets an error string from the current errno value
+/// Perform a case insensitive string comparison on two wide strings
 ///
-/// \return Returns an error string in a static buffer with
-///	    PURPL_STATIC_BUF_MAX bytes of space
-extern PURPL_API const char *purpl_strerror(void);
+/// \param s1 The first string
+/// \param s2 The second string
+///
+/// \return Returns the difference between the last two characters compared
+/// rounded to -1, 0, or 1
+extern PURPL_API s8 purpl_wcscasecmp(const wchar_t *s1, const wchar_t *s2);
 
 /// Converts a version number into a string in the format "vmajor.minor.patch"
 ///

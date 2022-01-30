@@ -21,11 +21,11 @@
 #include <stdlib.h>
 #include <time.h>
 
-#include "purpl/util/util.h"
-
 #include "coredefs.h"
 #include "inst.h"
 #include "types.h"
+
+#include "purpl/util/util.h"
 
 /// Levels for the logging functions
 enum purpl_log_level {
@@ -47,9 +47,9 @@ enum purpl_log_level {
 
 /// The default log file name
 #ifdef PURPL_DEBUG
-#define PURPL_LOG_DEFAULT_NAME "purpl-<date>-debug.log"
+#define PURPL_LOG_DEFAULT_NAME "logs/purpl-<date>-debug.log"
 #else
-#define PURPL_LOG_DEFAULT_NAME "purpl-<date>.log"
+#define PURPL_LOG_DEFAULT_NAME "logs/purpl-<date>.log"
 #endif // PURPL_DEBUG
 
 /// A logger

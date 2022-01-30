@@ -21,6 +21,10 @@
 #include <SDL.h>
 #include <SDL_syswm.h>
 
+#ifdef _WIN32
+#include "purpl/util/private/win/ntdll.h"
+#endif
+
 #include "purpl/core/init.h"
 
 PURPL_API bool purpl_init(const char *app_name, u32 app_version)
@@ -29,6 +33,10 @@ PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 	struct SDL_SysWMinfo wm_info;
 	bgfx_platform_data_t bgfx_plat;
 	bgfx_init_t bgfx_init_data;
+
+#ifdef _WIN32
+	purpl_load_ntdll();
+#endif // _WIN32
 
 	purpl_inst = calloc(1, sizeof(struct purpl_instance));
 	if (!purpl_inst) {
@@ -40,6 +48,9 @@ PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 #endif // PURPL_DEBUG
 		return false;
 	}
+
+	if (!purpl_path_exists("logs"))
+		purpl_mkdir("logs", 0, PURPL_FS_MODE_RDWR);
 
 	purpl_inst->logger = purpl_log_create(NULL, PURPL_LOG_LEVEL_INFO,
 					      PURPL_LOG_LEVEL_MAX, NULL);
@@ -128,9 +139,10 @@ PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 		break;
 #endif
 	default:
-		PURPL_LOG_ERROR(purpl_inst->logger, "Unknown window manager 0x%X"
-						    ". Unable to initialize "
-						    "bgfx.", wm_info.subsystem);
+		PURPL_LOG_ERROR(
+			purpl_inst->logger,
+			"Unknown window manager 0x%X. Unable to initialize bgfx.",
+			wm_info.subsystem);
 		SDL_DestroyWindow(purpl_inst->wnd);
 		purpl_log_close(purpl_inst->logger, true);
 		free(purpl_inst->app_name);
@@ -157,20 +169,19 @@ PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 
 	if (!bgfx_init(&bgfx_init_data)) {
 #ifdef PURPL_ARM
-		PURPL_LOG_WARNING(purpl_inst->logger, "Failed to initialize "
-						      "bgfx, retrying with "
-						      "OpenGL ES");
+		PURPL_LOG_WARNING(
+			purpl_inst->logger,
+			"Failed to initialize bgfx, retrying with OpenGL ES");
 		bgfx_init_data.type = BGFX_RENDERER_TYPE_OPENGLES;
 #else
-		PURPL_LOG_WARNING(purpl_inst->logger, "Failed to initialize "
-						      "bgfx, retrying with "
-						      "OpenGL");
+		PURPL_LOG_WARNING(
+			purpl_inst->logger,
+			"Failed to initialize bgfx, retrying with OpenGL");
 		bgfx_init_data.type = BGFX_RENDERER_TYPE_OPENGL;
 #endif
 		if (!bgfx_init(&bgfx_init_data)) {
-			PURPL_LOG_ERROR(purpl_inst->logger, "Failed to "
-							    "initialize "
-							    "bgfx");
+			PURPL_LOG_ERROR(purpl_inst->logger,
+					"Failed to initialize bgfx");
 			SDL_DestroyWindow(purpl_inst->wnd);
 			purpl_log_close(purpl_inst->logger, true);
 			free(purpl_inst->app_name);
@@ -189,8 +200,8 @@ PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 	srand((u32)((u64)purpl_inst ^ ((u64)purpl_inst->logger & (u64)title)) *
 	      time(NULL));
 
-	PURPL_LOG_INFO(purpl_inst->logger, "Engine #V initialized for "
-					   "application #n #v");
+	PURPL_LOG_INFO(purpl_inst->logger,
+		       "Engine #V initialized for application #n #v");
 
 	free(title);
 
@@ -249,9 +260,8 @@ PURPL_API void purpl_run(purpl_frame_func frame, void *user_data)
 
 	if (!purpl_inst || !frame) {
 		if (purpl_inst)
-			PURPL_LOG_WARNING(purpl_inst->logger, "No frame "
-							      "callback "
-							      "given");
+			PURPL_LOG_WARNING(purpl_inst->logger,
+					  "No frame callback given");
 		return;
 	}
 
@@ -259,9 +269,8 @@ PURPL_API void purpl_run(purpl_frame_func frame, void *user_data)
 	while (running) {
 		running = purpl_handle_events();
 		if (!running) {
-			PURPL_LOG_WARNING(purpl_inst->logger, "Received quit "
-							      "event, exiting "
-							      "loop");
+			PURPL_LOG_WARNING(purpl_inst->logger,
+					  "Received quit event, exiting loop");
 			break;
 		}
 

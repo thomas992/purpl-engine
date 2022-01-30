@@ -28,7 +28,7 @@
 #include "purpl/core/log.h"
 #include "purpl/core/types.h"
 
-#include "purpl/util/string.h"
+#include "purpl/util/util.h"
 
 /// Callback interface for bgfx
 extern bgfx_callback_interface_t bgfx_callbacks;
