@@ -19,30 +19,33 @@
 
 #include "purpl/graphics/private/callbacks.h"
 
-void fatal_callback(bgfx_callback_interface_t *this, const char *file,
-		    u16 line, bgfx_fatal_t code, const char *msg);
-void trace_vargs_callback(bgfx_callback_interface_t *this, const char *file,
-			  u16 line, const char *format, va_list args);
-void profiler_begin_callback(bgfx_callback_interface_t *this, const char *name,
-			     u32 abgr, const char *file, u16 line);
-void profiler_begin_literal_callback(bgfx_callback_interface_t *this,
-				     const char *name, u32 abgr,
-				     const char *file, u16 line);
-void profiler_end_callback(bgfx_callback_interface_t *this);
-u32 cache_get_size_callback(bgfx_callback_interface_t *this, u64 id);
-bool cache_read_callback(bgfx_callback_interface_t *this, u64 id, void *data,
-			 u32 size);
-void cache_write_callback(bgfx_callback_interface_t *this, u64 id,
-			  const void *data, u32 size);
-void screen_shot_callback(bgfx_callback_interface_t *this, u32 width,
-			  u32 height, u32 pitch, bgfx_texture_format_t format,
-			  bool yflip);
-void capture_begin_callback(bgfx_callback_interface_t *this, u32 width,
-			    u32 height, u32 pitch,
-			    bgfx_texture_format_t format, bool yflip);
-void capture_end_callback(bgfx_callback_interface_t *this);
-void capture_frame_callback(bgfx_callback_interface_t *this, const void *data,
-			    u32 size);
+static void fatal_callback(bgfx_callback_interface_t *this, const char *file,
+			   u16 line, bgfx_fatal_t code, const char *msg);
+static void trace_vargs_callback(bgfx_callback_interface_t *this,
+				 const char *file, u16 line,
+				 const char *format, va_list args);
+static void profiler_begin_callback(bgfx_callback_interface_t *this,
+				    const char *name, u32 abgr,
+				    const char *file, u16 line);
+static void profiler_begin_literal_callback(bgfx_callback_interface_t *this,
+					    const char *name, u32 abgr,
+					    const char *file, u16 line);
+static void profiler_end_callback(bgfx_callback_interface_t *this);
+static u32 cache_get_size_callback(bgfx_callback_interface_t *this, u64 id);
+static bool cache_read_callback(bgfx_callback_interface_t *this, u64 id,
+				void *data, u32 size);
+static void cache_write_callback(bgfx_callback_interface_t *this, u64 id,
+				 const void *data, u32 size);
+static void screen_shot_callback(bgfx_callback_interface_t *this,
+				 const char *file, u32 width, u32 height,
+				 u32 pitch, const void *data, u32 size,
+				 bool yflip);
+static void capture_begin_callback(bgfx_callback_interface_t *this, u32 width,
+				   u32 height, u32 pitch,
+				   bgfx_texture_format_t format, bool yflip);
+static void capture_end_callback(bgfx_callback_interface_t *this);
+static void capture_frame_callback(bgfx_callback_interface_t *this,
+				   const void *data, u32 size);
 
 bgfx_callback_interface_t *purpl_init_bgfx_callbacks(void)
 {
@@ -86,11 +89,11 @@ bgfx_callback_interface_t *purpl_init_bgfx_callbacks(void)
 	return bgfx_callbacks;
 }
 
-void fatal_callback(bgfx_callback_interface_t *this, const char *file,
-		    u16 line, bgfx_fatal_t code, const char *msg)
+static void fatal_callback(bgfx_callback_interface_t *this, const char *file,
+			   u16 line, bgfx_fatal_t code, const char *msg)
 {
 	purpl_log_write(purpl_inst->logger, PURPL_LOG_LEVEL_ERROR, file, line,
-			"<bgfx callback>", "bgfx error message: %s", msg);
+			"<bgfx fatal>", "%.*s", (u32)(strlen(msg) - 1), msg);
 #ifndef PURPL_DEBUG
 	if (code != BGFX_FATAL_DEBUG_CHECK)
 		exit(code);
@@ -99,41 +102,43 @@ void fatal_callback(bgfx_callback_interface_t *this, const char *file,
 #endif // !PURPL_DEBUG
 }
 
-void trace_vargs_callback(bgfx_callback_interface_t *this, const char *file,
-			  u16 line, const char *format, va_list args)
+static void trace_vargs_callback(bgfx_callback_interface_t *this,
+				 const char *file, u16 line,
+				 const char *format, va_list args)
 {
 	const char *buf;
 
 	buf = purpl_vstrfmt(NULL, format, args);
 
 	purpl_log_write(purpl_inst->logger, PURPL_LOG_LEVEL_DEBUG, file, line,
-			"<bgfx callback>", "bgfx trace message: %s", buf);
+			"<bgfx traceVargs>", "%.*s", (u32)(strlen(buf) - 1), buf);
 
 	free(buf);
 }
 
-void profiler_begin_callback(bgfx_callback_interface_t *this, const char *name,
-			     u32 abgr, const char *file, u16 line)
+static void profiler_begin_callback(bgfx_callback_interface_t *this,
+				    const char *name, u32 abgr,
+				    const char *file, u16 line)
 {
 }
 
-void profiler_begin_literal_callback(bgfx_callback_interface_t *this,
-				     const char *name, u32 abgr,
-				     const char *file, u16 line)
+static void profiler_begin_literal_callback(bgfx_callback_interface_t *this,
+					    const char *name, u32 abgr,
+					    const char *file, u16 line)
 {
 }
 
-void profiler_end_callback(bgfx_callback_interface_t *this) {}
+static void profiler_end_callback(bgfx_callback_interface_t *this) {}
 
-u32 cache_get_size_callback(bgfx_callback_interface_t *this, u64 id) {}
+static u32 cache_get_size_callback(bgfx_callback_interface_t *this, u64 id) {}
 
-bool cache_read_callback(bgfx_callback_interface_t *this, u64 id, void *data,
-			 u32 size)
+static bool cache_read_callback(bgfx_callback_interface_t *this, u64 id,
+				void *data, u32 size)
 {
 }
 
-void cache_write_callback(bgfx_callback_interface_t *this, u64 id,
-			  const void *data, u32 size)
+static void cache_write_callback(bgfx_callback_interface_t *this, u64 id,
+				 const void *data, u32 size)
 {
 	FILE *fp;
 	char *path;
@@ -165,21 +170,22 @@ void cache_write_callback(bgfx_callback_interface_t *this, u64 id,
 	fclose(fp);
 }
 
-void screen_shot_callback(bgfx_callback_interface_t *this, u32 width,
-			  u32 height, u32 pitch, bgfx_texture_format_t format,
-			  bool yflip)
+static void screen_shot_callback(bgfx_callback_interface_t *this,
+				 const char *file, u32 width, u32 height,
+				 u32 pitch, const void *data, u32 size,
+				 bool yflip)
 {
 }
 
-void capture_begin_callback(bgfx_callback_interface_t *this, u32 width,
-			    u32 height, u32 pitch,
-			    bgfx_texture_format_t format, bool yflip)
+static void capture_begin_callback(bgfx_callback_interface_t *this, u32 width,
+				   u32 height, u32 pitch,
+				   bgfx_texture_format_t format, bool yflip)
 {
 }
 
-void capture_end_callback(bgfx_callback_interface_t *this) {}
+static void capture_end_callback(bgfx_callback_interface_t *this) {}
 
-void capture_frame_callback(bgfx_callback_interface_t *this, const void *data,
-			    u32 size)
+static void capture_frame_callback(bgfx_callback_interface_t *this,
+				   const void *data, u32 size)
 {
 }

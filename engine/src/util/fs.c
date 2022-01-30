@@ -59,6 +59,12 @@ PURPL_API char *purpl_pathfmt(size_t *size, const char *path,
 	return path2;
 }
 
+PURPL_API bool purpl_path_exists(const char *path)
+{
+	// Mode and directories don't matter, this would occur first
+	return !(!fopen(path, "rb") && errno == ENOENT);
+}
+
 PURPL_API bool purpl_mkdir(const char *path, enum purpl_fs_flags flags,
 			   enum purpl_file_mode mode)
 {

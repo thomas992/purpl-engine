@@ -66,11 +66,7 @@ extern PURPL_API char *purpl_pathfmt(size_t *size, const char *path,
 /// \param path The path to check
 ///
 /// \return Returns true if the file exists, false otherwise
-inline bool purpl_path_exists(const char *path)
-{
-	// Mode and directories don't matter, this would occur first
-	return !(!fopen(path, "rb") && errno == ENOENT);
-}
+extern PURPL_API bool purpl_path_exists(const char *path);
 
 /// Create a directory
 ///

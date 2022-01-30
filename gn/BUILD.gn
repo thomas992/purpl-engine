@@ -69,9 +69,10 @@ config("compiler_defaults") {
       cflags += [
         "/O2",
         "/Oi",
+        "/WX"
       ]
     } else {
-      cflags += [ "-O2" ]
+      cflags += [ "-O2", "-Werror" ]
     }
   }
 }

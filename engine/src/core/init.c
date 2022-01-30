@@ -134,6 +134,11 @@ PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 		break;
 #endif
 #else
+#ifdef SDL_VIDEO_DRIVER_WAYLAND
+	case SDL_SYSWM_WAYLAND:
+		bgfx_plat.ndt = wm_info.info.wl.display;
+		bgfx_plat.nwh = (void *)wm_info.wl.egl_window;
+#endif
 	case SDL_SYSWM_X11: // X11 supports every OS in use other than Windows
 		bgfx_plat.ndt = wm_info.info.x11.display;
 		bgfx_plat.nwh = (void *)wm_info.info.x11.window;
