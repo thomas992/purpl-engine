@@ -17,6 +17,8 @@
 
 #include "purpl/util/error.h"
 
+#include <stb_sprintf.h>
+
 #ifdef _WIN32
 #define PHNT_VERSION PHNT_THRESHOLD
 #include <phnt_windows.h>

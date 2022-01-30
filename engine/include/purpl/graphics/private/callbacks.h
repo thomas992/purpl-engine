@@ -2,13 +2,13 @@
 //
 // Copyright 2022 MobSlicer152
 // This file is part of Purpl Engine
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,5 +30,7 @@
 
 #include "purpl/util/util.h"
 
-/// Callback interface for bgfx
-extern bgfx_callback_interface_t bgfx_callbacks;
+/// Allocates a callback table for bgfx
+///
+/// \return The callback table, free it and its vtbl member
+extern bgfx_callback_interface_t *purpl_init_bgfx_callbacks(void);

@@ -21,6 +21,8 @@
 #include <SDL.h>
 #include <SDL_syswm.h>
 
+#include "purpl/graphics/private/callbacks.h"
+
 #ifdef _WIN32
 #include "purpl/util/private/win/ntdll.h"
 #endif
@@ -42,8 +44,7 @@ PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 	if (!purpl_inst) {
 #ifdef PURPL_DEBUG
 		fprintf(stderr,
-			"Error: failed to allocate memory for the engine "
-			"instance: %s\n",
+			"Error: failed to allocate memory for the engine instance: %s\n",
 			purpl_strerror());
 #endif // PURPL_DEBUG
 		return false;
@@ -156,6 +157,7 @@ PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 	bgfx_render_frame(BGFX_RENDER_FRAME_NO_CONTEXT);
 
 	bgfx_init_ctor(&bgfx_init_data);
+	purpl_inst->bgfx_callbacks = purpl_init_bgfx_callbacks();
 #if defined _WIN32 && defined PURPL_ENABLE_DIRECTX
 	bgfx_init_data.type = BGFX_RENDERER_TYPE_DIRECT3D12;
 #elif defined __APPLE__ // _WIN32
@@ -163,6 +165,7 @@ PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 #else // _WIN32
 	bgfx_init_data.type = BGFX_RENDERER_TYPE_VULKAN;
 #endif // _WIN32
+	bgfx_init_data.callback = purpl_inst->bgfx_callbacks;
 	bgfx_init_data.resolution.width = purpl_inst->wnd_width;
 	bgfx_init_data.resolution.width = purpl_inst->wnd_height;
 	bgfx_init_data.resolution.reset = BGFX_RESET_VSYNC;
@@ -182,6 +185,8 @@ PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 		if (!bgfx_init(&bgfx_init_data)) {
 			PURPL_LOG_ERROR(purpl_inst->logger,
 					"Failed to initialize bgfx");
+			free(purpl_inst->bgfx_callbacks->vtbl);
+			free(purpl_inst->bgfx_callbacks);
 			SDL_DestroyWindow(purpl_inst->wnd);
 			purpl_log_close(purpl_inst->logger, true);
 			free(purpl_inst->app_name);
@@ -294,6 +299,9 @@ PURPL_API void purpl_shutdown(void)
 	PURPL_LOG_WARNING(purpl_inst->logger, "Engine shutting down");
 
 	bgfx_shutdown();
+
+	free(purpl_inst->bgfx_callbacks->vtbl);
+	free(purpl_inst->bgfx_callbacks);
 
 	SDL_DestroyWindow(purpl_inst->wnd);
 	SDL_Quit();

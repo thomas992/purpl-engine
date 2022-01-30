@@ -1,4 +1,5 @@
 **/.*cache
+**/*cache
 
 **/.vs
 
@@ -9,3 +10,4 @@
 deps/*-*
 
 *.log
+**/logs

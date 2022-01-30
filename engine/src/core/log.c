@@ -44,7 +44,9 @@ PURPL_API struct purpl_logger *purpl_log_create(const char *file,
 		date = purpl_strfmt(NULL, "%d-%d-%d", t2->tm_mday,
 				    t2->tm_mon + 1, t2->tm_year + 1900);
 	else
-		date = purpl_strfmt(NULL, "?\?-?\?-????");
+		date = purpl_strfmt(NULL, "?\?-?\?-????"); // Escapes are to
+							   // prevent trigraph
+							   // expansion
 
 	filename = purpl_strrplc(file ? file : PURPL_LOG_DEFAULT_NAME,
 				 "<date>", date, NULL);

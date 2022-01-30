@@ -45,6 +45,7 @@ struct purpl_instance {
 	u32 wnd_y; // The Y position of the window
 	bgfx_texture_format_t bgfx_display_format; // bgfx texture format used
 						   // by the display
+	bgfx_callback_interface_t *bgfx_callbacks; // bgfx callback table
 };
 
 extern struct purpl_instance *purpl_inst;
