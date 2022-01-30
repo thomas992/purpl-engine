@@ -109,8 +109,11 @@ for arg in sys.argv:
     elif arg in ["verbose", "--verbose", "--loud"]:
         silent = False
 
+# Tools directory
+tools_dir = os.path.abspath(sys.argv[0][0 : sys.argv[0].rfind(os.path.sep)])
+
 # Log path
-log_path = os.path.join(os.path.abspath(sys.argv[0][0 : sys.argv[0].rfind(os.path.sep)]), "deps.log")
+log_path = os.path.join(tools_dir, "deps.log")
 
 # Print a status message
 print(f"Building for {plat} with {nproc} jobs")
@@ -385,7 +388,7 @@ if not dry_run or (dry_run and debug):
     if platform.system() == "Windows":
         print(f"Generating new bgfx import library for {plat[4:]}")
         bgfx_def = outputs["bgfx"][2][1].replace("dll", "def")
-        subprocess.call(f"mkdlldef.bat " + outputs["bgfx"][2][1], shell=True, stdout=sys.stdout)
+        subprocess.call(f"{tools_dir}bmkdlldef.bat " + outputs["bgfx"][2][1], shell=True, stdout=sys.stdout)
         subprocess.call(f"link /lib /nologo /out:{deps_path}/bin/bgfx.lib /machine:{plat[4:]} /def:{bgfx_def}", shell=True, stdout=sys.stdout)
 
 # Clean up the other files
