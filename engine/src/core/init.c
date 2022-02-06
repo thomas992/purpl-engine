@@ -51,7 +51,7 @@ PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 	}
 
 	if (!purpl_path_exists("logs"))
-		purpl_mkdir("logs", 0, PURPL_FS_MODE_RDWR);
+		purpl_mkdir("logs", 0, PURPL_FS_MODE_ALL);
 
 	purpl_inst->logger = purpl_log_create(NULL, PURPL_LOG_LEVEL_INFO,
 					      PURPL_LOG_LEVEL_MAX, NULL);
@@ -124,7 +124,7 @@ PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 	}
 
 	switch (wm_info.subsystem) {
-#ifdef _WIN32
+#if defined _WIN32
 	case SDL_SYSWM_WINDOWS:
 		bgfx_plat.nwh = wm_info.info.win.window;
 		break;
@@ -132,13 +132,19 @@ PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 	case SDL_SYSWM_WINRT:
 		bgfx_plat.nwh = wm_info.info.winrt.window;
 		break;
-#endif
-#else
+#endif // __WINRT__
+#elif defined __APPLE__ // _WIN32
+#ifdef SDL_VIDEO_DRIVER_COCOA
+	case SDL_SYSWM_COCOA:
+		bgfx_plat.nwh = wm_info.info.cocoa.window;
+		break;
+#endif 
+#else // _WIN32
 #ifdef SDL_VIDEO_DRIVER_WAYLAND
 	case SDL_SYSWM_WAYLAND:
 		bgfx_plat.ndt = wm_info.info.wl.display;
-		bgfx_plat.nwh = (void *)wm_info.wl.egl_window;
-#endif
+		bgfx_plat.nwh = (void *)wm_info.info.wl.egl_window;
+#endif // SDL_VIDEO_DRIVER_WAYLAND
 	case SDL_SYSWM_X11: // X11 supports every OS in use other than Windows
 		bgfx_plat.ndt = wm_info.info.x11.display;
 		bgfx_plat.nwh = (void *)wm_info.info.x11.window;
@@ -147,7 +153,7 @@ PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 	default:
 		PURPL_LOG_ERROR(
 			purpl_inst->logger,
-			"Unknown window manager 0x%X. Unable to initialize bgfx.",
+			"Unsupported window manager 0x%X. Unable to initialize bgfx.",
 			wm_info.subsystem);
 		SDL_DestroyWindow(purpl_inst->wnd);
 		purpl_log_close(purpl_inst->logger, true);

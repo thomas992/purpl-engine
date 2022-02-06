@@ -37,12 +37,33 @@ enum purpl_file_mode {
 	PURPL_FS_MODE_RDWR = 0b11, // Read-write
 	PURPL_FS_MODE_RDXC = 0b101, // Read and execute
 	PURPL_FS_MODE_ALL = 0b111, // Read, write, and execute
+	PURPL_FS_MODE_EVERYONE = 0b1000, // Allows group and others to write
+};
+
+/// File attributes
+enum purpl_file_attrs {
+	PURPL_FILE_ATTR_NORMAL = 0b0, // A normal file
+	PURPL_FILE_ATTR_DEVICE = 0b1, // A device file
+	PURPL_FILE_ATTR_DIRECTORY = 0b10, // A directory
+	PURPL_FILE_ATTR_HIDDEN = 0b100, // A hidden file (on POSIX systems,
+				       // determined by the file name)
+	PURPL_FILE_ATTR_READONLY = 0b1000, // Read-only (on POSIX systems,
+					  // determined by file mode)
 };
 
 /// Flags for filesystem functions
 enum purpl_fs_flags {
 	PURPL_FS_MKDIR_RECURSE = 0b1, // Create directories recursively
-	PURPL_FS_EXCLUSIVE_ACCESS = 0b10, // Gain exclusive access to the file
+};
+
+/// File information
+struct purpl_file_info {
+	size_t size; // File size
+	u16 attrs; // File attributes
+	u16 mode; // File mode
+	time_t ctime; // Creation time
+	time_t atime; // Access time
+	time_t mtime; // Modification time
 };
 
 /// Translates between a platform specific file mode and one used by the engine
@@ -77,3 +98,33 @@ extern PURPL_API bool purpl_path_exists(const char *path);
 /// \return Returns true on success, and sets errno on Windows
 extern PURPL_API bool purpl_mkdir(const char *path, enum purpl_fs_flags flags,
 				  enum purpl_file_mode mode);
+
+/// Get the directory component of a path
+///
+/// \param path The path
+/// \param size The size of the buffer, optional
+///
+/// \return Returns the directory name, or NULL on failure
+extern PURPL_API char *purpl_path_directory(const char *path, size_t *size);
+
+/// Get the file component of a path
+///
+/// \param path The path
+/// \param size The size of the buffer, optional
+///
+/// \return Returns the file name, or NULL on failure
+extern PURPL_API char *purpl_path_file(const char *path, size_t *size);
+
+/// stat abstraction
+///
+/// \param path The path to stat
+/// \param info A purpl_file_info struct to store the information in. Will be
+/// 		NULL on failure
+extern PURPL_API void purpl_stat(const char *path, struct purpl_file_info *info);
+
+/// Get the size of a file
+///
+/// \param path The path to check
+///
+/// \return Returns the size of the file
+extern PURPL_API size_t purpl_get_size(const char *path);

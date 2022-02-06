@@ -26,7 +26,7 @@ int32_t main(int32_t argc, char *argv[])
 {
 	// Initialize the engine
 	if (!purpl_init("purpl-demo", PURPL_MAKE_VERSION(1, 0, 0))) {
-		fprintf(stderr, "Error: failed to initialize the engine: %s",
+		fprintf(stderr, "Error: failed to initialize the engine: %s\n",
 			purpl_strerror());
 		exit(errno);
 	}

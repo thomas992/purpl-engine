@@ -44,9 +44,12 @@ config("compiler_defaults") {
       "-Wno-pointer-sign",
       "-Wno-incompatible-pointer-types",
       "-Wno-incompatible-pointer-types-discards-qualifiers",
-      "-std=c2x",
+      "-Wno-unused-parameter",
+      "-std=gnu2x",
     ]
-    ldflags = ["-fuse-ld=lld"]
+    if (!is_mac) {
+      ldflags = ["-fuse-ld=lld"]
+    }
   }
 
   if (is_debug) {

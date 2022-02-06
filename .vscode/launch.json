@@ -3,7 +3,7 @@
 	// Hover to view descriptions of existing attributes.
 	// For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
 	"version": "0.2.0",
-	"configurations": [
+	"configurations": [	
 		{
 			"name": "(Windows) Launch",
 			"type": "cppvsdbg",
@@ -21,7 +21,24 @@
 			"console": "externalTerminal"
 		},
 		{
-			"name": "(gdb) Launch",
+			"name": "(macOS) Launch",
+			"type": "cppdbg",
+			"request": "launch",
+			"program": "${workspaceFolder}/out/mac/main",
+			"args": [],
+			"stopAtEntry": false,
+			"cwd": "${workspaceFolder}",
+			"environment": [
+				{
+					"name": "DYLD_LIBRARY_PATH",
+					"value": "${workspaceFolder}/out/mac/:${workspaceFolder}/deps/mac-x64/bin"
+				}
+			],
+			"externalConsole": false,
+			"MIMode": "lldb"
+		},
+		{
+			"name": "(Linux) Launch",
 			"type": "cppdbg",
 			"request": "launch",
 			"program": "${workspaceFolder}/out/linux/main",
@@ -31,7 +48,7 @@
 			"environment": [
 				{
 					"name": "LD_LIBRARY_PATH",
-					"value": "${workspaceFolder}/linux/out:${workspaceFolder}/deps/linux-x64/bin"
+					"value": "${workspaceFolder}/out/linux/:${workspaceFolder}/deps/linux-x64/bin"
 				}
 			],
 			"externalConsole": false,
