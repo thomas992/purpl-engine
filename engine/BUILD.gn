@@ -85,7 +85,6 @@ shared_library("engine") {
     libs = [
       "bgfx.lib",
       "cglm.lib",
-      "glew32.lib",
       "kernel32.lib",
       "SDL2.lib",
     ]
@@ -93,7 +92,6 @@ shared_library("engine") {
     libs = [
       "bgfx",
       "cglm",
-      "GLEW",
       "SDL2-2.0",
     ]
   }

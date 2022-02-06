@@ -21,6 +21,10 @@
 #include <phnt.h>
 #else // _WIN32
 #define _GNU_SOURCE
+
+#include <sys/stat.h>
+
+#include <fcntl.h>
 #include <unistd.h>
 #endif // _WIN32
 
@@ -40,6 +44,13 @@ PURPL_API u32 purpl_translate_mode(u32 mode, bool to_native)
 			out |= GENERIC_WRITE;
 		if (mode & PURPL_FS_MODE_EXECUTE)
 			out |= GENERIC_EXECUTE;
+#else // _WIN32
+		if (mode & PURPL_FS_MODE_READ)
+			out |= S_IRUSR | S_IRGRP | S_IROTH;
+		if (mode & PURPL_FS_MODE_WRITE)
+			out |= S_IWUSR | (mode & PURPL_FS_MODE_EVERYONE ? S_IWGRP | S_IWOTH : 0);
+		if (mode & PURPL_FS_MODE_EXECUTE)
+			out |= S_IXUSR | S_IXGRP | S_IXOTH;
 #endif // _WIN32
 	} else {
 #ifdef _WIN32
@@ -87,10 +98,9 @@ PURPL_API bool purpl_mkdir(const char *path, enum purpl_fs_flags flags,
 	} else {
 		stbds_arrput(dir_names, path2);
 	}
-	free(path2);
 
-#ifdef _WIN32
 	for (i = 0; i < stbds_arrlenu(dir_names); i++) {
+#ifdef _WIN32
 		// Maybe I'll add code for dealing with security attributes
 		// later
 		if (!CreateDirectoryA(dir_names[i], NULL)) {
@@ -98,10 +108,37 @@ PURPL_API bool purpl_mkdir(const char *path, enum purpl_fs_flags flags,
 			stbds_arrfree(dir_names);
 			return false;
 		}
-	}
 #else // _WIN32
+		int fd = mkdir(dir_names[i], purpl_translate_mode(mode, true));
+		if (fd < 0) {
+			stbds_arrfree(dir_names);
+			return false;
+		}
+		close(fd);
 #endif // _WIN32
+	}
 
+	free(path2);
 	stbds_arrfree(dir_names);
 	return true;
+}
+
+PURPL_API char *purpl_path_directory(const char *path, size_t *size)
+{
+	
+}
+
+PURPL_API char *purpl_path_file(const char *path, size_t *size)
+{
+	
+}
+
+PURPL_API void purpl_stat(const char *path, struct purpl_file_info *info)
+{
+	
+}
+
+PURPL_API size_t purpl_get_size(const char *path)
+{
+
 }

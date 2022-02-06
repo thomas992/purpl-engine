@@ -15,11 +15,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifdef _WIN32
+#if defined _WIN32
 #define PHNT_VERSION PHNT_THRESHOLD
 #include <phnt_windows.h>
 #include <phnt.h>
-#else
+#elif defined __APPLE__
+#define _GNU_SOURCE
+#include <pthread.h>
+#include <unistd.h>
+#elif defined __linux__
 #define _GNU_SOURCE
 #include <unistd.h>
 #endif
@@ -37,9 +41,14 @@ PURPL_API u32 purpl_get_pid(void)
 
 PURPL_API u32 purpl_get_tid(void)
 {
-#ifdef _WIN32
+#if defined _WIN32
 	return (u32)(size_t)(NtCurrentTeb()->ClientId.UniqueThread);
-#else
+#elif defined __APPLE__
+	u64 id;
+
+	pthread_threadid_np(NULL, &id);
+	return id;
+#elif defined __linux__
 	return gettid();
 #endif // _WIN32
 }

@@ -33,7 +33,7 @@ static void profiler_begin_literal_callback(bgfx_callback_interface_t *this,
 static void profiler_end_callback(bgfx_callback_interface_t *this);
 static u32 cache_get_size_callback(bgfx_callback_interface_t *this, u64 id);
 static bool cache_read_callback(bgfx_callback_interface_t *this, u64 id,
-				void *data, u32 size);
+				void *buf, u32 size);
 static void cache_write_callback(bgfx_callback_interface_t *this, u64 id,
 				 const void *data, u32 size);
 static void screen_shot_callback(bgfx_callback_interface_t *this,
@@ -111,7 +111,8 @@ static void trace_vargs_callback(bgfx_callback_interface_t *this,
 	buf = purpl_vstrfmt(NULL, format, args);
 
 	purpl_log_write(purpl_inst->logger, PURPL_LOG_LEVEL_DEBUG, file, line,
-			"<bgfx traceVargs>", "%.*s", (u32)(strlen(buf) - 1), buf);
+			PURPL_CURRENT_FUNCTION, "%.*s", (u32)(strlen(buf) - 1),
+			buf);
 
 	free(buf);
 }
@@ -130,11 +131,58 @@ static void profiler_begin_literal_callback(bgfx_callback_interface_t *this,
 
 static void profiler_end_callback(bgfx_callback_interface_t *this) {}
 
-static u32 cache_get_size_callback(bgfx_callback_interface_t *this, u64 id) {}
+static u32 cache_get_size_callback(bgfx_callback_interface_t *this, u64 id)
+{
+	u32 size;
+	char *path;
+
+	if (!purpl_path_exists("cache"))
+		return 0;
+
+	path = purpl_strfmt(NULL, "cache/%X.bin", id);
+	if (!purpl_path_exists(path)) {
+		free(path);
+		return 0;
+	}
+
+	size = purpl_get_size(path);
+	
+	free(path);
+
+	return size;
+}
 
 static bool cache_read_callback(bgfx_callback_interface_t *this, u64 id,
-				void *data, u32 size)
+				void *buf, u32 size)
 {
+	FILE *fp;
+	char *path;
+
+	if (!purpl_path_exists("cache"))
+		purpl_mkdir("cache", PURPL_FS_MKDIR_RECURSE,
+			    PURPL_FS_MODE_ALL);
+
+	path = purpl_strfmt(NULL, "cache/%X.bin", id);
+	fp = fopen(path, "wb+");
+	if (!fp) {
+		PURPL_LOG_ERROR(purpl_inst->logger,
+				"Failed to open cache file %s: %s", path,
+				purpl_strerror());
+		return false;
+	}
+
+	if (fread(buf, 1, size, fp) < size) {
+		PURPL_LOG_ERROR(purpl_inst->logger,
+				"Failed to read %u bytes to cache file %s: %s",
+				size, path, purpl_strerror());
+		return false;
+	}
+
+	PURPL_LOG_INFO(purpl_inst->logger, "Read %u bytes from cache file %s",
+		       size, path);
+
+	fclose(fp);
+	return true;
 }
 
 static void cache_write_callback(bgfx_callback_interface_t *this, u64 id,
