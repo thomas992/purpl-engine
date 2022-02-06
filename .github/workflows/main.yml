@@ -1,27 +1,18 @@
-# This is a basic workflow to help you get started with Actions
-
 name: CI
 
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the main branch
   push:
     branches: [ main ]
   pull_request:
     branches: [ main ]
 
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   build-windows:
-    # The type of runner that the job will run on
     runs-on: windows-2022
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
       - name: MSVC environment
@@ -30,18 +21,17 @@ jobs:
       - name: Build dependencies
         run: python tools\deps.py
 
-      # Runs a single command using the runners shell
       - name: Generate build files
-        run: tools\gn gen out
+        run: tools\gn gen out\win
 
       - name: Build
-        run: tools\ninja -C out
+        run: tools\ninja -C out\win
 
       - name: Add artifacts to folder
         run: |
           mkdir build
-          xcopy /y out\engine.dll build
-          xcopy /y out\main.exe build
+          xcopy /y out\win\engine.dll build
+          xcopy /y out\win\main.exe build
           xcopy /y deps\win-x64\bin\* build
           xcopy /i/y deps\licenses build\licenses
 
@@ -61,13 +51,52 @@ jobs:
         with:
           files: build-windows.zip
 
+  build-macos:
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set permissions on executables
+        run: |
+          chmod a+x tools/deps.py
+          chmod a+x tools/gn
+
+      - name: Build dependencies
+        run: tools/deps.py
+        
+      - name: Generate build files
+        run: tools/gn gen out/mac
+        
+      - name: Build
+        run: ninja -C out/mac -j$[`nproc` + 2]
+
+      - name: Add artifacts to folder
+        run: |
+          mkdir build
+          printf '#!/usr/bin/env bash\nDYLD_LIBRARY_PATH=. ./main\n' > build/purpl-demo
+          cp -r out/mac/{engine.dylib,main} deps/mac-x64/* deps/licenses build
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: build-macos
+          path: build
+
+      - name: Create zip of artifacts for release
+        run: |
+          7z a -tzip build-macos.zip build/*
+
+      - name: Create release with artifacts
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: build-macos.zip
+
   build-linux:
-    # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access itset.html#expressions
       - uses: actions/checkout@v2
 
       - name: Setup APT packages
@@ -84,18 +113,17 @@ jobs:
       - name: Build dependencies
         run: tools/deps.py
 
-      # Runs a single command using the runners shell
       - name: Generate build files
-        run: tools/gn gen out
+        run: tools/gn gen out/linux
         
       - name: Build
-        run: ninja -C out -j$[`nproc` + 2]
+        run: ninja -C out/linux -j$[`nproc` + 2]
 
       - name: Add artifacts to folder
         run: |
           mkdir build
           printf '#!/usr/bin/env bash\nLD_LIBRARY_PATH=. ./main\n' > build/purpl-demo
-          cp -r out/{engine.so,main} deps/linux-x64/* deps/licenses build
+          cp -r out/linux/{engine.so,main} deps/linux-x64/* deps/licenses build
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
@@ -111,4 +139,4 @@ jobs:
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          files: build-windows.zip
+          files: build-linux.zip

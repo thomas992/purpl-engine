@@ -15,6 +15,12 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+if (is_mac) {
+  sharedlib_ext = ".dylib"
+} else {
+  sharedlib_ext = ".so"
+}
+
 toolchain("clang") {
   tool("cc") {
     depfile = "{{output}}.d"
@@ -59,7 +65,7 @@ toolchain("clang") {
     # Use this for {{output_extension}} expansions unless a target manually
     # overrides it (in which case {{output_extension}} will be what the target
     # specifies).
-    default_output_extension = ".so"
+    default_output_extension = sharedlib_ext
 
     # Use this for {{output_dir}} expansions unless a target manually overrides
     # it (in which case {{output_dir}} will be what the target specifies).

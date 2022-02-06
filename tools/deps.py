@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #  Downloads and builds dependencies
 #
 #  Copyright 2022 MobSlicer152
