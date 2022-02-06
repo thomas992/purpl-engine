@@ -64,7 +64,7 @@ jobs:
           chmod a+x tools/ninja
 
       - name: Build dependencies
-        run: CMAKE_MAKE_PROGRAM=$GITHUB_WORKSPACE/tools/ninja tools/deps.py --verbose
+        run: tools/deps.py --verbose
         
       - name: Generate build files
         run: tools/gn gen out/mac
@@ -113,7 +113,7 @@ jobs:
           chmod a+x tools/ninja
 
       - name: Build dependencies
-        run: CMAKE_MAKE_PROGRAM=$GITHUB_WORKSPACE/tools/ninja tools/deps.py --verbose
+        run: tools/deps.py --verbose
 
       - name: Generate build files
         run: tools/gn gen out/linux
