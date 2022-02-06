@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+if [ "$(uname)" == "Darwin" ]; then
+	chmod a+x $0.mac
+	$0.mac $*
+else
+	chmod a+x $0.linux
+	$0.linux $*
+fi

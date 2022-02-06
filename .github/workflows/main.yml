@@ -61,15 +61,16 @@ jobs:
         run: |
           chmod a+x tools/deps.py
           chmod a+x tools/gn
+          chmod a+x tools/ninja
 
       - name: Build dependencies
-        run: tools/deps.py --verbose
+        run: CMAKE_MAKE_PROGRAM=$GITHUB_WORKSPACE/tools/ninja tools/deps.py --verbose
         
       - name: Generate build files
         run: tools/gn gen out/mac
         
       - name: Build
-        run: ninja -C out/mac -j$[`nproc` + 2]
+        run: tools/ninja -C out/mac -j$[`nproc` + 2]
 
       - name: Add artifacts to folder
         run: |
@@ -109,15 +110,16 @@ jobs:
         run: |
           chmod a+x tools/deps.py
           chmod a+x tools/gn
+          chmod a+x tools/ninja
 
       - name: Build dependencies
-        run: tools/deps.py --verbose
+        run: CMAKE_MAKE_PROGRAM=$GITHUB_WORKSPACE/tools/ninja tools/deps.py --verbose
 
       - name: Generate build files
         run: tools/gn gen out/linux
         
       - name: Build
-        run: ninja -C out/linux -j$[`nproc` + 2]
+        run: tools/ninja -C out/linux -j$[`nproc` + 2]
 
       - name: Add artifacts to folder
         run: |
