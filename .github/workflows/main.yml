@@ -19,7 +19,7 @@ jobs:
         uses: ilammy/msvc-dev-cmd@v1
 
       - name: Build dependencies
-        run: python tools\deps.py
+        run: python tools\deps.py --verbose
 
       - name: Generate build files
         run: tools\gn gen out\win
@@ -63,7 +63,7 @@ jobs:
           chmod a+x tools/gn
 
       - name: Build dependencies
-        run: tools/deps.py
+        run: tools/deps.py --verbose
         
       - name: Generate build files
         run: tools/gn gen out/mac
@@ -111,7 +111,7 @@ jobs:
           chmod a+x tools/gn
 
       - name: Build dependencies
-        run: tools/deps.py
+        run: tools/deps.py --verbose
 
       - name: Generate build files
         run: tools/gn gen out/linux
