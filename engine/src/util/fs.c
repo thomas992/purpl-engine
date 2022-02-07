@@ -234,10 +234,11 @@ PURPL_API void purpl_stat(const char *path, struct purpl_file_info *info)
 	info->ctime = sb.st_ctimespec.tv_sec;
 	info->atime = sb.st_atimespec.tv_sec;
 	info->mtime = sb.st_mtimespec.tv_sec;
-#else if defined __linux__
+#elif defined __linux__
 	info->ctime = sb.st_ctim.tv_sec;
 	info->atime = sb.st_atim.tv_sec;
 	info->mtime = sb.st_mtim.tv_sec;
+#endif // __APPLE__
 	
 	file = purpl_path_file(path2, NULL);
 	if (file[0] == '.')
