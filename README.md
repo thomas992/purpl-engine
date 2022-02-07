@@ -23,7 +23,7 @@ ninja -C out
 ```
 On Linux, run these commands instead:
 ```sh
-tools/deps.py
+tools/deps.py # You can pass --skip-download to prevent redownloading, and --keep-src to keep sources for debugging
 tools/gn gen out/linux
 ninja -C out
 ```
