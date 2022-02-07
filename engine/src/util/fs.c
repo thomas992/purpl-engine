@@ -32,7 +32,7 @@
 
 #include "purpl/util/fs.h"
 
-PURPL_API u32 purpl_translate_mode(u32 mode, bool to_native)
+PURPL_API u32 purpl_translate_file_mode(u32 mode, bool to_native)
 {
 	u32 out = 0;
 
@@ -54,6 +54,44 @@ PURPL_API u32 purpl_translate_mode(u32 mode, bool to_native)
 #endif // _WIN32
 	} else {
 #ifdef _WIN32
+#else // _WIN32
+		if (mode & (S_IRUSR | S_IRGRP | S_IROTH))
+			out |= PURPL_FS_MODE_READ;
+		if (mode & S_IWUSR)
+			out |= PURPL_FS_MODE_WRITE;
+		if (mode &  (S_IWGRP | S_IWOTH))
+			out |= PURPL_FS_MODE_EVERYONE;
+		if (mode & (S_IXUSR | S_IXGRP | S_IXOTH))
+			out |= PURPL_FS_MODE_EXECUTE;
+#endif // _WIN32
+	}
+
+	return out;
+}
+
+PURPL_API u32 purpl_translate_file_attrs(u32 attrs, bool to_native)
+{
+	u32 out = 0;
+
+	if (to_native) {
+
+	} else {
+#ifdef _WIN32
+#else // _WIN32
+		// These all overlap
+		if (attrs & S_IFREG)
+			out |= PURPL_FILE_ATTR_NORMAL;
+		else if (attrs & S_IFSOCK)
+			out |= PURPL_FILE_ATTR_DEVICE;
+		else if (attrs & S_IFLNK)
+			out |= PURPL_FILE_ATTR_SYMLINK;
+			
+		if (attrs & S_IFBLK || attrs & S_IFCHR)
+			out |= PURPL_FILE_ATTR_DEVICE;
+		if (attrs & S_IFIFO)
+			out |= PURPL_FILE_ATTR_PIPE;
+		if (attrs == (attrs & (S_IRUSR | S_IRGRP | S_IROTH)))
+			out |= PURPL_FILE_ATTR_READONLY;
 #endif // _WIN32
 	}
 
@@ -109,7 +147,7 @@ PURPL_API bool purpl_mkdir(const char *path, enum purpl_fs_flags flags,
 			return false;
 		}
 #else // _WIN32
-		int fd = mkdir(dir_names[i], purpl_translate_mode(mode, true));
+		int fd = mkdir(dir_names[i], purpl_translate_file_mode(mode, true));
 		if (fd < 0) {
 			stbds_arrfree(dir_names);
 			return false;
@@ -125,20 +163,91 @@ PURPL_API bool purpl_mkdir(const char *path, enum purpl_fs_flags flags,
 
 PURPL_API char *purpl_path_directory(const char *path, size_t *size)
 {
-	
+	char *buf;
+	char *buf2;
+	char *p;
+
+	buf = purpl_pathfmt(size, path, 0);
+	if (!buf) {
+		if (size)
+			*size = 0;
+		return NULL;
+	}
+
+	p = strrchr(buf, '/');
+	buf2 = purpl_strndup(buf, p - buf + 1);
+
+	if (size)
+		*size = p - buf + 1;
+	free(buf);
+	return buf2;
 }
 
 PURPL_API char *purpl_path_file(const char *path, size_t *size)
 {
-	
+	char *buf;
+	char *buf2;
+	char *p;
+
+	buf = purpl_pathfmt(size, path, 0);
+	if (!buf) {
+		if (size)
+			*size = 0;
+		return NULL;
+	}
+
+	if (!strrchr(path, '/')) {
+		if (size)
+			*size = 0;
+		free(buf);
+		return path;
+	}
+
+	p = strrchr(buf, '/') + 1;
+	buf2 = purpl_strdup(p);
+
+	if (size)
+		*size = strlen(buf2) + 1;
+	free(buf);
+	return buf2;
 }
 
 PURPL_API void purpl_stat(const char *path, struct purpl_file_info *info)
 {
+	char *path2;
+	char *file;
+
+	if (!path || !info)
+		return;
+
+	path2 = purpl_pathfmt(NULL, path, 0);
+
+#ifdef _WIN32
+#else // _WIN32
+	struct stat sb;
+
+	stat(path2, &sb);
+	info->size = sb.st_size;
+	info->attrs = purpl_translate_file_attrs(sb.st_mode, false);
+	info->mode = purpl_translate_file_mode(sb.st_mode, false);
+	info->ctime = sb.st_ctim.tv_sec;
+	info->atime = sb.st_atim.tv_sec;
+	info->mtime = sb.st_mtim.tv_sec;
 	
+	file = purpl_path_file(path2, NULL);
+	if (file[0] == '.')
+		info->attrs |= PURPL_FILE_ATTR_HIDDEN;
+#endif // _WIN32
+
+	free(file);
+	free(path2);
 }
 
 PURPL_API size_t purpl_get_size(const char *path)
 {
+	struct purpl_file_info info;
 
+	purpl_stat(path, &info);
+
+	return info.size;
 }

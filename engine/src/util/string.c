@@ -153,6 +153,26 @@ PURPL_API char *purpl_vstrfmt(size_t *size, const char *fmt, va_list args)
 	return buf;
 }
 
+PURPL_API char *purpl_strdup(const char *str)
+{
+	return purpl_strndup(str, strlen(str) + 1);
+}
+
+PURPL_API char *purpl_strndup(const char *str, size_t n)
+{
+	char *buf;
+
+	if (!str || !n)
+		return NULL;
+
+	buf = calloc(n, sizeof(char));
+	if (!buf)
+		return NULL;
+
+	strncpy(buf, str, n);
+	return buf;
+}
+
 PURPL_API s8 purpl_wcscasecmp(const wchar_t *s1, const wchar_t *s2)
 {
 	wchar_t c1 = towlower(*s1);

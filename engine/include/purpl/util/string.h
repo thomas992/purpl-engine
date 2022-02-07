@@ -79,7 +79,24 @@ extern PURPL_API char *purpl_strfmt(size_t *size, const char *fmt, ...);
 extern PURPL_API char *purpl_vstrfmt(size_t *size, const char *fmt,
 				     va_list args);
 
-/// Perform a case insensitive string comparison on two wide strings
+/// Duplicate a string like strdup(3)
+///
+/// \param str The string to duplicate
+///
+/// \return Returns a buffer containing a copy of str including the NUL
+///	    terminator or NULL
+extern PURPL_API char *purpl_strdup(const char *str);
+
+/// Duplicate a string like strndup(3)
+///
+/// \param str The string to duplicate
+/// \param n The maximum number of characters to copy from str
+///
+/// \return Returns a buffer containing n characters of str, or NULL
+extern PURPL_API char *purpl_strndup(const char *str, size_t n);
+
+/// Perform a case insensitive string comparison on two wide strings like
+/// wcscasecmp(3)
 ///
 /// \param s1 The first string
 /// \param s2 The second string

@@ -51,6 +51,7 @@ PURPL_API struct purpl_logger *purpl_log_create(const char *file,
 	filename = purpl_strrplc(file ? file : PURPL_LOG_DEFAULT_NAME,
 				 "<date>", date, NULL);
 	free(date);
+	purpl_get_size(filename);
 
 	logger->file = fopen(filename, "ab+");
 	if (!logger->file) {
@@ -64,7 +65,7 @@ PURPL_API struct purpl_logger *purpl_log_create(const char *file,
 					  max_level;
 	logger->level = level > logger->max_level ? logger->max_level : level;
 
-	message_format = purpl_strfmt(NULL, "%s", format ? format : "#def");
+	message_format = purpl_strdup(format ? format : "#def");
 #ifdef PURPL_DEBUG
 	logger->format =
 		purpl_strrplc(message_format, "#def",

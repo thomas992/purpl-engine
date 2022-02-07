@@ -45,10 +45,12 @@ enum purpl_file_attrs {
 	PURPL_FILE_ATTR_NORMAL = 0b0, // A normal file
 	PURPL_FILE_ATTR_DEVICE = 0b1, // A device file
 	PURPL_FILE_ATTR_DIRECTORY = 0b10, // A directory
-	PURPL_FILE_ATTR_HIDDEN = 0b100, // A hidden file (on POSIX systems,
-				       // determined by the file name)
-	PURPL_FILE_ATTR_READONLY = 0b1000, // Read-only (on POSIX systems,
-					  // determined by file mode)
+	PURPL_FILE_ATTR_SYMLINK = 0b100, // A symbolic link
+	PURPL_FILE_ATTR_PIPE = 0b1000, // A pipe
+	PURPL_FILE_ATTR_HIDDEN = 0b10000, // A hidden file (on POSIX systems,
+					// determined by the file name)
+	PURPL_FILE_ATTR_READONLY = 0b100000, // Read-only (on POSIX systems,
+					   // determined by file mode)
 };
 
 /// Flags for filesystem functions
@@ -66,13 +68,21 @@ struct purpl_file_info {
 	time_t mtime; // Modification time
 };
 
-/// Translates between a platform specific file mode and one used by the engine
+/// Translates between a platform-specific file mode and one used by the engine
 ///
 /// \param mode The mode to translate
 /// \param to_native Whether to convert to or from a native mode
 ///
 /// \return Returns the translated mode
-extern PURPL_API u32 purpl_translate_mode(u32 mode, bool to_native);
+extern PURPL_API u32 purpl_translate_file_mode(u32 mode, bool to_native);
+
+/// Translates between platform-specific file attributes and ones used by the engine
+///
+/// \param attrs The attributes to translate
+/// \param to_native Whether to convert to or from native attributes
+///
+/// \return Returns the translated attributes
+extern PURPL_API u32 purpl_translate_file_mode(u32 attrs, bool to_native);
 
 /// Formats a path (you don't need to call this)
 ///
@@ -104,7 +114,7 @@ extern PURPL_API bool purpl_mkdir(const char *path, enum purpl_fs_flags flags,
 /// \param path The path
 /// \param size The size of the buffer, optional
 ///
-/// \return Returns the directory name, or NULL on failure
+/// \return Returns the directory name in a new buffer, or NULL on failure
 extern PURPL_API char *purpl_path_directory(const char *path, size_t *size);
 
 /// Get the file component of a path
@@ -112,7 +122,7 @@ extern PURPL_API char *purpl_path_directory(const char *path, size_t *size);
 /// \param path The path
 /// \param size The size of the buffer, optional
 ///
-/// \return Returns the file name, or NULL on failure
+/// \return Returns the file name in a new buffer, or NULL on failure
 extern PURPL_API char *purpl_path_file(const char *path, size_t *size);
 
 /// stat abstraction
@@ -120,7 +130,8 @@ extern PURPL_API char *purpl_path_file(const char *path, size_t *size);
 /// \param path The path to stat
 /// \param info A purpl_file_info struct to store the information in. Will be
 /// 		NULL on failure
-extern PURPL_API void purpl_stat(const char *path, struct purpl_file_info *info);
+extern PURPL_API void purpl_stat(const char *path,
+				 struct purpl_file_info *info);
 
 /// Get the size of a file
 ///
