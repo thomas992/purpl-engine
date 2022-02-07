@@ -51,7 +51,6 @@ PURPL_API struct purpl_logger *purpl_log_create(const char *file,
 	filename = purpl_strrplc(file ? file : PURPL_LOG_DEFAULT_NAME,
 				 "<date>", date, NULL);
 	free(date);
-	purpl_get_size(filename);
 
 	logger->file = fopen(filename, "ab+");
 	if (!logger->file) {

@@ -63,7 +63,7 @@ struct purpl_file_info {
 	size_t size; // File size
 	u16 attrs; // File attributes
 	u16 mode; // File mode
-	time_t ctime; // Creation time
+	time_t ctime; // Status change time
 	time_t atime; // Access time
 	time_t mtime; // Modification time
 };
@@ -82,7 +82,7 @@ extern PURPL_API u32 purpl_translate_file_mode(u32 mode, bool to_native);
 /// \param to_native Whether to convert to or from native attributes
 ///
 /// \return Returns the translated attributes
-extern PURPL_API u32 purpl_translate_file_mode(u32 attrs, bool to_native);
+extern PURPL_API u32 purpl_translate_file_attrs(u32 attrs, bool to_native);
 
 /// Formats a path (you don't need to call this)
 ///

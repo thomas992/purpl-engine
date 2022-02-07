@@ -78,7 +78,7 @@ PURPL_API u32 purpl_translate_file_attrs(u32 attrs, bool to_native)
 	} else {
 #ifdef _WIN32
 #else // _WIN32
-		// These all overlap
+		// These all overlap and can't be present simultaneously
 		if (attrs & S_IFREG)
 			out |= PURPL_FILE_ATTR_NORMAL;
 		else if (attrs & S_IFSOCK)
@@ -230,6 +230,11 @@ PURPL_API void purpl_stat(const char *path, struct purpl_file_info *info)
 	info->size = sb.st_size;
 	info->attrs = purpl_translate_file_attrs(sb.st_mode, false);
 	info->mode = purpl_translate_file_mode(sb.st_mode, false);
+#if defined __APPLE__
+	info->ctime = sb.st_ctimespec.tv_sec;
+	info->atime = sb.st_atimespec.tv_sec;
+	info->mtime = sb.st_mtimespec.tv_sec;
+#else if defined __linux__
 	info->ctime = sb.st_ctim.tv_sec;
 	info->atime = sb.st_atim.tv_sec;
 	info->mtime = sb.st_mtim.tv_sec;
