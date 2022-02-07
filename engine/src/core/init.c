@@ -245,7 +245,6 @@ static bool purpl_handle_events(void)
 							purpl_inst->wnd_y);
 					break;
 				case SDL_WINDOWEVENT_RESIZED:
-				case SDL_WINDOWEVENT_SIZE_CHANGED:
 					purpl_inst->wnd_width = e.window.data1;
 					purpl_inst->wnd_height =
 						e.window.data2;
