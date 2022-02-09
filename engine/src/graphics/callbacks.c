@@ -193,7 +193,7 @@ static void cache_write_callback(bgfx_callback_interface_t *this, u64 id,
 
 	if (!purpl_path_exists("cache"))
 		purpl_mkdir("cache", PURPL_FS_MKDIR_RECURSE,
-			    PURPL_FS_MODE_RDWR);
+			    PURPL_FS_MODE_ALL);
 
 	path = purpl_strfmt(NULL, "cache/%X.bin", id);
 	fp = fopen(path, "wb+");

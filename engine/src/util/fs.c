@@ -121,6 +121,9 @@ PURPL_API bool purpl_mkdir(const char *path, enum purpl_fs_flags flags,
 	char **dir_names = NULL;
 	size_t i;
 
+	if (mode == 0)
+		mode = PURPL_FS_MODE_ALL;
+
 	path2 = purpl_pathfmt(NULL, path, flags);
 	if (flags & PURPL_FS_MKDIR_RECURSE) {
 		for (i = 0; i < (purpl_strcount(path, "/") -
