@@ -184,7 +184,7 @@ PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 
 	// Check for an older iGPU
 	init = bgfx_init(&bgfx_init_data);
-	if (!init || purpl_check_igpu(&bgfx_plat)) {
+	if (!init) {
 		if (init)
 			bgfx_shutdown();
 

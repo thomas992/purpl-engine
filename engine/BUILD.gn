@@ -34,7 +34,6 @@ shared_library("engine") {
     "include/purpl/core/types.h",
 
     "include/purpl/graphics/private/callbacks.h",
-    "include/purpl/graphics/detect.h",
 
     "include/purpl/util/fs.h",
     "include/purpl/util/misc.h",
@@ -46,7 +45,6 @@ shared_library("engine") {
     "src/core/log.c",
     
     "src/graphics/callbacks.c",
-    "src/graphics/detect.c",
     
     "src/util/error.c",
     "src/util/fs.c",

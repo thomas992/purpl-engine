@@ -290,6 +290,8 @@ PURPL_API void purpl_log_write(struct purpl_logger *logger,
 	va_end(args);
 
 	fprintf(logger->file, "%s\n", buf);
+	if (level < PURPL_LOG_LEVEL_INFO)
+		printf("%s\n", buf);
 #ifdef PURPL_DEBUG
 	// This if statement is ugly, but in this case I don't think I should
 	// fix it
