@@ -34,7 +34,7 @@ jobs:
           xcopy /y out\win\main.exe build
           xcopy /y deps\win-x64\bin\* build
           xcopy /i/y deps\licenses build\licenses
-          xcopy /y LICENSE build\licenses\purpl.txt
+          copy LICENSE build\licenses\purpl.txt
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
