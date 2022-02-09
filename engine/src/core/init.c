@@ -35,7 +35,6 @@ PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 	struct SDL_SysWMinfo wm_info;
 	bgfx_platform_data_t bgfx_plat;
 	bgfx_init_t bgfx_init_data;
-	bool init;
 
 #ifdef _WIN32
 	purpl_load_ntdll();
@@ -182,12 +181,7 @@ PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 	bgfx_init_data.resolution.width = purpl_inst->wnd_height;
 	bgfx_init_data.resolution.reset = BGFX_RESET_VSYNC;
 
-	// Check for an older iGPU
-	init = bgfx_init(&bgfx_init_data);
-	if (!init) {
-		if (init)
-			bgfx_shutdown();
-
+	if (!bgfx_init(&bgfx_init_data)) {
 #ifdef PURPL_ARM
 		PURPL_LOG_WARNING(
 			purpl_inst->logger,

@@ -25,8 +25,6 @@
 #include "inst.h"
 #include "types.h"
 
-#include "purpl/graphics/detect.h"
-
 #include "purpl/util/util.h"
 
 /// A user-supplied function to be called each frame
