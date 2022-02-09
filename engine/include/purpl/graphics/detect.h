@@ -1,4 +1,4 @@
-// Functions to make use of NTDLL
+// GPU identification
 //
 // Copyright 2022 MobSlicer152
 // This file is part of Purpl Engine
@@ -17,24 +17,27 @@
 
 #pragma once
 
-#ifndef PURPL_BUILD
-#error This file is only meant to be included by the engine
+#ifdef _MSC_VER
+#else // _MSC_VER
+#include <cpuid.h>
+#endif // _MSC_VER
+
+#ifdef PURPL_BUILD
+#include <bgfx/c99/bgfx.h>
 #endif // PURPL_BUILD
 
-#define PHNT_VERSION PHNT_THRESHOLD
-#include <phnt_windows.h>
-#include <phnt.h>
-
 #include "purpl/core/coredefs.h"
+#include "purpl/core/features.h"
 #include "purpl/core/types.h"
 
-#include "purpl/util/string.h"
-
-/// The base address of NTDLL
-extern void *ntdll_base;
-
-/// Functions loaded
-extern u32 (*DbgPrint_l)(const char *fmt, ...); /// DbgPrint
-
-/// Finds NTDLL's base address in the PEB
-extern void purpl_load_ntdll(void);
+/// Detect if an old iGPU is present
+///
+/// \param info A pointer to a bgfx_platform_data_t struct initialized by
+/// 		bgfx_set_platform_data
+///
+/// \return Returns true if an iGPU not supporting Vulkan is being used
+#ifdef PURPL_BUILD
+extern PURPL_API bool purpl_check_igpu(bgfx_caps_t *info);
+#else // PURPL_BUILD
+extern PURPL_API bool purpl_check_igpu(void *info);
+#endif // PURPL_BUILD

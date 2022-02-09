@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 #  Downloads and builds dependencies
+#  Uses python3 instead of just python because Ubuntu is jank and still thinks
+#  Python 2 is recent enough for its executable not to be named differently.
 #
 #  Copyright 2022 MobSlicer152
 #  This file is part of Purpl Engine

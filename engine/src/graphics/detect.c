@@ -1,4 +1,4 @@
-// Header with all the other headers
+// GPU identification
 //
 // Copyright 2022 MobSlicer152
 // This file is part of Purpl Engine
@@ -15,18 +15,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#pragma once
+#include "purpl/graphics/detect.h"
 
-#ifdef PURPL_BUILD
-#error "Don't include purpl/purpl.h in engine files, only programs using the engine"
-#endif
+PURPL_API bool purpl_check_igpu(bgfx_caps_t *info)
+{
+	if (!info)
+		return false;
 
-#define SDL_MAIN_HANDLED
+#ifdef PURPL_X86
+#ifdef _MSC_VER
+#else // _MSC_VER
+	u32 eax;
+	u32 ebx;
+	u32 ecx;
+	u32 edx;
 
-#include "core/coredefs.h"
-#include "core/features.h"
-#include "core/init.h"
-#include "core/inst.h"
-#include "core/types.h"
+	__get_cpuid(1, &eax, &ebx, &ecx, &edx);
+	if (eax == 0x0306C3 && info->numGPUs == 1 && info->gpu[0].vendorId == BGFX_PCI_ID_INTEL)
+		return true;
+#endif // _MSC_VER
+#endif // PURPL_X86
 
-#include "util/util.h"
+	return false;
+}
