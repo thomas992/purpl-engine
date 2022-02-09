@@ -165,8 +165,6 @@ cmake_flags = (
     f"-GNinja -DCMAKE_MAKE_PROGRAM={os.getcwd()}/tools/ninja.exe -DCMAKE_C_COMPILER=cl -DCMAKE_CXX_COMPILER=cl"
     if platform.system() == "Windows"
     else f"-GNinja -DCMAKE_MAKE_PROGRAM={os.getcwd()}/tools/ninja -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++"
-    if platform.system() == "Darwin"
-    else "-GNinja"
 )
 bgfx_config = "Debug" if keep_src else "Release"
 deps = {
