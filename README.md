@@ -7,45 +7,57 @@ This is my fifth game engine, it's gonna be good this time
 
 All the stuff needed to build the engine (other than the compiler) is provided, and licenses for the libraries and programs are in `deps/licenses`.
 
-On Windows, you need Visual Studio 2019 16.8 or later (i.e. C17 support. However, earlier versions may work) and the Windows SDK (any recentish one should be fine). On Linux, you need the X11 or Wayland development headers and any version of Clang supporting C17 or later (basically every easily obtainable version unless you run a super old distro).
+On Windows, you need Visual Studio 2019 16.8 or later (i.e. C17 support. However, earlier versions may work) and the Windows SDK (any recentish one should be fine, but for best results use the latest Windows 11 one {which even works on Windows 7, just as proof of how backwards compatible they are}). On Linux, you need the X11 or Wayland development headers and any version of Clang supporting C17 or later (basically every easily obtainable version unless you run a super old distro).
 
 To build the engine, run the following commands on Windows:
 ```batch
+:: For other architectures than x64, look at the buildenv script and run the commands but tweak them appropriately
 tools\buildenv
 python tools\deps.py
 
 :: This is more intended to be run from Explorer, it generates a compilation database and a Visual Studio solution too
 tools\mkprojects
 
-:: This is the better way for a Command Prompt shell
+:: This is the better way for a Command Prompt (or PowerShell if you aren't a true Windows god like me) shell
 gn gen out\win
-ninja -C out
+ninja -C out\win
 ```
 On Linux, run these commands instead:
 ```sh
 tools/deps.py # You can pass --skip-download to prevent redownloading, and --keep-src to keep sources for debugging
 tools/gn gen out/linux
-ninja -C out
+ninja -C out/linux
 ```
-GN can also generate IDE projects with `--ide=vs`, `--ide=qtcreator`, or `--ide=xcode` (XCode and macOS are not tested because I deleted my Hackintosh install {though I am planning to buy an M1 Mac}, but they might work with some modifications to the GN scripts and the `tools/deps.py` script), and compilation databases with `--export-compile-commands` for language servers in (Neo)vim and Visual Studio Code. To set options for the build such as debugging info, meming (various small Easter Eggs such as April 1st being reported as March 32nd and years being relative to 1970 on April 1st only), and verbose logging, you can use `gn args out/<platform>`.
+On macOS:
+```sh
+tools/deps.py
+tools/gn gen out/mac
+ninja -C out/mac
+```
+
+GN can also generate IDE projects with `--ide=vs`, `--ide=qtcreator`, or `--ide=xcode`, and compilation databases with `--export-compile-commands` for language servers in (Neo)vim and Visual Studio Code, among other, more obscure editors. To set options for the build such as debugging info, meming (various small Easter Eggs such as April 1st being reported as March 32nd and years being relative to 1970 on April 1st only), and verbose logging, you can use `gn args out/<platform>`.
 
 To run the demo, do the following on Windows:
 ```batch
-out\main :: buildenv already sets the path so that the DLLs are found for the engine and dependencies
+main :: buildenv already sets the path so that the DLLs are found for the engine and dependencies
 ```
 On Linux, run this command:
 ```sh
-LD_LIBRARY_PATH=deps/bin:out out/main
+LD_LIBRARY_PATH=deps/linux-<arch>/bin:out/linux out/linux/main
+```
+On macOS run this:
+```sh
+DYLD_LIBRARY_PATH=deps/mac-<arch>/bin:out/mac out/mac/main
 ```
 
 ## Using the releases and CI artifacts
-You can download artifacts from the actions sections for a build of the latest commit of the engine. To use these builds, do the following if you're on Linux:
+You can download artifacts from the actions sections for a build of the latest commit of the engine. To use these builds, do the following if you're on Linux or macOS:
 ```sh
-chmod +x purpl-demo main
+chmod +x purpl-demo
 
 # This script sets the environment variable needed to run the demo
 ./purpl-demo
 
-# Or, if you don't want to use the script
-LD_LIBRARY_PATH=. ./main
+# Or, if you don't want to use the script (DYLD_LIBRARY_PATH for macOS, LD_LIBRARY_PATH for Linux)
+[DY]LD_LIBRARY_PATH=bin ./main
 ```

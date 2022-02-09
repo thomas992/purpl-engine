@@ -76,7 +76,7 @@ jobs:
       - name: Add artifacts to folder
         run: |
           mkdir build
-          printf '#!/usr/bin/env bash\nDYLD_LIBRARY_PATH=. ./main\n' > build/purpl-demo
+          printf '#!/usr/bin/env bash\n\nchmod a+x main\nexportHERE="$(dirname "$0")"\n\nDYLD_LIBRARY_PATH=$HERE $HERE/main\n' > build/purpl-demo
           cp -r out/mac/{engine.dylib,main} deps/mac-x64/* deps/licenses build
           cp LICENSE build/licenses/purpl.txt
 
@@ -126,7 +126,7 @@ jobs:
       - name: Add artifacts to folder
         run: |
           mkdir build
-          printf '#!/usr/bin/env bash\nLD_LIBRARY_PATH=. ./main\n' > build/purpl-demo
+          printf '#!/usr/bin/env bash\n\nchmod a+x main\nexportHERE="$(dirname "$0")"\n\nLD_LIBRARY_PATH=$HERE $HERE/main\n' > build/purpl-demo
           cp -r out/linux/{engine.so,main} deps/linux-x64/* deps/licenses build
           cp LICENSE build/licenses/purpl.txt
 
