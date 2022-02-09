@@ -25,6 +25,7 @@ import shutil
 import stat
 import subprocess
 import sys
+import time
 
 
 def shutil_nuke_git(e: Exception, path: str, info: Exception):
@@ -69,12 +70,27 @@ def download_dep(
     try:
         if download:
             print(f"Running {dl_cmd}...")
-            subprocess.run(dl_cmd, shell=True, stdout=sys.stdout)
+            subprocess.run(
+                dl_cmd,
+                shell=True,
+                stdout=sys.stdout,
+                stderr=(sys.stdout if dl_cmd.startswith("git") else sys.stderr),
+            )
             for stp_cmd in stp_cmds:
                 print(f"Running {stp_cmd}...")
-                subprocess.run(stp_cmd, shell=True, stdout=sys.stdout)
+                subprocess.run(
+                    stp_cmd,
+                    shell=True,
+                    stdout=sys.stdout,
+                    stderr=(sys.stdout if dl_cmd.startswith("git") else sys.stderr),
+                )
         print(f"Running {bld_cmd}...")
-        subprocess.run(bld_cmd, shell=True, stdout=sys.stdout)
+        subprocess.run(
+            bld_cmd,
+            shell=True,
+            stdout=sys.stdout,
+            stderr=(sys.stdout if dl_cmd.startswith("git") else sys.stderr),
+        )
     except Exception as e:
         print(f"Failed to run command: {e}")
         exit(1)
@@ -155,16 +171,16 @@ cmake_flags = (
 bgfx_config = "Debug" if keep_src else "Release"
 deps = {
     "bgfx": [
-        "git clone https://github.com/bkaradzic/bgfx <deps>/bgfx",
+        "git clone --depth=1 https://github.com/bkaradzic/bgfx <deps>/bgfx",
         [
-            "git clone https://github.com/bkaradzic/bx <deps>/bx",
-            "git clone https://github.com/bkaradzic/bimg <deps>/bimg",
+            "git clone --depth=1 https://github.com/bkaradzic/bx <deps>/bx",
+            "git clone --depth=1 https://github.com/bkaradzic/bimg <deps>/bimg",
             (
-                f"pushd <deps>\\bgfx && ..\\bx\\tools\\bin\\windows\\genie --platform=x64 --with-shared-lib --with-tools {vs_version} && popd"
+                f"pushd <deps>\\bgfx && ..\\bx\\tools\\bin\\windows\\genie --platform=x64 --with-shared-lib {vs_version} && popd"
                 if platform.system() == "Windows"
-                else f"cd <deps>/bgfx && ../bx/tools/bin/linux/genie --gcc=linux-clang --platform=x64 --with-shared-lib --with-tools gmake && cd {os.getcwd()}"
+                else f"cd <deps>/bgfx && ../bx/tools/bin/linux/genie --gcc=linux-clang --platform=x64 --with-shared-lib gmake && cd {os.getcwd()}"
                 if platform.system() == "Linux"
-                else f"cd <deps>/bgfx && ../bx/tools/bin/darwin/genie --gcc=osx-x64 --platform=x64 --with-shared-lib --with-tools gmake && cd {os.getcwd()}"
+                else f"cd <deps>/bgfx && ../bx/tools/bin/darwin/genie --gcc=osx-x64 --platform=x64 --with-shared-lib gmake && cd {os.getcwd()}"
                 if platform.system() == "Darwin" and plat.find("x64") != -1
                 else ""
             ),
@@ -172,36 +188,36 @@ deps = {
         (
             f"msbuild -m:{nproc} -p:Configuration={bgfx_config} <deps>\\bgfx\\.build\\projects\\{vs_version}\\bgfx.sln"
             if platform.system() == "Windows"
-            else f"make -C <deps>/bgfx/.build/projects/gmake-linux-clang -j{nproc} config={bgfx_config.lower()}64 bgfx-shared-lib shaderc texturec texturev geometryc geometryv"
+            else f"make -C <deps>/bgfx/.build/projects/gmake-linux-clang -j{nproc} config={bgfx_config.lower()}64 bgfx-shared-lib"
             if platform.system() == "Linux"
-            else f"make -C <deps>/bgfx/.build/projects/gmake-osx-x64 -j{nproc} config={bgfx_config.lower()}64 bgfx-shared-lib shaderc texturec texturev geometryc geometryv"
+            else f"make -C <deps>/bgfx/.build/projects/gmake-osx-x64 -j{nproc} config={bgfx_config.lower()}64 bgfx-shared-lib"
             if platform.system() == "Darwin" and plat.find("x64") != -1
             else ""
         ),
     ],
     "cglm": [
-        "git clone https://github.com/recp/cglm <deps>/cglm",
+        "git clone --depth=1 https://github.com/recp/cglm <deps>/cglm",
         [
             f"cmake -S <deps>/cglm -B <deps>/build/cglm {cmake_flags} -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCGLM_STATIC=OFF"
         ],
         f"cmake --build <deps>/build/cglm -j{nproc}",
     ],
     "phnt": [
-        "git clone https://github.com/processhacker/phnt <deps>/phnt"
+        "git clone --depth=1 https://github.com/processhacker/phnt <deps>/phnt"
         if platform.system() == "Windows"
         else "",
         [""],
         "",
     ],
     "sdl2": [
-        "git clone https://github.com/libsdl-org/SDL <deps>/sdl2",
+        "git clone --depth=1 https://github.com/libsdl-org/SDL <deps>/sdl2",
         [
             f"cmake -S <deps>/sdl2 -B <deps>/build/sdl2 {cmake_flags} -DCMAKE_BUILD_TYPE=RelWithDebInfo -DSDL_STATIC=OFF"
         ],
         f"cmake --build <deps>/build/sdl2 -j{nproc}",
     ],
     "stb": [
-        "git clone https://github.com/nothings/stb <deps>/stb",
+        "git clone --depth=1 https://github.com/nothings/stb <deps>/stb",
         [""],
         "",
     ],
@@ -225,32 +241,12 @@ if platform.system() == "Windows":
     outputs = {
         "bgfx": [
             (
-                f"{deps_path}/tmp/bgfx/.build/win64_{vs_version}/bin/geometryc{bgfx_config}.exe",
-                f"{deps_path}/bin/geometryc.exe",
-            ),
-            (
-                f"{deps_path}/tmp/bgfx/.build/win64_{vs_version}/bin/geometryv{bgfx_config}.exe",
-                f"{deps_path}/bin/geometryv.exe",
-            ),
-            (
                 f"{deps_path}/tmp/bgfx/.build/win64_{vs_version}/bin/bgfx-shared-lib{bgfx_config}.dll",
                 f"{deps_path}/bin/bgfx.dll",
             ),
             (
                 f"{deps_path}/tmp/bgfx/.build/win64_{vs_version}/bin/bgfx-shared-lib{bgfx_config}.pdb",
                 f"{deps_path}/bin/bgfx.pdb",
-            ),
-            (
-                f"{deps_path}/tmp/bgfx/.build/win64_{vs_version}/bin/shaderc{bgfx_config}.exe",
-                f"{deps_path}/bin/shaderc.exe",
-            ),
-            (
-                f"{deps_path}/tmp/bgfx/.build/win64_{vs_version}/bin/texturec{bgfx_config}.exe",
-                f"{deps_path}/bin/texturec.exe",
-            ),
-            (
-                f"{deps_path}/tmp/bgfx/.build/win64_{vs_version}/bin/texturev{bgfx_config}.exe",
-                f"{deps_path}/bin/texturev.exe",
             ),
         ],
         "cglm": [
@@ -268,28 +264,8 @@ elif platform.system() == "Darwin":
     outputs = {
         "bgfx": [
             (
-                f"{deps_path}/tmp/bgfx/.build/osx-x64/bin/geometryc{bgfx_config}",
-                f"{deps_path}/bin/geometryc",
-            ),
-            (
-                f"{deps_path}/tmp/bgfx/.build/osx-x64/bin/geometryv{bgfx_config}",
-                f"{deps_path}/bin/geometryv",
-            ),
-            (
                 f"{deps_path}/tmp/bgfx/.build/osx-x64/bin/libbgfx-shared-lib{bgfx_config}.dylib",
                 f"{deps_path}/bin/libbgfx.dylib",
-            ),
-            (
-                f"{deps_path}/tmp/bgfx/.build/osx-x64/bin/shaderc{bgfx_config}",
-                f"{deps_path}/bin/shaderc",
-            ),
-            (
-                f"{deps_path}/tmp/bgfx/.build/osx-x64/bin/texturec{bgfx_config}",
-                f"{deps_path}/bin/texturec",
-            ),
-            (
-                f"{deps_path}/tmp/bgfx/.build/osx-x64/bin/texturev{bgfx_config}",
-                f"{deps_path}/bin/texturev",
             ),
         ],
         "cglm": [
@@ -309,28 +285,8 @@ elif platform.system() == "Linux":
     outputs = {
         "bgfx": [
             (
-                f"{deps_path}/tmp/bgfx/.build/linux64_clang/bin/geometryc{bgfx_config}",
-                f"{deps_path}/bin/geometryc",
-            ),
-            (
-                f"{deps_path}/tmp/bgfx/.build/linux64_clang/bin/geometryv{bgfx_config}",
-                f"{deps_path}/bin/geometryv",
-            ),
-            (
                 f"{deps_path}/tmp/bgfx/.build/linux64_clang/bin/libbgfx-shared-lib{bgfx_config}.so",
                 f"{deps_path}/bin/libbgfx.so",
-            ),
-            (
-                f"{deps_path}/tmp/bgfx/.build/linux64_clang/bin/shaderc{bgfx_config}",
-                f"{deps_path}/bin/shaderc",
-            ),
-            (
-                f"{deps_path}/tmp/bgfx/.build/linux64_clang/bin/texturec{bgfx_config}",
-                f"{deps_path}/bin/texturec",
-            ),
-            (
-                f"{deps_path}/tmp/bgfx/.build/linux64_clang/bin/texturev{bgfx_config}",
-                f"{deps_path}/bin/texturev",
             ),
         ],
         "cglm": [
@@ -352,6 +308,7 @@ elif platform.system() == "Linux":
         ],
     }
 
+start = time.time_ns()
 if not dry_run:
     if not no_download:
         # Prompt to overwrite
@@ -433,4 +390,10 @@ if not dry_run or (dry_run and debug):
 if not keep_src:
     shutil.rmtree(f"{deps_path}/tmp", onerror=shutil_nuke_git)
 
-print("Done!")
+end = time.time_ns()
+buildtime = (end - start) / 1000000
+buildminutes = buildtime / 1000 // 60
+buildseconds = buildtime / 1000 % 60
+sys.stderr.write(
+    f"Done! Finished building dependencies after {buildminutes}m{buildseconds}s ({buildtime} ms)\n"
+)
