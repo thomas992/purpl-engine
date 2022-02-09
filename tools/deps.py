@@ -372,9 +372,9 @@ if not dry_run:
 if not dry_run or (dry_run and debug):
     if platform.system() == "Windows":
         print(f"Generating new bgfx import library for {plat[4:]}")
-        bgfx_def = outputs["bgfx"][2][1].replace("dll", "def")
+        bgfx_def = outputs["bgfx"][0][1].replace("dll", "def")
         subprocess.call(
-            f"{tools_dir}\\mkdlldef.bat " + outputs["bgfx"][2][1],
+            f"{tools_dir}\\mkdlldef.bat " + outputs["bgfx"][0][1],
             shell=True,
             stdout=sys.stdout,
         )
