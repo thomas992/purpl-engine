@@ -174,11 +174,11 @@ deps = {
             "git clone --depth=1 https://github.com/bkaradzic/bx <deps>/bx",
             "git clone --depth=1 https://github.com/bkaradzic/bimg <deps>/bimg",
             (
-                f"pushd <deps>\\bgfx && ..\\bx\\tools\\bin\\windows\\genie --platform=x64 --with-shared-lib {vs_version} && popd"
+                f"pushd <deps>\\bgfx && ..\\bx\\tools\\bin\\windows\\genie --platform=x64 --with-shared-lib --with-tools {vs_version} && popd"
                 if platform.system() == "Windows"
-                else f"cd <deps>/bgfx && ../bx/tools/bin/linux/genie --gcc=linux-clang --platform=x64 --with-shared-lib gmake && cd {os.getcwd()}"
+                else f"cd <deps>/bgfx && ../bx/tools/bin/linux/genie --gcc=linux-clang --platform=x64 --with-shared-lib --with-tools gmake && cd {os.getcwd()}"
                 if platform.system() == "Linux"
-                else f"cd <deps>/bgfx && ../bx/tools/bin/darwin/genie --gcc=osx-x64 --platform=x64 --with-shared-lib gmake && cd {os.getcwd()}"
+                else f"cd <deps>/bgfx && ../bx/tools/bin/darwin/genie --gcc=osx-x64 --platform=x64 --with-shared-lib --with-tools gmake && cd {os.getcwd()}"
                 if platform.system() == "Darwin" and plat.find("x64") != -1
                 else ""
             ),
@@ -186,9 +186,9 @@ deps = {
         (
             f"msbuild -m:{nproc} -p:Configuration={bgfx_config} <deps>\\bgfx\\.build\\projects\\{vs_version}\\bgfx.sln"
             if platform.system() == "Windows"
-            else f"make -C <deps>/bgfx/.build/projects/gmake-linux-clang -j{nproc} config={bgfx_config.lower()}64 bgfx-shared-lib"
+            else f"make -C <deps>/bgfx/.build/projects/gmake-linux-clang -j{nproc} config={bgfx_config.lower()}64 bgfx-shared-lib geometryc geometryv shaderc texturec texturev"
             if platform.system() == "Linux"
-            else f"make -C <deps>/bgfx/.build/projects/gmake-osx-x64 -j{nproc} config={bgfx_config.lower()}64 bgfx-shared-lib"
+            else f"make -C <deps>/bgfx/.build/projects/gmake-osx-x64 -j{nproc} config={bgfx_config.lower()}64 bgfx-shared-lib geometryc geometryv shaderc texturec texturev"
             if platform.system() == "Darwin" and plat.find("x64") != -1
             else ""
         ),
@@ -246,6 +246,46 @@ if platform.system() == "Windows":
                 f"{deps_path}/tmp/bgfx/.build/win64_{vs_version}/bin/bgfx-shared-lib{bgfx_config}.pdb",
                 f"{deps_path}/bin/bgfx.pdb",
             ),
+            (
+                f"{deps_path}/tmp/bgfx/.build/win64_{vs_version}/bin/geometryc{bgfx_config}.exe",
+                f"{deps_path}/bin/geometryc.exe"
+            ),
+            (
+                f"{deps_path}/tmp/bgfx/.build/win64_{vs_version}/bin/geometryc{bgfx_config}.pdb",
+                f"{deps_path}/bin/geometryc.pdb"
+            ),
+            (
+                f"{deps_path}/tmp/bgfx/.build/win64_{vs_version}/bin/geometryv{bgfx_config}.exe",
+                f"{deps_path}/bin/geometryv.exe"
+            ),
+            (
+                f"{deps_path}/tmp/bgfx/.build/win64_{vs_version}/bin/geometryv{bgfx_config}.pdb",
+                f"{deps_path}/bin/geometryv.pdb"
+            ),
+            (
+                f"{deps_path}/tmp/bgfx/.build/win64_{vs_version}/bin/shaderc{bgfx_config}.exe",
+                f"{deps_path}/bin/shaderc.exe"
+            ),
+            (
+                f"{deps_path}/tmp/bgfx/.build/win64_{vs_version}/bin/shaderc{bgfx_config}.pdb",
+                f"{deps_path}/bin/shaderc.pdb"
+            ),
+            (
+                f"{deps_path}/tmp/bgfx/.build/win64_{vs_version}/bin/texturec{bgfx_config}.exe",
+                f"{deps_path}/bin/texturec.exe"
+            ),
+            (
+                f"{deps_path}/tmp/bgfx/.build/win64_{vs_version}/bin/texturec{bgfx_config}.pdb",
+                f"{deps_path}/bin/texturec.pdb"
+            ),
+            (
+                f"{deps_path}/tmp/bgfx/.build/win64_{vs_version}/bin/texturev{bgfx_config}.exe",
+                f"{deps_path}/bin/texturev.exe"
+            ),
+            (
+                f"{deps_path}/tmp/bgfx/.build/win64_{vs_version}/bin/texturev{bgfx_config}.pdb",
+                f"{deps_path}/bin/texturev.pdb"
+            )
         ],
         "cglm": [
             (f"{deps_path}/tmp/build/cglm/cglm-0.dll", f"{deps_path}/bin/cglm-0.dll"),
@@ -265,6 +305,26 @@ elif platform.system() == "Darwin":
                 f"{deps_path}/tmp/bgfx/.build/osx-x64/bin/libbgfx-shared-lib{bgfx_config}.dylib",
                 f"{deps_path}/bin/libbgfx.dylib",
             ),
+            (
+                f"{deps_path}/tmp/bgfx/.build/osx-x64/bin/geometryc{bgfx_config}",
+                f"{deps_path}/bin/geometryc"
+            ),
+            (
+                f"{deps_path}/tmp/bgfx/.build/osx-x64/bin/geometryv{bgfx_config}",
+                f"{deps_path}/bin/geometryv"
+            ),
+            (
+                f"{deps_path}/tmp/bgfx/.build/osx-x64/bin/shaderc{bgfx_config}",
+                f"{deps_path}/bin/shaderc"
+            ),
+            (
+                f"{deps_path}/tmp/bgfx/.build/osx-x64/bin/texturec{bgfx_config}",
+                f"{deps_path}/bin/texturec"
+            ),
+            (
+                f"{deps_path}/tmp/bgfx/.build/osx-x64/bin/texturev{bgfx_config}",
+                f"{deps_path}/bin/texturev"
+            )
         ],
         "cglm": [
             (
@@ -286,6 +346,26 @@ elif platform.system() == "Linux":
                 f"{deps_path}/tmp/bgfx/.build/linux64_clang/bin/libbgfx-shared-lib{bgfx_config}.so",
                 f"{deps_path}/bin/libbgfx.so",
             ),
+            (
+                f"{deps_path}/tmp/bgfx/.build/linux64_clang/bin/geometryc{bgfx_config}",
+                f"{deps_path}/bin/geometryc"
+            ),
+            (
+                f"{deps_path}/tmp/bgfx/.build/linux64_clang/bin/geometryv{bgfx_config}",
+                f"{deps_path}/bin/geometryv"
+            ),
+            (
+                f"{deps_path}/tmp/bgfx/.build/linux64_clang/bin/shaderc{bgfx_config}",
+                f"{deps_path}/bin/shaderc"
+            ),
+            (
+                f"{deps_path}/tmp/bgfx/.build/linux64_clang/bin/texturec{bgfx_config}",
+                f"{deps_path}/bin/texturec"
+            ),
+            (
+                f"{deps_path}/tmp/bgfx/.build/linux64_clang/bin/texturev{bgfx_config}",
+                f"{deps_path}/bin/texturev"
+            )
         ],
         "cglm": [
             (f"{deps_path}/tmp/build/cglm/libcglm.so", f"{deps_path}/bin/libcglm.so"),
@@ -393,5 +473,5 @@ buildtime = (end - start) / 1000000
 buildminutes = buildtime / 1000 // 60
 buildseconds = buildtime / 1000 % 60
 sys.stderr.write(
-    f"Done! Finished building dependencies after {buildminutes}m{buildseconds}s ({buildtime} ms)\n"
+    f"Done! Finished building dependencies after {buildminutes}m{round(buildseconds, 2)}s ({buildtime} ms)\n"
 )
