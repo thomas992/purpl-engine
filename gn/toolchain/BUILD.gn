@@ -40,7 +40,7 @@ toolchain("clang") {
         [ "{{source_out_dir}}/{{target_output_name}}.{{source_name_part}}.o" ]
   }
   tool("alink") {
-    command = "rm -f {{output}} && ar rcs {{output}} {{inputs}}"
+    command = "rm -f {{output}} && llvm-ar rcs {{output}} {{inputs}}"
     description = "AR {{target_output_name}}{{output_extension}}"
     outputs =
         [ "{{target_out_dir}}/{{target_output_name}}{{output_extension}}" ]

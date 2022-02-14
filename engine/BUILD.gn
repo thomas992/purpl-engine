@@ -33,8 +33,6 @@ shared_library("engine") {
     "include/purpl/core/log.h",
     "include/purpl/core/types.h",
 
-    "include/purpl/graphics/private/callbacks.h",
-
     "include/purpl/util/fs.h",
     "include/purpl/util/misc.h",
     "include/purpl/util/string.h",
@@ -43,8 +41,6 @@ shared_library("engine") {
     "src/core/globals.c",
     "src/core/init.c",
     "src/core/log.c",
-    
-    "src/graphics/callbacks.c",
     
     "src/util/error.c",
     "src/util/fs.c",
@@ -57,7 +53,6 @@ shared_library("engine") {
     sources += [ "src/util/win/ntdll.c" ]
   }
 
-  defines += [ "BGFX_SHARED_LIB_USE=1" ]
   if (current_cpu == "x64") {
     defines += [
       "PURPL_X86=1",
@@ -83,14 +78,12 @@ shared_library("engine") {
 
   if (is_win) {
     libs = [
-      "bgfx.lib",
       "cglm.lib",
       "kernel32.lib",
       "SDL2.lib",
     ]
   } else {
     libs = [
-      "bgfx",
       "cglm",
       "SDL2-2.0",
     ]

@@ -24,8 +24,6 @@
 #include "types.h"
 
 #ifdef PURPL_BUILD
-#include <bgfx/c99/bgfx.h>
-
 #include <SDL.h>
 
 /// Structure to hold information about the current instance of the engine
@@ -43,9 +41,6 @@ struct purpl_instance {
 	u32 wnd_height; // The height of the window
 	u32 wnd_x; // The X position of the window
 	u32 wnd_y; // The Y position of the window
-	bgfx_texture_format_t bgfx_display_format; // bgfx texture format used
-						   // by the display
-	bgfx_callback_interface_t *bgfx_callbacks; // bgfx callback table
 };
 
 extern struct purpl_instance *purpl_inst;

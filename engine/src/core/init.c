@@ -15,13 +15,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#define BGFX_SHARED_LIB_USE 1
-#include <bgfx/c99/bgfx.h>
-
 #include <SDL.h>
 #include <SDL_syswm.h>
-
-#include "purpl/graphics/private/callbacks.h"
 
 #ifdef _WIN32
 #include "purpl/util/private/win/ntdll.h"
@@ -32,9 +27,6 @@
 PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 {
 	char *title;
-	struct SDL_SysWMinfo wm_info;
-	bgfx_platform_data_t bgfx_plat;
-	bgfx_init_t bgfx_init_data;
 
 #ifdef _WIN32
 	purpl_load_ntdll();
@@ -109,109 +101,7 @@ PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 	SDL_GetWindowPosition(purpl_inst->wnd, &purpl_inst->wnd_x,
 			      &purpl_inst->wnd_y);
 	SDL_GetWindowSize(purpl_inst->wnd, &purpl_inst->wnd_width,
-			  &purpl_inst->wnd_height);
-
-	// Get the native window handle for bgfx
-	SDL_GetVersion(&wm_info.version);
-	if (!SDL_GetWindowWMInfo(purpl_inst->wnd, &wm_info)) {
-		PURPL_LOG_ERROR(purpl_inst->logger, "Failed to get native "
-						    "window handle from SDL");
-		SDL_DestroyWindow(purpl_inst->wnd);
-		purpl_log_close(purpl_inst->logger, true);
-		free(purpl_inst->app_name);
-		free(purpl_inst);
-		return false;
-	}
-
-	switch (wm_info.subsystem) {
-#if defined _WIN32
-	case SDL_SYSWM_WINDOWS:
-		bgfx_plat.nwh = wm_info.info.win.window;
-		break;
-#ifdef __WINRT__
-	case SDL_SYSWM_WINRT:
-		bgfx_plat.nwh = wm_info.info.winrt.window;
-		break;
-#endif // __WINRT__
-#elif defined __APPLE__ // _WIN32
-#ifdef SDL_VIDEO_DRIVER_COCOA
-	case SDL_SYSWM_COCOA:
-		bgfx_plat.nwh = wm_info.info.cocoa.window;
-		break;
-#endif 
-#else // _WIN32
-#ifdef SDL_VIDEO_DRIVER_WAYLAND
-	case SDL_SYSWM_WAYLAND:
-		bgfx_plat.ndt = wm_info.info.wl.display;
-		bgfx_plat.nwh = (void *)wm_info.info.wl.egl_window;
-#endif // SDL_VIDEO_DRIVER_WAYLAND
-	case SDL_SYSWM_X11: // X11 supports every OS in use other than Windows
-		bgfx_plat.ndt = wm_info.info.x11.display;
-		bgfx_plat.nwh = (void *)wm_info.info.x11.window;
-		break;
-#endif
-	default:
-		PURPL_LOG_ERROR(
-			purpl_inst->logger,
-			"Unsupported window manager 0x%X. Unable to initialize bgfx.",
-			wm_info.subsystem);
-		SDL_DestroyWindow(purpl_inst->wnd);
-		purpl_log_close(purpl_inst->logger, true);
-		free(purpl_inst->app_name);
-		free(purpl_inst);
-		return false;
-	}
-
-	PURPL_LOG_INFO(purpl_inst->logger, "Initializing bgfx");
-
-	bgfx_set_platform_data(&bgfx_plat);
-	bgfx_render_frame(BGFX_RENDER_FRAME_NO_CONTEXT);
-
-	bgfx_init_ctor(&bgfx_init_data);
-	purpl_inst->bgfx_callbacks = purpl_init_bgfx_callbacks();
-#if defined _WIN32 && defined PURPL_ENABLE_DIRECTX
-	bgfx_init_data.type = BGFX_RENDERER_TYPE_DIRECT3D12;
-#elif defined __APPLE__ // _WIN32
-	bgfx_init_data.type = BGFX_RENDERER_TYPE_METAL;
-#else // _WIN32
-	bgfx_init_data.type = BGFX_RENDERER_TYPE_VULKAN;
-#endif // _WIN32
-	bgfx_init_data.callback = purpl_inst->bgfx_callbacks;
-	bgfx_init_data.resolution.width = purpl_inst->wnd_width;
-	bgfx_init_data.resolution.width = purpl_inst->wnd_height;
-	bgfx_init_data.resolution.reset = BGFX_RESET_VSYNC;
-
-	if (!bgfx_init(&bgfx_init_data)) {
-#ifdef PURPL_ARM
-		PURPL_LOG_WARNING(
-			purpl_inst->logger,
-			"Unable to use Vulkan, retrying with OpenGL ES");
-		bgfx_init_data.type = BGFX_RENDERER_TYPE_OPENGLES;
-#else
-		PURPL_LOG_WARNING(
-			purpl_inst->logger,
-			"Unable to use Vulkan, retrying with OpenGL");
-		bgfx_init_data.type = BGFX_RENDERER_TYPE_OPENGL;
-#endif
-		if (!bgfx_init(&bgfx_init_data)) {
-			PURPL_LOG_ERROR(purpl_inst->logger,
-					"Failed to initialize bgfx");
-			free(purpl_inst->bgfx_callbacks->vtbl);
-			free(purpl_inst->bgfx_callbacks);
-			SDL_DestroyWindow(purpl_inst->wnd);
-			purpl_log_close(purpl_inst->logger, true);
-			free(purpl_inst->app_name);
-			free(purpl_inst);
-			return false;
-		}
-	}
-
-	purpl_inst->bgfx_display_format = bgfx_init_data.resolution.format;
-	bgfx_set_debug(BGFX_DEBUG_TEXT);
-	bgfx_reset(purpl_inst->wnd_width, purpl_inst->wnd_height,
-		   BGFX_RESET_VSYNC, purpl_inst->bgfx_display_format);
-	bgfx_set_view_clear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0, 1.0f,
-			    0);
+			  &purpl_inst->wnd_height);	
 
 	srand((u32)((u64)purpl_inst ^ ((u64)purpl_inst->logger & (u64)title)) *
 	      time(NULL));
@@ -248,8 +138,6 @@ static bool purpl_handle_events(void)
 					purpl_inst->wnd_width = e.window.data1;
 					purpl_inst->wnd_height =
 						e.window.data2;
-					bgfx_reset(purpl_inst->wnd_width, purpl_inst->wnd_height,
-						   BGFX_RESET_VSYNC, purpl_inst->bgfx_display_format);
 					PURPL_LOG_DEBUG(purpl_inst->logger, "Window resized to %dx%d", purpl_inst->wnd_width,
 						purpl_inst->wnd_height);
 					break;
@@ -271,7 +159,6 @@ static bool purpl_handle_events(void)
 PURPL_API void purpl_run(purpl_frame_func frame, void *user_data)
 {
 	bool running;
-	bgfx_encoder_t *encoder;
 
 	if (!purpl_inst || !frame) {
 		if (purpl_inst)
@@ -289,29 +176,14 @@ PURPL_API void purpl_run(purpl_frame_func frame, void *user_data)
 			break;
 		}
 
-		bgfx_set_view_rect(0, 0, 0, purpl_inst->wnd_width,
-				   purpl_inst->wnd_height);
-
-		// Ensure the viewport is cleared
-		encoder = bgfx_encoder_begin(true);
-		bgfx_encoder_touch(encoder, 0);
-		bgfx_encoder_end(encoder);
-
 		if (frame)
 			running = frame(0, user_data);
-
-		bgfx_frame(false);
 	}
 }
 
 PURPL_API void purpl_shutdown(void)
 {
 	PURPL_LOG_WARNING(purpl_inst->logger, "Engine shutting down");
-
-	bgfx_shutdown();
-
-	free(purpl_inst->bgfx_callbacks->vtbl);
-	free(purpl_inst->bgfx_callbacks);
 
 	SDL_DestroyWindow(purpl_inst->wnd);
 	SDL_Quit();

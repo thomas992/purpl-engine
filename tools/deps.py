@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
+
 #  Downloads and builds dependencies
 #  Uses python3 instead of just python because Ubuntu is jank and still thinks
 #  Python 2 is recent enough for its executable not to be named differently.
+#
+#  This script is pretty bad but does work perfectly, and it's simpler than using
+#  conan or vcpkg, especially considering I'm using GN for my buildsystem
 #
 #  Copyright 2022 MobSlicer152
 #  This file is part of Purpl Engine
@@ -68,7 +72,7 @@ def download_dep(
 
     # Run the commands (using shell=True is fine because all the commands are in the script)
     try:
-        if download:
+        if download or not os.path.exists(dl_cmd.split(" ")[-1]):
             print(f"Running {dl_cmd}...")
             subprocess.run(
                 dl_cmd,
@@ -77,13 +81,14 @@ def download_dep(
                 stderr=(sys.stdout if dl_cmd.startswith("git") else sys.stderr),
             )
             for stp_cmd in stp_cmds:
-                print(f"Running {stp_cmd}...")
-                subprocess.run(
-                    stp_cmd,
-                    shell=True,
-                    stdout=sys.stdout,
-                    stderr=(sys.stdout if dl_cmd.startswith("git") else sys.stderr),
-                )
+                if not os.path.exists(stp_cmd.split(" ")[-1]):
+                    print(f"Running {stp_cmd}...")
+                    subprocess.run(
+                        stp_cmd,
+                        shell=True,
+                        stdout=sys.stdout,
+                        stderr=(sys.stdout if dl_cmd.startswith("git") else sys.stderr),
+                    )
         print(f"Running {bld_cmd}...")
         subprocess.run(
             bld_cmd,
@@ -151,7 +156,7 @@ if dry_run:
 if keep_src:
     print("Keeping source code")
 if no_download:
-    print("Not downloading fresh sources")
+    print("Not removing existing sources")
 if silent:
     print(f"Saving output to {log_path}")
     sys.stdout = open(log_path, "w+", encoding="utf-8")
@@ -159,40 +164,13 @@ if silent:
 # CMake is officially the worst build system other than literally just throwing
 # together a bunch of random shell scripts and praying to whatever ancient
 # Lovecraftian deity is in charge of terrible build systems that it works. Oh
-# wait no CMake is still worse, because this script works better.
-vs_version = "vs2019" if os.getenv("COMPAT") == "1" else "vs2022"
+# wait no CMake is still worse, because even this script works better.
 cmake_flags = (
     f"-GNinja -DCMAKE_MAKE_PROGRAM={os.getcwd()}/tools/ninja.exe -DCMAKE_C_COMPILER=cl -DCMAKE_CXX_COMPILER=cl"
     if platform.system() == "Windows"
     else f"-GNinja -DCMAKE_MAKE_PROGRAM={os.getcwd()}/tools/ninja -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++"
 )
-bgfx_config = "Debug" if keep_src else "Release"
 deps = {
-    "bgfx": [
-        "git clone --depth=1 https://github.com/bkaradzic/bgfx <deps>/bgfx",
-        [
-            "git clone --depth=1 https://github.com/bkaradzic/bx <deps>/bx",
-            "git clone --depth=1 https://github.com/bkaradzic/bimg <deps>/bimg",
-            (
-                f"pushd <deps>\\bgfx && ..\\bx\\tools\\bin\\windows\\genie --platform=x64 --with-shared-lib --with-tools {vs_version} && popd"
-                if platform.system() == "Windows"
-                else f"cd <deps>/bgfx && ../bx/tools/bin/linux/genie --gcc=linux-clang --platform=x64 --with-shared-lib --with-tools gmake && cd {os.getcwd()}"
-                if platform.system() == "Linux"
-                else f"cd <deps>/bgfx && ../bx/tools/bin/darwin/genie --gcc=osx-x64 --platform=x64 --with-shared-lib --with-tools gmake && cd {os.getcwd()}"
-                if platform.system() == "Darwin" and plat.find("x64") != -1
-                else ""
-            ),
-        ],
-        (
-            f"msbuild -m:{nproc} -p:Configuration={bgfx_config} <deps>\\bgfx\\.build\\projects\\{vs_version}\\bgfx.sln"
-            if platform.system() == "Windows"
-            else f"make -C <deps>/bgfx/.build/projects/gmake-linux-clang -j{nproc} config={bgfx_config.lower()}64 bgfx-shared-lib geometryc geometryv shaderc texturec texturev"
-            if platform.system() == "Linux"
-            else f"make -C <deps>/bgfx/.build/projects/gmake-osx-x64 -j{nproc} config={bgfx_config.lower()}64 bgfx-shared-lib geometryc geometryv shaderc texturec texturev"
-            if platform.system() == "Darwin" and plat.find("x64") != -1
-            else ""
-        ),
-    ],
     "cglm": [
         "git clone --depth=1 https://github.com/recp/cglm <deps>/cglm",
         [
@@ -223,11 +201,6 @@ deps = {
 
 # Folders to get headers from
 include_dirs = {
-    "bgfx": [
-        f"{deps_path}/tmp/bgfx/include",
-        f"{deps_path}/tmp/bx/include",
-        f"{deps_path}/tmp/bimg/include",
-    ],
     "cglm": [f"{deps_path}/tmp/cglm/include"],
     "phnt": [f"{deps_path}/tmp/phnt$$"] if platform.system() == "Windows" else [],
     "sdl2": [f"{deps_path}/tmp/sdl2/include", f"{deps_path}/tmp/build/sdl2/include"],
@@ -237,56 +210,6 @@ include_dirs = {
 # Output files that get kept
 if platform.system() == "Windows":
     outputs = {
-        "bgfx": [
-            (
-                f"{deps_path}/tmp/bgfx/.build/win64_{vs_version}/bin/bgfx-shared-lib{bgfx_config}.dll",
-                f"{deps_path}/bin/bgfx.dll",
-            ),
-            (
-                f"{deps_path}/tmp/bgfx/.build/win64_{vs_version}/bin/bgfx-shared-lib{bgfx_config}.pdb",
-                f"{deps_path}/bin/bgfx.pdb",
-            ),
-            (
-                f"{deps_path}/tmp/bgfx/.build/win64_{vs_version}/bin/geometryc{bgfx_config}.exe",
-                f"{deps_path}/bin/geometryc.exe"
-            ),
-            (
-                f"{deps_path}/tmp/bgfx/.build/win64_{vs_version}/bin/geometryc{bgfx_config}.pdb",
-                f"{deps_path}/bin/geometryc.pdb"
-            ),
-            (
-                f"{deps_path}/tmp/bgfx/.build/win64_{vs_version}/bin/geometryv{bgfx_config}.exe",
-                f"{deps_path}/bin/geometryv.exe"
-            ),
-            (
-                f"{deps_path}/tmp/bgfx/.build/win64_{vs_version}/bin/geometryv{bgfx_config}.pdb",
-                f"{deps_path}/bin/geometryv.pdb"
-            ),
-            (
-                f"{deps_path}/tmp/bgfx/.build/win64_{vs_version}/bin/shaderc{bgfx_config}.exe",
-                f"{deps_path}/bin/shaderc.exe"
-            ),
-            (
-                f"{deps_path}/tmp/bgfx/.build/win64_{vs_version}/bin/shaderc{bgfx_config}.pdb",
-                f"{deps_path}/bin/shaderc.pdb"
-            ),
-            (
-                f"{deps_path}/tmp/bgfx/.build/win64_{vs_version}/bin/texturec{bgfx_config}.exe",
-                f"{deps_path}/bin/texturec.exe"
-            ),
-            (
-                f"{deps_path}/tmp/bgfx/.build/win64_{vs_version}/bin/texturec{bgfx_config}.pdb",
-                f"{deps_path}/bin/texturec.pdb"
-            ),
-            (
-                f"{deps_path}/tmp/bgfx/.build/win64_{vs_version}/bin/texturev{bgfx_config}.exe",
-                f"{deps_path}/bin/texturev.exe"
-            ),
-            (
-                f"{deps_path}/tmp/bgfx/.build/win64_{vs_version}/bin/texturev{bgfx_config}.pdb",
-                f"{deps_path}/bin/texturev.pdb"
-            )
-        ],
         "cglm": [
             (f"{deps_path}/tmp/build/cglm/cglm-0.dll", f"{deps_path}/bin/cglm-0.dll"),
             (f"{deps_path}/tmp/build/cglm/cglm.lib", f"{deps_path}/bin/cglm.lib"),
@@ -300,32 +223,6 @@ if platform.system() == "Windows":
     }
 elif platform.system() == "Darwin":
     outputs = {
-        "bgfx": [
-            (
-                f"{deps_path}/tmp/bgfx/.build/osx-x64/bin/libbgfx-shared-lib{bgfx_config}.dylib",
-                f"{deps_path}/bin/libbgfx.dylib",
-            ),
-            (
-                f"{deps_path}/tmp/bgfx/.build/osx-x64/bin/geometryc{bgfx_config}",
-                f"{deps_path}/bin/geometryc"
-            ),
-            (
-                f"{deps_path}/tmp/bgfx/.build/osx-x64/bin/geometryv{bgfx_config}",
-                f"{deps_path}/bin/geometryv"
-            ),
-            (
-                f"{deps_path}/tmp/bgfx/.build/osx-x64/bin/shaderc{bgfx_config}",
-                f"{deps_path}/bin/shaderc"
-            ),
-            (
-                f"{deps_path}/tmp/bgfx/.build/osx-x64/bin/texturec{bgfx_config}",
-                f"{deps_path}/bin/texturec"
-            ),
-            (
-                f"{deps_path}/tmp/bgfx/.build/osx-x64/bin/texturev{bgfx_config}",
-                f"{deps_path}/bin/texturev"
-            )
-        ],
         "cglm": [
             (
                 f"{deps_path}/tmp/build/cglm/libcglm.0.8.5.dylib",
@@ -341,32 +238,6 @@ elif platform.system() == "Darwin":
     }
 elif platform.system() == "Linux":
     outputs = {
-        "bgfx": [
-            (
-                f"{deps_path}/tmp/bgfx/.build/linux64_clang/bin/libbgfx-shared-lib{bgfx_config}.so",
-                f"{deps_path}/bin/libbgfx.so",
-            ),
-            (
-                f"{deps_path}/tmp/bgfx/.build/linux64_clang/bin/geometryc{bgfx_config}",
-                f"{deps_path}/bin/geometryc"
-            ),
-            (
-                f"{deps_path}/tmp/bgfx/.build/linux64_clang/bin/geometryv{bgfx_config}",
-                f"{deps_path}/bin/geometryv"
-            ),
-            (
-                f"{deps_path}/tmp/bgfx/.build/linux64_clang/bin/shaderc{bgfx_config}",
-                f"{deps_path}/bin/shaderc"
-            ),
-            (
-                f"{deps_path}/tmp/bgfx/.build/linux64_clang/bin/texturec{bgfx_config}",
-                f"{deps_path}/bin/texturec"
-            ),
-            (
-                f"{deps_path}/tmp/bgfx/.build/linux64_clang/bin/texturev{bgfx_config}",
-                f"{deps_path}/bin/texturev"
-            )
-        ],
         "cglm": [
             (f"{deps_path}/tmp/build/cglm/libcglm.so", f"{deps_path}/bin/libcglm.so"),
             (
@@ -399,14 +270,16 @@ if not dry_run:
                 sys.stderr.write("Not overwriting\n")
                 exit()
 
-        # Make a folder for the dependencies to be cloned into
         shutil.rmtree(deps_path, onerror=shutil_nuke_git)
+
+    if not os.path.exists(deps_path):
         os.mkdir(deps_path)
         os.mkdir(f"{deps_path}/tmp")
         os.mkdir(f"{deps_path}/tmp/build")
-    else:
-        shutil.rmtree(f"{deps_path}/bin")
-        shutil.rmtree(f"{deps_path}/include")
+
+    if no_download:
+        shutil.rmtree(f"{deps_path}/bin", onerror=shutil_nuke_git)
+        shutil.rmtree(f"{deps_path}/include", onerror=shutil_nuke_git)
 
     os.mkdir(f"{deps_path}/bin")
     os.mkdir(f"{deps_path}/include")
@@ -427,44 +300,32 @@ if not dry_run:
                 onelevel = True
             dirname = dir.replace("$$", "")
 
-            for f in os.listdir(dirname):
-                if os.path.isdir(f"{dirname}/{f}") and not onelevel:
-                    shutil.copytree(f"{dirname}/{f}", f"{deps_path}/include/{f}")
-                else:
-                    if f.endswith(".h") or f.endswith(".inl"):
-                        shutil.copy(f"{dirname}/{f}", f"{deps_path}/include/{f}")
+            if os.path.exists(dirname):
+                for f in os.listdir(dirname):
+                    if os.path.isdir(f"{dirname}/{f}") and not onelevel:
+                        shutil.copytree(f"{dirname}/{f}", f"{deps_path}/include/{f}")
+                    else:
+                        if f.endswith(".h") or f.endswith(".inl"):
+                            shutil.copy(f"{dirname}/{f}", f"{deps_path}/include/{f}")
 
     for dep, outs in outputs.items():
         for out in outs:
-            print(f"Copying {dep} output {out[0]} to {out[1]}...")
-            shutil.copy(
-                out[0],
-                out[1],
-                follow_symlinks=(out[0].replace(".dylib", "")[-1] in "1234567890"),
-            )
-            if platform.system() == "Darwin" and out[0].endswith(".dylib"):
-                subprocess.call(
-                    f"install_name_tool -id {out[1]} {out[1]}",
-                    shell=True,
-                    stdout=sys.stdout,
+            if os.path.exists(out[0]) and not os.path.exists(out[1]):
+                print(f"Copying {dep} output {out[0]} to {out[1]}...")
+                shutil.copy(
+                    out[0],
+                    out[1],
+                    follow_symlinks=(out[0].replace(".dylib", "")[-1] in "1234567890"),
                 )
-
-if not dry_run or (dry_run and debug):
-    if platform.system() == "Windows":
-        print(f"Generating new bgfx import library for {plat[4:]}")
-        bgfx_def = outputs["bgfx"][0][1].replace("dll", "def")
-        subprocess.call(
-            f"{tools_dir}\\mkdlldef.bat " + outputs["bgfx"][0][1],
-            shell=True,
-            stdout=sys.stdout,
-        )
-        subprocess.call(
-            f"link /lib /nologo /out:{deps_path}/bin/bgfx.lib /machine:{plat[4:]} /def:{bgfx_def}",
-            shell=True,
-            stdout=sys.stdout,
-        )
+                if platform.system() == "Darwin" and out[0].endswith(".dylib"):
+                    subprocess.call(
+                        f"install_name_tool -id {out[1]} {out[1]}",
+                        shell=True,
+                        stdout=sys.stdout,
+                    )
 
 # Clean up the other files
+shutil.rmtree(f"{deps_path}/tmp/build", onerror=shutil_nuke_git)
 if not keep_src:
     shutil.rmtree(f"{deps_path}/tmp", onerror=shutil_nuke_git)
 
@@ -472,6 +333,7 @@ end = time.time_ns()
 buildtime = (end - start) / 1000000
 buildminutes = buildtime / 1000 // 60
 buildseconds = buildtime / 1000 % 60
+buildmillis = buildtime - (int(buildseconds) * 1000)
 sys.stderr.write(
-    f"Done! Finished building dependencies after {buildminutes}m{round(buildseconds, 2)}s ({buildtime} ms)\n"
+    f"Done! Finished building dependencies after {int(buildminutes)}m{int(buildseconds)}s{round(buildmillis, 2)}ms ({buildtime} ms)\n"
 )

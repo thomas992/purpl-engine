@@ -17,12 +17,11 @@
 
 #pragma once
 
-#include <inttypes.h>
-#include <stdbool.h>
 #include <stdlib.h>
 
 #include "coredefs.h"
 #include "inst.h"
+#include "log.h"
 #include "types.h"
 
 #include "purpl/util/util.h"
