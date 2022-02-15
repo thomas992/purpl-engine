@@ -104,11 +104,11 @@ def download_dep(
 # Platform (replacements are for compatibility with GN's OS and architecture naming scheme)
 plat = (
     f"{platform.system()}-{platform.machine()}".lower()
-    .replace("x86_64", "x64")
-    .replace("amd64", "x64")
-    .replace("aarch64", "arm64")
-    .replace("windows", "win")
-    .replace("darwin", "mac")
+#    .replace("x86_64", "x64")
+#    .replace("amd64", "x64")
+#    .replace("aarch64", "arm64")
+#    .replace("windows", "win")
+#    .replace("darwin", "mac")
 )
 
 # Path to store dependencies in

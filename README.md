@@ -7,7 +7,7 @@ This is my fifth game engine, it's gonna be good this time
 
 All the stuff needed to build the engine (other than the compiler) is provided, and licenses for the libraries and programs are in `deps/licenses`.
 
-On Windows, you need Visual Studio 2019 16.8 or later (i.e. C17 support. However, earlier versions may work) and the Windows SDK (any recentish one should be fine, but for best results use the latest Windows 11 one {which even works on Windows 7, just as proof of how backwards compatible they are}). On Linux, you need the X11 or Wayland development headers and any version of Clang supporting C17 or later (basically every easily obtainable version unless you run a super old distro).
+On Windows, you need Visual Studio 2019 16.8 or later (i.e. C17 support. However, earlier versions may work) and the Windows SDK (any recentish one should be fine, but for best results use the latest Windows 11 one {which even works on Windows 7, just as proof of how backwards compatible they are}). On Linux, you need the X11 or Wayland development headers and any version of Clang supporting C17 or later (basically every easily obtainable version unless you run a super old distro). You also need to install `bfg9000` with `pip` to generate the build files (`bfg9000[msbuild]` on Windows).
 
 To build the engine, run the following commands on Windows:
 ```batch
@@ -19,19 +19,19 @@ python tools\deps.py
 tools\mkprojects
 
 :: This is the better way for a Command Prompt (or PowerShell if you aren't a true Windows god like me) shell
-gn gen out\win
+python -m bfg9000 configure out\win
 ninja -C out\win
 ```
 On Linux, run these commands instead:
 ```sh
 tools/deps.py # You can pass --skip-download to prevent redownloading, and --keep-src to keep sources for debugging
-tools/gn gen out/linux
+bfg9000 configure out/linux
 ninja -C out/linux
 ```
 On macOS:
 ```sh
 tools/deps.py
-tools/gn gen out/mac
+bfg9000 configure out/mac
 ninja -C out/mac
 ```
 
@@ -39,15 +39,15 @@ GN can also generate IDE projects with `--ide=vs`, `--ide=qtcreator`, or `--ide=
 
 To run the demo, do the following on Windows:
 ```batch
-main :: buildenv already sets the path so that the DLLs are found for the engine and dependencies
+demo :: buildenv already sets the path so that the DLLs are found for the engine and dependencies
 ```
 On Linux, run this command:
 ```sh
-LD_LIBRARY_PATH=deps/linux-<arch>/bin:out/linux out/linux/main
+LD_LIBRARY_PATH=deps/linux-<arch>/bin:out/linux/engine out/linux/demo/demo
 ```
 On macOS run this:
 ```sh
-DYLD_LIBRARY_PATH=deps/mac-<arch>/bin:out/mac out/mac/main
+DYLD_LIBRARY_PATH=deps/mac-<arch>/bin:out/mac/engine out/mac/demo/demo
 ```
 
 ## Using the releases and CI artifacts

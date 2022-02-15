@@ -1,5 +1,6 @@
 {
 	"files.associations": {
+		"*.bfg": "python",
 		"*.h": "c"
 	},
 	"cSpell.words": [
