@@ -69,7 +69,8 @@ jobs:
           path: build
 
       - name: Create zip of artifacts for release
-        run: "$Env:PROGRAMFILES\7-Zip\7z.exe a -tzip build-windows.zip build\*"
+        run: |
+          "$Env:PROGRAMFILES\7-Zip\7z.exe a -tzip build-windows.zip build\*"
 
       - name: Create release with artifacts
         uses: softprops/action-gh-release@v1
