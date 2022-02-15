@@ -100,10 +100,10 @@ jobs:
         run: python3 tools/deps.py --verbose
         
       - name: Install bfg9000
-        run: pip install bfg9000
+        run: python3 -m pip install bfg9000
 
       - name: Generate build files
-        run: bfg9000 configure out/mac
+        run: python3 -m bfg9000 configure out/mac
         
       - name: Build
         run: tools/ninja -C out/mac -j$[$(sysctl -n hw.ncpu) + 2]
@@ -162,11 +162,11 @@ jobs:
         run: python3 tools/deps.py --verbose
 
       - name: Install bfg9000
-        run: pip install bfg9000
+        run: python3 -m pip install bfg9000
 
       - name: Generate build files
         run: |
-          bfg9000 configure out/linux
+          python3 -m bfg9000 configure out/linux
           find out -type f
         
       - name: Build
