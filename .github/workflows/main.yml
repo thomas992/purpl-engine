@@ -42,7 +42,7 @@ jobs:
       - name: Generate build files
         run: |
           bfg9000 configure out\win --backend msbuild
-          dir /s/b out
+          cmd /c "dir /s/b out"
 
       - name: Build
         run: tools\ninja -C out\win
