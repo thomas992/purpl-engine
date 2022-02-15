@@ -21,9 +21,14 @@ options = [opts.std("c17")]
 
 if platform.system() == "Windows":
 	options.append(opts.warning("all"))
+	options.append("/wd4005")
+	options.append("/wd4090")
+	options.append("/wd4996")
 else:
 	options.append(opts.warning("extra", "error"))
+	options.append("-Wno-unknown-warning-option")
 	options.append("-Wno-discarded-qualifiers")
+	options.append("-Wno-ignored-qualifiers")
 	options.append("-Wno-pointer-sign")
 	options.append("-Wno-incompatible-pointer-types-discards-qualifiers")
 
