@@ -97,7 +97,7 @@ jobs:
 
       - name: Build dependencies
         if: steps.cache-deps.outputs.cache-hit != 'true'
-        run: python tools/deps.py --verbose
+        run: python3 tools/deps.py --verbose
         
       - name: Install bfg9000
         run: pip install bfg9000
@@ -159,7 +159,7 @@ jobs:
 
       - name: Build dependencies
         if: steps.cache-deps.outputs.cache-hit != 'true'
-        run: python tools/deps.py --verbose
+        run: python3 tools/deps.py --verbose
 
       - name: Install bfg9000
         run: pip install bfg9000
