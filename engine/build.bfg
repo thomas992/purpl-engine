@@ -51,7 +51,7 @@ engine = shared_library(
         opts.define("PURPL_DEBUG", str(int(bool(argv.debug)))),
         opts.define("PURPL_ENABLE_MEMING", str(int(bool(argv.enable_meming)))),
         opts.define("PURPL_VERBOSE_LOGGING", str(int(bool(argv.verbose_logging)))),
-        opts.debug if bool(argv.debug)
+        opts.debug if bool(argv.debug) else opts.optimize
     ],
 )
 
