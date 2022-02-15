@@ -103,7 +103,7 @@ jobs:
         run: sudo python3 -m pip install bfg9000
 
       - name: Generate build files
-        run: bfg9000 configure out/mac
+        run: bfg9000 configure out/mac --backend ninja
         
       - name: Build
         run: tools/ninja -C out/mac -j$[$(sysctl -n hw.ncpu) + 2]
@@ -165,9 +165,7 @@ jobs:
         run: sudo python3 -m pip install bfg9000
 
       - name: Generate build files
-        run: |
-          bfg9000 configure out/linux
-          find out -type f
+        run: bfg9000 configure out/linux --backend ninja
         
       - name: Build
         run: tools/ninja -C out/linux -j$[$(nproc) + 2]
