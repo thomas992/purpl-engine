@@ -5,7 +5,7 @@ This is my fifth game engine, it's gonna be good this time
 
 ## Building the engine
 
-All the stuff needed to build the engine (other than the compiler) is provided, and licenses for the libraries and programs are in `deps/licenses`.
+All the stuff needed to build the engine (other than the compiler and `bfg9000`) is provided, and licenses for the libraries and programs are in `deps/licenses`.
 
 On Windows, you need Visual Studio 2019 16.8 or later (i.e. C17 support. However, earlier versions may work) and the Windows SDK (any recentish one should be fine, but for best results use the latest Windows 11 one {which even works on Windows 7, just as proof of how backwards compatible they are}). On Linux, you need the X11 or Wayland development headers and any version of Clang supporting C17 or later (basically every easily obtainable version unless you run a super old distro). You also need to install `bfg9000` with `pip` to generate the build files (`bfg9000[msbuild]` on Windows).
 
@@ -19,7 +19,7 @@ python tools\deps.py
 tools\mkprojects
 
 :: This is the better way for a Command Prompt (or PowerShell if you aren't a true Windows god like me) shell
-python -m bfg9000 configure out\win
+bfg9000 configure out\win
 ninja -C out\win
 ```
 On Linux, run these commands instead:
@@ -35,19 +35,22 @@ bfg9000 configure out/mac
 ninja -C out/mac
 ```
 
-GN can also generate IDE projects with `--ide=vs`, `--ide=qtcreator`, or `--ide=xcode`, and compilation databases with `--export-compile-commands` for language servers in (Neo)vim and Visual Studio Code, among other, more obscure editors. To set options for the build such as debugging info, meming (various small Easter Eggs such as April 1st being reported as March 32nd and years being relative to 1970 on April 1st only), and verbose logging, you can use `gn args out/<platform>`.
+To see more build options, run `bfg9000 --help` or `bfg9000 <action> --help`
 
 To run the demo, do the following on Windows:
 ```batch
-demo :: buildenv already sets the path so that the DLLs are found for the engine and dependencies
+:: buildenv already sets the path so that the DLLs are found for the engine and dependencies
+demo
 ```
 On Linux, run this command:
 ```sh
-LD_LIBRARY_PATH=deps/linux-<arch>/bin:out/linux/engine out/linux/demo/demo
+# Running a locally built binary, the rpaths are fine
+out/linux/demo/demo
 ```
 On macOS run this:
 ```sh
-DYLD_LIBRARY_PATH=deps/mac-<arch>/bin:out/mac/engine out/mac/demo/demo
+# Running a locally built binary, the rpaths are fine
+out/mac/demo/demo
 ```
 
 ## Using the releases and CI artifacts
@@ -59,5 +62,5 @@ chmod +x purpl-demo
 ./purpl-demo
 
 # Or, if you don't want to use the script (DYLD_LIBRARY_PATH for macOS, LD_LIBRARY_PATH for Linux)
-[DY]LD_LIBRARY_PATH=bin ./main
+[DY]LD_LIBRARY_PATH=. ./main
 ```
