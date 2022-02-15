@@ -26,11 +26,11 @@ if platform.system() == "Windows":
 	options.append("/wd4996")
 else:
 	options.append(opts.warning("extra", "error"))
-	options.append("-Wno-unknown-warning-option")
 	options.append("-Wno-discarded-qualifiers")
-	options.append("-Wno-ignored-qualifiers")
 	options.append("-Wno-pointer-sign")
 	options.append("-Wno-sign-compare")
+	options.append("-Wno-unknown-warning-option")
+	options.append("-Wno-ignored-qualifiers")
 	options.append("-Wno-incompatible-pointer-types-discards-qualifiers")
 
 if bool(argv.debug):
