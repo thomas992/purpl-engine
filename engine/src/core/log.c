@@ -293,18 +293,12 @@ PURPL_API void purpl_log_write(struct purpl_logger *logger,
 	if (level < PURPL_LOG_LEVEL_INFO)
 		printf("%s\n", buf);
 #ifdef PURPL_DEBUG
-	// This if statement is ugly, but in this case I don't think I should
-	// fix it
-#ifndef PURPL_DEBUG_VERBOSE_LOG
 	if (level == PURPL_LOG_LEVEL_DEBUG) {
-#endif // PURPL_DEBUG_VERBOSE_LOG
 		printf("%s\n", buf);
 #ifdef _WIN32
 		DbgPrint_l("%s\n", buf);
 #endif // _WIN32
-#ifndef PURPL_DEBUG_VERBOSE_LOG
 	}
-#endif // PURPL_DEBUG_VERBOSE_LOG
 #endif // PURPL_DEBUG
 
 	free(buf);

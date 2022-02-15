@@ -58,8 +58,11 @@ PURPL_API void purpl_debug_break(void)
 #ifdef PURPL_DEBUG
 #ifdef _MSC_VER
 	__debugbreak();
-#else // _MSC_VER
+#elif __clang__ // _MSC_VER
 	__builtin_debugtrap();
+#elif __GNUC__ // _MSC_VER
+	__builtin_trap();
+#else // _MSC_VER
 #endif // _MSC_VER
 #endif // PURPL_DEBUG
 }

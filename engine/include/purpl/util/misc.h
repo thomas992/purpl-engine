@@ -34,6 +34,9 @@
 #define PURPL_CURRENT_FUNCTION __func__
 #endif
 
+/// Ignore x
+#define PURPL_IGNORE(x) ((void)(x))
+
 /// Generates a random number
 #define PURPL_RANDOM(limit) (rand() % (limit))
 

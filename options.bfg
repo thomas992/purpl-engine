@@ -17,4 +17,3 @@
 
 argument("debug", default="true", help="Whether to do a debug build")
 argument("enable_meming", default="false", help="April Fools' jokes and other small things")
-argument("verbose_logging", default="false", help="Print all messages to the console")

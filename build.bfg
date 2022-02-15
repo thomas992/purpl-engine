@@ -15,5 +15,21 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+import platform
+
+options = [opts.std("c17")]
+
+if platform.system() == "Windows":
+	option.append(opts.warning("all"))
+else:
+	options.append(opts.warning("extra", "error"))
+	options.append("-Wno-pointer-sign")
+	options.append("-Wno-incompatible-pointer-types-discards-qualifiers")
+
+if bool(argv.debug):
+	options.append(opts.debug())
+else:
+	options.append(opts.optimize("size", "linktime"))
+
 engine = submodule("engine")
 demo = submodule("demo")

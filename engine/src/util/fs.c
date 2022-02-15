@@ -103,6 +103,8 @@ PURPL_API char *purpl_pathfmt(size_t *size, const char *path,
 {
 	char *path2;
 
+	PURPL_IGNORE(flags);
+
 	path2 = purpl_strrplc(path, "\\", "/", size);
 
 	return path2;

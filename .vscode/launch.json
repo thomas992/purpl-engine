@@ -8,14 +8,14 @@
 			"name": "(Windows) Launch",
 			"type": "cppvsdbg",
 			"request": "launch",
-			"program": "${workspaceFolder}/out/win/main.exe",
+			"program": "${workspaceFolder}/out/win/demo/demo.exe",
 			"args": [],
 			"stopAtEntry": false,
 			"cwd": "${workspaceFolder}",
 			"environment": [
 				{
 					"name": "PATH",
-					"value": "${workspaceFolder}/out/win;${workspaceFolder}/deps/win-x64/bin"
+					"value": "${workspaceFolder}/out/win/engine;${workspaceFolder}/deps/win-x86_64/bin"
 				}
 			],
 			"console": "externalTerminal"
@@ -24,14 +24,14 @@
 			"name": "(macOS) Launch",
 			"type": "cppdbg",
 			"request": "launch",
-			"program": "${workspaceFolder}/out/mac/main",
+			"program": "${workspaceFolder}/out/mac/demo/demo",
 			"args": [],
 			"stopAtEntry": false,
 			"cwd": "${workspaceFolder}",
 			"environment": [
 				{
 					"name": "DYLD_LIBRARY_PATH",
-					"value": "${workspaceFolder}/out/mac/:${workspaceFolder}/deps/mac-x64/bin"
+					"value": "${workspaceFolder}/out/mac/engine:${workspaceFolder}/deps/mac-x86_64/bin"
 				}
 			],
 			"externalConsole": false,
@@ -41,14 +41,14 @@
 			"name": "(Linux) Launch",
 			"type": "cppdbg",
 			"request": "launch",
-			"program": "${workspaceFolder}/out/linux/main",
+			"program": "${workspaceFolder}/out/linux/demo/demo",
 			"args": [],
 			"stopAtEntry": false,
 			"cwd": "${workspaceFolder}",
 			"environment": [
 				{
 					"name": "LD_LIBRARY_PATH",
-					"value": "${workspaceFolder}/out/linux/:${workspaceFolder}/deps/linux-x64/bin"
+					"value": "${workspaceFolder}/out/linux/engine/:${workspaceFolder}/deps/linux-x86_64/bin"
 				}
 			],
 			"externalConsole": false,
