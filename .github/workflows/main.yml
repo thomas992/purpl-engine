@@ -27,10 +27,10 @@ jobs:
 
       - name: Setup Vulkan
         if: steps.cache-vulkan-sdk.outputs.cache-hit != 'true'
-          run: |
-            Invoke-WebRequest -Uri "https://sdk.lunarg.com/sdk/download/1.2.198.0/windows/VulkanSDK-1.2.198.0-Installer.exe" -OutFile VulkanSDK.exe
-            $installer = Start-Process -FilePath VulkanSDK.exe -Wait -PassThru -ArgumentList @("/S");
-            $installer.WaitForExit();
+        run: |
+          Invoke-WebRequest -Uri "https://sdk.lunarg.com/sdk/download/1.2.198.0/windows/VulkanSDK-1.2.198.0-Installer.exe" -OutFile VulkanSDK.exe
+          $installer = Start-Process -FilePath VulkanSDK.exe -Wait -PassThru -ArgumentList @("/S");
+          $installer.WaitForExit();
 
       - name: Cache dependencies
         id: cache-deps
@@ -41,7 +41,7 @@ jobs:
 
       - name: Build dependencies
         if: steps.cache-deps.outputs.cache-hit != 'true'
-          run: python tools\deps.py --verbose
+        run: python tools\deps.py --verbose
 
       - name: Install bfg9000
         run: python -m pip install bfg9000[msbuild]
@@ -98,7 +98,7 @@ jobs:
 
       - name: Build dependencies
         if: steps.cache-deps.outputs.cache-hit != 'true'
-          run: python tools/deps.py --verbose
+        run: python tools/deps.py --verbose
         
       - name: Install bfg9000
         run: pip install bfg9000
@@ -161,7 +161,7 @@ jobs:
 
       - name: Build dependencies
         if: steps.cache-deps.outputs.cache-hit != 'true'
-          run: python tools/deps.py --verbose
+        run: python tools/deps.py --verbose
 
       - name: Install bfg9000
         run: pip install bfg9000
