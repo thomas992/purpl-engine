@@ -52,9 +52,15 @@ jobs:
           mkdir build
           xcopy /y out\win\engine\engine.dll build
           xcopy /y out\win\demo\demo.exe build
-          xcopy /y deps\windows-x86_64\bin\* build
+          xcopy /i/y deps\windows-x86_64\bin build
+          xcopy /i/y deps\windows-x86_64\include build
           xcopy /i/y deps\licenses build\licenses
           copy LICENSE build\licenses\purpl.txt
+          @"@echo off
+          set PATH=%~dp0;%~dp0\bin
+
+          %~dp0\demo.exe
+          pause"@ | Add-Content build\purpl-demo.bat
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
@@ -63,8 +69,7 @@ jobs:
           path: build
 
       - name: Create zip of artifacts for release
-        run: |
-          "$Env:PROGRAMFILES\7-Zip\7z.exe a -tzip build-windows.zip build\*"
+        run: "$Env:PROGRAMFILES\7-Zip\7z.exe a -tzip build-windows.zip build\*"
 
       - name: Create release with artifacts
         uses: softprops/action-gh-release@v1

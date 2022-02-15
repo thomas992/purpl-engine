@@ -62,5 +62,6 @@ chmod +x purpl-demo
 ./purpl-demo
 
 # Or, if you don't want to use the script (DYLD_LIBRARY_PATH for macOS, LD_LIBRARY_PATH for Linux)
-[DY]LD_LIBRARY_PATH=. ./main
+[DY]LD_LIBRARY_PATH=bin:. ./main
 ```
+On Windows, you can run the `purpl-demo.bat` file.
