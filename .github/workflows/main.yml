@@ -165,7 +165,9 @@ jobs:
         run: pip install bfg9000
 
       - name: Generate build files
-        run: bfg9000 configure out/linux
+        run: |
+          bfg9000 configure out/linux
+          find out -type f
         
       - name: Build
         run: tools/ninja -C out/linux -j$[$(nproc) + 2]
