@@ -34,7 +34,7 @@ jobs:
 
       - name: Cache dependencies
         id: cache-deps
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: "$GITHUB_WORKSPACE\\deps\\win-x64"
           key: cache-deps-win-x64
@@ -91,7 +91,7 @@ jobs:
 
       - name: Cache dependencies
         id: cache-deps
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: "$GITHUB_WORKSPACE/deps/mac-x64"
           key: cache-deps-mac-x64
@@ -154,7 +154,7 @@ jobs:
 
       - name: Cache dependencies
         id: cache-deps
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: "$GITHUB_WORKSPACE/deps/linux-x64"
           key: cache-deps-linux-x64
