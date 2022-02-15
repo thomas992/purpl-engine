@@ -26,11 +26,11 @@ deps_includes = header_directory(
 engine_includes = header_directory("include", include="**/*.h")
 
 if platform.system() == "Windows":
-	libs = [f"{deps_dir}/bin/cglm.lib", "kernel32.lib", f"{deps_dir}/bin/SDL2.lib"]
+    libs = [f"{deps_dir}/bin/cglm.lib", "kernel32.lib", f"{deps_dir}/bin/SDL2.lib"]
 elif platform.system() == "Darwin":
-	libs = [f"{deps_dir}/bin/libcglm.dylib", f"{deps_dir}/bin/libSDL2-2.0.dylib"]
+    libs = [f"{deps_dir}/bin/libcglm.dylib", f"{deps_dir}/bin/libSDL2-2.0.dylib"]
 elif platform.system() == "Linux":
-	libs = [f"{deps_dir}/bin/libcglm.so", f"{deps_dir}/bin/libSDL2-2.0.so"]
+    libs = [f"{deps_dir}/bin/libcglm.so", f"{deps_dir}/bin/libSDL2-2.0.so"]
 
 engine = shared_library(
     "engine",
@@ -38,16 +38,21 @@ engine = shared_library(
         "src/core/globals.c",
         "src/core/init.c",
         "src/core/log.c",
-
         "src/util/error.c",
         "src/util/fs.c",
         "src/util/misc.c",
         "src/util/stb.c",
         "src/util/string.c",
     ],
-	includes=[deps_includes, engine_includes],
-	libs=libs,
-	compile_options=[opts.define("PURPL_BUILD", "1")],
+    includes=[deps_includes, engine_includes],
+    libs=libs,
+    compile_options=[
+        opts.define("PURPL_BUILD", "1"),
+        opts.define("PURPL_DEBUG", str(int(bool(argv.debug)))),
+        opts.define("PURPL_ENABLE_MEMING", str(int(bool(argv.enable_meming)))),
+        opts.define("PURPL_VERBOSE_LOGGING", str(int(bool(argv.verbose_logging)))),
+        opts.debug if bool(argv.debug)
+    ],
 )
 
 export(includes=engine_includes, lib=engine)
