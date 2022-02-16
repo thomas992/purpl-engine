@@ -40,10 +40,10 @@ jobs:
         run: python -m pip install bfg9000[msbuild]
 
       - name: Generate build files
-        run: bfg9000 configure out\win --backend msbuild
+        run: bfg9000 configure out\win --backend ninja
 
       - name: Build
-        run: msbuild out\win\purpl-engine.sln
+        run: ninja -C out\win -j$Env:NUMBER_OF_PROCESSORS
 
       - name: Add artifacts to folder
         run: |
