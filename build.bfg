@@ -18,26 +18,36 @@
 import platform
 
 options = []
+link_options = []
 
 if platform.system() == "Windows":
 	options.append("/std:c17")
-	options.append(opts.warning("all"))
+	options.append("/W4")
 	options.append("/wd4005")
 	options.append("/wd4090")
 	options.append("/wd4996")
+
+	if bool(argv.debug):
+		options.append("/O2")
+		options.append("/Oi")
+		options.append("/Zi")
+		options.append("/Zo")
+		link_options.append("/debug")
+	else:
+		options.append("/WX")
 else:
 	options.append("-std=gnu2x")
-	options.append(opts.warning("extra", "error"))
+	options.append("-Wall")
+	options.append("-Wextra")
 	options.append("-Wno-pointer-sign")
 	options.append("-Wno-sign-compare")
 	options.append("-Wno-unknown-warning-option")
 	options.append("-Wno-ignored-qualifiers")
 	options.append("-Wno-incompatible-pointer-types-discards-qualifiers")
-
-if bool(argv.debug):
-	options.append(opts.debug())
-else:
-	options.append(opts.optimize("size", "linktime"))
+	if bool(argv.debug):
+		options.append("-g")
+	else:
+		options.append("-Werror")
 
 engine = submodule("engine")
 demo = submodule("demo")
