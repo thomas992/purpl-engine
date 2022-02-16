@@ -28,7 +28,6 @@ if platform.system() == "Windows":
 else:
 	options.append("-std=gnu2x")
 	options.append(opts.warning("extra", "error"))
-	options.append("-Wno-discarded-qualifiers")
 	options.append("-Wno-pointer-sign")
 	options.append("-Wno-sign-compare")
 	options.append("-Wno-unknown-warning-option")
