@@ -24,5 +24,6 @@
 			"comments": false,
 			"strings": true
 		}
-	}
+	},
+	"mesonbuild.configureOnOpen": true
 }
