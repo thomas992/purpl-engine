@@ -1,5 +1,5 @@
 project('purpl', 'c', version: '1.0.0',
-	default_options: ['c_std=c17', 'default_library=shared', 'backend_startup_project=demo'])
+	default_options: ['c_std=c17', 'default_library=shared'])
 
 compiler = meson.get_compiler('c')
 
