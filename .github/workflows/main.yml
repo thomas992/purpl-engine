@@ -44,9 +44,7 @@ jobs:
 
       - name: Build
         run: |
-          $processor = Get-ComputerInfo -Property CsProcessors
-          $cores = $processor.CsProcessors + 2
-          ninja -C out\win -j$cores
+          ninja -C out\win
 
       - name: Add artifacts to folder
         run: |
