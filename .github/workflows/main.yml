@@ -24,6 +24,7 @@ jobs:
               run: |
                 choco install meson vulkan-sdk
                 refreshenv
+                echo "$env:PATH" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
             - name: Generate build files
               run: meson out\win --backend ninja
