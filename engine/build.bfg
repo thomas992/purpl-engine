@@ -20,19 +20,6 @@ import platform
 
 deps_dir = f"../deps/{platform.system()}-{platform.machine()}".lower()
 
-winsdk_lib_dir = (
-    os.getenv("WindowsSdkDir")
-    + "/lib/"
-    + os.getenv("WindowsSDKVersion")
-    + "/um/"
-    + (
-        f"{platform.machine()}".lower()
-        .replace("x86_64", "x64")
-        .replace("amd64", "x64")
-        .replace("aarch64", "arm64")
-    )
-)
-
 deps_includes = header_directory(
     f"{deps_dir}/include",
     include="**/*.h",
@@ -45,6 +32,19 @@ if platform.system() == "Windows":
         "{winsdk_lib_dir}/kernel32.lib",
         f"{deps_dir}/bin/SDL2.lib",
     ]
+
+    winsdk_lib_dir = (
+        str(os.getenv("WindowsSdkDir"))
+        + "/lib/"
+        + str(os.getenv("WindowsSDKVersion"))
+        + "/um/"
+        + (
+            f"{platform.machine()}".lower()
+            .replace("x86_64", "x64")
+            .replace("amd64", "x64")
+            .replace("aarch64", "arm64")
+        )
+    )
 elif platform.system() == "Darwin":
     libs = [f"{deps_dir}/bin/libcglm.dylib", f"{deps_dir}/bin/libSDL2-2.0.dylib"]
 elif platform.system() == "Linux":
