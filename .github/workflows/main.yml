@@ -51,6 +51,7 @@ jobs:
 
       - name: Build
         run: |
+          dir
           Get-Content out\win\ninja.build
           ninja -C out\win
 
