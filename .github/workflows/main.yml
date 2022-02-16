@@ -48,8 +48,8 @@ jobs:
 
             - name: Generate build files
               run: |
-                  bfg9000 configure --help
                   bfg9000 configure out\win --backend msbuild
+                  cmd /c "dir /s/b out"
 
             - name: Build
               run: |
