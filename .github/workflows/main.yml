@@ -52,7 +52,7 @@ jobs:
             - name: Build
               run: |
                   Get-ChildItem -Recurse out\win
-                  Get-Content out\win\ninja.build
+                  Get-Content out\win\build.ninja
                   ninja -C out\win
 
             - name: Add artifacts to folder
