@@ -51,6 +51,7 @@ jobs:
 
             - name: Build
               run: |
+                  bfg9000 configure --help
                   Get-ChildItem -Recurse out\win
                   msbuild out\win\purpl-engine.sln
 
