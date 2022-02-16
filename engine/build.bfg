@@ -29,7 +29,7 @@ engine_includes = header_directory("include", include="**/*.h")
 if platform.system() == "Windows":
 	winsdk_lib_dir = (
 		str(os.getenv("WindowsSdkDir"))
-		+ "/lib/"5
+		+ "/lib/"
 		+ str(os.getenv("WindowsSDKVersion"))
 		+ "/um/"
 		+ (
