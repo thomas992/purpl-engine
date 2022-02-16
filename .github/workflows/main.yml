@@ -43,7 +43,10 @@ jobs:
         run: bfg9000 configure out\win --backend ninja
 
       - name: Build
-        run: ninja -C out\win -j$Env:NUMBER_OF_PROCESSORS
+        run: |
+          $processor = Get-ComputerInfo -Property CsProcessors
+          $processor.CsProcessors
+          ninja -C out\win -j$processor
 
       - name: Add artifacts to folder
         run: |
