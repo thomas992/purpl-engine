@@ -47,7 +47,7 @@ jobs:
         run: python -m pip install bfg9000[msbuild]
 
       - name: Generate build files
-        run: bfg9000 configure -B msbuild out\win
+        run: bfg9000 -B msbuild configure out\win
 
       - name: Build
         run: |
@@ -110,7 +110,7 @@ jobs:
         run: sudo python3 -m pip install bfg9000
 
       - name: Generate build files
-        run: bfg9000 configure -B ninja out/mac
+        run: bfg9000 -B ninja configure out/mac
         
       - name: Build
         run: tools/ninja -C out/mac -j$[$(sysctl -n hw.ncpu) + 2]
@@ -172,7 +172,7 @@ jobs:
         run: sudo python3 -m pip install bfg9000
 
       - name: Generate build files
-        run: bfg9000 configure -B ninja out/linux
+        run: bfg9000 -B ninja configure out/linux
         
       - name: Build
         run: tools/ninja -C out/linux -j$[$(nproc) + 2]
