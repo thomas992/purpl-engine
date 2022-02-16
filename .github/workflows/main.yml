@@ -47,11 +47,11 @@ jobs:
         run: python -m pip install bfg9000[msbuild]
 
       - name: Generate build files
-        run: bfg9000 configure out\win --backend ninja
+        run: bfg9000 configure out\win --backend msbuild
 
       - name: Build
         run: |
-          ninja -C out\win
+          msbuild out\win\purpl-engine.sln
 
       - name: Add artifacts to folder
         run: |
@@ -63,7 +63,7 @@ jobs:
           xcopy /i/y deps\licenses build\licenses
           copy LICENSE build\licenses\purpl.txt
           @"@echo off
-          set PATH=%~dp0;%~dp0\bin
+          set PATH=%PATH%;%~dp0;%~dp0\bin
 
           %~dp0\demo.exe
           pause"@ | Add-Content build\purpl-demo.bat
