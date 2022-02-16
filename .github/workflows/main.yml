@@ -175,7 +175,7 @@ jobs:
               run: sudo python3 -m pip install bfg9000
 
             - name: Generate build files
-              run: CC=clang CXX=clang++ LD=ld.lld bfg9000 configure out/linux --backend ninja
+              run: CC=clang LD=ld.lld AR=llvm-ar bfg9000 configure out/linux --backend ninja
 
             - name: Build
               run: tools/ninja -C out/linux -j$[$(nproc) + 2]

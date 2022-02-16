@@ -25,7 +25,7 @@ ninja -C out\win
 On Linux, run these commands instead:
 ```sh
 tools/deps.py # You can pass --skip-download to prevent redownloading, and --keep-src to keep sources for debugging
-bfg9000 configure out/linux
+CC=clang LD=ld.lld AR=llvm-ar bfg9000 configure out/linux
 ninja -C out/linux
 ```
 On macOS:
