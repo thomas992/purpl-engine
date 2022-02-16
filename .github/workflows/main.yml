@@ -14,23 +14,14 @@ jobs:
 
         steps:
             - uses: actions/checkout@v2
+              with:
+                submodules: true
 
             - name: MSVC environment
               uses: ilammy/msvc-dev-cmd@v1
 
-            - name: Cache Vulkan SDK
-              id: cache-vulkan-sdk
-              uses: actions/cache@v2
-              with:
-                  path: "VULKAN_SDK"
-                  key: cache-vulkan-sdk-win-x86_64-1.3.204.0
-
-            - name: Install Vulkan SDK
-              uses: humbletim/setup-vulkan-sdk@v1.0.3
-              if: steps.cache-deps.outputs.cache-hit != 'true'
-              with:
-                  vulkan-version: 1.3.204.0
-                  vulkan-components: headers, loader, glslang, validation
+            - name: Install Chocolatey packages
+              run: choco install meson vulkan-sdk
 
             - name: Generate build files
               run: meson out\win --backend ninja
@@ -72,6 +63,8 @@ jobs:
 
         steps:
             - uses: actions/checkout@v2
+              with:
+                submodules: true
 
             - name: Set permissions on executables
               run: chmod a+x tools/ninja
@@ -113,6 +106,8 @@ jobs:
 
         steps:
             - uses: actions/checkout@v2
+              with:
+                submodules: true
 
             - name: Setup APT packages
               run: |
