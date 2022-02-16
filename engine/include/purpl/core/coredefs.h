@@ -37,7 +37,7 @@
 
 /// Make a version number from major, minor, and patch numbers
 #define PURPL_MAKE_VERSION(major, minor, patch) \
-	(((major)&0xFF) << 16 | ((minor)&0xFF) << 8 | (patch)&0xFF)
+	((((major) & 0xFF) << 16) | (((minor) & 0xFF) << 8) | ((patch) & 0xFF))
 
 /// The current major version of the engine
 #define PURPL_MAJOR_VERSION 1
