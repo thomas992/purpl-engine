@@ -21,7 +21,9 @@ jobs:
               uses: ilammy/msvc-dev-cmd@v1
 
             - name: Install Chocolatey packages
-              run: choco install meson vulkan-sdk
+              run: |
+                choco install meson vulkan-sdk
+                refreshenv
 
             - name: Generate build files
               run: meson out\win --backend ninja
