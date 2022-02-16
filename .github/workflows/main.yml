@@ -51,7 +51,7 @@ jobs:
 
       - name: Build
         run: |
-					Get-Content out\win\ninja.build
+          Get-Content out\win\ninja.build
           ninja -C out\win
 
       - name: Add artifacts to folder
