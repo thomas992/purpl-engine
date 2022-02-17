@@ -42,12 +42,16 @@ elif compiler.get_id() == 'clang'
 	add_global_arguments('-Wno-semicolon-before-method-body',
 			     language: ['objc'])
 elif compiler.get_id() == 'msvc'
-	add_global_arguments('/wd4100', # unused parameter
+	add_global_arguments('/wd4005', # macro redefinition (PHNT should do something about this)
+			     '/wd4100', # unused parameter
+			     '/wd4115', # typedef thing
 			     '/wd4127', # constant conditional expression
 			     '/wd4152', # function pointer cast
 			     '/wd4200', # zero-length array in struct
 			     '/wd4244', # truncation
 			     '/wd4245', # sign conversion
+			     '/wd4310', # ignoring qualifiers in truncating cast
+			     '/wd4324', # structure padded for alignment
 			     '/wd4389', # sign compare
 			     '/wd4701', # uninitialized variable
 			     '/wd4706', # assignment in trinary operator
