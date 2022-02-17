@@ -42,6 +42,7 @@ jobs:
                 mkdir subprojects\packagecache
                 cp deps\sdl2-meson.zip subprojects\packagecache
                 meson out\win --backend ninja --prefix $env:GITHUB_WORKSPACE/build
+                Get-Content out\win\build.ninja
 
             - name: Build
               run: tools\ninja --verbose -C out\win
