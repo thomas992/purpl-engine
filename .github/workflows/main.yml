@@ -87,6 +87,7 @@ jobs:
             - name: Install artifacts to folder
               run: |
                 tools/ninja -C out/mac install
+                find /usr | grep -i sdl
                 cp /usr/local/lib/libSDL2-2.0.dylib build/bin/libsdl2.dylib
 
             - name: Upload artifacts
@@ -133,6 +134,7 @@ jobs:
             - name: Install artifacts to folder
               run: |
                 tools/ninja -C out/linux install
+                find /usr | grep -i sdl
                 cp /usr/lib/x86_64-linux-gnu/libSDL2-2.0.so build/bin/libsdl2.so
 
             - name: Upload artifacts
