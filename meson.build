@@ -28,7 +28,7 @@ if compiler.get_id() == 'gcc'
 			     '-Wno-unused-parameter',
 			     '-Wno-unused-variable',
 			     language: ['c'])
-elif compiler.get_id() == 'clang' or compiler.get_id() == 'llvm'
+elif compiler.get_id() == 'clang'
 	add_global_arguments('-Wno-deprecated-declarations',
 			     '-Wno-incompatible-pointer-types-discards-qualifiers',
 			     '-Wno-pedantic',
@@ -37,6 +37,11 @@ elif compiler.get_id() == 'clang' or compiler.get_id() == 'llvm'
 			     '-Wno-unused-function',
 			     '-Wno-unused-parameter',
 			     '-Wno-unused-variable',
+			     language: ['c'])
+elif compiler.get_id() == 'msvc'
+	add_global_arguments('/wd4100', # unused parameter
+			     '/wd4127', # constant conditional expression
+			     '/wd4389', # sign compare
 			     language: ['c'])
 endif
 
