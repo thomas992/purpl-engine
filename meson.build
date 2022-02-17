@@ -64,6 +64,7 @@ elif compiler.get_id() == 'msvc'
 			     '/wd4700', # uninitialized variable
 			     '/wd4701', # uninitialized variable
 			     '/wd4706', # assignment in trinary operator
+			     '/wd4829', # invalid character
 			     '/wd4996', # "unsafe" functions, even though the secure ones are just as vulnerable to misuse
 			     language: ['c'])
 endif

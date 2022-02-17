@@ -125,10 +125,7 @@ jobs:
               run: chmod a+x tools/ninja
 
             - name: Generate build files
-              run: |
-                mkdir subprojects/packagecache
-                cp deps/sdl2-meson.zip subprojects/packagecache
-                meson out/linux --backend ninja --prefix $GITHUB_WORKSPACE/build
+              run: meson out/linux --backend ninja --prefix $GITHUB_WORKSPACE/build
 
             - name: Build
               run: tools/ninja -C out/linux
