@@ -6,7 +6,6 @@ project('purpl-engine', 'c',
 			'c_winlibs=kernel32',
 			'c_std=c17',
 			'default_library=shared',
-			'strip=true',
 			'warning_level=3',
 			'werror=true'
 	]
@@ -46,6 +45,7 @@ elif compiler.get_id() == 'msvc'
 	add_global_arguments('/wd4100', # unused parameter
 			     '/wd4127', # constant conditional expression
 			     '/wd4152', # function pointer cast
+			     '/wd4200', # zero-length array in struct
 			     '/wd4244', # truncation
 			     '/wd4389', # sign compare
 			     '/wd4701', # uninitialized variable
