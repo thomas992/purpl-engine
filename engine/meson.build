@@ -39,9 +39,6 @@ install_headers('include/purpl/util/error.h',
 		'include/purpl/util/string.h',
 		'include/purpl/util/util.h',
 		subdir: 'purpl/util')
-if build_machine.system() == 'windows'
-	install_headers('include/purpl/util/private/win/ntdll.h',
-			subdir: 'purpl/util/private/win')
 
 install_data('../deps/licenses/dos2unix.txt',
 	     '../deps/licenses/meson.txt',
@@ -55,6 +52,8 @@ install_data('../LICENSE',
 	     install_dir: 'licenses')
 
 if host_machine.system() == 'windows'
+	install_headers('include/purpl/util/private/win/ntdll.h',
+			subdir: 'purpl/util/private/win')
 	install_data('../tools/purpl-demo.bat',
 		     install_dir: '')
 endif
