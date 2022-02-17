@@ -39,6 +39,9 @@ install_headers('include/purpl/util/error.h',
 		'include/purpl/util/string.h',
 		'include/purpl/util/util.h',
 		subdir: 'purpl/util')
+if build_machine.system() == 'windows'
+	install_headers('include/purpl/util/private/win/ntdll.h',
+			subdir: 'purpl/util/private/win')
 
 install_data('../deps/licenses/dos2unix.txt',
 	     '../deps/licenses/meson.txt',
@@ -56,16 +59,24 @@ if host_machine.system() == 'windows'
 		     install_dir: '')
 endif
 
+engine_sources = [
+	'src/core/globals.c',
+	'src/core/init.c',
+	'src/core/log.c',
+	
+	'src/util/error.c',
+	'src/util/fs.c',
+	'src/util/misc.c',
+	'src/util/stb.c',
+	'src/util/string.c'
+]
+
+if build_machine.system() == 'windows'
+	engine_sources += 'src/util/win/ntdll.c'
+endif
+
 engine = shared_library('engine', 
-			'src/core/globals.c',
-			'src/core/init.c',
-			'src/core/log.c',
-			
-			'src/util/error.c',
-			'src/util/fs.c',
-			'src/util/misc.c',
-			'src/util/stb.c',
-			'src/util/string.c',
+			engine_sources,
 			
 			include_directories: engine_incdirs,
 			dependencies: libs,

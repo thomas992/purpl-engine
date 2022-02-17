@@ -50,6 +50,7 @@ elif compiler.get_id() == 'msvc'
 			     '/wd4127', # constant conditional expression
 			     '/wd4152', # function pointer cast
 			     '/wd4200', # zero-length array in struct
+			     '/wd4232', # pointer to dllimport function
 			     '/wd4244', # truncation
 			     '/wd4245', # sign conversion
 			     '/wd4310', # ignoring qualifiers in truncating cast
