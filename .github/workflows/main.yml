@@ -20,7 +20,7 @@ jobs:
             - name: MSVC environment
               uses: ilammy/msvc-dev-cmd@v1
 
-            - name: Install Pip packages
+            - name: Install pip packages
               run: pip install meson
 
             - name: Install Chocolatey packages
@@ -31,10 +31,10 @@ jobs:
               run: meson out\win --backend ninja --prefix $env:GITHUB_WORKSPACE/build
 
             - name: Build
-              run: meson compile out\win
+              run: tools\ninja -C out\win
 
             - name: Install artifacts to folder
-              run: meson install out\win
+              run: tools\ninja -C out\win install
 
             - name: Upload artifacts
               uses: actions/upload-artifact@v2
@@ -70,10 +70,10 @@ jobs:
               run: meson out/mac --backend ninja --prefix $GITHUB_WORKSPACE/build
 
             - name: Build
-              run: meson compile out/mac
+              run: tools/ninja -C out/mac
 
             - name: Install artifacts to folder
-              run: meson install out/mac
+              run: tools/ninja -C out/mac install
 
             - name: Upload artifacts
               uses: actions/upload-artifact@v2
@@ -114,10 +114,10 @@ jobs:
               run: meson out/linux --backend ninja --prefix $GITHUB_WORKSPACE/build
 
             - name: Build
-              run: meson compile out/linux
+              run: tools/ninja -C out/linux
 
             - name: Install artifacts to folder
-              run: meson install out/linux
+              run: tools/ninja -C out/linux install
 
             - name: Upload artifacts
               uses: actions/upload-artifact@v2
