@@ -47,6 +47,7 @@ elif compiler.get_id() == 'msvc'
 			     '/wd4090', # discarding qualifiers
 			     '/wd4100', # unused parameter
 			     '/wd4115', # typedef thing
+			     '/wd4125', # malformed octal
 			     '/wd4127', # constant conditional expression
 			     '/wd4133', # incompatible typecast
 			     '/wd4152', # function pointer cast

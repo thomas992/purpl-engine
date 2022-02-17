@@ -41,7 +41,7 @@ jobs:
               run: meson out\win --backend ninja --prefix $env:GITHUB_WORKSPACE/build
 
             - name: Build
-              run: tools\ninja --verbose -C out\win
+              run: tools\ninja -C out\win
 
             - name: Install artifacts to folder
               run: |
