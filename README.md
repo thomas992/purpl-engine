@@ -13,29 +13,32 @@ To build the engine, run the following commands on Windows:
 ```batch
 :: For other architectures than x64, look at the buildenv script and run the commands but tweak them appropriately
 tools\buildenv
-python tools\deps.py
 
-:: This is more intended to be run from Explorer, it generates a compilation database and a Visual Studio solution too
-tools\mkprojects
+:: Easiest way to get Meson
+pip install meson
 
-:: This is the better way for a Command Prompt (or PowerShell if you aren't a true Windows god like me) shell
-bfg9000 configure out\win
+meson --prefix %CD%\build 
 ninja -C out\win
 ```
 On Linux, run these commands instead:
 ```sh
-tools/deps.py # You can pass --skip-download to prevent redownloading, and --keep-src to keep sources for debugging
-CC=clang LD=ld.lld AR=llvm-ar bfg9000 configure out/linux
+# Somehow install Meson, it's better to get it from your package manager but pip has it too
+pip install meson
+
+# GCC is also supported but not as good
+CC=clang LD=ld.lld AR=llvm-ar meson out/linux --prefix $(pwd)/build
 ninja -C out/linux
 ```
 On macOS:
 ```sh
-tools/deps.py
-bfg9000 configure out/mac
+pip install meson
+
+meson out/linux --prefix $(pwd)/build
+
 ninja -C out/mac
 ```
 
-To see more build options, run `bfg9000 --help` or `bfg9000 <action> --help`
+To see more build options, run `meson --help`
 
 To run the demo, do the following on Windows:
 ```batch
@@ -54,14 +57,9 @@ out/mac/demo/demo
 ```
 
 ## Using the releases and CI artifacts
-You can download artifacts from the actions sections for a build of the latest commit of the engine. To use these builds, do the following if you're on Linux or macOS:
+You can download artifacts from the "Actions" section for a build of the latest commit of the engine. To use these builds, do the following if you're on Linux or macOS:
 ```sh
-chmod +x purpl-demo
-
-# This script sets the environment variable needed to run the demo
-./purpl-demo
-
-# Or, if you don't want to use the script (DYLD_LIBRARY_PATH for macOS, LD_LIBRARY_PATH for Linux)
-[DY]LD_LIBRARY_PATH=bin:. ./main
+# DYLD_LIBRARY_PATH for macOS, LD_LIBRARY_PATH for Linux
+[DY]LD_LIBRARY_PATH=bin ./demo
 ```
 On Windows, you can run the `purpl-demo.bat` file.

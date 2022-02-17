@@ -28,6 +28,8 @@ if compiler.get_id() == 'gcc'
 			     '-Wno-unused-parameter',
 			     '-Wno-unused-variable',
 			     language: ['c', 'objc'])
+	add_global_arguments('-Wno-semicolon-before-method-body',
+			     language: ['objc'])
 elif compiler.get_id() == 'clang'
 	add_global_arguments('-Wno-deprecated-declarations',
 			     '-Wno-incompatible-pointer-types-discards-qualifiers',
@@ -38,12 +40,15 @@ elif compiler.get_id() == 'clang'
 			     '-Wno-unused-parameter',
 			     '-Wno-unused-variable',
 			     language: ['c', 'objc'])
+	add_global_arguments('-Wno-semicolon-before-method-body',
+			     language: ['objc'])
 elif compiler.get_id() == 'msvc'
 	add_global_arguments('/wd4100', # unused parameter
 			     '/wd4127', # constant conditional expression
 			     '/wd4152', # function pointer cast
 			     '/wd4244', # truncation
 			     '/wd4389', # sign compare
+			     '/wd4701', # uninitialized variable
 			     '/wd4706', # assignment in trinary operator
 			     language: ['c'])
 endif

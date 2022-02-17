@@ -51,6 +51,11 @@ install_data('../LICENSE',
 	     rename: 'purpl.txt',
 	     install_dir: 'licenses')
 
+if host_machine.system() == 'windows'
+	install_data('../tools/purpl-demo.bat',
+		     install_dir: '')
+endif
+
 engine = shared_library('engine', 
 			'src/core/globals.c',
 			'src/core/init.c',
