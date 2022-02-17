@@ -53,6 +53,7 @@ elif compiler.get_id() == 'msvc'
 			     '/wd4232', # pointer to dllimport function
 			     '/wd4244', # truncation
 			     '/wd4245', # sign conversion
+			     '/wd4267', # trunctation but different
 			     '/wd4310', # ignoring qualifiers in truncating cast
 			     '/wd4324', # structure padded for alignment
 			     '/wd4389', # sign compare
