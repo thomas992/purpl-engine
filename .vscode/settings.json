@@ -25,5 +25,5 @@
 			"strings": true
 		}
 	},
-	"mesonbuild.configureOnOpen": true
+	"mesonbuild.configureOnOpen": false
 }

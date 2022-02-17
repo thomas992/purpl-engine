@@ -38,7 +38,10 @@ jobs:
                   vulkan-components: headers, loader, glslang, validation
 
             - name: Generate build files
-              run: meson out\win --backend ninja --prefix $env:GITHUB_WORKSPACE/build
+              run: |
+                mkdir subprojects\packagecache
+                cp deps\sdl2-meson.zip subprojects\packagecache
+                meson out\win --backend ninja --prefix $env:GITHUB_WORKSPACE/build
 
             - name: Build
               run: tools\ninja -C out\win
@@ -77,7 +80,10 @@ jobs:
               run: brew install meson sdl2
 
             - name: Generate build files
-              run: meson out/mac --backend ninja --prefix $GITHUB_WORKSPACE/build
+              run: |
+                mkdir subprojects/packagecache
+                cp deps/sdl2-meson.zip subprojects/packagecache
+                meson out/mac --backend ninja --prefix $GITHUB_WORKSPACE/build
 
             - name: Build
               run: tools/ninja -C out/mac
@@ -121,7 +127,10 @@ jobs:
               run: chmod a+x tools/ninja
 
             - name: Generate build files
-              run: meson out/linux --backend ninja --prefix $GITHUB_WORKSPACE/build
+              run: |
+                mkdir subprojects/packagecache
+                cp deps/sdl2-meson.zip subprojects/packagecache
+                meson out/linux --backend ninja --prefix $GITHUB_WORKSPACE/build
 
             - name: Build
               run: tools/ninja -C out/linux
