@@ -3,7 +3,7 @@ project('purpl-engine', 'c',
 	license: 'Apache',
 	default_options: [
 			'buildtype=debug',
-			'c_winlibs=kernel32.lib',
+			'c_winlibs=imm32.lib,kernel32.lib,shell32.lib,user32.lib,version.lib,winmm.lib',
 			'c_std=c17',
 			'default_library=shared',
 			'warning_level=3',
