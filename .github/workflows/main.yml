@@ -20,32 +20,21 @@ jobs:
             - name: MSVC environment
               uses: ilammy/msvc-dev-cmd@v1
 
+            - name: Install Pip packages
+              run: pip install meson
+
             - name: Install Chocolatey packages
               run: |
-                choco install meson vulkan-sdk
-                refreshenv
-                echo "PATH=$env:PATH" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+                choco install vulkan-sdk
 
             - name: Generate build files
-              run: |
-                Get-Content $env:GITHUB_ENV
-                meson out\win --backend ninja
+              run: meson out\win --backend ninja --prefix $env:GITHUB_WORKSPACE/build
 
             - name: Build
               run: meson compile out\win
 
-            - name: Add artifacts to folder
-              run: |
-                  mkdir build
-                  xcopy /y out\win\engine\engine.dll build\engine.dll
-                  xcopy /y out\win\demo\demo.exe build
-                  xcopy /i/y deps\licenses build\licenses
-                  copy LICENSE build\licenses\purpl.txt
-                  @"@echo off
-                  set PATH=%PATH%;%~dp0;%~dp0\bin
-
-                  %~dp0\demo.exe
-                  pause"@ | Add-Content build\purpl-demo.bat
+            - name: Install artifacts to folder
+              run: meson install out\win
 
             - name: Upload artifacts
               uses: actions/upload-artifact@v2
@@ -78,17 +67,13 @@ jobs:
               run: brew install meson sdl2
 
             - name: Generate build files
-              run: meson out/mac --backend ninja
+              run: meson out/mac --backend ninja --prefix $GITHUB_WORKSPACE/build
 
             - name: Build
-              run: tools/ninja -C out/mac -j$[$(sysctl -n hw.ncpu) + 2]
+              run: meson compile out/mac
 
-            - name: Add artifacts to folder
-              run: |
-                  mkdir build
-                  printf '#!/usr/bin/env bash\n\nchmod a+x demo\nexportHERE="$(dirname "$0")"\n\nDYLD_LIBRARY_PATH=$HERE/bin:$HERE $HERE/demo\n' > build/purpl-demo
-                  cp -r out/mac/{engine/libengine.dylib,demo/demo} deps/licenses build
-                  cp LICENSE build/licenses/purpl.txt
+            - name: Install artifacts to folder
+              run: meson install out/mac
 
             - name: Upload artifacts
               uses: actions/upload-artifact@v2
@@ -120,23 +105,19 @@ jobs:
                   sudo wget -qO /etc/apt/sources.list.d/lunarg-vulkan-1.3.204-focal.list https://packages.lunarg.com/vulkan/1.3.204/lunarg-vulkan-1.3.204-focal.list
                   sudo apt-get update -qq
                   sudo apt-get install -y gcc-multilib python3 curl meson
-                  sudo apt-get install -y --no-install-recommends libsdl2-dev libx11-dev libxcursor-dev libxrandr-dev libxinerama-dev libxi-dev libxext-dev libxfixes-dev libgl1-mesa-dev vulkan-sdk
+                  sudo apt-get install -y --no-install-recommends libx11-dev libxcursor-dev libxrandr-dev libxinerama-dev libxi-dev libxext-dev libxfixes-dev libgl1-mesa-dev vulkan-sdk
 
             - name: Set permissions on executables
               run: chmod a+x tools/ninja
 
             - name: Generate build files
-              run: meson out/linux --backend ninja
+              run: meson out/linux --backend ninja --prefix $GITHUB_WORKSPACE/build
 
             - name: Build
-              run: tools/ninja -C out/linux -j$[$(nproc) + 2]
+              run: meson compile out/linux
 
-            - name: Add artifacts to folder
-              run: |
-                  mkdir build
-                  printf '#!/usr/bin/env bash\n\nchmod a+x demo\nexportHERE="$(dirname "$0")"\n\nLD_LIBRARY_PATH=$HERE/bin:$HERE $HERE/demo\n' > build/purpl-demo
-                  cp -r out/linux/{engine/libengine.so,demo/demo} deps/licenses build
-                  cp LICENSE build/licenses/purpl.txt
+            - name: Install artifacts to folder
+              run: meson install out/linux
 
             - name: Upload artifacts
               uses: actions/upload-artifact@v2

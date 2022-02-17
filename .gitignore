@@ -9,8 +9,7 @@
 **/build
 **/out
 
-# This is the pattern used for the platform-specific dependency builds
-deps/*-*
+subprojects/*/
 
 *.log
 **/logs

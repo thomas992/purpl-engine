@@ -1,4 +1,4 @@
-project('purpl', 'c', version: '1.0.0',
+project('purpl-engine', 'c', version: '1.0.0', license: 'Apache',
 	default_options: ['c_std=c17', 'default_library=shared'])
 
 compiler = meson.get_compiler('c')
