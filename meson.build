@@ -43,6 +43,8 @@ elif compiler.get_id() == 'clang'
 			     language: ['objc'])
 elif compiler.get_id() == 'msvc'
 	add_global_arguments('/wd4005', # macro redefinition (PHNT should do something about this)
+			     '/wd4057', # pointer sign
+			     '/wd4090', # discarding qualifiers
 			     '/wd4100', # unused parameter
 			     '/wd4115', # typedef thing
 			     '/wd4127', # constant conditional expression
@@ -55,6 +57,7 @@ elif compiler.get_id() == 'msvc'
 			     '/wd4389', # sign compare
 			     '/wd4701', # uninitialized variable
 			     '/wd4706', # assignment in trinary operator
+			     '/wd4996', # "unsafe" functions, even though the secure ones are just as vulnerable to misuse
 			     language: ['c'])
 endif
 
