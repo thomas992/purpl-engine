@@ -9,7 +9,7 @@
 **/build
 **/out
 
-subprojects/*/
+subprojects/SDL2-*/
 
 *.log
 **/logs
