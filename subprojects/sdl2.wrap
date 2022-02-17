@@ -5,7 +5,7 @@ source_filename = SDL2-2.0.18.tar.gz
 source_hash = 94d40cd73dbfa10bb6eadfbc28f355992bb2d6ef6761ad9d4074eff95ee5711c
 patch_filename = sdl2-meson.zip
 patch_url = https://github.com/MobSlicer152/purpl-engine/raw/main/deps/sdl2-meson.zip
-patch_hash = 41a1989c6e86226f15075e97e81f6ccc312bd72006ec8fc14bf8e0d85991ce9c
+patch_hash = 4c47bde86b72f2e1ef647e3f51834ca1b0c62dffbc59dcf7d84803f46289c4fe
 
 [provide]
 sdl2 = sdl2_dep
