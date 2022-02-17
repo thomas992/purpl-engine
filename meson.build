@@ -60,6 +60,7 @@ elif compiler.get_id() == 'msvc'
 			     '/wd4324', # structure padded for alignment
 			     '/wd4389', # sign compare
 			     '/wd4459', # declaration hides global declaration
+			     '/wd4700', # uninitialized variable
 			     '/wd4701', # uninitialized variable
 			     '/wd4706', # assignment in trinary operator
 			     '/wd4996', # "unsafe" functions, even though the secure ones are just as vulnerable to misuse
