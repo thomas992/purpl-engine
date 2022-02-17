@@ -8,11 +8,12 @@
 
 **/.vs
 
+**/builddir
 **/build
 **/out
 
 subprojects/SDL2-*/
 
-*.log
+**/*.log
 **/logs
 null.d
