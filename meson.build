@@ -47,6 +47,7 @@ elif compiler.get_id() == 'msvc'
 			     '/wd4152', # function pointer cast
 			     '/wd4200', # zero-length array in struct
 			     '/wd4244', # truncation
+			     '/wd4245', # sign conversion
 			     '/wd4389', # sign compare
 			     '/wd4701', # uninitialized variable
 			     '/wd4706', # assignment in trinary operator
