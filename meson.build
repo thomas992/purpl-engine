@@ -15,6 +15,7 @@ project('purpl-engine', 'c',
 compiler = meson.get_compiler('c')
 
 # Not bad considering almost all of these are SDL's fault
+message('Compiling with ' + compiler.get_id())
 if compiler.get_id() == 'gcc'
 	add_global_arguments('-Wno-cast-function-type',
 			     '-Wno-deprecated-declarations',
@@ -27,7 +28,7 @@ if compiler.get_id() == 'gcc'
 			     '-Wno-unused-parameter',
 			     '-Wno-unused-variable',
 			     language: ['c'])
-elif compiler.get_id() == 'clang'
+elif compiler.get_id() == 'clang' or compiler.get_id() == 'llvm'
 	add_global_arguments('-Wno-deprecated-declarations',
 			     '-Wno-incompatible-pointer-types-discards-qualifiers',
 			     '-Wno-pedantic',
