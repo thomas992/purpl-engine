@@ -3,7 +3,7 @@ project('purpl-engine', 'c',
 	license: 'Apache',
 	default_options: [
 			'buildtype=debug',
-			'c_winlibs=kernel32.lib',
+			'c_winlibs=imm32.lib,kernel32.lib,shell32.lib,user32.lib,version.lib,winmm.lib',
 			'c_std=c17',
 			'default_library=shared',
 			'warning_level=3',
@@ -48,8 +48,10 @@ elif compiler.get_id() == 'msvc'
 			     '/wd4100', # unused parameter
 			     '/wd4115', # typedef thing
 			     '/wd4127', # constant conditional expression
+			     '/wd4133', # incompatible typecast
 			     '/wd4152', # function pointer cast
 			     '/wd4200', # zero-length array in struct
+			     '/wd4220', # something with varargs
 			     '/wd4232', # pointer to dllimport function
 			     '/wd4244', # truncation
 			     '/wd4245', # sign conversion
