@@ -87,7 +87,7 @@ jobs:
             - name: Install artifacts to folder
               run: |
                 tools/ninja -C out/mac install
-                cp out/mac/subprojects/SDL2-2.0.12/libsdl2.dylib build/bin
+                cp /usr/local/lib/libSDL2-2.0.dylib build/bin/libsdl2.dylib
 
             - name: Upload artifacts
               uses: actions/upload-artifact@v2
@@ -133,7 +133,7 @@ jobs:
             - name: Install artifacts to folder
               run: |
                 tools/ninja -C out/linux install
-                cp out/linux/subprojects/SDL2-2.0.12/libsdl2.so build/bin
+                cp /usr/lib/x86_64-linux-gnu/libSDL2-2.0.so build/bin/libsdl2.so
 
             - name: Upload artifacts
               uses: actions/upload-artifact@v2
