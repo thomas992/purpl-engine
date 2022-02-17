@@ -18,7 +18,7 @@
 #pragma once
 
 #ifdef PURPL_BUILD
-#include <SDL2.h>
+#include <SDL.h>
 
 #include <vulkan/vulkan.h>
 #endif // PURPL_BUILD

@@ -41,6 +41,8 @@ elif compiler.get_id() == 'clang'
 elif compiler.get_id() == 'msvc'
 	add_global_arguments('/wd4100', # unused parameter
 			     '/wd4127', # constant conditional expression
+			     '/wd4152', # function pointer cast
+			     '/wd4244', # truncation
 			     '/wd4389', # sign compare
 			     language: ['c'])
 endif

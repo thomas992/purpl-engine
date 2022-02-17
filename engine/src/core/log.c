@@ -15,8 +15,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <SDL2/SDL.h>
-
 #include "purpl/core/log.h"
 
 PURPL_API struct purpl_logger *purpl_log_create(const char *file,
