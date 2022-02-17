@@ -24,7 +24,11 @@
 #include "types.h"
 
 #ifdef PURPL_BUILD
-#include <SDL.h>
+#ifdef PURPL_USE_SYSTEM_SDL
+#include <SDL2/SDL.h>
+#else // PURPL_USE_SYSTEM_SDL
+#include "SDL.h"
+#endif // PURPL_USE_SYSTEM_SDL
 
 /// Structure to hold information about the current instance of the engine
 struct purpl_instance {

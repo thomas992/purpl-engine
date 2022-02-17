@@ -11,7 +11,12 @@ if get_option('enable_meming')
 	engine_options += '-DPURPL_ENABLE_MEMING=1'
 endif
 
-sdl = subproject('sdl2').get_variable('sdl2_dep')
+sdl = dependency('sdl2', required: false)
+if not sdl.found()
+	sdl = subproject('sdl2').get_variable('sdl2_dep')
+else
+	engine_options += '-DPURPL_USE_SYSTEM_SDL=1'
+endif
 
 if build_machine.system() == 'darwin'
 	metal = dependency('metal')

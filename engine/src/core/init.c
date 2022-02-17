@@ -15,8 +15,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <SDL.h>
-#include <SDL_syswm.h>
+#ifdef PURPL_USE_SYSTEM_SDL
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_syswm.h>
+#else // PURPL_USE_SYSTEM_SDL
+#include "SDL.h"
+#include "SDL_syswm.h"
+#endif // PURPL_USE_SYSTEM_SDL
 
 #ifdef _WIN32
 #include "purpl/util/private/win/ntdll.h"
