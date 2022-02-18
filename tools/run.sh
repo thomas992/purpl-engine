@@ -1,9 +1,12 @@
 #!/usr/bin/env bash
 
-here = $(dirname $0)
-LD_LIBRARY_PATH=$here/bin:$here
-if [ $(uname -k) == "Darwin" ]; then
-	DYLD_LIBRARY_PATH=$LD_LIBRARY_PATH
+export HERE=$(dirname "$0")
+
+chmod a+x "$HERE/demo"
+
+export LD_LIBRARY_PATH="$HERE/bin:$HERE"
+if [ "$(uname -s)" = "Darwin" ]; then
+	export DYLD_LIBRARY_PATH=$LD_LIBRARY_PATH
 fi
 
-$here/demo
+"$HERE/demo"
