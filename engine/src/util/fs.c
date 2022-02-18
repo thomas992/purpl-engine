@@ -232,7 +232,7 @@ PURPL_API char *purpl_path_file(const char *path, size_t *size)
 PURPL_API void purpl_stat(const char *path, struct purpl_file_info *info)
 {
 	char *path2;
-	char *file;
+	char *file = NULL;
 
 	if (!path || !info)
 		return;
