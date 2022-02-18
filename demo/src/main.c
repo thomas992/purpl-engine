@@ -42,5 +42,7 @@ int32_t main(int32_t argc, char *argv[])
 
 bool frame_func(s32 delta, void *data)
 {
+	PURPL_IGNORE(delta);
+	PURPL_IGNORE(data);
 	return true;
 }

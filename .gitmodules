@@ -4,6 +4,6 @@
 [submodule "deps/phnt"]
 	path = deps/phnt
 	url = https://github.com/processhacker/phnt
-[submodule "subprojects/sdl2"]
-	path = subprojects/sdl2
+[submodule "deps/sdl2"]
+	path = deps/sdl2
 	url = https://github.com/libsdl-org/sdl.git
