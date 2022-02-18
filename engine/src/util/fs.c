@@ -112,6 +112,9 @@ PURPL_API char *purpl_pathfmt(size_t *size, const char *path,
 
 PURPL_API bool purpl_path_exists(const char *path)
 {
+	if (!path)
+		return false;
+
 	// Mode and directories don't matter, this would occur first
 	return !(!fopen(path, "rb") && errno == ENOENT);
 }
@@ -122,6 +125,9 @@ PURPL_API bool purpl_mkdir(const char *path, enum purpl_fs_flags flags,
 	char *path2;
 	char **dir_names = NULL;
 	size_t i;
+
+	if (!path)
+		return NULL;
 
 	if (mode == 0)
 		mode = PURPL_FS_MODE_ALL;
@@ -172,6 +178,9 @@ PURPL_API char *purpl_path_directory(const char *path, size_t *size)
 	char *buf2;
 	char *p;
 
+	if (!path)
+		return NULL;
+
 	buf = purpl_pathfmt(size, path, 0);
 	if (!buf) {
 		if (size)
@@ -194,6 +203,9 @@ PURPL_API char *purpl_path_file(const char *path, size_t *size)
 	char *buf2;
 	char *p;
 
+	if (!path)
+		return NULL;
+
 	buf = purpl_pathfmt(size, path, 0);
 	if (!buf) {
 		if (size)
@@ -205,7 +217,7 @@ PURPL_API char *purpl_path_file(const char *path, size_t *size)
 		if (size)
 			*size = 0;
 		free(buf);
-		return path;
+		return purpl_strdup(path);
 	}
 
 	p = strrchr(buf, '/') + 1;

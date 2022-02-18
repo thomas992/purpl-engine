@@ -30,7 +30,7 @@ add_subdirectory(deps/sdl2 EXCLUDE_FROM_ALL)
 
 # Compiler and linker flags
 if (MSVC)
-	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /std:c17 /W4 /WX /wd4005 /wd4057 /wd4115 /wd4244 /wd4267 /wd4324 /wd4342 /wd4996")
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /std:c17 /W4 /WX /wd4005 /wd4057 /wd4090 /wd4100 /wd4115 /wd4244 /wd4267 /wd4324 /wd4342 /wd4996")
 else()
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu2x -Wall -Wextra -Werror")
 	if (${CMAKE_C_COMPILER_ID} MATCHES "Clang")
