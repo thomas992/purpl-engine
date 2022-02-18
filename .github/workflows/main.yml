@@ -115,7 +115,7 @@ jobs:
               run: chmod a+x tools/ninja
 
             - name: Generate build files
-              run: cmake -S. -Bbuild -GNinja
+              run: cmake -S. -Bbuild -GNinja -DCMAKE_C_COMPILER=clang
 
             - name: Build
               run: cmake --build build

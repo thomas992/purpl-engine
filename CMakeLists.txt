@@ -1,5 +1,14 @@
 cmake_minimum_required(VERSION 3.10)
 
+# Use this if Ninja can't be found
+if (${CMAKE_GENERATOR} MATCHES "Ninja")
+	if (WIN32)
+		set(CMAKE_MAKE_PROGRAM ${CMAKE_SOURCE_DIR}/tools/ninja.exe CACHE STRING "" FORCE)
+	else()
+		set(CMAKE_MAKE_PROGRAM ${CMAKE_SOURCE_DIR}/tools/ninja CACHE STRING "" FORCE)
+	endif()
+endif()
+
 # Declare the project
 project(purpl-engine VERSION 1.0.0 LANGUAGES C CXX)
 
@@ -13,13 +22,6 @@ set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/install)
 option(PURPL_ENABLE_DEMO "Build the demo" ON)
 option(PURPL_ENABLE_MEMING "Easter Eggs" OFF)
-if (${CMAKE_GENERATOR} MATCHES "Ninja")
-	if (WIN32)
-		set(CMAKE_MAKE_PROGRAM ${CMAKE_SOURCE_DIR}/tools/ninja.exe)
-	else()
-		set(CMAKE_MAKE_PROGRAM ${CMAKE_SOURCE_DIR}/tools/ninja)
-	endif()
-endif()
 
 # Dependencies
 set(SDL_STATIC OFF CACHE BOOL "" FORCE)
@@ -28,7 +30,7 @@ add_subdirectory(deps/sdl2 EXCLUDE_FROM_ALL)
 
 # Compiler and linker flags
 if (MSVC)
-	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /std:c17 /W4 /WX")
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /std:c17 /W4 /WX /wd4005 /wd4057 /wd4115 /wd4342")
 else()
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu2x -Wall -Wextra -Werror")
 	if (${CMAKE_C_COMPILER_ID} MATCHES "Clang")
