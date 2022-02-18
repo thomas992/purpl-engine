@@ -258,6 +258,11 @@ PURPL_API void purpl_stat(const char *path, struct purpl_file_info *info)
 #endif // __APPLE__
 	
 	file = purpl_path_file(path2, NULL);
+	if(!file) {
+		free(path2);
+		return;
+	}
+
 	if (file[0] == '.')
 		info->attrs |= PURPL_FILE_ATTR_HIDDEN;
 #endif // _WIN32
