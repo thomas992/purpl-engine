@@ -127,7 +127,7 @@ PURPL_API bool purpl_mkdir(const char *path, enum purpl_fs_flags flags,
 	size_t i;
 
 	if (!path)
-		return NULL;
+		return false;
 
 	if (mode == 0)
 		mode = PURPL_FS_MODE_ALL;
