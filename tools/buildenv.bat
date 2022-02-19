@@ -3,7 +3,7 @@
 :: I kinda wanted to call this script Razzle, but that's an honour only Microsoft is worthy of
 
 :: Try to set up a Visual C++ environment (copied from a script on my development drive)
-for /F "tokens=* USEBACKQ" %%F in (`"C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -property installationPath`) do (
+for /F "tokens=* USEBACKQ" %%F in (`"%PROGRAMFILES(X86)%\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -property installationPath`) do (
 	set vs2019_install=%%F
 )
 

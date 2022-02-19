@@ -304,12 +304,7 @@ PURPL_API u32 purpl_errno_to_win32_error(u32 errno)
 
 PURPL_API const char *purpl_strerror(void)
 {
-	static char buf[PURPL_STATIC_BUF_MAX]; // This is an
-					       // arbitrarily large
-					       // size that should be
-					       // fine, will be
-					       // increased if an edge
-					       // case is encountered
+	static char buf[PURPL_STATIC_BUF_MAX];
 
 	stbsp_snprintf(buf, PURPL_STATIC_BUF_MAX, "%s (errno %d)",
 		       strerror(errno), errno);
