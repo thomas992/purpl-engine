@@ -18,9 +18,6 @@ set(ENGINE_UTIL_HEADERS
 	include/purpl/util/string.h
 	include/purpl/util/util.h)
 
-set(ENGINE_WINDOWS_HEADERS
-	include/purpl/util/private/win/pe.h)
-
 set(ENGINE_CORE_SOURCES
 	src/core/globals.c
 	src/core/init.c
@@ -32,9 +29,6 @@ set(ENGINE_UTIL_SOURCES
 	src/util/misc.c
 	src/util/stb.c
 	src/util/string.c)
-
-set(ENGINE_WINDOWS_SOURCES
-	src/util/win/pe.c)
 
 if (WIN32)
 	set(ENGINE_PLATFORM_HEADERS ${ENGINE_WINDOWS_HEADERS})
@@ -81,7 +75,7 @@ endif()
 
 target_include_directories(engine PUBLIC
 					${CMAKE_CURRENT_SOURCE_DIR}/include
-				PRIVATE
+					PRIVATE
 					${CMAKE_SOURCE_DIR}/deps/phnt
 					${CMAKE_SOURCE_DIR}/deps/sdl2/include
 					${CMAKE_SOURCE_DIR}/deps/stb)

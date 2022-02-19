@@ -15,6 +15,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
 #include "purpl/core/log.h"
 
 PURPL_API struct purpl_logger *purpl_log_create(const char *file,
@@ -294,7 +298,7 @@ PURPL_API void purpl_log_write(struct purpl_logger *logger,
 	if (level == PURPL_LOG_LEVEL_DEBUG) {
 		printf("%s\n", buf);
 #ifdef _WIN32
-		DbgPrint_l("%s\n", buf);
+		OutputDebugStringA(buf);
 #endif // _WIN32
 	}
 #endif // PURPL_DEBUG

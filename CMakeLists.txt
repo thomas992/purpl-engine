@@ -18,8 +18,8 @@ add_subdirectory(deps/sdl2 EXCLUDE_FROM_ALL)
 file(WRITE ${CMAKE_BINARY_DIR}/MakeRulesOverwrite.cmake
 [=[
 if (MSVC)
-	set(CMAKE_C_STANDARD_LIBRARIES_INIT "")
-	set(CMAKE_CXX_STANDARD_LIBRARIES_INIT "")
+	set(CMAKE_C_STANDARD_LIBRARIES_INIT "kernel32.lib")
+	set(CMAKE_CXX_STANDARD_LIBRARIES_INIT "kernel32.lib")
 endif()
 ]=]
 )

@@ -23,19 +23,11 @@
 #include "SDL_syswm.h"
 #endif // PURPL_USE_SYSTEM_SDL
 
-#ifdef _WIN32
-#include "purpl/util/private/win/ntdll.h"
-#endif
-
 #include "purpl/core/init.h"
 
 PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 {
 	char *title;
-
-#ifdef _WIN32
-	purpl_load_ntdll();
-#endif // _WIN32
 
 	purpl_inst = calloc(1, sizeof(struct purpl_instance));
 	if (!purpl_inst) {
