@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 
-# Use this if Ninja can't be found
+# Use the engine's Ninja
 if (${CMAKE_GENERATOR} MATCHES "Ninja")
 	if (WIN32)
 		set(CMAKE_MAKE_PROGRAM ${CMAKE_SOURCE_DIR}/tools/ninja.exe CACHE STRING "" FORCE)
@@ -8,6 +8,22 @@ if (${CMAKE_GENERATOR} MATCHES "Ninja")
 		set(CMAKE_MAKE_PROGRAM ${CMAKE_SOURCE_DIR}/tools/ninja CACHE STRING "" FORCE)
 	endif()
 endif()
+
+# Dependencies (has to go before the custom rules but after the fix for Ninja)
+set(SDL_STATIC OFF CACHE BOOL "" FORCE)
+set(SDL_CMAKE_DEBUG_POSTFIX "" CACHE STRING "" FORCE)
+add_subdirectory(deps/sdl2 EXCLUDE_FROM_ALL)
+
+# Don't link to anything
+file(WRITE ${CMAKE_BINARY_DIR}/MakeRulesOverwrite.cmake
+[=[
+if (MSVC)
+	set(CMAKE_C_STANDARD_LIBRARIES_INIT "")
+	set(CMAKE_CXX_STANDARD_LIBRARIES_INIT "")
+endif()
+]=]
+)
+set(CMAKE_USER_MAKE_RULES_OVERRIDE "${CMAKE_BINARY_DIR}/MakeRulesOverwrite.cmake")
 
 # Declare the project
 project(purpl-engine VERSION 1.0.0 LANGUAGES C CXX)
@@ -20,13 +36,9 @@ endif()
 # Settings
 set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/install)
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 option(PURPL_ENABLE_DEMO "Build the demo" ON)
 option(PURPL_ENABLE_MEMING "Easter Eggs" OFF)
-
-# Dependencies
-set(SDL_STATIC OFF CACHE BOOL "" FORCE)
-set(SDL_CMAKE_DEBUG_POSTFIX "" CACHE STRING "" FORCE)
-add_subdirectory(deps/sdl2 EXCLUDE_FROM_ALL)
 
 # Compiler and linker flags
 if (MSVC)
@@ -44,6 +56,7 @@ endif()
 add_subdirectory(engine)
 if (${PURPL_ENABLE_DEMO})
 	add_subdirectory(demo)
+	set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT demo)
 endif()
 
 # Install licenses

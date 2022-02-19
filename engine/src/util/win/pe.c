@@ -27,7 +27,7 @@ void purpl_load_ntdll(void)
 	PEB_LDR_DATA *ldr;
 	LIST_ENTRY *head;
 	LIST_ENTRY *cur;
-	LDR_DATA_TABLE_ENTRY *cur_dll;
+	LDR_DATA_TABLE_ENTRY *cur_dll = NULL;
 
 	// NTDLL is _always_ loaded in normal processes, find it
 	peb = NtCurrentPeb();
@@ -37,11 +37,27 @@ void purpl_load_ntdll(void)
 		cur_dll = CONTAINING_RECORD(cur, LDR_DATA_TABLE_ENTRY,
 					    InLoadOrderLinks);
 		if (purpl_wcscasecmp(cur_dll->FullDllName.Buffer,
-			       L"C:\\Windows\\System32\\ntdll.dll") == 0)
+				     L"C:\\Windows\\System32\\ntdll.dll") == 0)
 			break;
 	}
+
+	// Should be impossible
+	if (!cur_dll)
+		return;
 
 	ntdll_base = cur_dll->DllBase;
 
 	DbgPrint_l = GetProcAddress(ntdll_base, "DbgPrint");
+}
+
+void *purpl_get_pe_symbol(void *base, const char *name)
+{
+	void *sym = NULL;
+
+	if (!base)
+		return NULL;
+
+
+
+	return sym;
 }

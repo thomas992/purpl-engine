@@ -1,49 +1,40 @@
 cmake_minimum_required(VERSION 3.10)
 
 set(ENGINE_CORE_HEADERS
-	include/purpl/ENGINE.h
-
 	include/purpl/core/coredefs.h
 	include/purpl/core/features.h
 	include/purpl/core/init.h
 	include/purpl/core/inst.h
 	include/purpl/core/log.h
-	include/purpl/core/types.h
-)
+	include/purpl/core/types.h)
 
 set(ENGINE_GRAPHICS_HEADERS
-	include/graphics/init.h
-)
+	include/purpl/graphics/init.h)
 
 set(ENGINE_UTIL_HEADERS
 	include/purpl/util/error.h
 	include/purpl/util/fs.h
 	include/purpl/util/misc.h
 	include/purpl/util/string.h
-	include/purpl/util/util.h
-)
+	include/purpl/util/util.h)
 
 set(ENGINE_WINDOWS_HEADERS
-	include/purpl/util/private/win/ntdll.h
-)
+	include/purpl/util/private/win/pe.h)
 
 set(ENGINE_CORE_SOURCES
 	src/core/globals.c
 	src/core/init.c
-	src/core/log.c
-)
+	src/core/log.c)
 
 set(ENGINE_UTIL_SOURCES
 	src/util/error.c
 	src/util/fs.c
 	src/util/misc.c
 	src/util/stb.c
-	src/util/string.c
-)
+	src/util/string.c)
 
 set(ENGINE_WINDOWS_SOURCES
-	src/util/win/ntdll.c
-)
+	src/util/win/pe.c)
 
 if (WIN32)
 	set(ENGINE_PLATFORM_HEADERS ${ENGINE_WINDOWS_HEADERS})
@@ -60,24 +51,34 @@ set(ENGINE_ALL_HEADERS
 	${ENGINE_CORE_HEADERS}
 	${ENGINE_GRAPHICS_HEADERS}
 	${ENGINE_UTIL_HEADERS}
-	${ENGINE_PLATFORM_HEADERS}
-)
+	${ENGINE_PLATFORM_HEADERS})
 
 set(ENGINE_ALL_SOURCES
 	${ENGINE_CORE_SOURCES}
 	${ENGINE_GRAPHICS_SOURCES}
 	${ENGINE_UTIL_SOURCES}
-	${ENGINE_PLATFORM_SOURCES}
-)
+	${ENGINE_PLATFORM_SOURCES})
 
-add_library(engine SHARED ${ENGINE_ALL_SOURCES})
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/include PREFIX "Header Files" FILES ${ENGINE_ALL_HEADERS})
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/src PREFIX "Source Files" FILES ${ENGINE_ALL_SOURCES})
+
+add_library(engine SHARED ${ENGINE_ALL_HEADERS} ${ENGINE_ALL_SOURCES})
 target_compile_definitions(engine PRIVATE PURPL_BUILD=1)
+
 if (${PURPL_ENABLE_MEMING})
 	target_compile_definitions(engine PRIVATE PURPL_ENABLE_MEMING=1)
 endif()
-if (${CMAKE_BUILD_TYPE} EQUAL "Debug")
+if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
 	target_compile_definitions(engine PRIVATE PURPL_DEBUG=1)
 endif()
+if (${CMAKE_SYSTEM_PROCESSOR} MATCHES "AMD64" OR ${CMAKE_SYSTEM_PROCESSOR} MATCHES "x86_64")
+	target_compile_definitions(engine PRIVATE PURPL_X86=1 PURPL_X86_64=1)
+elseif(${CMAKE_SYSTEM_PROCESSOR} MATCHES "86")
+	target_compile_definitions(engine PRIVATE PURPL_X86=1)
+elseif(${CMAKE_SYSTEM_PROCESSOR} MATCHES "a.*64")
+	target_compile_definitions(engine PRIVATE PURPL_ARM=1)
+endif()
+
 target_include_directories(engine PUBLIC
 					${CMAKE_CURRENT_SOURCE_DIR}/include
 				PRIVATE

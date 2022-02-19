@@ -21,6 +21,8 @@
 #error This file is only meant to be included by the engine
 #endif // PURPL_BUILD
 
+#include <assert.h>
+
 #define PHNT_VERSION PHNT_THRESHOLD
 #include <phnt_windows.h>
 #include <phnt.h>
@@ -30,11 +32,5 @@
 
 #include "purpl/util/string.h"
 
-/// The base address of NTDLL
-extern void *ntdll_base;
+#include "pe.h"
 
-/// Functions loaded
-extern u32 (*DbgPrint_l)(const char *fmt, ...); /// DbgPrint
-
-/// Finds NTDLL's base address in the PEB
-extern void purpl_load_ntdll(void);
