@@ -75,7 +75,7 @@ target_compile_definitions(engine PRIVATE PURPL_BUILD=1)
 if (${PURPL_ENABLE_MEMING})
 	target_compile_definitions(engine PRIVATE PURPL_ENABLE_MEMING=1)
 endif()
-if (${CMAKE_BUILD_TYPE} EQUALS "Debug")
+if (${CMAKE_BUILD_TYPE} EQUAL "Debug")
 	target_compile_definitions(engine PRIVATE PURPL_DEBUG=1)
 endif()
 target_include_directories(engine PUBLIC
