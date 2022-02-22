@@ -1,37 +1,30 @@
 {
     "configurations": [
         {
-            "name": "Linux",
-            "cStandard": "gnu17",
-            "includePath": [
-                "${workspaceFolder}/deps/linux-x64/include",
-                "${workspaceFolder}/engine/include"
-            ],
-            "defines": [],
-            "intelliSenseMode": "linux-clang-x64",
-            "compileCommands": "${workspaceFolder}/out/linux/compile_commands.json"
-        },
-        {
-            "name": "macOS",
-            "cStandard": "c17",
-            "includePath": [
-                "${workspaceFolder}/deps/mac-x64/include",
-                "${workspaceFolder}/engine/include"
-            ],
-            "defines": [],
-            "intelliSenseMode": "macos-clang-x64",
-            "compileCommands": "${workspaceFolder}/out/mac/compile_commands.json"
-        },
-        {
             "name": "Windows",
             "cStandard": "c17",
             "includePath": [
-                "${workspaceFolder}/deps/win-x64/include",
+                "${workspaceFolder}/deps/phnt",
+                "${workspaceFolder}/deps/stb",
+                "${workspaceFolder}/deps/sdl2/include",
                 "${workspaceFolder}/engine/include"
             ],
             "defines": [],
             "intelliSenseMode": "windows-msvc-x64",
-            "compileCommands": "${workspaceFolder}/out/win/compile_commands.json"
+            "compileCommands": "${workspaceFolder}/build/compile_commands.json"
+        },
+        {
+            "name": "Linux",
+            "cStandard": "gnu17",
+            "includePath": [
+                "${workspaceFolder}/deps/phnt",
+                "${workspaceFolder}/deps/stb",
+                "${workspaceFolder}/deps/sdl2/include",
+                "${workspaceFolder}/engine/include"
+            ],
+            "defines": [],
+            "intelliSenseMode": "linux-clang-x64",
+            "compileCommands": "${workspaceFolder}/build/compile_commands.json"
         }
     ],
     "version": 4

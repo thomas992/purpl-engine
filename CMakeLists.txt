@@ -36,6 +36,7 @@ endif()
 # Settings
 set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/install)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 option(PURPL_ENABLE_DEMO "Build the demo" ON)
 option(PURPL_ENABLE_MEMING "Easter Eggs" OFF)
@@ -60,8 +61,15 @@ if (${PURPL_ENABLE_DEMO})
 endif()
 
 # Install licenses
-install(DIRECTORY deps/licenses
-	DESTINATION ${CMAKE_INSTALL_PREFIX})
+install(FILES deps/phnt/LICENSE
+	RENAME phnt.txt
+	DESTINATION ${CMAKE_INSTALL_PREFIX}/licenses)
+install(FILES deps/sdl2/LICENSE.txt
+	RENAME sdl2.txt
+	DESTINATION ${CMAKE_INSTALL_PREFIX}/licenses)
+install(FILES deps/stb/LICENSE
+	RENAME stb.txt
+	DESTINATION ${CMAKE_INSTALL_PREFIX}/licenses)
 install(FILES LICENSE
 	RENAME purpl.txt
 	DESTINATION ${CMAKE_INSTALL_PREFIX}/licenses)
@@ -73,9 +81,9 @@ install(TARGETS SDL2
 
 # Install the run script
 if (WIN32)
-	install(FILES tools/run.bat
+	install(PROGRAMS tools/run.bat
 		DESTINATION ${CMAKE_INSTALL_PREFIX})
 else()
-	install(FILES tools/run.sh
+	install(PROGRAMS tools/run.sh
 		DESTINATION ${CMAKE_INSTALL_PREFIX})
 endif()
