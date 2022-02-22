@@ -14,7 +14,7 @@ if (NOT WIN32)
 	set(PURPL_USE_LLVM ON)
 endif()
 
-if(${PURPL_USE_LLVM} AND ${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+if(${CMAKE_SYSTEM_NAME} MATCHES "Linux" AND ${PURPL_USE_LLVM})
 	message(STATUS "Using LLVM to build because PURPL_USE_LLVM was set to ${PURPL_USE_LLVM}")
 		set(CMAKE_C_COMPILER clang)
 		set(CMAKE_CXX_COMPILER clang++)
@@ -48,7 +48,7 @@ option(PURPL_ENABLE_DEMO "Build the demo" ON)
 option(PURPL_ENABLE_MEMING "Easter Eggs" OFF)
 
 # Compiler and linker flags
-if (MSVC AND NOT ${PURPL_USE_LLVM})
+if (MSVC)
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /std:c17 /W4 /WX /wd4005 /wd4057 /wd4090 /wd4100 /wd4115 /wd4133 /wd4220 /wd4244 /wd4267 /wd4324 /wd4342 /wd4701 /wd4703 /wd4706 /wd4996")
 else()
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu2x -Wall -Wextra -Werror")
