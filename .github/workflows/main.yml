@@ -11,6 +11,8 @@ on:
 jobs:
     build-windows:
         runs-on: windows-2022
+        env:
+          VULKAN_SDK: $Env:GITHUB_WORKSPACE/VULKAN_SDK
 
         steps:
             - uses: actions/checkout@v2
