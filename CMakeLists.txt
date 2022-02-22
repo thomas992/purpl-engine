@@ -11,13 +11,13 @@ endif()
 
 # I hate GCC, and it's slower and unable to compile SDL
 if (NOT WIN32)
-	set(PURPL_USE_LLVM ON)
+	set(PURPL_USE_CLANG ON CACHE BOOL "" FORCE)
 endif()
 
-if(${CMAKE_SYSTEM_NAME} MATCHES "Linux" AND ${PURPL_USE_LLVM})
-	message(STATUS "Using LLVM to build because PURPL_USE_LLVM was set to ${PURPL_USE_LLVM}")
-		set(CMAKE_C_COMPILER clang)
-		set(CMAKE_CXX_COMPILER clang++)
+if(${PURPL_USE_CLANG})
+	message(STATUS "Using Clang to compile because PURPL_USE_CLANG was set to ${PURPL_USE_CLANG}")
+		set(CMAKE_C_COMPILER clang CACHE STRING "" FORCE)
+		set(CMAKE_CXX_COMPILER clang++ CACHE STRING "" FORCE)
 endif()
 
 # Dependencies (has to go before the custom rules but after the fix for Ninja)
