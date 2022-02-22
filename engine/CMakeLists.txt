@@ -76,10 +76,11 @@ endif()
 target_include_directories(engine PUBLIC
 					${CMAKE_CURRENT_SOURCE_DIR}/include
 					PRIVATE
+					${Vulkan_INCLUDE_DIRS}
 					${CMAKE_SOURCE_DIR}/deps/phnt
 					${CMAKE_SOURCE_DIR}/deps/sdl2/include
 					${CMAKE_SOURCE_DIR}/deps/stb)
-target_link_libraries(engine PRIVATE SDL2::SDL2)
+target_link_libraries(engine PRIVATE SDL2::SDL2 ${Vulkan_LIBRARIES})
 
 install(TARGETS engine
 	LIBRARY

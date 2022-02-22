@@ -61,6 +61,11 @@ else()
 	endif()
 endif()
 
+# Vulkan SDK
+if (NOT APPLE)
+	find_package(Vulkan REQUIRED)
+endif()
+
 # Add the engine and the demo if it's enabled
 add_subdirectory(engine)
 if (${PURPL_ENABLE_DEMO})
