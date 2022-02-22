@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-export HERE=$(dirname $(realpath "$0"))
+export HERE=$(realpath $(dirname "$0"))
 
 chmod a+x "$HERE/demo"
 

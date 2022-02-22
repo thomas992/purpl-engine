@@ -9,6 +9,26 @@ if (${CMAKE_GENERATOR} MATCHES "Ninja")
 	endif()
 endif()
 
+# I hate GCC, and it's slower and unable to compile SDL
+if (NOT WIN32)
+	set(PURPL_USE_LLVM ON)
+endif()
+
+if(${PURPL_USE_LLVM})
+	message(STATUS "Using LLVM to build")
+	if (WIN32)
+		set(CMAKE_C_COMPILER clang-cl)
+		set(CMAKE_CXX_COMPILER clang-cl)
+		set(CMAKE_C_FLAGS "-fuse-ld=lld-link")
+		set(CMAKE_CXX_FLAGS "-fuse-ld=lld-link")
+	else()
+		set(CMAKE_C_COMPILER clang)
+		set(CMAKE_CXX_COMPILER clang++)
+		set(CMAKE_C_FLAGS "-fuse-ld=lld")
+		set(CMAKE_CXX_FLAGS "-fuse-ld=lld")
+	endif()
+endif()
+
 # Dependencies (has to go before the custom rules but after the fix for Ninja)
 set(SDL_STATIC OFF CACHE BOOL "" FORCE)
 set(SDL_CMAKE_DEBUG_POSTFIX "" CACHE STRING "" FORCE)
@@ -27,11 +47,6 @@ set(CMAKE_USER_MAKE_RULES_OVERRIDE "${CMAKE_BINARY_DIR}/MakeRulesOverwrite.cmake
 
 # Declare the project
 project(purpl-engine VERSION 1.0.0 LANGUAGES C CXX)
-
-# Linux Mint's GCC's C2x support doesn't seem have [[fallthrough]] yet
-if (${CMAKE_C_COMPILER_ID} MATCHES "GNU")
-	message(WARNING "GCC may not be able to compile SDL2")
-endif()
 
 # Settings
 set(CMAKE_BUILD_TYPE Debug)
