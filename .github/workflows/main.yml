@@ -11,8 +11,6 @@ on:
 jobs:
     build-windows:
         runs-on: windows-2022
-        env:
-          VULKAN_SDK: $Env:GITHUB_WORKSPACE/VULKAN_SDK
 
         steps:
             - uses: actions/checkout@v2
@@ -38,6 +36,8 @@ jobs:
 
             - name: Generate build files
               run: cmake -S. -Bbuild -GNinja
+              env:
+                VULKAN_SDK: $Env:GITHUB_WORKSPACE/VULKAN_SDK
 
             - name: Build
               run: cmake --build build
