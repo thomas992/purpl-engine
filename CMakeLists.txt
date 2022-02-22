@@ -9,11 +9,6 @@ if (${CMAKE_GENERATOR} MATCHES "Ninja")
 	endif()
 endif()
 
-# I hate GCC, and it's slower and unable to compile SDL
-if (NOT WIN32)
-	set(PURPL_USE_CLANG ON CACHE BOOL "" FORCE)
-endif()
-
 if(${PURPL_USE_CLANG})
 	message(STATUS "Using Clang to compile because PURPL_USE_CLANG was set to ${PURPL_USE_CLANG}")
 		set(CMAKE_C_COMPILER clang CACHE STRING "" FORCE)
@@ -51,7 +46,14 @@ option(PURPL_ENABLE_MEMING "Easter Eggs" OFF)
 if (MSVC)
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /std:c17 /W4 /WX /wd4005 /wd4057 /wd4090 /wd4100 /wd4115 /wd4133 /wd4220 /wd4244 /wd4267 /wd4324 /wd4342 /wd4701 /wd4703 /wd4706 /wd4996")
 else()
-	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu2x -Wall -Wextra -Werror")
+	if (${CMAKE_C_COMPILER_ID} MATCHES "GNU")
+		# GCC 9's C2x support doesn't have [[fallthrough]], but SDL assumes it does
+		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu17")
+	else()
+		# Clang has no issues
+		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu2x")
+	endif()
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -Werror")
 	if (${CMAKE_C_COMPILER_ID} MATCHES "Clang")
 		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-ignored-qualifiers -Wno-incompatible-pointer-types-discards-qualifiers -Wno-pointer-sign -Wno-sign-compare -Wno-unused-parameter")
 	else() # Assume GCC warning names
