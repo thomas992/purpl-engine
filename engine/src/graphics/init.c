@@ -15,7 +15,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include "purpl/graphics/init.h"
+
 bool purpl_graphics_init(void)
 {
-	
+	return true;	
 }
