@@ -15,13 +15,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifdef PURPL_USE_SYSTEM_SDL
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_syswm.h>
-#else // PURPL_USE_SYSTEM_SDL
 #include "SDL.h"
 #include "SDL_syswm.h"
-#endif // PURPL_USE_SYSTEM_SDL
 
 #include "purpl/core/init.h"
 

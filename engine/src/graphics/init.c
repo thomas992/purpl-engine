@@ -21,3 +21,9 @@ bool purpl_graphics_init(void)
 {
 	return true;	
 }
+
+void purpl_graphics_shutdown(void)
+{
+	
+}
+
