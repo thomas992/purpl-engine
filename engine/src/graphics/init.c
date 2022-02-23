@@ -17,17 +17,4 @@
 
 #pragma once
 
-#include "purpl/core/coredefs.h"
-#include "purpl/core/features.h"
-#include "purpl/core/inst.h"
-#include "purpl/core/types.h"
 
-#include "purpl/util/util.h"
-
-/// Initialize graphics for the engine
-///
-/// \return Returns true if initialization succeeded, false otherwise
-bool purpl_graphics_init(void);
-
-/// Shut down graphics
-void purpl_graphics_shutdown(void);

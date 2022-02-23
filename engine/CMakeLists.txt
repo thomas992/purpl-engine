@@ -23,12 +23,17 @@ set(ENGINE_CORE_SOURCES
 	src/core/init.c
 	src/core/log.c)
 
+set(ENGINE_GRAPHICS_SOURCES
+	src/graphics/init.c)
+
 set(ENGINE_UTIL_SOURCES
 	src/util/error.c
 	src/util/fs.c
 	src/util/misc.c
 	src/util/stb.c
 	src/util/string.c)
+
+set(ENGINE_WINDOWS_SOURCES src/engine.rc)
 
 if (WIN32)
 	set(ENGINE_PLATFORM_HEADERS ${ENGINE_WINDOWS_HEADERS})
@@ -42,6 +47,7 @@ else()
 endif()
 
 set(ENGINE_ALL_HEADERS
+	include/purpl/purpl.h
 	${ENGINE_CORE_HEADERS}
 	${ENGINE_GRAPHICS_HEADERS}
 	${ENGINE_UTIL_HEADERS}
