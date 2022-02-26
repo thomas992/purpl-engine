@@ -25,11 +25,13 @@ PURPL_API bool purpl_graphics_init(void)
 		return false;
 
 	// TODO: when other APIs are supported, make this better
+#ifndef __APPLE__
 	init = purpl_vulkan_init();
 	if (!init) {
 		PURPL_LOG_ERROR(purpl_inst->logger, "Failed to initialize Vulkan, unloading Vulkan library");
 		SDL_Vulkan_UnloadLibrary();
 	}
+#endif // !__APPLE__
 
 	PURPL_LOG_INFO(purpl_inst->logger,
 		       "Successfully initialized graphics");
@@ -65,7 +67,7 @@ PURPL_API void purpl_graphics_shutdown(void)
 #endif // _WIN32
 #ifdef __APPLE__
 	case PURPL_GRAPHICS_API_METAL:
-		break
+		break;
 #endif // __APPLE__;
 	}
 }
