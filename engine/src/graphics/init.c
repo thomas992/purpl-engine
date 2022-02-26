@@ -50,9 +50,23 @@ PURPL_API void purpl_graphics_shutdown(void)
 	PURPL_LOG_WARNING(purpl_inst->logger, "Shutting down graphics");
 
 	switch (purpl_inst->graphics_api) {
+	case PURPL_GRAPHICS_API_SOFTWARE:
+		break;
+	case PURPL_GRAPHICS_API_OPENGL:
+		break;
+#ifndef __APPLE__
 	case PURPL_GRAPHICS_API_VULKAN:
 		purpl_vulkan_shutdown();
 		break;
+#endif // !__APPLE__
+#ifdef _WIN32
+	case PURPL_GRAPHICS_API_DIRECT3D:
+		break;
+#endif // _WIN32
+#ifdef __APPLE__
+	case PURPL_GRAPHICS_API_METAL:
+		break
+#endif // __APPLE__;
 	}
 }
 

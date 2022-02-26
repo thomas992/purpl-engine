@@ -34,9 +34,15 @@
 enum purpl_graphics_api {
 	PURPL_GRAPHICS_API_SOFTWARE = 0, // Software rendering (unimplemented)
 	PURPL_GRAPHICS_API_OPENGL = 1, // OpenGL (unimplemented)
+#ifndef __APPLE__
 	PURPL_GRAPHICS_API_VULKAN = 2, // Vulkan
+#endif // !__APPLE__
+#ifdef _WIN32
 	PURPL_GRAPHICS_API_DIRECT3D = 3, // Direct3D (unimplemented)
+#endif // _WIN32
+#ifdef __APPLE__
 	PURPL_GRAPHICS_API_METAL = 4, // Metal (unimplemented)
+#endif // __APPLE__
 };
 
 /// Structure to hold information about the current instance of the engine

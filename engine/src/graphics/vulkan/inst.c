@@ -15,8 +15,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#pragma once
-
 #include "purpl/graphics/vulkan/inst.h"
 
 bool vulkan_create_instance(void)
@@ -29,6 +27,7 @@ bool vulkan_create_instance(void)
 	char **required_exts;
 	VkExtensionProperties *ext_props;
 	const char *validation_layers[] = { "VK_LAYER_KHRONOS_validation" };
+	size_t i;
 
 	app_info.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
 	app_info.pApplicationName = purpl_inst->app_name;
@@ -54,6 +53,9 @@ bool vulkan_create_instance(void)
 #ifdef PURPL_DEBUG
 	create_info.enabledLayerCount = PURPL_SIZEOF_ARRAY(validation_layers);
 	create_info.ppEnabledLayerNames = validation_layers;
+	for (i = 0; i < PURPL_SIZEOF_ARRAY(validation_layers); i++)
+		PURPL_LOG_INFO(purpl_inst->logger, "Requesting Vulkan validation layer \"%s\"",
+			       validation_layers[i]);
 #else // PURPL_DEBUG
 	create_info.enabledLayerCount = 0;
 #endif // PURPL_DEBUG
@@ -62,7 +64,15 @@ bool vulkan_create_instance(void)
 	if (res != VK_SUCCESS) {
 		PURPL_LOG_ERROR(purpl_inst->logger,
 				"Failed to create Vulkan instance: VkResult %d", res);
+		stbds_arrfree(required_exts);
+		stbds_arrfree(ext_props);
+		stbds_arrfree(exts);
+		return false;
 	}
+
+	PURPL_LOG_INFO(purpl_inst->logger,
+		       "Successfully created Vulkan instance with %zu extensions and %zu validation layers enabled",
+		       stbds_arrlenu(required_exts), PURPL_SIZEOF_ARRAY(validation_layers));
 
 	stbds_arrfree(required_exts);
 	stbds_arrfree(ext_props);
@@ -103,6 +113,9 @@ void **vulkan_get_extensions(void)
 				      VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
 #endif // PURPL_DEBUG
 	}
+
+	for (i = 0; i < stbds_arrlenu(required_exts); i++)
+		PURPL_LOG_INFO(purpl_inst->logger, "Requesting Vulkan instance extension \"%s\"", required_exts[i]);
 
 	stbds_arrput(exts, required_exts);
 	stbds_arrput(exts, ext_props);

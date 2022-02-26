@@ -24,7 +24,9 @@
 
 #include "purpl/util/util.h"
 
+#ifndef __APPLE__
 #include "vulkan/init.h"
+#endif // __APPLE__
 
 /// Initialize graphics for the engine
 ///
