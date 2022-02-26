@@ -105,7 +105,7 @@ extern PURPL_API char *purpl_strndup(const char *str, size_t n);
 /// rounded to -1, 0, or 1
 extern PURPL_API s8 purpl_wcscasecmp(const wchar_t *s1, const wchar_t *s2);
 
-/// Converts a version number into a string in the format "vmajor.minor.patch"
+/// Converts a version number into a string in the format "major.minor.patch"
 ///
 /// \param version The version number (from PURPL_MAKE_VERSION) to format
 ///

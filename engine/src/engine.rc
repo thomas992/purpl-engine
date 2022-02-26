@@ -28,7 +28,7 @@ BEGIN
             VALUE "LegalCopyright", "Copyright (C) 2022 MobSlicer152\0"
             VALUE "OriginalFilename", "engine.dll\0"
             VALUE "ProductName", "Purpl Engine\0"
-            VALUE "ProductVersion", "1, 0, 0, 0\0"
+            VALUE "ProductVersion", "1.0.0.0\0"
         END
     END
     BLOCK "VarFileInfo"

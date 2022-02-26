@@ -20,17 +20,20 @@
 
 #include "purpl/core/init.h"
 
+#include "purpl/graphics/init.h"
+
 PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 {
 	char *title;
+	const u32 wnd_flags = SDL_WINDOW_RESIZABLE | SDL_WINDOW_VULKAN;
 
 	purpl_inst = calloc(1, sizeof(struct purpl_instance));
 	if (!purpl_inst) {
-#ifdef PURPL_DEBUG
 		fprintf(stderr,
 			"Error: failed to allocate memory for the engine instance: %s\n",
 			purpl_strerror());
-#endif // PURPL_DEBUG
+		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Purpl Engine",
+					 "Failed to allocate the engine instance", NULL);
 		return false;
 	}
 
@@ -40,11 +43,11 @@ PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 	purpl_inst->logger = purpl_log_create(NULL, PURPL_LOG_LEVEL_INFO,
 					      PURPL_LOG_LEVEL_MAX, NULL);
 	if (!purpl_inst->logger) {
-#ifdef PURPL_DEBUG
 		fprintf(stderr, "Error: failed to create a logger: %s\n",
 			purpl_strerror());
-#endif // PURPL_DEBUG
-		free(purpl_inst);
+		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Purpl Engine",
+					 "Failed to create a logger", NULL);
+		purpl_shutdown();
 		return false;
 	}
 
@@ -67,39 +70,52 @@ PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 		PURPL_LOG_CRITICAL(purpl_inst->logger,
 				   "Failed to initialize SDL: %s",
 				   SDL_GetError());
-		purpl_log_close(purpl_inst->logger, true);
-		free(purpl_inst->app_name);
-		free(purpl_inst);
+		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Purpl Engine",
+					 "Failed to initialize SDL. See the logs for more information.", NULL);
+		purpl_shutdown();
 		return false;
 	}
 
-	title = purpl_strfmt(NULL, "%s %s", purpl_inst->app_name,
+	title = purpl_strfmt(NULL, "%s v%s", purpl_inst->app_name,
 			     purpl_format_version(purpl_inst->app_version));
 
 	PURPL_LOG_INFO(purpl_inst->logger, "Creating a window titled %s",
 		       title);
 	purpl_inst->wnd = SDL_CreateWindow(title, SDL_WINDOWPOS_UNDEFINED,
 					   SDL_WINDOWPOS_UNDEFINED, 1024, 768,
-					   SDL_WINDOW_RESIZABLE);
+					   wnd_flags);
 	if (!purpl_inst->wnd) {
 		PURPL_LOG_CRITICAL(purpl_inst->logger,
 				   "Failed to create a window: %s",
 				   SDL_GetError());
-		purpl_log_close(purpl_inst->logger, true);
-		free(purpl_inst->app_name);
-		free(purpl_inst);
+		SDL_ShowSimpleMessageBox(
+			SDL_MESSAGEBOX_ERROR, "Purpl Engine",
+			"Failed to create a window. See the logs for more information.",
+			NULL);
+		purpl_shutdown();
+		return false;
 	}
 
 	SDL_GetWindowPosition(purpl_inst->wnd, &purpl_inst->wnd_x,
 			      &purpl_inst->wnd_y);
 	SDL_GetWindowSize(purpl_inst->wnd, &purpl_inst->wnd_width,
-			  &purpl_inst->wnd_height);	
+			  &purpl_inst->wnd_height);
+
+	PURPL_LOG_INFO(purpl_inst->logger, "Initializing graphics");
+	if (!purpl_graphics_init()) {
+		SDL_ShowSimpleMessageBox(
+			SDL_MESSAGEBOX_ERROR, "Purpl Engine",
+			"Failed to initialize graphics. See the logs for more information.",
+			NULL);
+		purpl_shutdown();
+		return false;
+	}
 
 	srand((u32)((u64)purpl_inst ^ ((u64)purpl_inst->logger & (u64)title)) *
 	      time(NULL));
 
 	PURPL_LOG_INFO(purpl_inst->logger,
-		       "Engine #V initialized for application #n #v");
+		       "Purpl Engine #V initialized for application #n #v");
 
 	free(title);
 
@@ -177,11 +193,15 @@ PURPL_API void purpl_shutdown(void)
 {
 	PURPL_LOG_WARNING(purpl_inst->logger, "Engine shutting down");
 
-	SDL_DestroyWindow(purpl_inst->wnd);
+	purpl_graphics_shutdown();
+
+	if (purpl_inst->wnd)
+		SDL_DestroyWindow(purpl_inst->wnd);
 	SDL_Quit();
 
 	purpl_log_close(purpl_inst->logger, true);
 
-	free(purpl_inst->app_name);
+	if (purpl_inst->app_name)
+		free(purpl_inst->app_name);
 	free(purpl_inst);
 }

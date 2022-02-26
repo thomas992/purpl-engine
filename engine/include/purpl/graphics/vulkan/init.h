@@ -1,4 +1,4 @@
-// Graphics initialization/shutdown functions
+// Vulkan initialization
 //
 // Copyright 2022 MobSlicer152
 // This file is part of Purpl Engine
@@ -17,6 +17,14 @@
 
 #pragma once
 
+#ifndef PURPL_BUILD
+#error This header should only be included in engine files
+#endif // !PURPL_BUILD
+
+#include "SDL.h"
+
+#include <vulkan/vulkan.h>
+
 #include "purpl/core/coredefs.h"
 #include "purpl/core/features.h"
 #include "purpl/core/inst.h"
@@ -24,12 +32,13 @@
 
 #include "purpl/util/util.h"
 
-#include "vulkan/init.h"
+#include "inst.h"
 
-/// Initialize graphics for the engine
+/// Initialize Vulkan
 ///
-/// \return Returns true if initialization succeeded, false otherwise
-extern PURPL_API bool purpl_graphics_init(void);
+/// \return Returns true if initialization was successful, false otherwise
+extern bool purpl_vulkan_init(void);
 
-/// Shut down graphics
-extern PURPL_API void purpl_graphics_shutdown(void);
+/// Shut down Vulkan (if it's initialized)
+extern void purpl_vulkan_shutdown(void);
+

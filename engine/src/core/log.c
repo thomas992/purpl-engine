@@ -151,7 +151,7 @@ static char *purpl_log_format(struct purpl_logger *logger,
 	free(p1);
 	free(p3);
 
-	p3 = purpl_strfmt(NULL, "%02d", t1->tm_min, NULL);
+	p3 = purpl_strfmt(NULL, "%02d", t1->tm_min);
 	p1 = purpl_strrplc(p2, "#m", p3, NULL);
 	free(p2);
 	free(p3);
@@ -255,9 +255,12 @@ static char *purpl_log_format(struct purpl_logger *logger,
 		p1, "#v", purpl_format_version(purpl_inst->app_version), NULL);
 	free(p1);
 
+	p1 = purpl_strfmt(NULL, "%s\n", p2);
+	free(p2);
+
 	va_end(args);
 
-	return p2;
+	return p1;
 }
 
 PURPL_API void purpl_log_write(struct purpl_logger *logger,
@@ -291,16 +294,15 @@ PURPL_API void purpl_log_write(struct purpl_logger *logger,
 			       msg, args);
 	va_end(args);
 
-	fprintf(logger->file, "%s\n", buf);
-	if (level < PURPL_LOG_LEVEL_INFO)
-		printf("%s\n", buf);
+	fprintf(logger->file, "%s", buf);
 #ifdef PURPL_DEBUG
-	if (level == PURPL_LOG_LEVEL_DEBUG) {
-		printf("%s\n", buf);
+	printf("%s", buf);
 #ifdef _WIN32
-		OutputDebugStringA(buf);
+	OutputDebugStringA(buf);
 #endif // _WIN32
-	}
+#else // PURPL_DEBUG
+	if (level < PURPL_LOG_LEVEL_INFO)
+		printf("%s", buf);
 #endif // PURPL_DEBUG
 
 	free(buf);

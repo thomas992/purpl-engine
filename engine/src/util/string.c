@@ -195,7 +195,7 @@ PURPL_API const char *purpl_format_version(u32 version)
 {
 	static char buf[PURPL_STATIC_BUF_MAX];
 
-	stbsp_snprintf(buf, PURPL_STATIC_BUF_MAX, "v%d.%d.%d",
+	stbsp_snprintf(buf, PURPL_STATIC_BUF_MAX, "%d.%d.%d",
 		       (version >> 16) & 0xFF, (version >> 8) & 0xFF,
 		       version & 0xFF);
 

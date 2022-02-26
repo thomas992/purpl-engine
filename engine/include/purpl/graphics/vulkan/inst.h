@@ -1,4 +1,4 @@
-// Graphics initialization/shutdown functions
+// Functions for creating Vulkan instances
 //
 // Copyright 2022 MobSlicer152
 // This file is part of Purpl Engine
@@ -17,6 +17,17 @@
 
 #pragma once
 
+#ifndef PURPL_BUILD
+#error This header should only be included in engine files
+#endif // !PURPL_BUILD
+
+#include "SDL.h"
+#include "SDL_vulkan.h"
+
+#include "stb_ds.h"
+
+#include <vulkan/vulkan.h>
+
 #include "purpl/core/coredefs.h"
 #include "purpl/core/features.h"
 #include "purpl/core/inst.h"
@@ -24,12 +35,15 @@
 
 #include "purpl/util/util.h"
 
-#include "vulkan/init.h"
-
-/// Initialize graphics for the engine
+/// Create a Vulkan instance
 ///
-/// \return Returns true if initialization succeeded, false otherwise
-extern PURPL_API bool purpl_graphics_init(void);
+/// \return Returns true on success, false on failure
+extern bool vulkan_create_instance(void);
 
-/// Shut down graphics
-extern PURPL_API void purpl_graphics_shutdown(void);
+/// Get the list of extensions to request
+///
+/// \return Returns an array of two pointers, one to an array of strings, and
+///	    one to the list of supported instance extensions. All three
+///	    pointers are to be freed by stbds_arrfree.
+extern void **vulkan_get_extensions(void);
+

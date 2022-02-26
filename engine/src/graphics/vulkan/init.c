@@ -1,4 +1,4 @@
-// Graphics initialization/shutdown functions
+// Vulkan initialization
 //
 // Copyright 2022 MobSlicer152
 // This file is part of Purpl Engine
@@ -15,21 +15,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#pragma once
+#include "SDL.h"
 
-#include "purpl/core/coredefs.h"
-#include "purpl/core/features.h"
-#include "purpl/core/inst.h"
-#include "purpl/core/types.h"
+#include "purpl/graphics/vulkan/init.h"
 
-#include "purpl/util/util.h"
+bool purpl_vulkan_init(void)
+{
+#ifdef __APPLE__
+	return false;
+#endif // __APPLE__
 
-#include "vulkan/init.h"
+	if (!purpl_inst)
+		return false;
 
-/// Initialize graphics for the engine
-///
-/// \return Returns true if initialization succeeded, false otherwise
-extern PURPL_API bool purpl_graphics_init(void);
+	vulkan_create_instance();
 
-/// Shut down graphics
-extern PURPL_API void purpl_graphics_shutdown(void);
+	purpl_inst->graphics_api = PURPL_GRAPHICS_API_VULKAN;
+	return true;
+}
+
+void purpl_vulkan_shutdown(void)
+{
+	struct purpl_instance_vulkan *vulkan = &purpl_inst->graphics.vulkan;
+
+	vkDestroyInstance(vulkan->inst, NULL);
+}

@@ -24,11 +24,20 @@
 #include "types.h"
 
 #ifdef PURPL_BUILD
-#ifdef PURPL_USE_SYSTEM_SDL
-#include <SDL2/SDL.h>
-#else // PURPL_USE_SYSTEM_SDL
 #include "SDL.h"
-#endif // PURPL_USE_SYSTEM_SDL
+
+#ifndef __APPLE__
+#include <vulkan/vulkan.h>
+#endif // !__APPLE__
+
+/// Possible graphics APIs (only for shutdown)
+enum purpl_graphics_api {
+	PURPL_GRAPHICS_API_SOFTWARE = 0, // Software rendering (unimplemented)
+	PURPL_GRAPHICS_API_OPENGL = 1, // OpenGL (unimplemented)
+	PURPL_GRAPHICS_API_VULKAN = 2, // Vulkan
+	PURPL_GRAPHICS_API_DIRECT3D = 3, // Direct3D (unimplemented)
+	PURPL_GRAPHICS_API_METAL = 4, // Metal (unimplemented)
+};
 
 /// Structure to hold information about the current instance of the engine
 struct purpl_instance {
@@ -45,7 +54,26 @@ struct purpl_instance {
 	u32 wnd_height; // The height of the window
 	u32 wnd_x; // The X position of the window
 	u32 wnd_y; // The Y position of the window
+
+	union {
+#ifdef __APPLE__
+		// No Metal support yet
+#endif // __APPLE__
+#ifndef __APPLE__ // Vulkan supports everything except macOS (MoltenVK exists,
+		  // but I'd rather just write it in Metal eventually)
+      		// Vulkan information
+		struct purpl_instance_vulkan {
+			VkInstance inst; // Vulkan instance
+		} vulkan;
+#endif // !__APPLE__
+
+		// Must match the largest size the structures can be (most likely this will
+		// be Windows eventually, because it supports 3 APIs)
+		void *padding[1];
+	} graphics;
+	enum purpl_graphics_api graphics_api; // The API that was initialized on startup
 };
 
 extern struct purpl_instance *purpl_inst;
 #endif
+

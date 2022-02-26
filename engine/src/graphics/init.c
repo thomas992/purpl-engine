@@ -17,13 +17,42 @@
 
 #include "purpl/graphics/init.h"
 
-bool purpl_graphics_init(void)
+PURPL_API bool purpl_graphics_init(void)
 {
+	bool init = false;
+
+	if (!purpl_inst)
+		return false;
+
+	// TODO: when other APIs are supported, make this better
+	init = purpl_vulkan_init();
+	if (!init) {
+		PURPL_LOG_ERROR(purpl_inst->logger, "Failed to initialize Vulkan, unloading Vulkan library");
+		SDL_Vulkan_UnloadLibrary();
+	}
+
+	PURPL_LOG_INFO(purpl_inst->logger,
+		       "Successfully initialized graphics");
+
+	if (!init) {
+		PURPL_LOG_CRITICAL(purpl_inst->logger, "Unable to initialize any graphics API");
+		return false;
+	}
+
 	return true;	
 }
 
-void purpl_graphics_shutdown(void)
+PURPL_API void purpl_graphics_shutdown(void)
 {
-	
+	if (!purpl_inst)
+		return;
+
+	PURPL_LOG_WARNING(purpl_inst->logger, "Shutting down graphics");
+
+	switch (purpl_inst->graphics_api) {
+	case PURPL_GRAPHICS_API_VULKAN:
+		purpl_vulkan_shutdown();
+		break;
+	}
 }
 

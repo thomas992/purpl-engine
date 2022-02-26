@@ -8,12 +8,10 @@
 
 **/.vs
 
-**/builddir
-**/build
+**/build**
 **/out
-
-subprojects/SDL2-*/
 
 **/*.log
 **/logs
 null.d
+/build-linux
