@@ -46,7 +46,7 @@ option(PURPL_ENABLE_MEMING "Easter Eggs" OFF)
 
 # Compiler and linker flags
 if (MSVC)
-	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /std:c17 /W4 /WX /wd4005 /wd4057 /wd4090 /wd4100 /wd4115 /wd4133 /wd4220 /wd4244 /wd4267 /wd4324 /wd4335 /wd4342 /wd4701 /wd4703 /wd4706 /wd4996")
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /std:c17 /W4 /WX /wd4005 /wd4057 /wd4090 /wd4100 /wd4115 /wd4133 /wd4152 /wd4220 /wd4244 /wd4267 /wd4324 /wd4335 /wd4342 /wd4701 /wd4703 /wd4706 /wd4996")
 else()
 	if (${CMAKE_C_COMPILER_ID} MATCHES "GNU")
 		# GCC 9's C2x support doesn't have [[fallthrough]], but SDL assumes it does

@@ -41,7 +41,7 @@ bool purpl_vulkan_init(void)
 	if (!purpl_inst)
 		return false;
 
-	*((void **)&vulkan->vk_get_instance_proc_addr) = SDL_Vulkan_GetVkGetInstanceProcAddr();
+	vulkan->vk_get_instance_proc_addr = SDL_Vulkan_GetVkGetInstanceProcAddr();
 
 	vulkan_create_instance();
 
@@ -62,6 +62,7 @@ void purpl_vulkan_shutdown(void)
 static void *vulkan_load_func(VkInstance inst, const char *name)
 {
 	struct purpl_instance_vulkan *vulkan = &purpl_inst->graphics.vulkan;
+
 	PURPL_LOG_INFO(purpl_inst->logger, "Loading Vulkan function \"%s\"",
 		       name);
 
