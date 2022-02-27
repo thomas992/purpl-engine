@@ -54,7 +54,8 @@ bool vulkan_create_instance(void)
 	create_info.enabledLayerCount = PURPL_SIZEOF_ARRAY(validation_layers);
 	create_info.ppEnabledLayerNames = validation_layers;
 	for (i = 0; i < PURPL_SIZEOF_ARRAY(validation_layers); i++)
-		PURPL_LOG_INFO(purpl_inst->logger, "Requesting Vulkan validation layer \"%s\"",
+		PURPL_LOG_INFO(purpl_inst->logger,
+			       "Requesting Vulkan validation layer \"%s\"",
 			       validation_layers[i]);
 #else // PURPL_DEBUG
 	create_info.enabledLayerCount = 0;
@@ -62,17 +63,22 @@ bool vulkan_create_instance(void)
 
 	res = vkCreateInstance(&create_info, NULL, &vulkan->inst);
 	if (res != VK_SUCCESS) {
-		PURPL_LOG_ERROR(purpl_inst->logger,
-				"Failed to create Vulkan instance: VkResult %d", res);
+		PURPL_LOG_ERROR(
+			purpl_inst->logger,
+			"Failed to create Vulkan instance: VkResult %d", res);
 		stbds_arrfree(required_exts);
 		stbds_arrfree(ext_props);
 		stbds_arrfree(exts);
 		return false;
 	}
 
-	PURPL_LOG_INFO(purpl_inst->logger,
-		       "Successfully created Vulkan instance with %zu extensions and %zu validation layers enabled",
-		       stbds_arrlenu(required_exts), PURPL_SIZEOF_ARRAY(validation_layers));
+	PURPL_LOG_INFO(
+		purpl_inst->logger,
+		"Successfully created Vulkan instance with %zu extension%s and %zu validation layer%s enabled",
+		stbds_arrlenu(required_exts),
+		stbds_arrlenu(required_exts) == 1 ? "" : "s",
+		PURPL_SIZEOF_ARRAY(validation_layers),
+		PURPL_SIZEOF_ARRAY(validation_layers) == 1 ? "" : "s");
 
 	stbds_arrfree(required_exts);
 	stbds_arrfree(ext_props);
@@ -110,12 +116,14 @@ void **vulkan_get_extensions(void)
 		    ext_props[i].specVersion ==
 			    VK_EXT_DEBUG_UTILS_SPEC_VERSION)
 			stbds_arrput(required_exts,
-				      VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+				     VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
 #endif // PURPL_DEBUG
 	}
 
 	for (i = 0; i < stbds_arrlenu(required_exts); i++)
-		PURPL_LOG_INFO(purpl_inst->logger, "Requesting Vulkan instance extension \"%s\"", required_exts[i]);
+		PURPL_LOG_INFO(purpl_inst->logger,
+			       "Requesting Vulkan instance extension \"%s\"",
+			       required_exts[i]);
 
 	stbds_arrput(exts, required_exts);
 	stbds_arrput(exts, ext_props);

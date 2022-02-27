@@ -8,6 +8,9 @@ set(ENGINE_CORE_HEADERS
     include/purpl/core/log.h
     include/purpl/core/types.h)
 
+set(ENGINE_DEBUG_HEADERS
+    include/purpl/graphics/vulkan/debug.h)
+
 set(ENGINE_GRAPHICS_HEADERS
     include/purpl/graphics/init.h)
 
@@ -26,6 +29,9 @@ set(ENGINE_CORE_SOURCES
     src/core/globals.c
     src/core/init.c
     src/core/log.c)
+
+set(ENGINE_DEBUG_SOURCES
+    src/graphics/vulkan/debug.c)
 
 set(ENGINE_GRAPHICS_SOURCES
     src/graphics/init.c)
@@ -73,6 +79,11 @@ set(ENGINE_ALL_SOURCES
     ${ENGINE_UTIL_SOURCES}
     ${ENGINE_PLATFORM_SOURCES})
 
+if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+	set(ENGINE_ALL_HEADERS ${ENGINE_ALL_HEADERS} ${ENGINE_DEBUG_HEADERS})
+	set(ENGINE_ALL_SOURCES ${ENGINE_ALL_SOURCES} ${ENGINE_DEBUG_SOURCES})
+endif()
+
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/include PREFIX "Header Files" FILES ${ENGINE_ALL_HEADERS})
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/src PREFIX "Source Files" FILES ${ENGINE_ALL_SOURCES})
 
@@ -97,10 +108,11 @@ target_include_directories(engine PUBLIC
 			   ${CMAKE_CURRENT_SOURCE_DIR}/include
 			   PRIVATE
 			   ${Vulkan_INCLUDE_DIRS}
+			   ${CMAKE_SOURCE_DIR}/deps/glad2/include
 			   ${CMAKE_SOURCE_DIR}/deps/phnt
 			   ${CMAKE_SOURCE_DIR}/deps/sdl2/include
-					${CMAKE_SOURCE_DIR}/deps/stb)
-target_link_libraries(engine PRIVATE SDL2::SDL2 ${Vulkan_LIBRARIES})
+			   ${CMAKE_SOURCE_DIR}/deps/stb)
+target_link_libraries(engine PRIVATE glad_opengl glad_vulkan SDL2::SDL2 ${Vulkan_LIBRARIES})
 
 if (WIN32)
 	set(ENGINE_RUNTIME_FILES $<TARGET_FILE:engine> $<TARGET_PDB_FILE:engine> $<TARGET_FILE:SDL2::SDL2> $<TARGET_PDB_FILE:SDL2::SDL2> PARENT_SCOPE)

@@ -70,6 +70,14 @@ struct purpl_instance {
       		// Vulkan information
 		struct purpl_instance_vulkan {
 			VkInstance inst; // Vulkan instance
+
+#ifdef GLAD_VULKAN_H_
+			GLADapiproc (*vk_get_instance_proc_addr)(
+				VkInstance inst, const char *name);
+#else // GLAD_VULKAN_H_
+			void *(*vk_get_instance_proc_addr)(
+				VkInstance inst, const char *name);
+#endif // GLAD_VULKAN_H_
 		} vulkan;
 #endif // !__APPLE__
 

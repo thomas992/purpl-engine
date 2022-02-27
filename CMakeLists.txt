@@ -16,6 +16,7 @@ if(${PURPL_USE_CLANG})
 endif()
 
 # Dependencies (has to go before the custom rules but after the fix for Ninja)
+add_subdirectory(deps/glad/cmake glad_cmake)
 set(SDL_STATIC OFF CACHE BOOL "" FORCE)
 set(SDL_CMAKE_DEBUG_POSTFIX "" CACHE STRING "" FORCE)
 add_subdirectory(deps/sdl2 EXCLUDE_FROM_ALL)
@@ -66,6 +67,9 @@ if (NOT APPLE)
 	find_package(Vulkan REQUIRED)
 endif()
 
+glad_add_library(glad_opengl REPRODUCIBLE API gl:core=4.6)
+glad_add_library(glad_vulkan REPRODUCIBLE API vulkan=1.3)
+
 # Add the engine and the demo if it's enabled
 add_subdirectory(engine)
 if (${PURPL_ENABLE_DEMO})
@@ -74,6 +78,9 @@ if (${PURPL_ENABLE_DEMO})
 endif()
 
 # Install licenses
+install(FILES deps/glad/LICENSE
+	RENAME glad.txt
+	DESTINATION ${CMAKE_INSTALL_PREFIX}/licenses)
 install(FILES deps/phnt/LICENSE
 	RENAME phnt.txt
 	DESTINATION ${CMAKE_INSTALL_PREFIX}/licenses)

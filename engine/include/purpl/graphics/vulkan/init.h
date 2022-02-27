@@ -21,17 +21,17 @@
 #error This header should only be included in engine files
 #endif // !PURPL_BUILD
 
-#include "SDL.h"
-
 #include <vulkan/vulkan.h>
 
+#include "SDL.h"
+
 #include "purpl/core/coredefs.h"
-#include "purpl/core/features.h"
 #include "purpl/core/inst.h"
 #include "purpl/core/types.h"
 
 #include "purpl/util/util.h"
 
+#include "debug.h"
 #include "inst.h"
 
 /// Initialize Vulkan

@@ -33,13 +33,13 @@ PURPL_API bool purpl_graphics_init(void)
 	}
 #endif // !__APPLE__
 
-	PURPL_LOG_INFO(purpl_inst->logger,
-		       "Successfully initialized graphics");
-
 	if (!init) {
 		PURPL_LOG_CRITICAL(purpl_inst->logger, "Unable to initialize any graphics API");
 		return false;
 	}
+
+	PURPL_LOG_INFO(purpl_inst->logger,
+		       "Successfully initialized graphics");
 
 	return true;	
 }
