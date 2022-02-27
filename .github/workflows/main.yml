@@ -37,6 +37,9 @@ jobs:
             - name: Add Vulkan SDK to environment
               run: echo "VULKAN_SDK=$Env:GITHUB_WORKSPACE\VULKAN_SDK" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
+            - name: Install pip packages
+              run: pip install jinja2
+
             - name: Generate build files
               run: cmake -S. -Bbuild -GNinja
 
@@ -72,6 +75,9 @@ jobs:
 
             - name: Set permissions on executables
               run: chmod a+x tools/ninja
+
+            - name: Install pip packages
+              run: pip install jinja2
 
             - name: Generate build files
               run: cmake -S. -Bbuild -GNinja
@@ -116,6 +122,9 @@ jobs:
 
             - name: Set permissions on executables
               run: chmod a+x tools/ninja
+
+            - name: Install pip packages
+              run: pip install jinja2
 
             - name: Generate build files
               run: cmake -S. -Bbuild -GNinja -DCMAKE_C_COMPILER=clang

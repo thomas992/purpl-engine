@@ -28,7 +28,7 @@
 /// 
 /// \return Returns the return value of vkGetInstanceProcAddr with the same
 ///	    parameters
-static GLADapiproc vulkan_load_func(VkInstance inst, const char *name);
+static void *vulkan_load_func(VkInstance inst, const char *name);
 
 bool purpl_vulkan_init(void)
 {
@@ -46,7 +46,7 @@ bool purpl_vulkan_init(void)
 	vulkan_create_instance();
 
 	// This fails due to the device being NULL, but not for any other reason
-	gladLoadVulkanUserPtr(NULL, vulkan_load_func, vulkan->inst);
+	gladLoadVulkanUserPtr(NULL, (GLADuserptrloadfunc)vulkan_load_func, vulkan->inst);
 
 	purpl_inst->graphics_api = PURPL_GRAPHICS_API_VULKAN;
 	return true;
@@ -59,7 +59,7 @@ void purpl_vulkan_shutdown(void)
 	vkDestroyInstance(vulkan->inst, NULL);
 }
 
-static GLADapiproc vulkan_load_func(VkInstance inst, const char *name)
+static void *vulkan_load_func(VkInstance inst, const char *name)
 {
 	struct purpl_instance_vulkan *vulkan = &purpl_inst->graphics.vulkan;
 	PURPL_LOG_INFO(purpl_inst->logger, "Loading Vulkan function \"%s\"",
