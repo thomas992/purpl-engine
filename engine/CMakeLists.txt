@@ -8,13 +8,11 @@ set(ENGINE_CORE_HEADERS
     include/purpl/core/log.h
     include/purpl/core/types.h)
 
-set(ENGINE_DEBUG_HEADERS
-    include/purpl/graphics/vulkan/debug.h)
-
 set(ENGINE_GRAPHICS_HEADERS
     include/purpl/graphics/init.h)
 
 set(ENGINE_VULKAN_HEADERS
+    include/purpl/graphics/vulkan/debug.h
     include/purpl/graphics/vulkan/init.h
     include/purpl/graphics/vulkan/inst.h)
 
@@ -30,13 +28,13 @@ set(ENGINE_CORE_SOURCES
     src/core/init.c
     src/core/log.c)
 
-set(ENGINE_DEBUG_SOURCES
-    src/graphics/vulkan/debug.c)
+set(ENGINE_DEBUG_SOURCES)
 
 set(ENGINE_GRAPHICS_SOURCES
     src/graphics/init.c)
 
 set(ENGINE_VULKAN_SOURCES
+    src/graphics/vulkan/debug.c
     src/graphics/vulkan/init.c
     src/graphics/vulkan/inst.c)
 
@@ -78,11 +76,6 @@ set(ENGINE_ALL_SOURCES
     ${ENGINE_GRAPHICS_SOURCES}
     ${ENGINE_UTIL_SOURCES}
     ${ENGINE_PLATFORM_SOURCES})
-
-if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
-	set(ENGINE_ALL_HEADERS ${ENGINE_ALL_HEADERS} ${ENGINE_DEBUG_HEADERS})
-	set(ENGINE_ALL_SOURCES ${ENGINE_ALL_SOURCES} ${ENGINE_DEBUG_SOURCES})
-endif()
 
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/include PREFIX "Header Files" FILES ${ENGINE_ALL_HEADERS})
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/src PREFIX "Source Files" FILES ${ENGINE_ALL_SOURCES})
