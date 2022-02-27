@@ -70,6 +70,14 @@ endif()
 
 glad_add_library(glad_opengl REPRODUCIBLE API gl:core=4.6)
 glad_add_library(glad_vulkan REPRODUCIBLE API vulkan=1.3)
+if (MSVC) # MSVC doesn't like Mac line endings, which glad seems to put in khrplatform.h
+	add_custom_command(TARGET glad_opengl
+			   PRE_BUILD
+			   COMMAND tools/ddos.bat)
+	add_custom_command(TARGET glad_vulkan
+			   PRE_BUILD
+			   COMMAND tools/ddos.bat)
+endif()
 
 # Add the engine and the demo if it's enabled
 add_subdirectory(engine)
