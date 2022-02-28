@@ -40,20 +40,69 @@ strategy:
       config: 'Debug'
       cc: 'clang'
     linux-dist:
-      imageName: 'linux-latest'
+      imageName: 'ubuntu-latest'
       config: 'MinSizeRel'
       cc: 'clang'
     linux-release:
-      imageName: 'linux-latest'
+      imageName: 'ubuntu-latest'
       config: 'RelWithDebInfo'
       cc: 'clang'
     linux-debug:
-      imageName: 'linux-latest'
+      imageName: 'ubuntu-latest'
       config: 'Debug'
       cc: 'clang'
+
+variables:
+  artifactArchive: $(Build.ArtifactStagingDirectory)/purpl-$(imageName)-$(config)-$(cc).7z
+  vulkanSdkVersion: 1.3.204.0
+  vulkanSdk: C:/VulkanSDK/$(vulkanSdkVersion)
 
 pool:
   vmImage: $(imageName)
 
 steps:
-- script: echo $(config)
+  - bash: |
+      curl -fsGL -o vulkan-sdk.exe "https://sdk.lunarg.com/sdk/download/latest/windows/vulkan-sdk.exe"
+      _=$(echo "vulkan-sdk.exe /S | cmd")
+    condition: eq(variables(['Agent.OS'], 'Windows_NT'))
+    displayName: Install Vulkan SDK
+
+  - bash: |
+      curl -fsGL https://packages.lunarg.com/lunarg-signing-key-pub.asc | sudo apt-key add -
+      sudo curl -fsGL https://packages.lunarg.org/vulkan/lunarg-vulkan-focal.list -o /etc/apt/sources.list.d/lunarg-vulkan-focal.list
+      sudo apt update -qq
+      sudo apt install -y vulkan-headers vulkan-sdk libasound2-dev libdbus-1-dev libegl1-mesa-dev libgl1-mesa-dev libgles2-mesa-dev libglu1-mesa-dev libibus-1.0-dev libpulse-dev libsndio-dev libudev-dev libwayland-dev libx11-dev libxcursor-dev libxext-dev libxi-dev libxinerama-dev libxkbcommon-dev libxrandr-dev libxss-dev libxt-dev libxv-dev libxxf86vm-dev
+    condition: eq(variables['Agent.OS'], 'Linux')
+    displayName: Install Vulkan SDK and SDL dependencies with APT
+
+  - script: |
+      cmake -S. -Bbuild -GNinja -DCMAKE_C_COMPILER=$(cc) -DCMAKE_BUILD_TYPE=$(config)
+    condition: eq(variables(['Agent.OS'], 'Windows_NT'))
+    displayName: Generate build files
+    env:
+      VULKAN_SDK: $(vulkanSdk)
+
+  - script: |
+      cmake -S. -Bbuild -GNinja -DCMAKE_C_COMPILER=$(cc) -DCMAKE_BUILD_TYPE=$(config)
+    condition: not(eq(variables['Agent.OS'], 'Windows_NT'))
+    displayName: Generate build files
+
+  - script: |
+      cmake --build build --config $(config)
+      cmake --install build --config $(config)
+    displayName: Build
+
+  - task: ArchiveFiles@2
+    inputs:
+      rootFolderOrFile: build/install
+      archiveFile: $(artifactArchive)
+      includeRootFolder: true
+      archiveType: 7z
+      replaceExistingArchive: true
+      verbose: true
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      pathToPublish: $(artifactArchive)
+      artifactName: $(imageName)-$(config)-$(cc)
+
