@@ -68,6 +68,9 @@ steps:
     displayName: Install Vulkan SDK
 
   - bash: |
+      chmod a+x tools/ninja
+
+  - bash: |
       curl -fsGL https://packages.lunarg.com/lunarg-signing-key-pub.asc | sudo apt-key add -
       sudo curl -fsGL https://packages.lunarg.org/vulkan/lunarg-vulkan-focal.list -o /etc/apt/sources.list.d/lunarg-vulkan-focal.list
       sudo apt update -qq
@@ -76,6 +79,7 @@ steps:
     displayName: Install Vulkan SDK and SDL dependencies with APT
 
   - script: |
+      tools\buildenv.bat
       cmake -S. -Bbuild -GNinja -DCMAKE_C_COMPILER=$(cc) -DCMAKE_BUILD_TYPE=$(config)
     condition: eq(variables['Agent.OS'], 'Windows_NT')
     displayName: Generate build files
@@ -88,8 +92,16 @@ steps:
     displayName: Generate build files
 
   - script: |
+      tools\buildenv.bat
       cmake --build build --config $(config)
       cmake --install build --config $(config)
+    condition: eq(variables['Agent.OS'], 'Windows_NT')
+    displayName: Build
+
+  - script: |
+      cmake --build build --config $(config)
+      cmake --install build --config $(config)
+    condition: not(eq(variables['Agent.OS'], 'Windows_NT'))
     displayName: Build
 
   - task: ArchiveFiles@2
