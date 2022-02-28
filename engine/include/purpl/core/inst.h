@@ -70,6 +70,7 @@ struct purpl_instance {
       		// Vulkan information
 		struct purpl_instance_vulkan {
 			VkInstance inst; // Vulkan instance
+			VkDebugUtilsMessengerEXT debug_messenger; // Debug messenger
 
 #ifdef GLAD_VULKAN_H_
 			GLADapiproc (*vk_get_instance_proc_addr)(

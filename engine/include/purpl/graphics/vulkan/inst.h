@@ -34,6 +34,8 @@
 
 #include "purpl/util/util.h"
 
+#include "debug.h"
+
 /// Create a Vulkan instance
 ///
 /// \return Returns true on success, false on failure

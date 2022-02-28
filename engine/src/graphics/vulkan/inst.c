@@ -26,8 +26,8 @@ bool vulkan_create_instance(void)
 	void **exts;
 	char **required_exts;
 	VkExtensionProperties *ext_props;
-	const char *validation_layers[] = { "VK_LAYER_KHRONOS_validation" };
-	size_t i;
+	size_t ext_count = 0;
+	size_t layer_count = 0;
 
 	app_info.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
 	app_info.pApplicationName = purpl_inst->app_name;
@@ -49,14 +49,26 @@ bool vulkan_create_instance(void)
 
 	create_info.enabledExtensionCount = stbds_arrlenu(required_exts);
 	create_info.ppEnabledExtensionNames = required_exts;
+	ext_count = stbds_arrlenu(required_exts);
 
 #ifdef PURPL_DEBUG
+	VkDebugUtilsMessengerCreateInfoEXT debug_create_info = { 0 };
+	size_t i;
+
+	const char *validation_layers[] = { "VK_LAYER_KHRONOS_validation" };
+	layer_count = PURPL_SIZEOF_ARRAY(validation_layers);
+
 	create_info.enabledLayerCount = PURPL_SIZEOF_ARRAY(validation_layers);
 	create_info.ppEnabledLayerNames = validation_layers;
 	for (i = 0; i < PURPL_SIZEOF_ARRAY(validation_layers); i++)
 		PURPL_LOG_INFO(purpl_inst->logger,
 			       "Requesting Vulkan validation layer \"%s\"",
 			       validation_layers[i]);
+
+	vulkan_setup_debug_messenger(&debug_create_info);
+
+	// Vulkan will create this if it's put here, without having to load functions
+	create_info.pNext = &debug_create_info;
 #else // PURPL_DEBUG
 	create_info.enabledLayerCount = 0;
 #endif // PURPL_DEBUG
@@ -74,11 +86,11 @@ bool vulkan_create_instance(void)
 
 	PURPL_LOG_INFO(
 		purpl_inst->logger,
-		"Successfully created Vulkan instance with %zu extension%s and %zu validation layer%s enabled",
-		stbds_arrlenu(required_exts),
-		stbds_arrlenu(required_exts) == 1 ? "" : "s",
-		PURPL_SIZEOF_ARRAY(validation_layers),
-		PURPL_SIZEOF_ARRAY(validation_layers) == 1 ? "" : "s");
+		"Successfully created a Vulkan instance with %zu extension%s and %zu validation layer%s enabled",
+		ext_count,
+		ext_count == 1 ? "" : "s",
+		layer_count,
+		layer_count == 1 ? "" : "s");
 
 	stbds_arrfree(required_exts);
 	stbds_arrfree(ext_props);

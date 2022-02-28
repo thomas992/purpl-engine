@@ -9,4 +9,8 @@ if [ "$(uname -s)" = "Darwin" ]; then
 	export DYLD_LIBRARY_PATH=$LD_LIBRARY_PATH
 fi
 
+pushd $HERE
+echo "Running from $(pwd)"
 "$HERE/demo"
+popd
+

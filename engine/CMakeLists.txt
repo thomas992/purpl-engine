@@ -86,9 +86,6 @@ target_compile_definitions(engine PRIVATE PURPL_BUILD=1)
 if (${PURPL_ENABLE_MEMING})
 	target_compile_definitions(engine PRIVATE PURPL_ENABLE_MEMING=1)
 endif()
-if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
-	target_compile_definitions(engine PRIVATE PURPL_DEBUG=1)
-endif()
 if (${CMAKE_SYSTEM_PROCESSOR} MATCHES "AMD64" OR ${CMAKE_SYSTEM_PROCESSOR} MATCHES "x86_64")
 	target_compile_definitions(engine PRIVATE PURPL_X86=1 PURPL_X86_64=1)
 elseif(${CMAKE_SYSTEM_PROCESSOR} MATCHES "86")
@@ -105,10 +102,13 @@ target_include_directories(engine PUBLIC
 			   ${CMAKE_SOURCE_DIR}/deps/phnt
 			   ${CMAKE_SOURCE_DIR}/deps/sdl2/include
 			   ${CMAKE_SOURCE_DIR}/deps/stb)
-target_link_libraries(engine PRIVATE glad_opengl glad_vulkan SDL2::SDL2 ${Vulkan_LIBRARIES})
+target_link_libraries(engine PRIVATE glad_opengl glad_vulkan ${OPENGL_LIBRARIES} SDL2::SDL2 ${Vulkan_LIBRARIES})
 
 if (WIN32)
-	set(ENGINE_RUNTIME_FILES $<TARGET_FILE:engine> $<TARGET_PDB_FILE:engine> $<TARGET_FILE:SDL2::SDL2> $<TARGET_PDB_FILE:SDL2::SDL2> PARENT_SCOPE)
+	set(ENGINE_RUNTIME_FILES $<TARGET_FILE:engine> $<TARGET_FILE:SDL2::SDL2> PARENT_SCOPE)
+	if (${CMAKE_BUILD_TYPE} MATCHES "Deb" AND MSVC) # Debug and RelWithDebInfo both give PDB files
+		set(ENGINE_RUNTIME_FILES ${ENGINE_RUNTIME_FILES} $<TARGET_PDB_FILE:engine> $<TARGET_PDB_FILE:SDL2::SDL2> PARENT_SCOPE)
+	endif()
 endif()
 
 install(TARGETS engine

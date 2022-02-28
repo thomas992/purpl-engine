@@ -71,11 +71,11 @@ PURPL_API struct purpl_logger *purpl_log_create(const char *file,
 	logger->format =
 		purpl_strrplc(message_format, "#def",
 			      "[PID #P TID #T] [#d #t] [#W] [#L] #msg", NULL);
-#else
+#else // PURPL_DEBUG
 	logger->format = purpl_strrplc(message_format, "#def",
-				       "[ #d ] [ #t ] [ #n #v ] [ #L ] #msg",
+				       "[ #d #t ] [ #n #v ] [ #L ] #msg",
 				       NULL);
-#endif
+#endif // PURPL_DEBUG
 
 	free(message_format);
 
@@ -295,14 +295,18 @@ PURPL_API void purpl_log_write(struct purpl_logger *logger,
 	va_end(args);
 
 	fprintf(logger->file, "%s", buf);
+	fflush(logger->file);
 #ifdef PURPL_DEBUG
 	printf("%s", buf);
+	fflush(stdout);
+#else // PURPL_DEBUG
 #ifdef _WIN32
 	OutputDebugStringA(buf);
 #endif // _WIN32
-#else // PURPL_DEBUG
-	if (level < PURPL_LOG_LEVEL_INFO)
+	if (level < PURPL_LOG_LEVEL_INFO) {
 		printf("%s", buf);
+		fflush(stdout);
+	}
 #endif // PURPL_DEBUG
 
 	free(buf);

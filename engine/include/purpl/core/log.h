@@ -41,14 +41,14 @@ enum purpl_log_level {
 /// Use this to use the logger's maximum level
 #ifdef PURPL_DEBUG
 #define PURPL_LOG_LEVEL_MAX PURPL_LOG_LEVEL_DEBUG + 1
-#else
+#else // PURPL_DEBUG
 #define PURPL_LOG_LEVEL_MAX PURPL_LOG_LEVEL_INFO + 1
 #endif // PURPL_DEBUG
 
 /// The default log file name
 #ifdef PURPL_DEBUG
 #define PURPL_LOG_DEFAULT_NAME "logs/purpl-<date>-debug.log"
-#else
+#else // PURPL_DEBUG
 #define PURPL_LOG_DEFAULT_NAME "logs/purpl-<date>.log"
 #endif // PURPL_DEBUG
 
@@ -112,7 +112,7 @@ struct purpl_logger {
 ///		  that)
 ///	#def	- The default pattern (passing NULL for format also gives
 ///		  this), which is equivalent to
-///		  or "[ #d ] [ #t ] [ #n #v ] [ #L ] #msg" in normal builds, or
+///		  or "[ #d #t ] [ #n #v ] [ #L ] #msg" in release builds, or
 ///		  "[PID #P TID #T] [#d #t] [#W] [#L] #msg" in debug builds
 ///
 /// 	The sequences can also be used in purpl_log_write (and the macros
@@ -210,3 +210,4 @@ extern PURPL_API void purpl_log_close(struct purpl_logger *logger,
 /// Log a message at PURPL_LOG_LEVEL_DEBUG
 #define PURPL_LOG_DEBUG(logger, ...) \
 	PURPL_LOG_WRITE(logger, DEBUG, __VA_ARGS__)
+
