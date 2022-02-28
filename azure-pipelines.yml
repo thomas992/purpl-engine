@@ -54,8 +54,8 @@ strategy:
 
 variables:
   artifactArchive: $(Build.ArtifactStagingDirectory)/purpl-$(imageName)-$(config)-$(cc).7z
-  vulkanSdkVersion: 1.3.204
-  vulkanSdk: C:\VulkanSDK\1.2.182.0
+  vulkanSdkVersion: 1.3.204.1
+  vulkanSdk: C:\VulkanSDK\$(vulkanSdkVersion)
 
 pool:
   vmImage: $(imageName)
@@ -64,8 +64,10 @@ steps:
   - checkout: self
     submodules: true
 
-  - bash: |
-      winget install KhronosGroup.VulkanSDK
+  - script: |
+      curl -fGLO https://sdk.lunarg.com/sdk/download/latest/windows/vulkan-sdk.exe
+      cmd /c vulkan-sdk --accept-licenses --default-answer --confirm-command install
+      echo %VULKAN_SDK%
     condition: eq(variables['Agent.OS'], 'Windows_NT')
     displayName: Install Vulkan SDK
 
@@ -76,7 +78,7 @@ steps:
 
   - bash: |
       curl -fsGL https://packages.lunarg.com/lunarg-signing-key-pub.asc | sudo apt-key add -
-      sudo curl -fsGL https://packages.lunarg.com/vulkan/$(vulkanSdkVersion)/lunarg-vulkan-$(vulkanSdkVersion)-focal.list -o /etc/apt/sources.list.d/lunarg-vulkan-focal.list
+      sudo curl -fsGL https://packages.lunarg.com/vulkan/lunarg-vulkan-focal.list -o /etc/apt/sources.list.d/lunarg-vulkan-focal.list
       sudo apt update -qq
       sudo apt install -y vulkan-sdk libasound2-dev libdbus-1-dev libegl1-mesa-dev libgl1-mesa-dev libgles2-mesa-dev libglu1-mesa-dev libibus-1.0-dev libpulse-dev libsndio-dev libudev-dev libwayland-dev libx11-dev libxcursor-dev libxext-dev libxi-dev libxinerama-dev libxkbcommon-dev libxrandr-dev libxss-dev libxt-dev libxv-dev libxxf86vm-dev
     condition: eq(variables['Agent.OS'], 'Linux')
