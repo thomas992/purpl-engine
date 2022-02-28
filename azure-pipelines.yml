@@ -65,8 +65,7 @@ steps:
     submodules: true
 
   - bash: |
-      curl -fsGL -o vulkan-sdk.exe "https://sdk.lunarg.com/sdk/download/$(vulkanSdkVersion)/windows/VulkanSDK-$(vulkanSdkVersion).1-Installer.exe"
-      _=$(echo "vulkan-sdk.exe /S | cmd")
+      winget install KhronosGroup.VulkanSDK
     condition: eq(variables['Agent.OS'], 'Windows_NT')
     displayName: Install Vulkan SDK
 

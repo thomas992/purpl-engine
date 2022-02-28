@@ -38,7 +38,7 @@ bool vulkan_create_instance(void)
 	app_info.pEngineName = "Purpl Engine";
 	app_info.engineVersion = VK_MAKE_VERSION(
 		PURPL_MAJOR_VERSION, PURPL_MINOR_VERSION, PURPL_PATCH_VERSION);
-	app_info.apiVersion = VK_API_VERSION_1_3;
+	app_info.apiVersion = VK_API_VERSION_1_2;
 
 	create_info.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
 	create_info.pApplicationInfo = &app_info;
