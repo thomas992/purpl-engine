@@ -1,0 +1,29 @@
+trigger:
+- main
+
+strategy:
+  matrix:
+    windows:
+      imageName: 'windows-latest'
+      config:
+        - 'debug'
+        - 'release'
+        - 'dist'
+    macos:
+      imageName: 'macos-latest'
+      config:
+        - 'debug'
+        - 'release'
+        - 'dist'
+    linux:
+      imageName: 'linux-latest'
+      config:
+        - 'debug'
+        - 'release'
+        - 'dist'
+
+pool:
+  vmImage: $(imageName)
+
+steps:
+- script: echo $(config)
