@@ -3,24 +3,54 @@ trigger:
 
 strategy:
   matrix:
-    windows:
+    windows-msvc-dist:
       imageName: 'windows-latest'
-      config:
-        - 'debug'
-        - 'release'
-        - 'dist'
-    macos:
+      config: 'MinSizeRel'
+      cc: 'cl'
+    windows-msvc-release:
+      imageName: 'windows-latest'
+      config: 'RelWithDebInfo'
+      cc: 'cl'
+    windows-msvc-debug:
+      imageName: 'windows-latest'
+      config: 'Debug'
+      cc: 'cl'
+    windows-clang-dist:
+      imageName: 'windows-latest'
+      config: 'MinSizeRel'
+      cc: 'clang'
+    windows-clang-release:
+      imageName: 'windows-latest'
+      config: 'RelWithDebInfo'
+      cc: 'clang'
+    windows-clang-debug:
+      imageName: 'windows-latest'
+      config: 'Debug'
+      cc: 'clang'
+    macos-dist:
       imageName: 'macos-latest'
-      config:
-        - 'debug'
-        - 'release'
-        - 'dist'
-    linux:
+      config: 'MinSizeRel'
+      cc: 'clang'
+    macos-release:
+      imageName: 'macos-latest'
+      config: 'RelWithDebInfo'
+      cc: 'clang'
+    macos-debug:
+      imageName: 'macos-latest'
+      config: 'Debug'
+      cc: 'clang'
+    linux-dist:
       imageName: 'linux-latest'
-      config:
-        - 'debug'
-        - 'release'
-        - 'dist'
+      config: 'MinSizeRel'
+      cc: 'clang'
+    linux-release:
+      imageName: 'linux-latest'
+      config: 'RelWithDebInfo'
+      cc: 'clang'
+    linux-debug:
+      imageName: 'linux-latest'
+      config: 'Debug'
+      cc: 'clang'
 
 pool:
   vmImage: $(imageName)
