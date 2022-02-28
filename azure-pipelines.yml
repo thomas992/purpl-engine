@@ -84,6 +84,10 @@ steps:
     displayName: Install Vulkan SDK and SDL dependencies with APT
 
   - script: |
+      pip install jinja2
+    displayName: Install jinja2 for glad
+
+  - script: |
       call tools\buildenv.bat
       set VULKAN_SDK=$(vulkanSdk)
       echo %VULKAN_SDK%
