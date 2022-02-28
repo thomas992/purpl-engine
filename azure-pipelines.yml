@@ -90,7 +90,7 @@ steps:
   - script: |
       call tools\buildenv.bat
       set VULKAN_SDK=$(vulkanSdk)
-      dir /s/b %VULKAN_SDK%
+      dir /s/b C:\VulkanSDK
       cmake -S. -Bbuild -GNinja -DCMAKE_C_COMPILER=$(cc) -DCMAKE_BUILD_TYPE=$(config)
     condition: eq(variables['Agent.OS'], 'Windows_NT')
     displayName: Generate build files
