@@ -61,6 +61,9 @@ pool:
   vmImage: $(imageName)
 
 steps:
+  - checkout: self
+    submodules: true
+
   - bash: |
       curl -fsGL -o vulkan-sdk.exe "https://sdk.lunarg.com/sdk/download/latest/windows/vulkan-sdk.exe"
       _=$(echo "vulkan-sdk.exe /S | cmd")
