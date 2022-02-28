@@ -9,12 +9,6 @@ if (${CMAKE_GENERATOR} MATCHES "Ninja")
 	endif()
 endif()
 
-if (WIN32 AND DEFINED ${CMAKE_C_COMPILER} AND ${CMAKE_C_COMPILER} MATCHES "clang")
-	message(STATUS "Setting compiler to clang-cl")
-	set(CMAKE_C_COMPILER clang-cl CACHE STRING "" FORCE)
-	set(CMAKE_CXX_COMPILER clang-cl CACHE STRING "" FORCE)
-endif()
-
 # Dependencies (has to go before the custom rules but after the fix for Ninja and Windows Clang)
 add_subdirectory(deps/glad/cmake glad_cmake)
 set(SDL_STATIC OFF CACHE BOOL "" FORCE)

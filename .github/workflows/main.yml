@@ -97,7 +97,7 @@ jobs:
               run: pip install jinja2
 
             - name: Generate build files
-              run: cmake -S. -Bbuild -GNinja -DCMAKE_C_COMPILER=clang-cl -DCMAKE_CXX_COMPILER=clang-cl
+              run: cmake -S. -Bbuild -GNinja -DCMAKE_C_COMPILER=clang
 
             - name: Build
               run: cmake --build build
@@ -108,18 +108,18 @@ jobs:
             - name: Upload artifacts
               uses: actions/upload-artifact@v2
               with:
-                  name: build-windows
+                  name: build-windows-clang
                   path: build/install
 
             - name: Create zip of artifacts for release
               run: |
-                  "$Env:PROGRAMFILES\7-Zip\7z.exe a -tzip build-windows.zip build\*"
+                  "$Env:PROGRAMFILES\7-Zip\7z.exe a -tzip build-windows-clang.zip build\*"
 
             - name: Create release with artifacts
               uses: softprops/action-gh-release@v1
               if: startsWith(github.ref, 'refs/tags/')
               with:
-                  files: build-windows.zip
+                  files: build-windows-clang.zip
 
 
     build-macos:

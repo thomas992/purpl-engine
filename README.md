@@ -16,3 +16,6 @@ cmake -S. -Bbuild
 cmake --build build
 cmake --install build # Installs to `build/install`
 ```
+
+On Windows, if you use `clang-cl`, at the time of this writing it doesn't support `/MP`, making it slower and also causing warnings about it. Building with the regular `clang` frontend instead has no such issue, and is faster, so use it unless you have good reason.
+
