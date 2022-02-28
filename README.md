@@ -1,5 +1,5 @@
 # Purpl Engine
-[![CI](https://github.com/MobSlicer152/purpl-engine/actions/workflows/main.yml/badge.svg)](https://github.com/MobSlicer152/purpl-engine/actions/workflows/main.yml)
+[![Build Status](https://dev.azure.com/MobSlicer152/purpl-engine/_apis/build/status/MobSlicer152.purpl-engine?branchName=main)](https://dev.azure.com/MobSlicer152/purpl-engine/_build/latest?definitionId=1&branchName=main)
 
 This is my fifth game engine, it's gonna be good this time
 
