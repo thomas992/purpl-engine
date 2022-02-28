@@ -72,6 +72,8 @@ steps:
 
   - bash: |
       chmod a+x tools/ninja
+    condition: not(eq(variables['Agent.OS'], 'Windows_NT'))
+    displayName: Set executable bit on Ninja
 
   - bash: |
       curl -fsGL https://packages.lunarg.com/lunarg-signing-key-pub.asc | sudo apt-key add -
@@ -82,7 +84,7 @@ steps:
     displayName: Install Vulkan SDK and SDL dependencies with APT
 
   - script: |
-      tools\buildenv.bat
+      call tools\buildenv.bat
       cmake -S. -Bbuild -GNinja -DCMAKE_C_COMPILER=$(cc) -DCMAKE_BUILD_TYPE=$(config)
     condition: eq(variables['Agent.OS'], 'Windows_NT')
     displayName: Generate build files
@@ -95,7 +97,7 @@ steps:
     displayName: Generate build files
 
   - script: |
-      tools\buildenv.bat
+      call tools\buildenv.bat
       cmake --build build --config $(config)
       cmake --install build --config $(config)
     condition: eq(variables['Agent.OS'], 'Windows_NT')
