@@ -79,7 +79,7 @@ steps:
       curl -fsGL https://packages.lunarg.com/lunarg-signing-key-pub.asc | sudo apt-key add -
       sudo curl -fsGL https://packages.lunarg.com/vulkan/lunarg-vulkan-focal.list -o /etc/apt/sources.list.d/lunarg-vulkan-focal.list
       sudo apt update -qq
-      sudo apt install -y vulkan-headers vulkan-sdk libasound2-dev libdbus-1-dev libegl1-mesa-dev libgl1-mesa-dev libgles2-mesa-dev libglu1-mesa-dev libibus-1.0-dev libpulse-dev libsndio-dev libudev-dev libwayland-dev libx11-dev libxcursor-dev libxext-dev libxi-dev libxinerama-dev libxkbcommon-dev libxrandr-dev libxss-dev libxt-dev libxv-dev libxxf86vm-dev
+      sudo apt install -y vulkan-sdk libasound2-dev libdbus-1-dev libegl1-mesa-dev libgl1-mesa-dev libgles2-mesa-dev libglu1-mesa-dev libibus-1.0-dev libpulse-dev libsndio-dev libudev-dev libwayland-dev libx11-dev libxcursor-dev libxext-dev libxi-dev libxinerama-dev libxkbcommon-dev libxrandr-dev libxss-dev libxt-dev libxv-dev libxxf86vm-dev
     condition: eq(variables['Agent.OS'], 'Linux')
     displayName: Install Vulkan SDK and SDL dependencies with APT
 
