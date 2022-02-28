@@ -64,7 +64,7 @@ steps:
   - bash: |
       curl -fsGL -o vulkan-sdk.exe "https://sdk.lunarg.com/sdk/download/latest/windows/vulkan-sdk.exe"
       _=$(echo "vulkan-sdk.exe /S | cmd")
-    condition: eq(variables(['Agent.OS'], 'Windows_NT'))
+    condition: eq(variables['Agent.OS'], 'Windows_NT'))
     displayName: Install Vulkan SDK
 
   - bash: |
@@ -77,7 +77,7 @@ steps:
 
   - script: |
       cmake -S. -Bbuild -GNinja -DCMAKE_C_COMPILER=$(cc) -DCMAKE_BUILD_TYPE=$(config)
-    condition: eq(variables(['Agent.OS'], 'Windows_NT'))
+    condition: eq(variables['Agent.OS'], 'Windows_NT')
     displayName: Generate build files
     env:
       VULKAN_SDK: $(vulkanSdk)
