@@ -90,7 +90,7 @@ steps:
   - script: |
       call tools\buildenv.bat
       call tools\refreshenv.bat
-      cmake -S. -Bbuild -GNinja -DVULKAN_SDK=$(vulkanSdk) -DCMAKE_C_COMPILER=$(cc) -DCMAKE_BUILD_TYPE=$(config)
+      cmake -S. -Bbuild -GNinja -DVULKAN_SDK=$(vulkanSdk) -DVulkan_LIBRARY=$(vulkanSdk)/Lib/vulkan-1.lib -DVulkan_INCLUDE_DIR=$(vulkanSdk)/Include -DCMAKE_C_COMPILER=$(cc) -DCMAKE_BUILD_TYPE=$(config)
     condition: eq(variables['Agent.OS'], 'Windows_NT')
     displayName: Generate build files
 
