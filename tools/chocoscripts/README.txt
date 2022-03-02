@@ -1,1 +1,0 @@
-These scripts (as evidenced by their copyright notices) are all from Chocolatey commit f2de4914c5, which can be found at https://github.com/chocolatey/choco/tree/f2de4914c57e6cacb4c2a2db13de5c587541c6d2/src/chocolatey.resources/helpers/functions.
