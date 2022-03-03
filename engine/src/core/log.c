@@ -234,9 +234,9 @@ static char *purpl_log_format(struct purpl_logger *logger,
 	} else {
 		free(p3);
 	}
-	p1 = purpl_strrplc(p2, "#F", p4, NULL);
-	free(p2);
 	free(p4);
+	p1 = purpl_strrplc(p2, "#F", p3, NULL);
+	free(p2);
 
 	p2 = purpl_strrplc(p1, "#f", function, NULL);
 	free(p1);
