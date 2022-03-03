@@ -80,7 +80,9 @@ set(ENGINE_ALL_SOURCES
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/include PREFIX "Header Files" FILES ${ENGINE_ALL_HEADERS})
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/src PREFIX "Source Files" FILES ${ENGINE_ALL_SOURCES})
 
-add_library(engine SHARED ${ENGINE_ALL_HEADERS} ${ENGINE_ALL_SOURCES})
+configure_file(include/purpl/core/config.h.in config.h @ONLY)
+
+add_library(engine SHARED ${ENGINE_ALL_HEADERS} ${ENGINE_ALL_SOURCES} ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 target_compile_definitions(engine PRIVATE PURPL_BUILD=1)
 
 if (${PURPL_ENABLE_MEMING})
@@ -94,14 +96,17 @@ elseif(${CMAKE_SYSTEM_PROCESSOR} MATCHES "a.*64")
 	target_compile_definitions(engine PRIVATE PURPL_ARM=1)
 endif()
 
-target_include_directories(engine PUBLIC
-			   ${CMAKE_CURRENT_SOURCE_DIR}/include
+target_include_directories(engine
+			   PUBLIC
+				${CMAKE_CURRENT_SOURCE_DIR}/include
+				${CMAKE_CURRENT_BINARY_DIR}
 			   PRIVATE
-			   ${Vulkan_INCLUDE_DIRS}
-			   ${CMAKE_SOURCE_DIR}/deps/glad2/include
-			   ${CMAKE_SOURCE_DIR}/deps/phnt
-			   ${CMAKE_SOURCE_DIR}/deps/sdl2/include
-			   ${CMAKE_SOURCE_DIR}/deps/stb)
+				${OPENGL_INCLUDE_DIR}
+				${Vulkan_INCLUDE_DIRS}
+				${CMAKE_SOURCE_DIR}/deps/glad2/include
+				${CMAKE_SOURCE_DIR}/deps/phnt
+				${CMAKE_SOURCE_DIR}/deps/sdl2/include
+				${CMAKE_SOURCE_DIR}/deps/stb)
 target_link_libraries(engine PRIVATE SDL2::SDL2)
 if (NOT APPLE)
 	target_link_libraries(engine PRIVATE glad_opengl glad_vulkan ${OPENGL_LIBRARIES} ${Vulkan_LIBRARIES})

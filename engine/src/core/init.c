@@ -76,8 +76,10 @@ PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 		return false;
 	}
 
-	title = purpl_strfmt(NULL, "%s v%s", purpl_inst->app_name,
-			     purpl_format_version(purpl_inst->app_version));
+	title = purpl_strfmt(NULL, "%s v%s - engine v%s+%s-%s-%s", purpl_inst->app_name,
+			     purpl_format_version(purpl_inst->app_version),
+			     purpl_format_version(purpl_inst->app_version), PURPL_SOURCE_BRANCH,
+			     PURPL_SOURCE_COMMIT, PURPL_BUILD_TYPE);
 
 	PURPL_LOG_INFO(purpl_inst->logger, "Creating a window titled %s",
 		       title);

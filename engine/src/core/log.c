@@ -107,8 +107,10 @@ static char *purpl_log_format(struct purpl_logger *logger,
 	char *p1;
 	char *p2;
 	char *p3;
+	char *p4;
 	struct tm *t1;
 	struct tm *t2;
+	size_t len;
 	va_list args;
 
 	const char *days[] = { "Sunday",   "Monday", "Tuesday", "Wednesday",
@@ -223,8 +225,18 @@ static char *purpl_log_format(struct purpl_logger *logger,
 	p2 = purpl_strrplc(p1, "#W", "#F:#sl@#f", NULL);
 	free(p1);
 
-	p1 = purpl_strrplc(p2, "#F", file, NULL);
+	p3 = purpl_pathfmt(NULL, PURPL_SOURCE_DIR, 0);
+	p4 = purpl_pathfmt(NULL, file, 0);
+	len = strlen(p3);
+	if (strncmp(p3, p4, len) == 0) {
+		free(p3);
+		p3 = file + len + 1;
+	} else {
+		free(p3);
+	}
+	p1 = purpl_strrplc(p2, "#F", p4, NULL);
 	free(p2);
+	free(p4);
 
 	p2 = purpl_strrplc(p1, "#f", function, NULL);
 	free(p1);
@@ -242,7 +254,9 @@ static char *purpl_log_format(struct purpl_logger *logger,
 	p1 = purpl_strrplc(p2, "#l", p3, NULL);
 	free(p2);
 
-	p2 = purpl_strrplc(p1, "#V", purpl_format_version(PURPL_VERSION),
+	p3 = purpl_format_version(PURPL_VERSION);
+	strncat(p3, "+" PURPL_SOURCE_BRANCH "-" PURPL_SOURCE_COMMIT "-" PURPL_BUILD_TYPE, PURPL_STATIC_BUF_MAX);
+	p2 = purpl_strrplc(p1, "#V", p3,
 			   NULL);
 	free(p1);
 
@@ -251,9 +265,10 @@ static char *purpl_log_format(struct purpl_logger *logger,
 		purpl_inst->app_name ? purpl_inst->app_name : "unknown", NULL);
 	free(p2);
 
-	p2 = purpl_strrplc(
-		p1, "#v", purpl_format_version(purpl_inst->app_version), NULL);
+	p3 = purpl_strfmt(NULL, "v%s", purpl_format_version(purpl_inst->app_version));
+	p2 = purpl_strrplc(p1, "#v", p3, NULL);
 	free(p1);
+	free(p3);
 
 	p1 = purpl_strfmt(NULL, "%s\n", p2);
 	free(p2);

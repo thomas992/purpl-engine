@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 
+include(cmake/GetGitRevisionDescription.cmake)
+
 # Use the engine's Ninja
 if (${CMAKE_GENERATOR} MATCHES "Ninja")
 	if (WIN32)
@@ -74,11 +76,15 @@ if (NOT APPLE)
 	glad_add_library(glad_vulkan REPRODUCIBLE API vulkan=1.3)
 endif()
 
+get_git_head_revision(_, ENGINE_COMMIT)
+git_branch_name(ENGINE_BRANCH)
+
 message(STATUS "")
 message(STATUS "Purpl Engine configuration: ")
 message(STATUS "")
 message(STATUS "\tPlatform: ${CMAKE_SYSTEM} (pointer size: ${CMAKE_SIZEOF_VOID_P})")
 message(STATUS "\tBuild type: ${CMAKE_BUILD_TYPE}")
+message(STATUS "\tRevision: ${ENGINE_BRANCH} commit ${ENGINE_COMMIT}")
 message(STATUS "")
 message(STATUS "\tCC: ${CMAKE_C_COMPILER}")
 message(STATUS "\tCFLAGS: ${CMAKE_C_FLAGS}")
