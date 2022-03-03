@@ -38,10 +38,13 @@ PURPL_API bool purpl_graphics_init(void)
 		return false;
 	}
 
+	SDL_GetWindowPosition(purpl_inst->wnd, &purpl_inst->wnd_x, &purpl_inst->wnd_y);
+	SDL_GetWindowSize(purpl_inst->wnd, &purpl_inst->wnd_width, &purpl_inst->wnd_height);
+
 	PURPL_LOG_INFO(purpl_inst->logger,
 		       "Successfully initialized graphics");
 
-	return true;	
+	return true;
 }
 
 PURPL_API void purpl_graphics_shutdown(void)

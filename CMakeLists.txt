@@ -79,6 +79,10 @@ endif()
 get_git_head_revision(_, ENGINE_COMMIT)
 git_branch_name(ENGINE_BRANCH)
 
+if (NOT DEFINED GENERATOR_IS_MULTICONFIG AND NOT DEFINED CMAKE_BUILD_TYPE)
+	set(CMAKE_BUILD_TYPE Debug CACHE STRING "" FORCE)
+endif()
+
 message(STATUS "")
 message(STATUS "Purpl Engine configuration: ")
 message(STATUS "")

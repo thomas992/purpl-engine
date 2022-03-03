@@ -24,9 +24,6 @@
 
 PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 {
-	char *title;
-	const u32 wnd_flags = SDL_WINDOW_RESIZABLE | SDL_WINDOW_VULKAN;
-
 	purpl_inst = calloc(1, sizeof(struct purpl_instance));
 	if (!purpl_inst) {
 		fprintf(stderr,
@@ -76,33 +73,6 @@ PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 		return false;
 	}
 
-	title = purpl_strfmt(NULL, "%s v%s - engine v%s+%s-%s-%s", purpl_inst->app_name,
-			     purpl_format_version(purpl_inst->app_version),
-			     purpl_format_version(purpl_inst->app_version), PURPL_SOURCE_BRANCH,
-			     PURPL_SOURCE_COMMIT, PURPL_BUILD_TYPE);
-
-	PURPL_LOG_INFO(purpl_inst->logger, "Creating a window titled %s",
-		       title);
-	purpl_inst->wnd = SDL_CreateWindow(title, SDL_WINDOWPOS_UNDEFINED,
-					   SDL_WINDOWPOS_UNDEFINED, 1024, 768,
-					   wnd_flags);
-	if (!purpl_inst->wnd) {
-		PURPL_LOG_CRITICAL(purpl_inst->logger,
-				   "Failed to create a window: %s",
-				   SDL_GetError());
-		SDL_ShowSimpleMessageBox(
-			SDL_MESSAGEBOX_ERROR, "Purpl Engine",
-			"Failed to create a window. See the logs for more information.",
-			NULL);
-		purpl_shutdown();
-		return false;
-	}
-
-	SDL_GetWindowPosition(purpl_inst->wnd, &purpl_inst->wnd_x,
-			      &purpl_inst->wnd_y);
-	SDL_GetWindowSize(purpl_inst->wnd, &purpl_inst->wnd_width,
-			  &purpl_inst->wnd_height);
-
 	PURPL_LOG_INFO(purpl_inst->logger, "Initializing graphics");
 	if (!purpl_graphics_init()) {
 		SDL_ShowSimpleMessageBox(
@@ -113,13 +83,11 @@ PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 		return false;
 	}
 
-	srand((u32)((u64)purpl_inst ^ ((u64)purpl_inst->logger & (u64)title)) *
-	      time(NULL));
+	srand((u32)((u64)purpl_inst ^ ((u64)purpl_inst->logger) *
+	      time(NULL)));
 
 	PURPL_LOG_INFO(purpl_inst->logger,
 		       "Purpl Engine #V initialized for application #n #v");
-
-	free(title);
 
 	return true;
 }
@@ -197,8 +165,6 @@ PURPL_API void purpl_shutdown(void)
 
 	purpl_graphics_shutdown();
 
-	if (purpl_inst->wnd)
-		SDL_DestroyWindow(purpl_inst->wnd);
 	SDL_Quit();
 
 	purpl_log_close(purpl_inst->logger, true);
