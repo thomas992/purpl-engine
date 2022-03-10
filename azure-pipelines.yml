@@ -65,8 +65,7 @@ steps:
     submodules: true
 
   - script: |
-      curl -fGLO https://sdk.lunarg.com/sdk/download/latest/windows/vulkan-sdk.exe
-      cmd /c vulkan-sdk --accept-licenses --default-answer --confirm-command install
+      call tools\installvulkan.bat
     condition: eq(variables['Agent.OS'], 'Windows_NT')
     displayName: Install Vulkan SDK
 
