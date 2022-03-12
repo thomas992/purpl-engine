@@ -65,9 +65,10 @@ struct purpl_instance {
 #ifdef __APPLE__
 		// No Metal support yet
 #endif // __APPLE__
-#ifndef __APPLE__ // Vulkan supports everything except macOS (MoltenVK exists,
-		  // but I'd rather just write it in Metal eventually)
-      		// Vulkan information
+#ifndef __APPLE__
+		// Vulkan supports everything except macOS (MoltenVK exists,
+		// but I'd rather just write it in Metal eventually)
+		// Vulkan information
 		struct purpl_instance_vulkan {
 			VkInstance inst; // Vulkan instance
 			VkDebugUtilsMessengerEXT debug_messenger; // Debug messenger
@@ -79,12 +80,14 @@ struct purpl_instance {
 			void *(*vk_get_instance_proc_addr)(
 				VkInstance inst, const char *name);
 #endif // GLAD_VULKAN_H_
+
+			VkPhysicalDevice phys_device; // Physical device
 		} vulkan;
 #endif // !__APPLE__
 
 		// Must match the largest size the structures can be (most likely this will
 		// be Windows eventually, because it supports 3 APIs)
-		void *padding[1];
+		void *padding[4];
 	} graphics;
 	enum purpl_graphics_api graphics_api; // The API that was initialized on startup
 };

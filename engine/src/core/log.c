@@ -376,6 +376,7 @@ PURPL_API void purpl_log_close(struct purpl_logger *logger, bool last_message)
 	const char *adjectives[] = { "nice", "good", "pleasant" };
 	const char *time_of_day = "day";
 	struct tm *t;
+	size_t random = PURPL_RANDOM(100) % PURPL_SIZEOF_ARRAY(adjectives);
 
 	if (!logger)
 		return;
@@ -394,8 +395,8 @@ PURPL_API void purpl_log_close(struct purpl_logger *logger, bool last_message)
 
 		msg = purpl_strfmt(
 			NULL, "This logger is shutting down. Have a %s %s.",
-			adjectives[PURPL_RANDOM(100) % PURPL_SIZEOF_ARRAY(adjectives) - 1],
-			time_of_day);
+			adjectives[random],
+			time_of_day, random, PURPL_SIZEOF_ARRAY(adjectives) - 1);
 		PURPL_LOG_INFO(purpl_inst->logger, "%s", msg);
 		free(msg);
 	}

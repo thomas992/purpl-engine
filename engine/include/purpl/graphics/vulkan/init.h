@@ -32,6 +32,7 @@
 #include "purpl/util/util.h"
 
 #include "debug.h"
+#include "device.h"
 #include "inst.h"
 
 /// Initialize Vulkan

@@ -70,6 +70,11 @@ bool purpl_vulkan_init(void)
 	// This fails due to the device being NULL, but not for any other reason
 	gladLoadVulkanUserPtr(NULL, (GLADuserptrloadfunc)vulkan_load_func, vulkan->inst);
 
+	if (!vulkan_pick_physical_device()) {
+		purpl_vulkan_shutdown();
+		return false;
+	}
+
 	purpl_inst->graphics_api = PURPL_GRAPHICS_API_VULKAN;
 	return true;
 }

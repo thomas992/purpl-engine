@@ -13,6 +13,7 @@ set(ENGINE_GRAPHICS_HEADERS
 
 set(ENGINE_VULKAN_HEADERS
     include/purpl/graphics/vulkan/debug.h
+    include/purpl/graphics/vulkan/device.h
     include/purpl/graphics/vulkan/init.h
     include/purpl/graphics/vulkan/inst.h)
 
@@ -35,6 +36,7 @@ set(ENGINE_GRAPHICS_SOURCES
 
 set(ENGINE_VULKAN_SOURCES
     src/graphics/vulkan/debug.c
+    src/graphics/vulkan/device.c
     src/graphics/vulkan/init.c
     src/graphics/vulkan/inst.c)
 
@@ -48,8 +50,8 @@ set(ENGINE_UTIL_SOURCES
 set(ENGINE_WINDOWS_SOURCES src/engine.rc)
 
 if (NOT APPLE)
-	set(ENGINE_GRAPHICS_HEADERS ${ENGINE_GRAPHICS_HEADERS} ${ENGINE_VULKAN_HEADERS})
-	set(ENGINE_GRAPHICS_SOURCES ${ENGINE_GRAPHICS_SOURCES} ${ENGINE_VULKAN_SOURCES})
+	list(APPEND ENGINE_GRAPHICS_HEADERS ${ENGINE_VULKAN_HEADERS})
+	list(APPEND ENGINE_GRAPHICS_SOURCES ${ENGINE_VULKAN_SOURCES})
 endif()
 
 
@@ -113,10 +115,11 @@ if (NOT APPLE)
 endif()
 
 if (WIN32)
-	set(ENGINE_RUNTIME_FILES $<TARGET_FILE:engine> $<TARGET_FILE:SDL2::SDL2> PARENT_SCOPE)
+	set(ENGINE_RUNTIME_FILES_ $<TARGET_FILE:engine> $<TARGET_FILE:SDL2::SDL2>)
 	if (${CMAKE_BUILD_TYPE} MATCHES "Deb" AND MSVC) # Debug and RelWithDebInfo both give PDB files
-		set(ENGINE_RUNTIME_FILES ${ENGINE_RUNTIME_FILES} $<TARGET_PDB_FILE:engine> $<TARGET_PDB_FILE:SDL2::SDL2> PARENT_SCOPE)
+		list(APPEND ENGINE_RUNTIME_FILES_ $<TARGET_PDB_FILE:engine> $<TARGET_PDB_FILE:SDL2::SDL2>)
 	endif()
+    set(ENGINE_RUNTIME_FILES ${ENGINE_RUNTIME_FILES_} PARENT_SCOPE)
 endif()
 
 install(TARGETS engine
