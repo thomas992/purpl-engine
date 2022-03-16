@@ -6,10 +6,9 @@ add_executable(demo ${DEMO_SOURCES})
 target_link_libraries(demo PRIVATE engine)
 
 if (WIN32)
-	add_custom_command(TARGET demo
-			   POST_BUILD
-			   COMMAND ${CMAKE_COMMAND} -E copy ${ENGINE_RUNTIME_FILES} $<TARGET_FILE_DIR:demo>
-			   DEPENDS ${ENGINE_RUNTIME_FILES})
+	add_custom_target(copy_engine_dlls
+			   COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ENGINE_RUNTIME_FILES} $<TARGET_FILE_DIR:demo>
+			   DEPENDS demo ${ENGINE_RUNTIME_FILES})
 endif()
 
 install(TARGETS demo

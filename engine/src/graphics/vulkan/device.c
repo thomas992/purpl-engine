@@ -28,7 +28,7 @@ u64 vulkan_score_device(VkPhysicalDevice device)
 
 	// iGPUs are usually shit, and on a system that doesn't follow that
 	// rule there probably won't be a dGPU
-	if (properties.deviceType = VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU)
+	if (properties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU)
 		score += 1000;
 
 	score += properties.limits.maxImageDimension2D;
