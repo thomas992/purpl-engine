@@ -1,5 +1,6 @@
 // This file includes all the stb headers used in the engine so they get
-// compiled separately (rather than just only using them in one file)
+// compiled separately (rather than just using them in one random file they're
+// used in)
 //
 // Copyright 2022 MobSlicer152
 // This file is part of Purpl Engine
