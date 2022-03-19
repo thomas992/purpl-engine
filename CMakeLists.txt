@@ -68,7 +68,7 @@ else()
 	endif()
 endif()
 
-# Vulkan SDK
+# Graphics APIs
 if (NOT APPLE)
 	cmake_policy(SET CMP0072 NEW)
 	find_package(OpenGL REQUIRED)
@@ -77,6 +77,8 @@ if (NOT APPLE)
 	glad_add_library(glad_opengl REPRODUCIBLE API gl:core=4.6)
 	glad_add_library(glad_vulkan REPRODUCIBLE API vulkan=1.3)
 endif()
+
+find_package(Python3 REQUIRED)
 
 get_git_head_revision(_, ENGINE_COMMIT)
 git_branch_name(ENGINE_BRANCH)

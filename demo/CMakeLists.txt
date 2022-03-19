@@ -12,10 +12,10 @@ endif()
 
 if (WIN32)
 	add_custom_target(copy_engine_dlls ALL
-				  DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/copy_engine_dlls)
-	add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/copy_engine_dlls
-					   COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ENGINE_RUNTIME_FILES} $<TARGET_FILE_DIR:demo>
-					   DEPENDS ${ENGINE_RUNTIME_FILES})
+			  DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/copy_engine_dlls)
+	add_custom_command(TARGET copy_engine_dlls POST_BUILD
+			   COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ENGINE_RUNTIME_FILES} $<TARGET_FILE_DIR:demo>
+			   DEPENDS ${ENGINE_RUNTIME_FILES})
 endif()
 
 install(TARGETS demo

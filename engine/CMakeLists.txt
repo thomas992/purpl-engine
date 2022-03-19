@@ -84,14 +84,17 @@ source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/src PREFIX "Source Files" FILES ${
 
 configure_file(include/purpl/core/config.h.in config.h @ONLY)
 
-add_library(engine_preinit STATIC src/core/preinit.c)
+if (WIN32)
+	set(EXPORTS_HEADER ${CMAKE_CURRENT_BINARY_DIR}/exports.h)
+endif()
+add_library(engine_preinit STATIC src/core/preinit.c ${EXPORTS_HEADER})
 add_library(engine SHARED ${ENGINE_ALL_HEADERS} ${ENGINE_ALL_SOURCES} ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 target_compile_definitions(engine_preinit PRIVATE PURPL_BUILD=1)
 target_compile_definitions(engine PRIVATE PURPL_BUILD=1)
 
 if (WIN32)
-	add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/exports.c
-			   COMMAND ${PythonInterp} ${CMAKE_SOURCE_DIR}/tools/dumpexports.py $<TARGET_FILE:engine> ${CMAKE_CURRENT_BINARY_DIR}/exports.c
+	add_custom_command(OUTPUT ${EXPORTS_HEADER}
+		COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tools/dumpexports.py $<TARGET_FILE:engine> ${EXPORTS_HEADER}
 			   DEPENDS engine)
 endif()
 
@@ -109,7 +112,14 @@ endif()
 target_include_directories(engine_preinit
 			   PUBLIC
 				${CMAKE_CURRENT_SOURCE_DIR}/include
-				${CMAKE_CURRENT_BINARY_DIR})
+				${CMAKE_CURRENT_BINARY_DIR}
+			   PRIVATE
+				${OPENGL_INCLUDE_DIR}
+				${Vulkan_INCLUDE_DIRS}
+				${CMAKE_SOURCE_DIR}/deps/glad2/include
+				${CMAKE_SOURCE_DIR}/deps/phnt
+				${CMAKE_SOURCE_DIR}/deps/sdl2/include
+				${CMAKE_SOURCE_DIR}/deps/stb)
 target_include_directories(engine
 			   PUBLIC
 				${CMAKE_CURRENT_SOURCE_DIR}/include
