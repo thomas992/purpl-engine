@@ -37,7 +37,7 @@
 /// \param device The device to score
 ///
 /// \return Returns the device's score
-extern u64 vulkan_score_device(VkPhysicalDevice device);
+extern u64 vulkan_score_device(VkPhysicalDevice device, size_t idx);
 
 /// Pick the best physical device
 ///

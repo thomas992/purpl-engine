@@ -17,7 +17,7 @@
 
 #include "purpl/graphics/vulkan/device.h"
 
-u64 vulkan_score_device(VkPhysicalDevice device)
+u64 vulkan_score_device(VkPhysicalDevice device, size_t idx)
 {
 	u64 score = 0;
 	VkPhysicalDeviceProperties properties;
@@ -32,6 +32,10 @@ u64 vulkan_score_device(VkPhysicalDevice device)
 		score += 1000;
 
 	score += properties.limits.maxImageDimension2D;
+	PURPL_LOG_INFO(purpl_inst->logger, "Device %zu:", idx + 1);
+	PURPL_LOG_INFO(purpl_inst->logger, "\tName: %s",
+		       properties.deviceName);
+	PURPL_LOG_INFO(purpl_inst->logger, "\tScore: %d", score);
 
 	return score;
 }
@@ -39,8 +43,8 @@ u64 vulkan_score_device(VkPhysicalDevice device)
 bool vulkan_pick_physical_device(void)
 {
 	struct purpl_instance_vulkan *vulkan = &purpl_inst->graphics.vulkan;
-	VkPhysicalDevice *devices = NULL;
 	VkPhysicalDeviceProperties properties;
+	VkPhysicalDevice *devices = NULL;
 	u32 device_count = 0;
 	u64 best_score = 0;
 	size_t best_idx = 0;
@@ -62,12 +66,9 @@ bool vulkan_pick_physical_device(void)
 	vkEnumeratePhysicalDevices(vulkan->inst, &device_count, devices);
 
 	for (i = 0; i < stbds_arrlenu(devices); i++) {
+		u64 score = vulkan_score_device(devices[i], i);
+
 		vkGetPhysicalDeviceProperties(devices[i], &properties);
-		u64 score = vulkan_score_device(devices[i]);
-		PURPL_LOG_INFO(purpl_inst->logger, "Device %zu:", i + 1);
-		PURPL_LOG_INFO(purpl_inst->logger, "\tName: %s",
-			       properties.deviceName);
-		PURPL_LOG_INFO(purpl_inst->logger, "\tScore: %d", score);
 
 		if (score > best_score) {
 			vulkan->phys_device = devices[i];
