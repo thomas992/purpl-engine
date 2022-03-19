@@ -4,9 +4,8 @@ set(DEMO_SOURCES src/main.c)
 
 add_executable(demo ${DEMO_SOURCES})
 # This is to get around PE executables not having pre-defined runtime paths embedded like ELF and Mach-O do
-if (WIN32)
-	target_link_libraries(demo PRIVATE engine_preinit)
-else()
+target_link_libraries(demo PRIVATE engine_preinit)
+if (NOT WIN32)
 	target_link_libraries(demo PRIVATE engine)
 endif()
 
