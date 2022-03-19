@@ -3,7 +3,12 @@ cmake_minimum_required(VERSION 3.10)
 set(DEMO_SOURCES src/main.c)
 
 add_executable(demo ${DEMO_SOURCES})
-target_link_libraries(demo PRIVATE engine)
+# This is to get around PE executables not having pre-defined runtime paths embedded like ELF and Mach-O do
+if (WIN32)
+	target_link_libraries(demo PRIVATE engine_preinit)
+else()
+	target_link_libraries(demo PRIVATE engine)
+endif()
 
 if (WIN32)
 	add_custom_target(copy_engine_dlls ALL
@@ -16,3 +21,9 @@ endif()
 install(TARGETS demo
 	RUNTIME
 	DESTINATION ${CMAKE_INSTALL_PREFIX})
+
+if (WIN32 AND ${CMAKE_BUILD_TYPE} MATCHES "Deb")
+	install(PROGRAMS $<TARGET_PDB_FILE:demo>
+		DESTINATION ${CMAKE_INSTALL_PREFIX})
+endif()
+

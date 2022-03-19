@@ -84,8 +84,16 @@ source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/src PREFIX "Source Files" FILES ${
 
 configure_file(include/purpl/core/config.h.in config.h @ONLY)
 
+add_library(engine_preinit STATIC src/core/preinit.c)
 add_library(engine SHARED ${ENGINE_ALL_HEADERS} ${ENGINE_ALL_SOURCES} ${CMAKE_CURRENT_BINARY_DIR}/config.h)
+target_compile_definitions(engine_preinit PRIVATE PURPL_BUILD=1)
 target_compile_definitions(engine PRIVATE PURPL_BUILD=1)
+
+if (WIN32)
+	add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/exports.c
+			   COMMAND ${PythonInterp} ${CMAKE_SOURCE_DIR}/tools/dumpexports.py $<TARGET_FILE:engine> ${CMAKE_CURRENT_BINARY_DIR}/exports.c
+			   DEPENDS engine)
+endif()
 
 if (${PURPL_ENABLE_MEMING})
 	target_compile_definitions(engine PRIVATE PURPL_ENABLE_MEMING=1)
@@ -98,6 +106,10 @@ elseif(${CMAKE_SYSTEM_PROCESSOR} MATCHES "a.*64")
 	target_compile_definitions(engine PRIVATE PURPL_ARM=1)
 endif()
 
+target_include_directories(engine_preinit
+			   PUBLIC
+				${CMAKE_CURRENT_SOURCE_DIR}/include
+				${CMAKE_CURRENT_BINARY_DIR})
 target_include_directories(engine
 			   PUBLIC
 				${CMAKE_CURRENT_SOURCE_DIR}/include
@@ -122,6 +134,16 @@ if (WIN32)
     set(ENGINE_RUNTIME_FILES ${ENGINE_RUNTIME_FILES_} PARENT_SCOPE)
 endif()
 
+install(TARGETS engine_preinit
+	LIBRARY
+	DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
+
 install(TARGETS engine
 	LIBRARY
 	DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+
+if (WIN32 AND ${CMAKE_BUILD_TYPE} MATCHES "Deb")
+	install(PROGRAMS $<TARGET_PDB_FILE:engine>
+		DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+endif()
+

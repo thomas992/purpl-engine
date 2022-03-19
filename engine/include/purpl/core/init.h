@@ -36,6 +36,9 @@
 /// \return Should return true if nothing went wrong, false otherwise
 typedef bool (*purpl_frame_func)(s32 delta, void *user_data);
 
+/// Make sure the engine is ready to be initialized
+extern void purpl_preinit(void);
+
 /// Initialize the engine
 ///
 /// \param app_name The name of the application (used for the window title,
