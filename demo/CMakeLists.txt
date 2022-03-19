@@ -10,9 +10,8 @@ if (NOT WIN32)
 endif()
 
 if (WIN32)
-	add_custom_target(copy_engine_dlls ALL
-			  DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/copy_engine_dlls)
-	add_custom_command(TARGET copy_engine_dlls POST_BUILD
+	add_custom_command(TARGET demo PRE_BUILD
+			   COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:demo>
 			   COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ENGINE_RUNTIME_FILES} $<TARGET_FILE_DIR:demo>
 			   DEPENDS ${ENGINE_RUNTIME_FILES})
 endif()
@@ -25,4 +24,3 @@ if (WIN32 AND ${CMAKE_BUILD_TYPE} MATCHES "Deb")
 	install(PROGRAMS $<TARGET_PDB_FILE:demo>
 		DESTINATION ${CMAKE_INSTALL_PREFIX})
 endif()
-
