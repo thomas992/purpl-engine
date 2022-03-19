@@ -133,7 +133,12 @@ target_include_directories(engine
 				${CMAKE_SOURCE_DIR}/deps/stb)
 target_link_libraries(engine PRIVATE SDL2::SDL2)
 if (NOT APPLE)
-	target_link_libraries(engine PRIVATE glad_opengl glad_vulkan ${OPENGL_LIBRARIES} ${Vulkan_LIBRARIES})
+	target_link_libraries(engine
+			      PRIVATE
+				glad_opengl
+				glad_vulkan
+				${OPENGL_LIBRARIES}
+				${Vulkan_LIBRARIES})
 endif()
 
 if (WIN32)

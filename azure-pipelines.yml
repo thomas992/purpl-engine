@@ -4,27 +4,27 @@ trigger:
 strategy:
   matrix:
     windows-msvc-dist:
-      imageName: 'windows-latest'
+      imageName: 'windows-2022'
       config: 'MinSizeRel'
       cc: 'cl'
     windows-msvc-release:
-      imageName: 'windows-latest'
+      imageName: 'windows-2022'
       config: 'RelWithDebInfo'
       cc: 'cl'
     windows-msvc-debug:
-      imageName: 'windows-latest'
+      imageName: 'windows-2022'
       config: 'Debug'
       cc: 'cl'
     windows-clang-dist:
-      imageName: 'windows-latest'
+      imageName: 'windows-2022'
       config: 'MinSizeRel'
       cc: 'clang'
     windows-clang-release:
-      imageName: 'windows-latest'
+      imageName: 'windows-2022'
       config: 'RelWithDebInfo'
       cc: 'clang'
     windows-clang-debug:
-      imageName: 'windows-latest'
+      imageName: 'windows-2022'
       config: 'Debug'
       cc: 'clang'
     macos-dist:
