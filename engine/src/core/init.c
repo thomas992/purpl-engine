@@ -72,6 +72,8 @@ PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 		purpl_shutdown();
 		return false;
 	}
+	
+	PURPL_LOG_INFO(purpl_inst->logger, "Successfully initialized SDL");
 
 	PURPL_LOG_INFO(purpl_inst->logger, "Initializing graphics");
 	if (!purpl_graphics_init()) {

@@ -49,7 +49,7 @@ bool purpl_vulkan_init(void)
 			     purpl_format_version(purpl_inst->app_version), PURPL_SOURCE_BRANCH,
 			     PURPL_SOURCE_COMMIT, PURPL_BUILD_TYPE);
 
-	PURPL_LOG_INFO(purpl_inst->logger, "Creating a window titled %s",
+	PURPL_LOG_INFO(purpl_inst->logger, "Creating a window titled \"%s\"",
 		       title);
 	purpl_inst->wnd = SDL_CreateWindow(title, SDL_WINDOWPOS_UNDEFINED,
 					   SDL_WINDOWPOS_UNDEFINED, 1024, 768,
