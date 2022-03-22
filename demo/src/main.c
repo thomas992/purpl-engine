@@ -15,6 +15,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include "purpl/graphics/window.h"
 #include <errno.h>
 
 #include <purpl/purpl.h>
@@ -47,7 +48,7 @@ int32_t main(int32_t argc, char *argv[])
 	}
 	
 	// Get the engine's window title so information can be put in it
-	info.title = purpl_get_window_title();
+	info.title = purpl_graphics_window_get_title();
 
 	// Run the main loop, it takes a void pointer passed to the frame function
 	purpl_run(frame_func, &info);
@@ -64,7 +65,7 @@ bool frame_func(u32 delta, void *data)
 {
 	struct demo_info *info = data;
 	
-	purpl_set_window_title("%s - Frame delta: %ums", info->title, delta);
+	purpl_graphics_window_set_title("%s - Frame delta: %ums", info->title, delta);
 	
 	info->deltas += delta;
 	info->frames++;

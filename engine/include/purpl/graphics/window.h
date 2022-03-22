@@ -29,10 +29,10 @@
 /// Gets the window title
 ///
 /// \return Returns the current title of the engine's window. Must be freed.
-extern PURPL_API char *purpl_get_window_title(void);
+extern PURPL_API char *purpl_graphics_window_get_title(void);
 
 /// Sets the window title
 ///
 /// \param title The new title for the window. Supports printf format specifiers.
-extern PURPL_API void purpl_set_window_title(const char *title, ...);
+extern PURPL_API void purpl_graphics_window_set_title(const char *title, ...);
 

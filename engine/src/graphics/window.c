@@ -20,12 +20,12 @@
 
 #include "purpl/graphics/window.h"
 
-PURPL_API char *purpl_get_window_title(void)
+PURPL_API char *purpl_graphics_window_get_title(void)
 {
 	return purpl_strdup(purpl_inst->wnd_title);
 }
 
-PURPL_API void purpl_set_window_title(const char *title, ...)
+PURPL_API void purpl_graphics_window_set_title(const char *title, ...)
 {
 	va_list args;
 	char *new_title;
@@ -37,12 +37,10 @@ PURPL_API void purpl_set_window_title(const char *title, ...)
 
 	va_start(args, title);
 
-	if (stbsp_vsnprintf(NULL, 0, title, args) < strlen(purpl_inst->wnd_title))
-		return;
-
 	new_title = purpl_vstrfmt(NULL, title, args);
 	va_end(args);
 
+	// Avoid renaming the window if the strings are the same, it lags Explorer
 	if (strcmp(new_title, purpl_inst->wnd_title) == 0) {
 		free(new_title);
 		return;
