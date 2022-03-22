@@ -81,6 +81,9 @@ endif()
 find_package(Python3 REQUIRED)
 
 get_git_head_revision(_, ENGINE_COMMIT)
+if (${CMAKE_BUILD_TYPE} MATCHES "Rel")
+	string(SUBSTRING "${ENGINE_COMMIT}" 0 7 ENGINE_COMMIT)
+endif()
 git_branch_name(ENGINE_BRANCH)
 
 if (NOT DEFINED GENERATOR_IS_MULTICONFIG AND NOT DEFINED CMAKE_BUILD_TYPE)
