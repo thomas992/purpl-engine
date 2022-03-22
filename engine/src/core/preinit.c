@@ -69,4 +69,7 @@ void purpl_preinit(void)
 
 	init_ptrs();
 #endif // _WIN32
+	
+	// Tell the engine that preinit was called so it doesn't print a warning
+	__imp_purpl_complete_preinit();
 }

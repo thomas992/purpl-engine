@@ -36,7 +36,9 @@
 /// \return Should return true if nothing went wrong, false otherwise
 typedef bool (*purpl_frame_func)(u32 delta, void *user_data);
 
-/// Make sure the engine is ready to be initialized
+/// Make sure the engine is ready to be used. You MUST call this function
+/// before calling ANY functions from the engine other than this one, or
+/// there is a solid chance your program will crash.
 extern void purpl_preinit(void);
 
 /// Initialize the engine

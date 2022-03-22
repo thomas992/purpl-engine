@@ -22,6 +22,16 @@
 
 #include "purpl/graphics/init.h"
 
+#define PREINIT_MAGIC (PURPL_VERSION << 8 | 0x01)
+
+u64 preinit_called;
+
+// Sets preinit_called to PREINIT_MAGIC
+PURPL_API void purpl_complete_preinit(void)
+{
+	preinit_called = PREINIT_MAGIC;
+}
+
 PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 {
 	purpl_inst = calloc(1, sizeof(struct purpl_instance));
@@ -51,6 +61,11 @@ PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 	PURPL_LOG_INFO(purpl_inst->logger, "Logger created. Engine "
 					   "initialization started.");
 
+	// Check that preinit was called so a warning can be issued otherwise
+	if (preinit_called != PREINIT_MAGIC)
+		PURPL_LOG_DEBUG(purpl_inst->logger,
+				"This application has not called purpl_preinit, it is likely only working"
+				" because only Windows currently requires preinit\n");
 	purpl_inst->start_time = time(NULL);
 
 	purpl_inst->app_name = purpl_strfmt(
