@@ -85,7 +85,7 @@ PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 		return false;
 	}
 
-	srand((u32)((u64)purpl_inst ^ ((u64)purpl_inst->logger) *
+	srand((u32)((u64)purpl_inst & ((u64)purpl_inst->logger) *
 	      time(NULL)));
 
 	PURPL_LOG_INFO(purpl_inst->logger,
@@ -128,6 +128,8 @@ static bool purpl_handle_events(void)
 			}
 			break;
 		case SDL_QUIT:
+			PURPL_LOG_WARNING(purpl_inst->logger,
+					  "Received quit event, exiting loop");
 			return false;
 		}
 	}
@@ -139,25 +141,31 @@ static bool purpl_handle_events(void)
 PURPL_API void purpl_run(purpl_frame_func frame, void *user_data)
 {
 	bool running;
+	u32 now;
+	u32 last;
 
 	if (!purpl_inst || !frame) {
 		if (purpl_inst)
-			PURPL_LOG_WARNING(purpl_inst->logger,
+			PURPL_LOG_DEBUG(purpl_inst->logger,
 					  "No frame callback given");
 		return;
 	}
 
+	last = SDL_GetTicks();
 	running = true;
 	while (running) {
+		now = SDL_GetTicks();
 		running = purpl_handle_events();
-		if (!running) {
-			PURPL_LOG_WARNING(purpl_inst->logger,
-					  "Received quit event, exiting loop");
+		if (!running)
 			break;
-		}
+		
+		free(purpl_inst->wnd_title);
+		purpl_inst->wnd_title =
+			purpl_strdup(SDL_GetWindowTitle(purpl_inst->wnd));
 
 		if (frame)
-			running = frame(0, user_data);
+			running = frame(now - last, user_data);
+		last = now;
 	}
 }
 

@@ -33,18 +33,18 @@ enum purpl_log_level {
 	PURPL_LOG_LEVEL_CURRENT, // Use this to use the logger's current log
 				 // level
 	PURPL_LOG_LEVEL_CRITICAL = 0, // Very bad errors
-	PURPL_LOG_LEVEL_ERROR, // Minor errors (like most of them)
+	PURPL_LOG_LEVEL_ERROR, // Minor errors (most of them)
 	PURPL_LOG_LEVEL_WARNING, // Minor errors unlikely to impact anything
 	PURPL_LOG_LEVEL_INFO, // Information
-	PURPL_LOG_LEVEL_DEBUG, // Debugging messages
-};
-
-/// Use this to use the logger's maximum level
+	PURPL_LOG_LEVEL_DEBUG, // Debugging messages such as invalid paramaters
+	
+	// Use the maximum message level the logger won't filter out
 #ifdef PURPL_DEBUG
-#define PURPL_LOG_LEVEL_MAX PURPL_LOG_LEVEL_DEBUG + 1
+	PURPL_LOG_LEVEL_MAX = PURPL_LOG_LEVEL_DEBUG + 1
 #else // PURPL_DEBUG
-#define PURPL_LOG_LEVEL_MAX PURPL_LOG_LEVEL_INFO + 1
+	PURPL_LOG_LEVEL_MAX = PURPL_LOG_LEVEL_INFO + 1
 #endif // PURPL_DEBUG
+};
 
 /// The default log file name
 #ifdef PURPL_DEBUG
@@ -116,9 +116,10 @@ struct purpl_logger {
 ///		  or "[#d #t] [#n #v] [#L] #msg",in release builds, or
 ///		  "[PID #P TID #T] [#d #t] [#W] [#L] #msg" in debug builds
 ///
-/// 	The sequences can also be used in purpl_log_write (and the macros
-///	wrapping it), as they are processed by that function and #msg is
-///	expanded before the other sequences.
+/// 	The sequences can also be used in messages passed to
+/// 	purpl_log_write (and the macros wrapping it), as they
+/// 	are processed by that function and #msg is expanded
+/// 	before the other sequences.
 ///
 /// clang-format on
 ///

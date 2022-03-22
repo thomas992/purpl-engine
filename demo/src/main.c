@@ -1,4 +1,4 @@
-// A demo of the engine's features
+// A demo of using the engine
 //
 // Copyright 2022 MobSlicer152
 // This file is part of Purpl Engine
@@ -19,11 +19,20 @@
 
 #include <purpl/purpl.h>
 
+// A structure to store information for the application
+struct demo_info {
+	char *title; // The original title of the engine's window
+	double frames; // Number of times frame_func was called
+	double deltas; // Sum of every frame delta
+};
+
 // This will be called each frame by the engine
-bool frame_func(s32 delta, void *data);
+bool frame_func(u32 delta, void *data);
 
 int32_t main(int32_t argc, char *argv[])
 {
+	struct demo_info info = { 0 };
+	
 	PURPL_IGNORE(argc);
 	PURPL_IGNORE(argv);
 	
@@ -36,19 +45,29 @@ int32_t main(int32_t argc, char *argv[])
 			purpl_strerror());
 		exit(errno);
 	}
+	
+	// Get the engine's window title so information can be put in it
+	info.title = purpl_get_window_title();
 
-	// Run the main loop
-	purpl_run(frame_func, NULL);
+	// Run the main loop, it takes a void pointer passed to the frame function
+	purpl_run(frame_func, &info);
 
 	// Shut down the engine
 	purpl_shutdown();
 
+	printf("Rendered a total of %lf frames, with an average delta of %lf", info.frames, info.deltas / info.frames);
+	
 	return 0;
 }
 
-bool frame_func(s32 delta, void *data)
+bool frame_func(u32 delta, void *data)
 {
-	PURPL_IGNORE(delta);
-	PURPL_IGNORE(data);
+	struct demo_info *info = data;
+	
+	purpl_set_window_title("%s - Frame delta: %ums", info->title, delta);
+	
+	info->deltas += delta;
+	info->frames++;
+	
 	return true;
 }

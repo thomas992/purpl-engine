@@ -56,6 +56,7 @@ struct purpl_instance {
 	time_t start_time; // When the engine started
 
 	SDL_Window *wnd; // The main window for the engine
+	char *wnd_title; // The title of the window
 	s32 wnd_width; // The width of the window
 	s32 wnd_height; // The height of the window
 	s32 wnd_x; // The X position of the window

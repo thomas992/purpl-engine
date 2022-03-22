@@ -29,4 +29,6 @@
 #include "core/inst.h"
 #include "core/types.h"
 
+#include "graphics/window.h"
+
 #include "util/util.h"

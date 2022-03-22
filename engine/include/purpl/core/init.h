@@ -34,7 +34,7 @@
 ///		     purpl_run
 ///
 /// \return Should return true if nothing went wrong, false otherwise
-typedef bool (*purpl_frame_func)(s32 delta, void *user_data);
+typedef bool (*purpl_frame_func)(u32 delta, void *user_data);
 
 /// Make sure the engine is ready to be initialized
 extern void purpl_preinit(void);
@@ -56,7 +56,8 @@ extern PURPL_API bool purpl_init(const char *app_name, u32 app_version);
 /// Enter the engine's main loop
 ///
 /// \param frame This function, if supplied, will be called after event
-/// processing \param user_data This pointer will be passed to frame
+///		 processing
+/// \param user_data This pointer will be passed to frame
 extern PURPL_API void purpl_run(purpl_frame_func frame, void *user_data);
 
 /// Shut down the engine

@@ -33,7 +33,6 @@ static GLADapiproc vulkan_load_func(VkInstance inst, const char *name);
 bool purpl_vulkan_init(void)
 {
 	struct purpl_instance_vulkan *vulkan = &purpl_inst->graphics.vulkan;
-	char *title;
 
 #ifdef __APPLE__
 	return false;
@@ -44,17 +43,16 @@ bool purpl_vulkan_init(void)
 
 	// The window is created here because SDL doesn't support OpenGL and Vulkan in
 	// the same window
-	title = purpl_strfmt(NULL, "%s v%s - Vulkan - engine v%s+%s-%s-%s", purpl_inst->app_name,
+	purpl_inst->wnd_title = purpl_strfmt(NULL, "%s v%s - Vulkan - engine v%s+%s-%s-%s", purpl_inst->app_name,
 			     purpl_format_version(purpl_inst->app_version),
 			     purpl_format_version(purpl_inst->app_version), PURPL_SOURCE_BRANCH,
 			     PURPL_SOURCE_COMMIT, PURPL_BUILD_TYPE);
 
 	PURPL_LOG_INFO(purpl_inst->logger, "Creating a window titled \"%s\"",
-		       title);
-	purpl_inst->wnd = SDL_CreateWindow(title, SDL_WINDOWPOS_UNDEFINED,
+		       purpl_inst->wnd_title);
+	purpl_inst->wnd = SDL_CreateWindow(purpl_inst->wnd_title, SDL_WINDOWPOS_UNDEFINED,
 					   SDL_WINDOWPOS_UNDEFINED, 1024, 768,
 					   SDL_WINDOW_RESIZABLE | SDL_WINDOW_VULKAN);
-	free(title);
 	if (!purpl_inst->wnd) {
 		purpl_vulkan_shutdown();
 		return false;
@@ -85,9 +83,6 @@ void purpl_vulkan_shutdown(void)
 
 	if (vulkan->inst)
 		vkDestroyInstance(vulkan->inst, NULL);
-
-	if (purpl_inst->wnd)
-		SDL_DestroyWindow(purpl_inst->wnd);
 }
 
 static GLADapiproc vulkan_load_func(VkInstance inst, const char *name)

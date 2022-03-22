@@ -73,5 +73,10 @@ PURPL_API void purpl_graphics_shutdown(void)
 		break;
 #endif // __APPLE__;
 	}
+	
+	if (purpl_inst->wnd_title)
+		free(purpl_inst->wnd_title);
+	if (purpl_inst->wnd)
+		SDL_DestroyWindow(purpl_inst->wnd);
 }
 

@@ -9,7 +9,8 @@ set(ENGINE_CORE_HEADERS
     include/purpl/core/types.h)
 
 set(ENGINE_GRAPHICS_HEADERS
-    include/purpl/graphics/init.h)
+    include/purpl/graphics/init.h
+    include/purpl/graphics/window.h)
 
 set(ENGINE_VULKAN_HEADERS
     include/purpl/graphics/vulkan/debug.h
@@ -32,7 +33,8 @@ set(ENGINE_CORE_SOURCES
 set(ENGINE_DEBUG_SOURCES)
 
 set(ENGINE_GRAPHICS_SOURCES
-    src/graphics/init.c)
+    src/graphics/init.c
+    src/graphics/window.c)
 
 set(ENGINE_VULKAN_SOURCES
     src/graphics/vulkan/debug.c

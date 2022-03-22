@@ -34,7 +34,7 @@ void vulkan_setup_debug_messenger(
 	VkDebugUtilsMessengerCreateInfoEXT *create_info)
 {
 	if (!create_info) {
-		PURPL_LOG_WARNING(
+		PURPL_LOG_DEBUG(
 			purpl_inst->logger,
 			"Invalid parameter, not filling creation information structure");
 		return;
