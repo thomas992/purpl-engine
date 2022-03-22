@@ -59,8 +59,11 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL vulkan_debug_log(
 	VkDebugUtilsMessageTypeFlagsEXT type,
 	const VkDebugUtilsMessengerCallbackDataEXT *callback_data, void *data)
 {
-	enum purpl_log_level level;
+	enum purpl_log_level level = PURPL_LOG_LEVEL_INFO;
 
+	PURPL_IGNORE(type);
+	PURPL_IGNORE(data);
+	
 	switch (severity) {
 	case VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT:
 		level = PURPL_LOG_LEVEL_DEBUG;

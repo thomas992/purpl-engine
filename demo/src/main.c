@@ -24,6 +24,9 @@ bool frame_func(s32 delta, void *data);
 
 int32_t main(int32_t argc, char *argv[])
 {
+	PURPL_IGNORE(argc);
+	PURPL_IGNORE(argv);
+	
 	// Make sure the engine is ready (loads the DLL on Windows)
 	purpl_preinit();
 

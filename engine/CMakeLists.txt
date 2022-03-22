@@ -92,6 +92,10 @@ add_library(engine SHARED ${ENGINE_ALL_HEADERS} ${ENGINE_ALL_SOURCES} ${CMAKE_CU
 target_compile_definitions(engine_preinit PRIVATE PURPL_BUILD=1)
 target_compile_definitions(engine PRIVATE PURPL_BUILD=1)
 
+if (MSVC)
+	target_compile_options(engine_preinit PRIVATE /wd4152)
+endif()
+
 if (WIN32)
 	add_custom_command(OUTPUT ${EXPORTS_HEADER}
 		COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tools/dumpexports.py $<TARGET_FILE:engine> ${EXPORTS_HEADER}

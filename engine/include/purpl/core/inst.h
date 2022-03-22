@@ -56,10 +56,10 @@ struct purpl_instance {
 	time_t start_time; // When the engine started
 
 	SDL_Window *wnd; // The main window for the engine
-	u32 wnd_width; // The width of the window
-	u32 wnd_height; // The height of the window
-	u32 wnd_x; // The X position of the window
-	u32 wnd_y; // The Y position of the window
+	s32 wnd_width; // The width of the window
+	s32 wnd_height; // The height of the window
+	s32 wnd_x; // The X position of the window
+	s32 wnd_y; // The Y position of the window
 
 	union {
 #ifdef __APPLE__

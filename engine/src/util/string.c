@@ -21,15 +21,16 @@
 
 PURPL_API size_t purpl_strcount(const char *str, const char *sub)
 {
-	const char *p = str;
+	const char *p;
 	size_t count = 0;
 
 	if (!str)
 		return 0;
 
-	while ((p = strstr(p, sub))) {
+	p = strstr(str, sub);
+	while (p) {
 		count++;
-		p++;
+		p = strstr(++p, sub);
 	}
 
 	return count;
@@ -63,12 +64,13 @@ PURPL_API char *purpl_strrplc(const char *str, const char *old,
 	}
 
 	strncpy(buf, str, buf_size);
-	p = buf;
+	p = strstr(buf, old);
 
-	while ((p = strstr(p, old))) {
+	while (p) {
 		stbsp_snprintf(tmp, buf_size, "%.*s%s%s", (s32)(p - buf), buf,
 			       new, p + strlen(old));
 		strncpy(buf, tmp, buf_size);
+		p = strstr(++p, old);
 	}
 
 	free(tmp);

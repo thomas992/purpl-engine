@@ -28,7 +28,7 @@
 /// 
 /// \return Returns the return value of vkGetInstanceProcAddr with the same
 ///	    parameters
-static void *vulkan_load_func(VkInstance inst, const char *name);
+static GLADapiproc vulkan_load_func(VkInstance inst, const char *name);
 
 bool purpl_vulkan_init(void)
 {
@@ -60,7 +60,7 @@ bool purpl_vulkan_init(void)
 		return false;
 	}
 
-	vulkan->vk_get_instance_proc_addr = SDL_Vulkan_GetVkGetInstanceProcAddr();
+	vulkan->vk_get_instance_proc_addr = (GLADapiproc (*)(VkInstance, const char *))SDL_Vulkan_GetVkGetInstanceProcAddr();
 
 	if (!vulkan_create_instance()) {
 		purpl_vulkan_shutdown();
@@ -90,7 +90,7 @@ void purpl_vulkan_shutdown(void)
 		SDL_DestroyWindow(purpl_inst->wnd);
 }
 
-static void *vulkan_load_func(VkInstance inst, const char *name)
+static GLADapiproc vulkan_load_func(VkInstance inst, const char *name)
 {
 	struct purpl_instance_vulkan *vulkan = &purpl_inst->graphics.vulkan;
 

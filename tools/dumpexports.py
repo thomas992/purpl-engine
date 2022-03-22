@@ -1,4 +1,4 @@
-# Garbage fire script to get the exports from the engine so that it can be dynamically loaded
+# Garbage fire script to get the exports from the engine so that it can be dynamically loaded on Windows
 
 import os
 import subprocess
@@ -16,7 +16,11 @@ print(f"Writing exports from {sys.argv[1]} to {sys.argv[2]}")
 try:
     dumpbin = subprocess.run(f"dumpbin /exports {sys.argv[1]}", capture_output=True, encoding="utf-8")
 except:
-    print("Failed to run dumpbin. Make sure to run this from a Visual Studio Developer Command Prompt")
+    print("""
+Failed to run dumpbin. Make sure to run this from a Visual Studio Developer Command Prompt.
+The best way to do this is to use the buildenv.bat script in the tools directory from an
+existing command prompt, or run buildcmd.bat to open one for you.
+""")
     exit(1)
 
 start_str = "ordinal hint RVA      name"

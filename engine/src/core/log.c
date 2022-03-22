@@ -73,7 +73,7 @@ PURPL_API struct purpl_logger *purpl_log_create(const char *file,
 			      "[PID #P TID #T] [#d #t] [#W] [#L] #msg", NULL);
 #else // PURPL_DEBUG
 	logger->format = purpl_strrplc(message_format, "#def",
-				       "[ #d #t ] [ #n #v ] [ #L ] #msg",
+				       "[#d #t] [#n #v] [#L] #msg",
 				       NULL);
 #endif // PURPL_DEBUG
 
@@ -107,7 +107,8 @@ static char *purpl_log_format(struct purpl_logger *logger,
 	char *p1;
 	char *p2;
 	char *p3;
-	char *p4;
+	const char *p4;
+	const char *p5;
 	struct tm *t1;
 	struct tm *t2;
 	size_t len;
@@ -188,8 +189,8 @@ static char *purpl_log_format(struct purpl_logger *logger,
 	free(p1);
 	free(p3);
 
-	p3 = days[t1->tm_wday];
-	p1 = purpl_strrplc(p2, "#WD", p3, NULL);
+	p4 = days[t1->tm_wday];
+	p1 = purpl_strrplc(p2, "#WD", p4, NULL);
 	free(p2);
 
 	p3 = purpl_strfmt(NULL, "%02d", t1->tm_mon + 1);
@@ -225,17 +226,13 @@ static char *purpl_log_format(struct purpl_logger *logger,
 	p2 = purpl_strrplc(p1, "#W", "#F:#sl@#f", NULL);
 	free(p1);
 
-	p3 = purpl_pathfmt(NULL, PURPL_SOURCE_DIR, 0);
-	p4 = purpl_pathfmt(NULL, file, 0);
-	len = strlen(p3);
-	if (strncmp(p3, p4, len) == 0) {
-		free(p3);
-		p3 = file + len + 1;
-	} else {
-		free(p3);
-	}
-	free(p4);
-	p1 = purpl_strrplc(p2, "#F", p3, NULL);
+	p3 = purpl_pathfmt(NULL, file, 0);
+	p5 = PURPL_SOURCE_DIR;
+	len = strlen(p5);
+	if (strncmp(p3, p5, len) == 0)
+		p5 = file + len + 1;
+	free(p3);
+	p1 = purpl_strrplc(p2, "#F", p5, NULL);
 	free(p2);
 
 	p2 = purpl_strrplc(p1, "#f", function, NULL);
@@ -246,19 +243,20 @@ static char *purpl_log_format(struct purpl_logger *logger,
 	free(p2);
 	free(p3);
 
-	p3 = levels_upper[level];
-	p2 = purpl_strrplc(p1, "#L", p3, NULL);
+	p4 = levels_upper[level];
+	p2 = purpl_strrplc(p1, "#L", p4, NULL);
 	free(p1);
 
-	p3 = levels_lower[level];
-	p1 = purpl_strrplc(p2, "#l", p3, NULL);
+	p4 = levels_lower[level];
+	p1 = purpl_strrplc(p2, "#l", p4, NULL);
 	free(p2);
 
-	p3 = purpl_format_version(PURPL_VERSION);
-	strncat(p3, "+" PURPL_SOURCE_BRANCH "-" PURPL_SOURCE_COMMIT "-" PURPL_BUILD_TYPE, PURPL_STATIC_BUF_MAX);
+	p4 = purpl_format_version(PURPL_VERSION);
+	p3 = purpl_strfmt(NULL, "%s+" PURPL_SOURCE_BRANCH "-" PURPL_SOURCE_COMMIT "-" PURPL_BUILD_TYPE, p4);
 	p2 = purpl_strrplc(p1, "#V", p3,
 			   NULL);
 	free(p1);
+	free(p3);
 
 	p1 = purpl_strrplc(
 		p2, "#n",

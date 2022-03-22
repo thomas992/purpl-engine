@@ -113,7 +113,7 @@ struct purpl_logger {
 ///		  that)
 ///	#def	- The default pattern (passing NULL for format also gives
 ///		  this), which is equivalent to
-///		  or "[ #d #t ] [ #n #v ] [ #L ] #msg" in release builds, or
+///		  or "[#d #t] [#n #v] [#L] #msg",in release builds, or
 ///		  "[PID #P TID #T] [#d #t] [#W] [#L] #msg" in debug builds
 ///
 /// 	The sequences can also be used in purpl_log_write (and the macros

@@ -73,6 +73,8 @@ PURPL_API u32 purpl_translate_file_attrs(u32 attrs, bool to_native)
 {
 	u32 out = 0;
 
+	PURPL_IGNORE(attrs);
+
 	if (to_native) {
 
 	} else {
@@ -136,11 +138,14 @@ PURPL_API bool purpl_mkdir(const char *path, enum purpl_fs_flags flags,
 	if (flags & PURPL_FS_MKDIR_RECURSE) {
 		for (i = 0; i < (purpl_strcount(path, "/") -
 				 purpl_strcount(path, "//")) + 1; i++) {
-			char *p = path2;
+			char *p;
 			size_t j = 0;
 
-			while ((p = strstr(p + j, "/")) && j < i)
+			p = strstr(path2, "/");
+			while (p && j < i) {
 				j++;
+				p = strstr(p + j, "/");
+			}
 			stbds_arrput(dir_names, purpl_strfmt(NULL, "%.*s",
 						  (s32)(p - path2), path2));
 		}

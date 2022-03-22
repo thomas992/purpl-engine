@@ -31,7 +31,7 @@ void *engine_dll = NULL;
 #include "exports.h"
 #endif // _WIN32
 
-void purpl_preinit(const char *argv0)
+void purpl_preinit(void)
 {
 	// On Windows, the pre-initialization requires loading the engine DLL,
 	// which in turn automatically loads the others

@@ -20,7 +20,7 @@
 PURPL_API bool purpl_graphics_init(void)
 {
 	bool init = false;
-
+	
 	if (!purpl_inst)
 		return false;
 
