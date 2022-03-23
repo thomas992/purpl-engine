@@ -29,6 +29,8 @@ void *engine_dll = NULL;
 
 #ifdef _WIN32
 #include "exports.h"
+
+#define purpl_complete_preinit __imp_purpl_complete_preinit
 #endif // _WIN32
 
 void purpl_preinit(void)
@@ -71,5 +73,5 @@ void purpl_preinit(void)
 #endif // _WIN32
 	
 	// Tell the engine that preinit was called so it doesn't print a warning
-	__imp_purpl_complete_preinit();
+	purpl_complete_preinit();
 }
