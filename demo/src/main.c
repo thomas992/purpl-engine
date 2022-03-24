@@ -56,7 +56,7 @@ int32_t main(int32_t argc, char *argv[])
 	// Shut down the engine
 	purpl_shutdown();
 
-	printf("Rendered a total of %lf frames, with an average delta of %lf", info.frames, info.deltas / info.frames);
+	printf("Rendered a total of %lf frames, with an average delta of %lf\n", info.frames, info.deltas / info.frames);
 	
 	return 0;
 }

@@ -31,6 +31,8 @@ void *engine_dll = NULL;
 #include "exports.h"
 
 #define purpl_complete_preinit __imp_purpl_complete_preinit
+#else // _WIN32
+extern void purpl_complete_preinit(void);
 #endif // _WIN32
 
 void purpl_preinit(void)

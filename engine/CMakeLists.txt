@@ -84,6 +84,7 @@ set(ENGINE_ALL_SOURCES
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/include PREFIX "Header Files" FILES ${ENGINE_ALL_HEADERS})
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/src PREFIX "Source Files" FILES ${ENGINE_ALL_SOURCES})
 
+file(RELATIVE_PATH ENGINE_RELATIVE_SOURCE_DIR ${CMAKE_BINARY_DIR} ${CMAKE_SOURCE_DIR})
 configure_file(include/purpl/core/config.h.in config.h @ONLY)
 
 if (WIN32)
