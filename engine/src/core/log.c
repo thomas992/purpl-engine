@@ -231,13 +231,14 @@ static char *purpl_log_format(struct purpl_logger *logger,
 	if (strncmp(p3, PURPL_SOURCE_DIR, len) == 0) {
 		p5 = file + len + 1;
 	} else {
+		p5 = p3;
 		len = strlen(PURPL_RELATIVE_SOURCE_DIR);
 		if (strncmp(p3, PURPL_RELATIVE_SOURCE_DIR, len) == 0)
 			p5 = file + len;
 	}
-	free(p3);
 	p1 = purpl_strrplc(p2, "#F", p5, NULL);
 	free(p2);
+	free(p3);
 
 	p2 = purpl_strrplc(p1, "#f", function, NULL);
 	free(p1);
