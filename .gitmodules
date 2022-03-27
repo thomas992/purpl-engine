@@ -7,3 +7,6 @@
 [submodule "deps/sdl2"]
 	path = deps/sdl2
 	url = https://github.com/libsdl-org/sdl.git
+[submodule "deps/glad"]
+	path = deps/glad
+	url = https://github.com/Dav1dde/glad.git

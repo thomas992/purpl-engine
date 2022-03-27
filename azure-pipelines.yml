@@ -83,7 +83,7 @@ steps:
     displayName: Install Vulkan SDK and SDL dependencies with APT
 
   - script: |
-      pip install -r deps/glad/requirements.txt
+      pip install Jinja2==3.0.3 MarkupSafe==2.1.0
     displayName: Install requirements for glad
 
   - script: |
