@@ -50,5 +50,5 @@ extern bool vulkan_pick_physical_device(void);
 /// \param device The device to get queue families for
 ///
 /// \return Returns true if the device has all the necessary queue families
-extern bool vulkan_get_device_queue_families(VkPhysicalDevice device);
+extern bool vulkan_get_device_queue_families(VkPhysicalDevice device, struct vulkan_queue_families *queue_families);
 

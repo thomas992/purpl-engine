@@ -21,10 +21,10 @@
 
 u64 vulkan_score_device(VkPhysicalDevice device, size_t idx)
 {
-	struct purpl_instance_vulkan *vulkan = &purpl_inst->graphics.vulkan;
 	u64 score = 0;
 	VkPhysicalDeviceProperties properties;
 	VkPhysicalDeviceFeatures features;
+	struct vulkan_queue_families queue_families;
 
 	if (!device) {
 		PURPL_LOG_DEBUG(purpl_inst->logger, "device parameter was NULL");
@@ -34,7 +34,7 @@ u64 vulkan_score_device(VkPhysicalDevice device, size_t idx)
 	vkGetPhysicalDeviceProperties(device, &properties);
 	vkGetPhysicalDeviceFeatures(device, &features);
 
-	if (!vulkan_get_device_queue_families(device)) {
+	if (!vulkan_get_device_queue_families(device, &queue_families)) {
 		PURPL_LOG_INFO(purpl_inst->logger, "Device %zu (%s) does not have the necessary queue families, ignoring", idx + 1, properties.deviceName);
 		return 0;
 	}
@@ -52,7 +52,7 @@ u64 vulkan_score_device(VkPhysicalDevice device, size_t idx)
 	PURPL_LOG_INFO(purpl_inst->logger, "\tScore: %d", score);
 	PURPL_LOG_INFO(purpl_inst->logger, "\tQueue family indices:");
 	PURPL_LOG_INFO(purpl_inst->logger, "\t\tGraphics: %zu",
-		       vulkan->phys_device_queue_families.graphics_family);
+		       queue_families.graphics_family);
 
 	return score;
 }
@@ -85,8 +85,6 @@ bool vulkan_pick_physical_device(void)
 	for (i = 0; i < stbds_arrlenu(devices); i++) {
 		u64 score = vulkan_score_device(devices[i], i);
 
-		vkGetPhysicalDeviceProperties(devices[i], &properties);
-
 		if (score > best_score) {
 			vulkan->phys_device = devices[i];
 			best_score = score;
@@ -94,37 +92,39 @@ bool vulkan_pick_physical_device(void)
 		}
 	}
 
+
+	vkGetPhysicalDeviceProperties(vulkan->phys_device, &properties);
 	PURPL_LOG_INFO(purpl_inst->logger, "Device %zu (%s) has the best score (its score is %llu)",
 		       best_idx + 1, properties.deviceName, best_score);
+	vulkan_get_device_queue_families(vulkan->phys_device, &vulkan->phys_device_queue_families);
 
 	stbds_arrfree(devices);
 	return true;
 }
 
-bool vulkan_get_device_queue_families(VkPhysicalDevice device)
+bool vulkan_get_device_queue_families(VkPhysicalDevice device, struct vulkan_queue_families *queue_families)
 {
-	struct purpl_instance_vulkan *vulkan = &purpl_inst->graphics.vulkan;
-	VkQueueFamilyProperties *queue_families = NULL;
+	VkQueueFamilyProperties *queue_family_list = NULL;
 	u32 queue_family_count = 0;
 	bool all_found = false;
 	size_t i;
 
-	if (!device) {
-		PURPL_LOG_DEBUG(purpl_inst->logger, "device parameter was NULL");
+	if (!device || !queue_families) {
+		PURPL_LOG_DEBUG(purpl_inst->logger, "A mandatory parameter was NULL");
 		return false;
 	}
 
 	vkGetPhysicalDeviceQueueFamilyProperties(device, &queue_family_count, NULL);
-	stbds_arrsetlen(queue_families, queue_family_count);
-	vkGetPhysicalDeviceQueueFamilyProperties(device, &queue_family_count, queue_families);
+	stbds_arrsetlen(queue_family_list, queue_family_count);
+	vkGetPhysicalDeviceQueueFamilyProperties(device, &queue_family_count, queue_family_list);
 
-	for (i = 0; i < stbds_arrlenu(queue_families) && !all_found; i++) {
-		if (queue_families[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) {
-			vulkan->phys_device_queue_families.graphics_family_present = true;
-			vulkan->phys_device_queue_families.graphics_family = i;
+	for (i = 0; i < stbds_arrlenu(queue_family_list) && !all_found; i++) {
+		if (queue_family_list[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) {
+			queue_families->graphics_family_present = true;
+			queue_families->graphics_family = i;
 		}
 		
-		all_found = (vulkan->phys_device_queue_families.graphics_family_present);
+		all_found = (queue_families->graphics_family_present);
 	}
 
 	return all_found;

@@ -26,9 +26,7 @@
 #ifdef PURPL_BUILD
 #include "SDL.h"
 
-#ifndef __APPLE__
-#include <vulkan/vulkan.h>
-#endif // !__APPLE__
+#include "purpl/graphics/inst_data.h"
 
 /// Possible graphics APIs (only for shutdown)
 enum purpl_graphics_api {
@@ -63,36 +61,9 @@ struct purpl_instance {
 	s32 wnd_y; // The Y position of the window
 
 	union {
-#ifdef __APPLE__
-		// No Metal support yet
-#endif // __APPLE__
 #ifndef __APPLE__
-		// Vulkan supports everything except macOS (MoltenVK exists,
-		// but I'd rather just write it in Metal eventually)
-		// Vulkan information
-		struct purpl_instance_vulkan {
-			VkInstance inst; // Vulkan instance
-			VkDebugUtilsMessengerEXT debug_messenger; // Debug messenger
-
-#ifdef GLAD_VULKAN_H_
-			GLADapiproc (*vk_get_instance_proc_addr)(
-				VkInstance inst, const char *name);
-#else // GLAD_VULKAN_H_
-			void *(*vk_get_instance_proc_addr)(
-				VkInstance inst, const char *name);
-#endif // GLAD_VULKAN_H_
-
-			VkPhysicalDevice phys_device; // Physical device
-			struct {
-				size_t graphics_family; // The index of the graphics queue family
-				bool graphics_family_present; // Whether graphics_family is set
-			} phys_device_queue_families; // The queue families to use with phys_device
-		} vulkan;
-#endif // !__APPLE__
-
-		// Must match the largest size the structures can be (most likely this will
-		// be Windows eventually, because it supports 3 APIs)
-		void *padding[4];
+		struct purpl_instance_vulkan vulkan; // Vulkan data
+#endif // __APPLE__
 	} graphics;
 	enum purpl_graphics_api graphics_api; // The API that was initialized on startup
 };
