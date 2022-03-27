@@ -10,3 +10,4 @@
 [submodule "deps/glad"]
 	path = deps/glad
 	url = https://github.com/Dav1dde/glad.git
+	branch = glad2
