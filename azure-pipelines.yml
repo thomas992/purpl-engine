@@ -95,8 +95,7 @@ steps:
     displayName: Generate build files
 
   - script: |
-      export VULKAN_SDK=/usr
-      cmake -S. -Bbuild -GNinja -DCMAKE_C_COMPILER=$(cc) -DCMAKE_BUILD_TYPE=$(config)
+      cmake -S. -Bbuild -GNinja -DVulkan_LIBRARY=/usr/lib/x86_64-linux-gnu/libvulkan.so -DCMAKE_C_COMPILER=$(cc) -DCMAKE_BUILD_TYPE=$(config)
     condition: not(eq(variables['Agent.OS'], 'Windows_NT'))
     displayName: Generate build files
 

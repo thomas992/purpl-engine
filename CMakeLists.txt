@@ -120,7 +120,6 @@ else()
 	message(STATUS "\tVulkan SDK: $ENV{VULKAN_SDK}")
 endif()
 message(STATUS "")
-message(STATUS "\tOpenGL libraries: ${OPENGL_LIBRARIES}")
 message(STATUS "\tVulkan libraries: ${Vulkan_LIBRARIES}")
 message(STATUS "")
 
