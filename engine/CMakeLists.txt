@@ -121,7 +121,6 @@ target_include_directories(engine_preinit
 				${CMAKE_CURRENT_SOURCE_DIR}/include
 				${CMAKE_CURRENT_BINARY_DIR}
 			   PRIVATE
-				${OPENGL_INCLUDE_DIR}
 				${Vulkan_INCLUDE_DIRS}
 				${CMAKE_SOURCE_DIR}/deps/glad2/include
 				${CMAKE_SOURCE_DIR}/deps/phnt
@@ -132,7 +131,6 @@ target_include_directories(engine
 				${CMAKE_CURRENT_SOURCE_DIR}/include
 				${CMAKE_CURRENT_BINARY_DIR}
 			   PRIVATE
-				${OPENGL_INCLUDE_DIR}
 				${Vulkan_INCLUDE_DIRS}
 				${CMAKE_SOURCE_DIR}/deps/glad2/include
 				${CMAKE_SOURCE_DIR}/deps/phnt
@@ -144,7 +142,6 @@ if (NOT APPLE)
 			      PRIVATE
 				glad_opengl
 				glad_vulkan
-				${OPENGL_LIBRARIES}
 				${Vulkan_LIBRARIES})
 endif()
 

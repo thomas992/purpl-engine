@@ -75,8 +75,6 @@ endif()
 
 # Graphics APIs
 if (NOT APPLE)
-	cmake_policy(SET CMP0072 NEW)
-	find_package(OpenGL REQUIRED)
 	find_package(Vulkan REQUIRED)
 
 	glad_add_library(glad_opengl REPRODUCIBLE API gl:core=4.6)
