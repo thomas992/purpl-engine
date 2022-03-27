@@ -84,7 +84,8 @@ steps:
 
   - script: |
       pip install MarkupSafe==2.1.0
-      pip install Jinja2==2.11
+      pip install Jinja2==3.0.3
+    condition: eq(variables['Agent.OS'], 'Windows_NT')
     displayName: Install requirements for glad
 
   - script: |
