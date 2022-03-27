@@ -84,7 +84,7 @@ steps:
 
   - script: |
       pip install MarkupSafe==2.1.0
-      pip install Jinja2<=3.0.3
+      pip install Jinja2==2.11
     displayName: Install requirements for glad
 
   - script: |
