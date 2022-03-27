@@ -22,7 +22,6 @@
 
 // A structure to store information for the application
 struct demo_info {
-	char *title; // The original title of the engine's window
 	double frames; // Number of times frame_func was called
 	double deltas; // Sum of every frame delta
 };
@@ -46,9 +45,6 @@ int32_t main(int32_t argc, char *argv[])
 			purpl_strerror());
 		exit(errno);
 	}
-	
-	// Get the engine's window title so information can be put in it
-	info.title = purpl_graphics_window_get_title();
 
 	// Run the main loop, it takes a void pointer passed to the frame function
 	purpl_run(frame_func, &info);
@@ -65,7 +61,8 @@ bool frame_func(u32 delta, void *data)
 {
 	struct demo_info *info = data;
 	
-	purpl_graphics_window_set_title("%s - Frame delta: %ums", info->title, delta);
+	// Tabs are to prevent characters from staying behind
+	printf("\rFrame delta: %ums\t\t", delta);
 	
 	info->deltas += delta;
 	info->frames++;

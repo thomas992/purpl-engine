@@ -83,6 +83,10 @@ struct purpl_instance {
 #endif // GLAD_VULKAN_H_
 
 			VkPhysicalDevice phys_device; // Physical device
+			struct {
+				size_t graphics_family; // The index of the graphics queue family
+				bool graphics_family_present; // Whether graphics_family is set
+			} phys_device_queue_families; // The queue families to use with phys_device
 		} vulkan;
 #endif // !__APPLE__
 

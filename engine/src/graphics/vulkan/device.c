@@ -16,18 +16,32 @@
 // limitations under the License.
 
 #include "purpl/graphics/vulkan/device.h"
+#include "purpl/core/log.h"
+#include "vulkan/vulkan_core.h"
 
 u64 vulkan_score_device(VkPhysicalDevice device, size_t idx)
 {
+	struct purpl_instance_vulkan *vulkan = &purpl_inst->graphics.vulkan;
 	u64 score = 0;
 	VkPhysicalDeviceProperties properties;
 	VkPhysicalDeviceFeatures features;
 
+	if (!device) {
+		PURPL_LOG_DEBUG(purpl_inst->logger, "device parameter was NULL");
+		return 0;
+	}
+
 	vkGetPhysicalDeviceProperties(device, &properties);
 	vkGetPhysicalDeviceFeatures(device, &features);
 
+	if (!vulkan_get_device_queue_families(device)) {
+		PURPL_LOG_INFO(purpl_inst->logger, "Device %zu (%s) does not have the necessary queue families, ignoring", idx + 1, properties.deviceName);
+		return 0;
+	}
+
 	// iGPUs are usually shit, and on a system that doesn't follow that
-	// rule there probably won't be a dGPU
+	// rule (i.e. the Steam Deck or a mobile device) there probably
+	// won't be a dGPU
 	if (properties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU)
 		score += 1000;
 
@@ -36,6 +50,9 @@ u64 vulkan_score_device(VkPhysicalDevice device, size_t idx)
 	PURPL_LOG_INFO(purpl_inst->logger, "\tName: %s",
 		       properties.deviceName);
 	PURPL_LOG_INFO(purpl_inst->logger, "\tScore: %d", score);
+	PURPL_LOG_INFO(purpl_inst->logger, "\tQueue family indices:");
+	PURPL_LOG_INFO(purpl_inst->logger, "\t\tGraphics: %zu",
+		       vulkan->phys_device_queue_families.graphics_family);
 
 	return score;
 }
@@ -77,9 +94,39 @@ bool vulkan_pick_physical_device(void)
 		}
 	}
 
-	PURPL_LOG_INFO(purpl_inst->logger, "Device %zu (%s) has the best score",
-		       best_idx + 1, properties.deviceName);
+	PURPL_LOG_INFO(purpl_inst->logger, "Device %zu (%s) has the best score (its score is %llu)",
+		       best_idx + 1, properties.deviceName, best_score);
 
 	stbds_arrfree(devices);
 	return true;
 }
+
+bool vulkan_get_device_queue_families(VkPhysicalDevice device)
+{
+	struct purpl_instance_vulkan *vulkan = &purpl_inst->graphics.vulkan;
+	VkQueueFamilyProperties *queue_families = NULL;
+	u32 queue_family_count = 0;
+	bool all_found = false;
+	size_t i;
+
+	if (!device) {
+		PURPL_LOG_DEBUG(purpl_inst->logger, "device parameter was NULL");
+		return false;
+	}
+
+	vkGetPhysicalDeviceQueueFamilyProperties(device, &queue_family_count, NULL);
+	stbds_arrsetlen(queue_families, queue_family_count);
+	vkGetPhysicalDeviceQueueFamilyProperties(device, &queue_family_count, queue_families);
+
+	for (i = 0; i < stbds_arrlenu(queue_families) && !all_found; i++) {
+		if (queue_families[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) {
+			vulkan->phys_device_queue_families.graphics_family_present = true;
+			vulkan->phys_device_queue_families.graphics_family = i;
+		}
+		
+		all_found = (vulkan->phys_device_queue_families.graphics_family_present);
+	}
+
+	return all_found;
+}
+

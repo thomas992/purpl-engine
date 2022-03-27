@@ -17,6 +17,7 @@
 
 #pragma once
 
+#include "vulkan/vulkan_core.h"
 #ifndef PURPL_BUILD
 #error This header should only be includeed in engine files
 #endif // !PURPL_BUILD
@@ -43,4 +44,11 @@ extern u64 vulkan_score_device(VkPhysicalDevice device, size_t idx);
 ///
 /// \return Returns the device chosen
 extern bool vulkan_pick_physical_device(void);
+
+/// Get the queue families to be used for a device
+///
+/// \param device The device to get queue families for
+///
+/// \return Returns true if the device has all the necessary queue families
+extern bool vulkan_get_device_queue_families(VkPhysicalDevice device);
 
