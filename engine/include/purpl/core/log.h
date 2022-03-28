@@ -37,8 +37,8 @@ enum purpl_log_level {
 	PURPL_LOG_LEVEL_WARNING, // Minor errors unlikely to impact anything
 	PURPL_LOG_LEVEL_INFO, // Information
 	PURPL_LOG_LEVEL_DEBUG, // Debugging messages such as invalid paramaters
-	
-	// Use the maximum message level the logger won't filter out
+
+// Use the maximum message level the logger won't filter out
 #ifdef PURPL_DEBUG
 	PURPL_LOG_LEVEL_MAX = PURPL_LOG_LEVEL_DEBUG + 1
 #else // PURPL_DEBUG
@@ -212,4 +212,3 @@ extern PURPL_API void purpl_log_close(struct purpl_logger *logger,
 /// Log a message at PURPL_LOG_LEVEL_DEBUG
 #define PURPL_LOG_DEBUG(logger, ...) \
 	PURPL_LOG_WRITE(logger, DEBUG, __VA_ARGS__)
-

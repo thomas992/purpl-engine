@@ -63,7 +63,7 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL vulkan_debug_log(
 
 	PURPL_IGNORE(type);
 	PURPL_IGNORE(data);
-	
+
 	switch (severity) {
 	case VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT:
 		level = PURPL_LOG_LEVEL_DEBUG;
@@ -88,4 +88,3 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL vulkan_debug_log(
 
 	return false;
 }
-

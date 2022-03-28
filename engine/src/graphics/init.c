@@ -20,26 +20,31 @@
 PURPL_API bool purpl_graphics_init(void)
 {
 	bool init = false;
-	
+
 	if (!purpl_inst)
 		return false;
 
-	// TODO: when other APIs are supported, make this better
+		// TODO: when other APIs are supported, make this better
 #ifndef __APPLE__
 	init = purpl_vulkan_init();
 	if (!init) {
-		PURPL_LOG_ERROR(purpl_inst->logger, "Failed to initialize Vulkan, unloading Vulkan library");
+		PURPL_LOG_ERROR(
+			purpl_inst->logger,
+			"Failed to initialize Vulkan, unloading Vulkan library");
 		SDL_Vulkan_UnloadLibrary();
 	}
 #endif // !__APPLE__
 
 	if (!init) {
-		PURPL_LOG_CRITICAL(purpl_inst->logger, "Unable to initialize any graphics API");
+		PURPL_LOG_CRITICAL(purpl_inst->logger,
+				   "Unable to initialize any graphics API");
 		return false;
 	}
 
-	SDL_GetWindowPosition(purpl_inst->wnd, &purpl_inst->wnd_x, &purpl_inst->wnd_y);
-	SDL_GetWindowSize(purpl_inst->wnd, &purpl_inst->wnd_width, &purpl_inst->wnd_height);
+	SDL_GetWindowPosition(purpl_inst->wnd, &purpl_inst->wnd_x,
+			      &purpl_inst->wnd_y);
+	SDL_GetWindowSize(purpl_inst->wnd, &purpl_inst->wnd_width,
+			  &purpl_inst->wnd_height);
 
 	PURPL_LOG_INFO(purpl_inst->logger,
 		       "Successfully initialized graphics");
@@ -73,10 +78,9 @@ PURPL_API void purpl_graphics_shutdown(void)
 		break;
 #endif // __APPLE__;
 	}
-	
+
 	if (purpl_inst->wnd_title)
 		free(purpl_inst->wnd_title);
 	if (purpl_inst->wnd)
 		SDL_DestroyWindow(purpl_inst->wnd);
 }
-

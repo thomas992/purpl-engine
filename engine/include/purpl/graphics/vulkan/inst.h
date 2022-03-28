@@ -47,4 +47,3 @@ extern bool vulkan_create_instance(void);
 ///	    one to the list of supported instance extensions. All three
 ///	    pointers are to be freed by stbds_arrfree.
 extern void **vulkan_get_extensions(void);
-

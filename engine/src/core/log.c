@@ -73,8 +73,7 @@ PURPL_API struct purpl_logger *purpl_log_create(const char *file,
 			      "[PID #P TID #T] [#d #t] [#W] [#L] #msg", NULL);
 #else // PURPL_DEBUG
 	logger->format = purpl_strrplc(message_format, "#def",
-				       "[#d #t] [#n #v] [#L] #msg",
-				       NULL);
+				       "[#d #t] [#n #v] [#L] #msg", NULL);
 #endif // PURPL_DEBUG
 
 	free(message_format);
@@ -257,9 +256,11 @@ static char *purpl_log_format(struct purpl_logger *logger,
 	free(p2);
 
 	p4 = purpl_format_version(PURPL_VERSION);
-	p3 = purpl_strfmt(NULL, "%s+" PURPL_SOURCE_BRANCH "-" PURPL_SOURCE_COMMIT "-" PURPL_BUILD_TYPE, p4);
-	p2 = purpl_strrplc(p1, "#V", p3,
-			   NULL);
+	p3 = purpl_strfmt(NULL,
+			  "%s+" PURPL_SOURCE_BRANCH "-" PURPL_SOURCE_COMMIT
+			  "-" PURPL_BUILD_TYPE,
+			  p4);
+	p2 = purpl_strrplc(p1, "#V", p3, NULL);
 	free(p1);
 	free(p3);
 
@@ -268,7 +269,8 @@ static char *purpl_log_format(struct purpl_logger *logger,
 		purpl_inst->app_name ? purpl_inst->app_name : "unknown", NULL);
 	free(p2);
 
-	p3 = purpl_strfmt(NULL, "v%s", purpl_format_version(purpl_inst->app_version));
+	p3 = purpl_strfmt(NULL, "v%s",
+			  purpl_format_version(purpl_inst->app_version));
 	p2 = purpl_strrplc(p1, "#v", p3, NULL);
 	free(p1);
 	free(p3);
@@ -398,8 +400,8 @@ PURPL_API void purpl_log_close(struct purpl_logger *logger, bool last_message)
 
 		msg = purpl_strfmt(
 			NULL, "This logger is shutting down. Have a %s %s.",
-			adjectives[random],
-			time_of_day, random, PURPL_SIZEOF_ARRAY(adjectives) - 1);
+			adjectives[random], time_of_day, random,
+			PURPL_SIZEOF_ARRAY(adjectives) - 1);
 		PURPL_LOG_INFO(purpl_inst->logger, "%s", msg);
 		free(msg);
 	}

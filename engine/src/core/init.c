@@ -39,8 +39,9 @@ PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 		fprintf(stderr,
 			"Error: failed to allocate memory for the engine instance: %s\n",
 			purpl_strerror());
-		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Purpl Engine",
-					 "Failed to allocate the engine instance", NULL);
+		SDL_ShowSimpleMessageBox(
+			SDL_MESSAGEBOX_ERROR, "Purpl Engine",
+			"Failed to allocate the engine instance", NULL);
 		return false;
 	}
 
@@ -63,9 +64,10 @@ PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 
 	// Check that preinit was called so a warning can be issued otherwise
 	if (preinit_called != PREINIT_MAGIC)
-		PURPL_LOG_DEBUG(purpl_inst->logger,
-				"This application has not called purpl_preinit, it is likely only working"
-				" because only Windows currently requires preinit\n");
+		PURPL_LOG_DEBUG(
+			purpl_inst->logger,
+			"This application has not called purpl_preinit, it is likely only working"
+			" because only Windows currently requires preinit\n");
 	purpl_inst->start_time = time(NULL);
 
 	purpl_inst->app_name = purpl_strfmt(
@@ -82,12 +84,14 @@ PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 		PURPL_LOG_CRITICAL(purpl_inst->logger,
 				   "Failed to initialize SDL: %s",
 				   SDL_GetError());
-		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Purpl Engine",
-					 "Failed to initialize SDL. See the logs for more information.", NULL);
+		SDL_ShowSimpleMessageBox(
+			SDL_MESSAGEBOX_ERROR, "Purpl Engine",
+			"Failed to initialize SDL. See the logs for more information.",
+			NULL);
 		purpl_shutdown();
 		return false;
 	}
-	
+
 	PURPL_LOG_INFO(purpl_inst->logger, "Successfully initialized SDL");
 
 	PURPL_LOG_INFO(purpl_inst->logger, "Initializing graphics");
@@ -100,8 +104,7 @@ PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 		return false;
 	}
 
-	srand((u32)((u64)purpl_inst & ((u64)purpl_inst->logger) *
-	      time(NULL)));
+	srand((u32)((u64)purpl_inst & ((u64)purpl_inst->logger) * time(NULL)));
 
 	PURPL_LOG_INFO(purpl_inst->logger,
 		       "Purpl Engine #V initialized for application #n #v");
@@ -162,7 +165,7 @@ PURPL_API void purpl_run(purpl_frame_func frame, void *user_data)
 	if (!purpl_inst || !frame) {
 		if (purpl_inst)
 			PURPL_LOG_DEBUG(purpl_inst->logger,
-					  "No frame callback given");
+					"No frame callback given");
 		return;
 	}
 
@@ -173,7 +176,7 @@ PURPL_API void purpl_run(purpl_frame_func frame, void *user_data)
 		running = purpl_handle_events();
 		if (!running)
 			break;
-		
+
 		free(purpl_inst->wnd_title);
 		purpl_inst->wnd_title =
 			purpl_strdup(SDL_GetWindowTitle(purpl_inst->wnd));

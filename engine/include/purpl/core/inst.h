@@ -65,9 +65,9 @@ struct purpl_instance {
 		struct purpl_instance_vulkan vulkan; // Vulkan data
 #endif // __APPLE__
 	} graphics;
-	enum purpl_graphics_api graphics_api; // The API that was initialized on startup
+	enum purpl_graphics_api graphics_api; // The API that was initialized
+					      // on startup
 };
 
 extern struct purpl_instance *purpl_inst;
 #endif
-

@@ -25,7 +25,7 @@
 ///
 /// \param inst The engine's Vulkan instance
 /// \param name The name of the function to load
-/// 
+///
 /// \return Returns the return value of vkGetInstanceProcAddr with the same
 ///	    parameters
 static GLADapiproc vulkan_load_func(VkInstance inst, const char *name);
@@ -41,32 +41,39 @@ bool purpl_vulkan_init(void)
 	if (!purpl_inst)
 		return false;
 
-	// The window is created here because SDL doesn't support OpenGL and Vulkan in
-	// the same window
-	purpl_inst->wnd_title = purpl_strfmt(NULL, "%s v%s - Vulkan - engine v%s+%s-%s-%s", purpl_inst->app_name,
-			     purpl_format_version(purpl_inst->app_version),
-			     purpl_format_version(purpl_inst->app_version), PURPL_SOURCE_BRANCH,
-			     PURPL_SOURCE_COMMIT, PURPL_BUILD_TYPE);
+	// The window is created here because SDL doesn't support OpenGL and
+	// Vulkan in the same window
+	purpl_inst->wnd_title = purpl_strfmt(
+		NULL, "%s v%s - Vulkan - engine v%s+%s-%s-%s",
+		purpl_inst->app_name,
+		purpl_format_version(purpl_inst->app_version),
+		purpl_format_version(purpl_inst->app_version),
+		PURPL_SOURCE_BRANCH, PURPL_SOURCE_COMMIT, PURPL_BUILD_TYPE);
 
 	PURPL_LOG_INFO(purpl_inst->logger, "Creating a window titled \"%s\"",
 		       purpl_inst->wnd_title);
-	purpl_inst->wnd = SDL_CreateWindow(purpl_inst->wnd_title, SDL_WINDOWPOS_UNDEFINED,
-					   SDL_WINDOWPOS_UNDEFINED, 1024, 768,
-					   SDL_WINDOW_RESIZABLE | SDL_WINDOW_VULKAN);
+	purpl_inst->wnd = SDL_CreateWindow(
+		purpl_inst->wnd_title, SDL_WINDOWPOS_UNDEFINED,
+		SDL_WINDOWPOS_UNDEFINED, 1024, 768,
+		SDL_WINDOW_RESIZABLE | SDL_WINDOW_VULKAN);
 	if (!purpl_inst->wnd) {
 		purpl_vulkan_shutdown();
 		return false;
 	}
 
-	vulkan->vk_get_instance_proc_addr = (GLADapiproc (*)(VkInstance, const char *))SDL_Vulkan_GetVkGetInstanceProcAddr();
+	vulkan->vk_get_instance_proc_addr =
+		(GLADapiproc(*)(VkInstance, const char *))
+			SDL_Vulkan_GetVkGetInstanceProcAddr();
 
 	if (!vulkan_create_instance()) {
 		purpl_vulkan_shutdown();
 		return false;
 	}
 
-	// This fails due to the device being NULL, but not for any other reason
-	gladLoadVulkanUserPtr(NULL, (GLADuserptrloadfunc)vulkan_load_func, vulkan->inst);
+	// This fails due to the device being NULL, but not for any other
+	// reason
+	gladLoadVulkanUserPtr(NULL, (GLADuserptrloadfunc)vulkan_load_func,
+			      vulkan->inst);
 
 	if (!vulkan_pick_physical_device()) {
 		purpl_vulkan_shutdown();

@@ -33,6 +33,6 @@ extern PURPL_API char *purpl_graphics_window_get_title(void);
 
 /// Sets the window title. DO NOT CALL THIS TOO OFTEN, WINDOWS WILL LAG.
 ///
-/// \param title The new title for the window. Supports printf format specifiers.
+/// \param title The new title for the window. Supports printf format
+/// specifiers.
 extern PURPL_API void purpl_graphics_window_set_title(const char *title, ...);
-

@@ -28,6 +28,7 @@
 
 /// Create a debug messenger
 ///
-/// \param create_info Pointer to a creation information structure for a debug messenger
-extern void vulkan_setup_debug_messenger(VkDebugUtilsMessengerCreateInfoEXT *create_info);
-
+/// \param create_info Pointer to a creation information structure for a debug
+/// messenger
+extern void
+vulkan_setup_debug_messenger(VkDebugUtilsMessengerCreateInfoEXT *create_info);

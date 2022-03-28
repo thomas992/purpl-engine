@@ -67,7 +67,8 @@ bool vulkan_create_instance(void)
 
 	vulkan_setup_debug_messenger(&debug_create_info);
 
-	// Vulkan will create this if it's put here, without having to load functions
+	// Vulkan will create this if it's put here, without having to load
+	// functions
 	create_info.pNext = &debug_create_info;
 #else // PURPL_DEBUG
 	create_info.enabledLayerCount = 0;
@@ -87,9 +88,7 @@ bool vulkan_create_instance(void)
 	PURPL_LOG_INFO(
 		purpl_inst->logger,
 		"Successfully created a Vulkan instance with %zu extension%s and %zu validation layer%s enabled",
-		ext_count,
-		ext_count == 1 ? "" : "s",
-		layer_count,
+		ext_count, ext_count == 1 ? "" : "s", layer_count,
 		layer_count == 1 ? "" : "s");
 
 	stbds_arrfree(required_exts);

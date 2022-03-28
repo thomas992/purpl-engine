@@ -2,13 +2,13 @@
 //
 // Copyright 2022 MobSlicer152
 // This file is part of Purpl Engine
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -41,7 +41,7 @@ typedef uint8_t u8; // Unsigned 8-bit integer
 typedef uint16_t u16; // Unsigned 16-bit integer
 typedef uint32_t u32; // Unsigned 32-bit integer
 typedef uint64_t u64; // Unsigned 64-bit integer
-#ifdef  PURPL_INT128_AVAILABLE
+#ifdef PURPL_INT128_AVAILABLE
 typedef unsigned __int128 u128; // Unsigned 128-bit integer
 #endif // PURPL_INT128_AVAILABLE
 

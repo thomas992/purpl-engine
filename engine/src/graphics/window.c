@@ -29,9 +29,10 @@ PURPL_API void purpl_graphics_window_set_title(const char *title, ...)
 {
 	va_list args;
 	char *new_title;
-	
+
 	if (!title) {
-		PURPL_LOG_DEBUG(purpl_inst->logger, "title was NULL, not setting window title");
+		PURPL_LOG_DEBUG(purpl_inst->logger,
+				"title was NULL, not setting window title");
 		return;
 	}
 
@@ -40,7 +41,8 @@ PURPL_API void purpl_graphics_window_set_title(const char *title, ...)
 	new_title = purpl_vstrfmt(NULL, title, args);
 	va_end(args);
 
-	// Avoid renaming the window if the strings are the same, it lags Explorer
+	// Avoid renaming the window if the strings are the same, it lags
+	// Explorer
 	if (strcmp(new_title, purpl_inst->wnd_title) == 0) {
 		free(new_title);
 		return;
@@ -48,7 +50,6 @@ PURPL_API void purpl_graphics_window_set_title(const char *title, ...)
 
 	free(purpl_inst->wnd_title);
 	purpl_inst->wnd_title = new_title;
-	
+
 	SDL_SetWindowTitle(purpl_inst->wnd, purpl_inst->wnd_title);
 }
-

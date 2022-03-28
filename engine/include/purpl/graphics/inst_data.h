@@ -49,8 +49,9 @@ struct purpl_instance_vulkan {
 #endif // GLAD_VULKAN_H_
 
 	VkPhysicalDevice phys_device; // Physical device
-	struct vulkan_queue_families phys_device_queue_families; // The queue families to use with
+	struct vulkan_queue_families phys_device_queue_families; // The queue
+								 // families to
+								 // use with
 								 // phys_device
 };
 #endif // !__APPLE__
-

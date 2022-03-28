@@ -20,4 +20,3 @@
 #include "purpl/core/inst.h"
 
 struct purpl_instance *purpl_inst;
-

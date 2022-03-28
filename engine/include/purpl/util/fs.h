@@ -48,9 +48,9 @@ enum purpl_file_attrs {
 	PURPL_FILE_ATTR_SYMLINK = 0b100, // A symbolic link
 	PURPL_FILE_ATTR_PIPE = 0b1000, // A pipe
 	PURPL_FILE_ATTR_HIDDEN = 0b10000, // A hidden file (on POSIX systems,
-					// determined by the file name)
+					  // determined by the file name)
 	PURPL_FILE_ATTR_READONLY = 0b100000, // Read-only (on POSIX systems,
-					   // determined by file mode)
+					     // determined by file mode)
 };
 
 /// Flags for filesystem functions
@@ -76,7 +76,8 @@ struct purpl_file_info {
 /// \return Returns the translated mode
 extern PURPL_API u32 purpl_translate_file_mode(u32 mode, bool to_native);
 
-/// Translates between platform-specific file attributes and ones used by the engine
+/// Translates between platform-specific file attributes and ones used by the
+/// engine
 ///
 /// \param attrs The attributes to translate
 /// \param to_native Whether to convert to or from native attributes

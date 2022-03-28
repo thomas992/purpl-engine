@@ -48,7 +48,9 @@ PURPL_API u32 purpl_translate_file_mode(u32 mode, bool to_native)
 		if (mode & PURPL_FS_MODE_READ)
 			out |= S_IRUSR | S_IRGRP | S_IROTH;
 		if (mode & PURPL_FS_MODE_WRITE)
-			out |= S_IWUSR | (mode & PURPL_FS_MODE_EVERYONE ? S_IWGRP | S_IWOTH : 0);
+			out |= S_IWUSR | (mode & PURPL_FS_MODE_EVERYONE ?
+						  S_IWGRP | S_IWOTH :
+							0);
 		if (mode & PURPL_FS_MODE_EXECUTE)
 			out |= S_IXUSR | S_IXGRP | S_IXOTH;
 #endif // _WIN32
@@ -59,7 +61,7 @@ PURPL_API u32 purpl_translate_file_mode(u32 mode, bool to_native)
 			out |= PURPL_FS_MODE_READ;
 		if (mode & S_IWUSR)
 			out |= PURPL_FS_MODE_WRITE;
-		if (mode &  (S_IWGRP | S_IWOTH))
+		if (mode & (S_IWGRP | S_IWOTH))
 			out |= PURPL_FS_MODE_EVERYONE;
 		if (mode & (S_IXUSR | S_IXGRP | S_IXOTH))
 			out |= PURPL_FS_MODE_EXECUTE;
@@ -76,18 +78,17 @@ PURPL_API u32 purpl_translate_file_attrs(u32 attrs, bool to_native)
 	PURPL_IGNORE(attrs);
 
 	if (to_native) {
-
 	} else {
 #ifdef _WIN32
 #else // _WIN32
-		// These all overlap and can't be present simultaneously
+      // These all overlap and can't be present simultaneously
 		if (attrs & S_IFREG)
 			out |= PURPL_FILE_ATTR_NORMAL;
 		else if (attrs & S_IFSOCK)
 			out |= PURPL_FILE_ATTR_DEVICE;
 		else if (attrs & S_IFLNK)
 			out |= PURPL_FILE_ATTR_SYMLINK;
-			
+
 		if (attrs & S_IFBLK || attrs & S_IFCHR)
 			out |= PURPL_FILE_ATTR_DEVICE;
 		if (attrs & S_IFIFO)
@@ -137,7 +138,9 @@ PURPL_API bool purpl_mkdir(const char *path, enum purpl_fs_flags flags,
 	path2 = purpl_pathfmt(NULL, path, flags);
 	if (flags & PURPL_FS_MKDIR_RECURSE) {
 		for (i = 0; i < (purpl_strcount(path, "/") -
-				 purpl_strcount(path, "//")) + 1; i++) {
+				 purpl_strcount(path, "//")) +
+					1;
+		     i++) {
 			char *p;
 			size_t j = 0;
 
@@ -146,7 +149,8 @@ PURPL_API bool purpl_mkdir(const char *path, enum purpl_fs_flags flags,
 				j++;
 				p = strstr(p + j, "/");
 			}
-			stbds_arrput(dir_names, purpl_strfmt(NULL, "%.*s",
+			stbds_arrput(dir_names,
+				     purpl_strfmt(NULL, "%.*s",
 						  (s32)(p - path2), path2));
 		}
 	} else {
@@ -163,7 +167,8 @@ PURPL_API bool purpl_mkdir(const char *path, enum purpl_fs_flags flags,
 			return false;
 		}
 #else // _WIN32
-		int fd = mkdir(dir_names[i], purpl_translate_file_mode(mode, true));
+		int fd = mkdir(dir_names[i],
+			       purpl_translate_file_mode(mode, true));
 		if (fd < 0) {
 			stbds_arrfree(dir_names);
 			return false;
@@ -261,9 +266,9 @@ PURPL_API void purpl_stat(const char *path, struct purpl_file_info *info)
 	info->atime = sb.st_atim.tv_sec;
 	info->mtime = sb.st_mtim.tv_sec;
 #endif // __APPLE__
-	
+
 	file = purpl_path_file(path2, NULL);
-	if(!file) {
+	if (!file) {
 		free(path2);
 		return;
 	}

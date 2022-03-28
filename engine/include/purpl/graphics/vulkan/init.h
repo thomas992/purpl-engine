@@ -42,4 +42,3 @@ extern bool purpl_vulkan_init(void);
 
 /// Shut down Vulkan (if it's initialized)
 extern void purpl_vulkan_shutdown(void);
-

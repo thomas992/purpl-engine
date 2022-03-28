@@ -17,8 +17,8 @@
 
 #pragma once
 
-// Clang and GCC support these and have for like a decade, while MSVC is still too lazy
-// to implement them
+// Clang and GCC support these and have for like a decade, while MSVC is still
+// too lazy to implement them
 #if defined __clang__ || defined __GNUC__
 // Defined if 128-bit integers are available
 #define PURPL_INT128_AVAILABLE 1
