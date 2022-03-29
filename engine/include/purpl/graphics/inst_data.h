@@ -17,12 +17,12 @@
 
 #pragma once
 
-#include "purpl/core/coredefs.h"
-#include "purpl/core/types.h"
-
 #ifndef PURPL_BUILD
 #error This header should only be included in engine files
 #endif // !PURPL_BUILD
+
+#include "purpl/core/coredefs.h"
+#include "purpl/core/types.h"
 
 // Vulkan supports everything except macOS (MoltenVK exists,
 // but I'd rather just write it in Metal eventually)
@@ -53,5 +53,7 @@ struct purpl_instance_vulkan {
 								 // families to
 								 // use with
 								 // phys_device
+
+	VkDevice device; // Logical device
 };
 #endif // !__APPLE__

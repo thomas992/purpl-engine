@@ -16,8 +16,6 @@
 // limitations under the License.
 
 #include "purpl/graphics/vulkan/device.h"
-#include "purpl/core/log.h"
-#include "vulkan/vulkan_core.h"
 
 u64 vulkan_score_device(VkPhysicalDevice device, size_t idx)
 {
@@ -50,7 +48,7 @@ u64 vulkan_score_device(VkPhysicalDevice device, size_t idx)
 		score += 1000;
 
 	score += properties.limits.maxImageDimension2D;
-	PURPL_LOG_INFO(purpl_inst->logger, "Device %zu:", idx + 1);
+	PURPL_LOG_INFO(purpl_inst->logger, "Device %zu (0x%X):", idx + 1, device);
 	PURPL_LOG_INFO(purpl_inst->logger, "\tName: %s",
 		       properties.deviceName);
 	PURPL_LOG_INFO(purpl_inst->logger, "\tScore: %d", score);
@@ -99,8 +97,8 @@ bool vulkan_pick_physical_device(void)
 	vkGetPhysicalDeviceProperties(vulkan->phys_device, &properties);
 	PURPL_LOG_INFO(
 		purpl_inst->logger,
-		"Device %zu (%s) has the best score (its score is %llu)",
-		best_idx + 1, properties.deviceName, best_score);
+		"Device %zu (%s, 0x%X) has the best score (its score is %llu)",
+		best_idx + 1, properties.deviceName, vulkan->phys_device, best_score);
 	vulkan_get_device_queue_families(vulkan->phys_device,
 					 &vulkan->phys_device_queue_families);
 

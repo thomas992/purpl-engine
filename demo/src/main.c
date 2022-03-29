@@ -62,7 +62,7 @@ bool frame_func(u32 delta, void *data)
 	struct demo_info *info = data;
 	
 	// Tabs are to prevent characters from staying behind
-	printf("\rFrame delta: %ums\t\t", delta);
+	printf("\rFrame delta: %ums   ", delta);
 	
 	info->deltas += delta;
 	info->frames++;

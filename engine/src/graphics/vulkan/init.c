@@ -20,6 +20,8 @@
 #include "SDL.h"
 
 #include "purpl/graphics/vulkan/init.h"
+#include "purpl/graphics/vulkan/logical_device.h"
+#include "vulkan/vulkan_core.h"
 
 /// Loads a Vulkan function for glad
 ///
@@ -80,6 +82,11 @@ bool purpl_vulkan_init(void)
 		return false;
 	}
 
+	if (!vulkan_create_logical_device()) {
+		purpl_vulkan_shutdown();
+		return false;
+	}
+
 	purpl_inst->graphics_api = PURPL_GRAPHICS_API_VULKAN;
 	return true;
 }
@@ -87,6 +94,9 @@ bool purpl_vulkan_init(void)
 void purpl_vulkan_shutdown(void)
 {
 	struct purpl_instance_vulkan *vulkan = &purpl_inst->graphics.vulkan;
+
+	if (vulkan->device)
+		vkDestroyDevice(vulkan->device, NULL);
 
 	if (vulkan->inst)
 		vkDestroyInstance(vulkan->inst, NULL);
@@ -96,7 +106,7 @@ static GLADapiproc vulkan_load_func(VkInstance inst, const char *name)
 {
 	struct purpl_instance_vulkan *vulkan = &purpl_inst->graphics.vulkan;
 
-	PURPL_LOG_INFO(purpl_inst->logger, "Loading Vulkan function \"%s\"",
+	PURPL_LOG_DEBUG(purpl_inst->logger, "Loading Vulkan function \"%s\"",
 		       name);
 
 	return vulkan->vk_get_instance_proc_addr(inst, name);

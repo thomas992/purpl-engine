@@ -34,7 +34,7 @@ set(CMAKE_USER_MAKE_RULES_OVERRIDE "${CMAKE_BINARY_DIR}/MakeRulesOverwrite.cmake
 project(purpl-engine VERSION 1.0.0 LANGUAGES C CXX)
 
 # Settings
-if (NOT DEFINED ${CMAKE_BUILD_TYPE})
+if (NOT DEFINED ${CMAKE_BUILD_TYPE} OR ${CMAKE_BUILD_TYPE} STREQUAL "")
 	message(WARNING "CMAKE_BUILD_TYPE was not set, setting it to Debug")
 	set(CMAKE_BUILD_TYPE Debug CACHE STRING "" FORCE)
 endif()
@@ -134,8 +134,8 @@ endif()
 install(FILES deps/glad/LICENSE
 	RENAME glad.txt
 	DESTINATION ${CMAKE_INSTALL_PREFIX}/licenses)
-install(FILES deps/phnt/LICENSE
-	RENAME phnt.txt
+install(FILES deps/processhacker/LICENSE.txt
+	RENAME processhacker.txt
 	DESTINATION ${CMAKE_INSTALL_PREFIX}/licenses)
 install(FILES deps/sdl2/LICENSE.txt
 	RENAME sdl2.txt

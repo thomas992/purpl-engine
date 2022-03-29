@@ -16,7 +16,8 @@ set(ENGINE_VULKAN_HEADERS
     include/purpl/graphics/vulkan/debug.h
     include/purpl/graphics/vulkan/device.h
     include/purpl/graphics/vulkan/init.h
-    include/purpl/graphics/vulkan/inst.h)
+    include/purpl/graphics/vulkan/inst.h
+    include/purpl/graphics/vulkan/logical_device.h)
 
 set(ENGINE_UTIL_HEADERS
     include/purpl/util/error.h
@@ -40,7 +41,8 @@ set(ENGINE_VULKAN_SOURCES
     src/graphics/vulkan/debug.c
     src/graphics/vulkan/device.c
     src/graphics/vulkan/init.c
-    src/graphics/vulkan/inst.c)
+    src/graphics/vulkan/inst.c
+    src/graphics/vulkan/logical_device.c)
 
 set(ENGINE_UTIL_SOURCES
     src/util/error.c
@@ -123,7 +125,7 @@ target_include_directories(engine_preinit
 			   PRIVATE
 				${Vulkan_INCLUDE_DIRS}
 				${CMAKE_SOURCE_DIR}/deps/glad2/include
-				${CMAKE_SOURCE_DIR}/deps/phnt
+				${CMAKE_SOURCE_DIR}/deps/processhacker/phnt/include
 				${CMAKE_SOURCE_DIR}/deps/sdl2/include
 				${CMAKE_SOURCE_DIR}/deps/stb)
 target_include_directories(engine
@@ -133,7 +135,7 @@ target_include_directories(engine
 			   PRIVATE
 				${Vulkan_INCLUDE_DIRS}
 				${CMAKE_SOURCE_DIR}/deps/glad2/include
-				${CMAKE_SOURCE_DIR}/deps/phnt
+				${CMAKE_SOURCE_DIR}/deps/processhacker/phnt/include
 				${CMAKE_SOURCE_DIR}/deps/sdl2/include
 				${CMAKE_SOURCE_DIR}/deps/stb)
 target_link_libraries(engine PRIVATE SDL2::SDL2)

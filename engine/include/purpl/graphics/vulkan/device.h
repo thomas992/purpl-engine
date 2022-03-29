@@ -17,7 +17,6 @@
 
 #pragma once
 
-#include "vulkan/vulkan_core.h"
 #ifndef PURPL_BUILD
 #error This header should only be includeed in engine files
 #endif // !PURPL_BUILD

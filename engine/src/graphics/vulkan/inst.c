@@ -58,9 +58,9 @@ bool vulkan_create_instance(void)
 	const char *validation_layers[] = { "VK_LAYER_KHRONOS_validation" };
 	layer_count = PURPL_SIZEOF_ARRAY(validation_layers);
 
-	create_info.enabledLayerCount = PURPL_SIZEOF_ARRAY(validation_layers);
+	create_info.enabledLayerCount = layer_count;
 	create_info.ppEnabledLayerNames = validation_layers;
-	for (i = 0; i < PURPL_SIZEOF_ARRAY(validation_layers); i++)
+	for (i = 0; i < layer_count; i++)
 		PURPL_LOG_INFO(purpl_inst->logger,
 			       "Requesting Vulkan validation layer \"%s\"",
 			       validation_layers[i]);
@@ -87,8 +87,8 @@ bool vulkan_create_instance(void)
 
 	PURPL_LOG_INFO(
 		purpl_inst->logger,
-		"Successfully created a Vulkan instance with %zu extension%s and %zu validation layer%s enabled",
-		ext_count, ext_count == 1 ? "" : "s", layer_count,
+		"Successfully created a Vulkan instance at 0x%X with %zu extension%s and %zu validation layer%s enabled",
+		vulkan->inst, ext_count, ext_count == 1 ? "" : "s", layer_count,
 		layer_count == 1 ? "" : "s");
 
 	stbds_arrfree(required_exts);
