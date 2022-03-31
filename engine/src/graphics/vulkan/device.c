@@ -47,14 +47,21 @@ u64 vulkan_score_device(VkPhysicalDevice device, size_t idx)
 	if (properties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU)
 		score += 1000;
 
+	// The Vulkan tutorial said this makes performance better, favour it
+	if (queue_families.graphics_family ==
+	    queue_families.presentation_family)
+		score += 100;
+
 	score += properties.limits.maxImageDimension2D;
-	PURPL_LOG_INFO(purpl_inst->logger, "Device %zu (0x%X):", idx + 1, device);
+	PURPL_LOG_INFO(purpl_inst->logger, "Device %zu (handle 0x%X):", idx + 1, device);
 	PURPL_LOG_INFO(purpl_inst->logger, "\tName: %s",
 		       properties.deviceName);
 	PURPL_LOG_INFO(purpl_inst->logger, "\tScore: %d", score);
 	PURPL_LOG_INFO(purpl_inst->logger, "\tQueue family indices:");
 	PURPL_LOG_INFO(purpl_inst->logger, "\t\tGraphics: %zu",
 		       queue_families.graphics_family);
+	PURPL_LOG_INFO(purpl_inst->logger, "\t\tPresentation: %zu",
+		       queue_families.presentation_family);
 
 	return score;
 }
@@ -97,7 +104,7 @@ bool vulkan_pick_physical_device(void)
 	vkGetPhysicalDeviceProperties(vulkan->phys_device, &properties);
 	PURPL_LOG_INFO(
 		purpl_inst->logger,
-		"Device %zu (%s, 0x%X) has the best score (its score is %llu)",
+		"Device %zu (%s, handle 0x%X) has the best score (its score is %llu)",
 		best_idx + 1, properties.deviceName, vulkan->phys_device, best_score);
 	vulkan_get_device_queue_families(vulkan->phys_device,
 					 &vulkan->phys_device_queue_families);
@@ -109,6 +116,7 @@ bool vulkan_pick_physical_device(void)
 bool vulkan_get_device_queue_families(
 	VkPhysicalDevice device, struct vulkan_queue_families *queue_families)
 {
+	struct purpl_instance_vulkan *vulkan = &purpl_inst->graphics.vulkan;
 	VkQueueFamilyProperties *queue_family_list = NULL;
 	u32 queue_family_count = 0;
 	bool all_found = false;
@@ -132,7 +140,17 @@ bool vulkan_get_device_queue_families(
 			queue_families->graphics_family = i;
 		}
 
-		all_found = (queue_families->graphics_family_present);
+		// 32 fucking bits for a BOOLEAN? 8 is already too many, but at least that's
+		// due to everything already operating at byte granularity at minimum.
+		VkBool32 presentation_support = 0;
+		vkGetPhysicalDeviceSurfaceSupportKHR(
+			device, i, vulkan->surface, &presentation_support);
+		if (presentation_support) {
+			queue_families->graphics_family_present = true;
+			queue_families->presentation_family = i;
+		}
+
+		all_found = (queue_families->graphics_family_present && queue_families->presentation_family_present);
 	}
 
 	return all_found;

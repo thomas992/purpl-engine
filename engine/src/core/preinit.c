@@ -38,7 +38,7 @@ extern void purpl_complete_preinit(void);
 void purpl_preinit(void)
 {
 	// On Windows, the pre-initialization requires loading the engine DLL,
-	// which in turn automatically loads the others
+	// which in turn causes NTDLL to automatically load the others
 #ifdef _WIN32
 	UNICODE_STRING *peb_path =
 		&NtCurrentPeb()->ProcessParameters->ImagePathName;
@@ -47,7 +47,8 @@ void purpl_preinit(void)
 	engine_dll = LoadLibraryExA("engine.dll", NULL,
 				    LOAD_LIBRARY_SEARCH_DEFAULT_DIRS);
 	if (!engine_dll) {
-		// 16 is for the length of "bin\\engine.dll\0"
+		// 16 is for the length of "bin\\engine.dll\0", because that's the worst case
+		// scenario for the needed length of the final string
 		path = calloc(peb_path->Length + 16, sizeof(wchar_t));
 		if (!path) {
 			fprintf(stderr,
@@ -67,11 +68,18 @@ void purpl_preinit(void)
 	}
 
 	if (!engine_dll) {
+		MessageBoxA(NULL, "Failed to load engine.dll", "Purpl Engine",
+			    MB_OK | MB_ICONERROR);
 		fprintf(stderr, "Failed to load engine.dll, exiting\n");
-		exit(1);
+		exit(STATUS_DLL_NOT_FOUND);
 	}
 
-	init_ptrs();
+#ifndef PURPL_DEBUG
+	// Get rid of the console window in non-debug mode
+	FreeConsole();
+#endif // !PURPL_DEBUG
+
+	init_engine_dll_ptrs();
 #endif // _WIN32
 
 	// Tell the engine that preinit was called so it doesn't print a

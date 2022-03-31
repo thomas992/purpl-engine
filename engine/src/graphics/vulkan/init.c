@@ -56,26 +56,34 @@ bool purpl_vulkan_init(void)
 		       purpl_inst->wnd_title);
 	purpl_inst->wnd = SDL_CreateWindow(
 		purpl_inst->wnd_title, SDL_WINDOWPOS_UNDEFINED,
-		SDL_WINDOWPOS_UNDEFINED, 1024, 768,
+		SDL_WINDOWPOS_UNDEFINED, PURPL_INITIAL_WINDOW_WIDTH,
+		PURPL_INITIAL_WINDOW_HEIGHT,
 		SDL_WINDOW_RESIZABLE | SDL_WINDOW_VULKAN);
 	if (!purpl_inst->wnd) {
 		purpl_vulkan_shutdown();
 		return false;
 	}
 
-	vulkan->vk_get_instance_proc_addr =
-		(GLADapiproc(*)(VkInstance, const char *))
-			SDL_Vulkan_GetVkGetInstanceProcAddr();
-
 	if (!vulkan_create_instance()) {
 		purpl_vulkan_shutdown();
 		return false;
 	}
 
-	// This fails due to the device being NULL, but not for any other
-	// reason
-	gladLoadVulkanUserPtr(NULL, (GLADuserptrloadfunc)vulkan_load_func,
-			      vulkan->inst);
+	// Surface creation is only one line (excluding error checking, which
+	// is about the same here as it would be in a separate function), it
+	// really doesn't need its own file or function
+	PURPL_LOG_INFO(purpl_inst->logger, "Creating surface");
+	if (!SDL_Vulkan_CreateSurface(purpl_inst->wnd, vulkan->inst,
+				      &vulkan->surface)) {
+		PURPL_LOG_ERROR(purpl_inst->logger,
+				"Failed to create surface: %s",
+				SDL_GetError());
+		purpl_vulkan_shutdown();
+		return false;
+	}
+	PURPL_LOG_INFO(purpl_inst->logger,
+		       "Successfully created surface with handle 0x%X",
+		       vulkan->surface);
 
 	if (!vulkan_pick_physical_device()) {
 		purpl_vulkan_shutdown();
@@ -87,6 +95,9 @@ bool purpl_vulkan_init(void)
 		return false;
 	}
 
+	gladLoaderLoadVulkan(vulkan->inst, vulkan->phys_device,
+			     vulkan->device);
+
 	purpl_inst->graphics_api = PURPL_GRAPHICS_API_VULKAN;
 	return true;
 }
@@ -95,19 +106,23 @@ void purpl_vulkan_shutdown(void)
 {
 	struct purpl_instance_vulkan *vulkan = &purpl_inst->graphics.vulkan;
 
-	if (vulkan->device)
+	if (vulkan->device) {
 		vkDestroyDevice(vulkan->device, NULL);
+		PURPL_LOG_INFO(purpl_inst->logger,
+			       "Destroyed logical device with handle 0x%X",
+			       vulkan->device);
+	}
 
-	if (vulkan->inst)
+	if (vulkan->surface) {
+		vkDestroySurfaceKHR(vulkan->inst, vulkan->surface, NULL);
+		PURPL_LOG_INFO(purpl_inst->logger, "Destroyed surface with handle 0x%X",
+			       vulkan->surface);
+	}
+
+	if (vulkan->inst) {
 		vkDestroyInstance(vulkan->inst, NULL);
-}
-
-static GLADapiproc vulkan_load_func(VkInstance inst, const char *name)
-{
-	struct purpl_instance_vulkan *vulkan = &purpl_inst->graphics.vulkan;
-
-	PURPL_LOG_DEBUG(purpl_inst->logger, "Loading Vulkan function \"%s\"",
-		       name);
-
-	return vulkan->vk_get_instance_proc_addr(inst, name);
+		PURPL_LOG_INFO(purpl_inst->logger,
+			       "Destroyed Vulkan instance with handle 0x%X",
+			       vulkan->device);
+	}
 }

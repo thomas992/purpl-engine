@@ -11,16 +11,20 @@ elif len(sys.argv) < 3:
     print("Missing output file")
     exit(1)
 
+if not os.path.exists(sys.argv[1]):
+    print(f"File \"{sys.argv[1]}\" doesn't exist, exiting")
+    exit(1)
+
 print(f"Writing exports from {sys.argv[1]} to {sys.argv[2]}")
 
 try:
-    dumpbin = subprocess.run(f"dumpbin /exports {sys.argv[1]}", capture_output=True, encoding="utf-8")
+    dumpbin = subprocess.run(f"dumpbin /exports {sys.argv[1]}", capture_output=True, check=True, encoding="utf-8")
 except:
     print("""
 Failed to run dumpbin. Make sure to run this from a Visual Studio Developer Command Prompt.
 The best way to do this is to use the buildenv.bat script in the tools directory from an
-existing command prompt, or run buildcmd.bat to open one for you.
-""")
+existing Command Prompt, or run buildcmd.bat to open one for you.
+          """)
     exit(1)
 
 start_str = "ordinal hint RVA      name"
@@ -41,9 +45,11 @@ for x in out.split("\n"):
 
 f = open(sys.argv[2], "wb+")
 for name in names:
-    f.write(bytes(f"void (*__imp_{name})(void) = (void *)0;\n", encoding="utf-8"))
+    f.write(bytes(f"void (*__imp_{name})(void) = (void (*)(void))0;\n", encoding="utf-8"))
 
-f.write(bytes("\nvoid init_ptrs(void)\n{\n", encoding="utf-8"))
+dll_name = os.path.basename(sys.argv[1]).replace("-", "_").replace(".", "_")
+f.write(bytes(f"\nvoid init_{dll_name}_ptrs(void)\n", encoding="utf-8"))
+f.write(bytes("{\n", encoding="utf-8"))
 
 for name in names:
     f.write(bytes(f"\t__imp_{name} = (void *)GetProcAddress(engine_dll, \"{name}\");\n", encoding="utf-8"))
@@ -51,5 +57,5 @@ for name in names:
 f.write(bytes("}\n", encoding="utf-8"))
 f.close()
 
-print("Done")
+print(f"Done. Include {sys.argv[2]} and call init_{dll_name}_ptrs to use the library once it's loaded.")
 

@@ -87,7 +87,7 @@ bool vulkan_create_instance(void)
 
 	PURPL_LOG_INFO(
 		purpl_inst->logger,
-		"Successfully created a Vulkan instance at 0x%X with %zu extension%s and %zu validation layer%s enabled",
+		"Successfully created a Vulkan instance with handle 0x%X with %zu extension%s and %zu validation layer%s enabled",
 		vulkan->inst, ext_count, ext_count == 1 ? "" : "s", layer_count,
 		layer_count == 1 ? "" : "s");
 

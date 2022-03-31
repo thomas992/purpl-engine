@@ -47,8 +47,8 @@ PURPL_API struct purpl_logger *purpl_log_create(const char *file,
 				    t2->tm_mon + 1, t2->tm_year + 1900);
 	else
 		date = purpl_strfmt(NULL, "?\?-?\?-????"); // Escapes are to
-							   // prevent trigraph
-							   // expansion
+								   // prevent trigraph
+								   // expansion
 
 	filename = purpl_strrplc(file ? file : PURPL_LOG_DEFAULT_NAME,
 				 "<date>", date, NULL);
@@ -317,14 +317,14 @@ PURPL_API void purpl_log_write(struct purpl_logger *logger,
 	fprintf(logger->file, "%s", buf);
 	fflush(logger->file);
 #ifdef PURPL_DEBUG
-	printf("%s", buf);
+	printf("\r%s", buf);
 	fflush(stdout);
 #else // PURPL_DEBUG
 #ifdef _WIN32
 	OutputDebugStringA(buf);
 #endif // _WIN32
 	if (level < PURPL_LOG_LEVEL_INFO) {
-		printf("%s", buf);
+		printf("\r%s", buf);
 		fflush(stdout);
 	}
 #endif // PURPL_DEBUG

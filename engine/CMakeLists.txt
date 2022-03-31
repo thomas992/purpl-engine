@@ -10,6 +10,7 @@ set(ENGINE_CORE_HEADERS
 
 set(ENGINE_GRAPHICS_HEADERS
     include/purpl/graphics/init.h
+    include/purpl/graphics/inst_data.h
     include/purpl/graphics/window.h)
 
 set(ENGINE_VULKAN_HEADERS
@@ -92,7 +93,7 @@ configure_file(include/purpl/core/config.h.in config.h @ONLY)
 if (WIN32)
 	set(EXPORTS_HEADER ${CMAKE_CURRENT_BINARY_DIR}/exports.h)
 endif()
-add_library(engine_preinit STATIC src/core/preinit.c ${EXPORTS_HEADER})
+add_library(engine_preinit STATIC ${CMAKE_SOURCE_DIR}/tools/dumpexports.py src/core/preinit.c ${EXPORTS_HEADER})
 add_library(engine SHARED ${ENGINE_ALL_HEADERS} ${ENGINE_ALL_SOURCES} ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 target_compile_definitions(engine_preinit PRIVATE PURPL_BUILD=1)
 target_compile_definitions(engine PRIVATE PURPL_BUILD=1)
@@ -103,8 +104,8 @@ endif()
 
 if (WIN32)
 	add_custom_command(OUTPUT ${EXPORTS_HEADER}
-		COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tools/dumpexports.py $<TARGET_FILE:engine> ${EXPORTS_HEADER}
-			   DEPENDS engine)
+			   COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tools/dumpexports.py $<TARGET_FILE:engine> ${EXPORTS_HEADER}
+			   DEPENDS engine ${CMAKE_SOURCE_DIR}/tools/dumpexports.py)
 endif()
 
 if (${PURPL_ENABLE_MEMING})

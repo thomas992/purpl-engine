@@ -34,7 +34,7 @@ set(CMAKE_USER_MAKE_RULES_OVERRIDE "${CMAKE_BINARY_DIR}/MakeRulesOverwrite.cmake
 project(purpl-engine VERSION 1.0.0 LANGUAGES C CXX)
 
 # Settings
-if (NOT DEFINED ${CMAKE_BUILD_TYPE} OR ${CMAKE_BUILD_TYPE} STREQUAL "")
+if (NOT DEFINED CMAKE_BUILD_TYPE OR ${CMAKE_BUILD_TYPE} STREQUAL "")
 	message(WARNING "CMAKE_BUILD_TYPE was not set, setting it to Debug")
 	set(CMAKE_BUILD_TYPE Debug CACHE STRING "" FORCE)
 endif()
@@ -77,8 +77,8 @@ endif()
 if (NOT APPLE)
 	find_package(Vulkan REQUIRED)
 
-	glad_add_library(glad_opengl REPRODUCIBLE API gl:core=4.6)
-	glad_add_library(glad_vulkan REPRODUCIBLE API vulkan=1.3)
+	glad_add_library(glad_opengl REPRODUCIBLE LANGUAGE c LOADER API gl:core=4.6)
+	glad_add_library(glad_vulkan REPRODUCIBLE LANGUAGE c LOADER API vulkan=1.3)
 endif()
 
 find_package(Python3 REQUIRED)

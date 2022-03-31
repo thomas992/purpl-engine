@@ -32,28 +32,27 @@
 
 /// Vulkan queue family information
 struct vulkan_queue_families {
-	size_t graphics_family; // The index of the graphics queue
-				// family
-	bool graphics_family_present; // Whether graphics_family is set
+	size_t graphics_family; // The index of the graphics queue family
+	bool graphics_family_present; // Whether graphics_family is present
+	size_t presentation_family; // The index of the presentation queue
+				    // family
+	bool presentation_family_present; // Whether presentation_family is
+					  // present
 };
 
 struct purpl_instance_vulkan {
 	VkInstance inst; // Vulkan instance
 	VkDebugUtilsMessengerEXT debug_messenger; // Debug messenger
 
-#ifdef GLAD_VULKAN_H_
-	GLADapiproc (*vk_get_instance_proc_addr)(VkInstance inst,
-						 const char *name);
-#else // GLAD_VULKAN_H_
-	void *(*vk_get_instance_proc_addr)(VkInstance inst, const char *name);
-#endif // GLAD_VULKAN_H_
-
 	VkPhysicalDevice phys_device; // Physical device
 	struct vulkan_queue_families phys_device_queue_families; // The queue
 								 // families to
 								 // use with
 								 // phys_device
-
 	VkDevice device; // Logical device
+
+	VkSurfaceKHR surface; // Surface
+
+	VkQueue presentation_queue; // Presentation queue
 };
 #endif // !__APPLE__

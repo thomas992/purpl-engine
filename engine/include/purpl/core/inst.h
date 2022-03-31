@@ -28,6 +28,12 @@
 
 #include "purpl/graphics/inst_data.h"
 
+/// Initial window width
+#define PURPL_INITIAL_WINDOW_WIDTH 1024
+
+/// Initial window height
+#define PURPL_INITIAL_WINDOW_HEIGHT 768
+
 /// Possible graphics APIs (only for shutdown)
 enum purpl_graphics_api {
 	PURPL_GRAPHICS_API_SOFTWARE = 0, // Software rendering (unimplemented)
