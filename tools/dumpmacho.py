@@ -39,14 +39,14 @@ for x in out.split("\n"):
 
 f = open(sys.argv[2], "wb+")
 for name in names:
-    f.write(bytes(f"void (*_{name})(void) = (void (*)(void))0;\n", encoding="utf-8"))
-    f.write(bytes(f"void {name}(void) {{ _{name}(); }}\n", encoding="utf-8"))
+    f.write(bytes(f"void (*{name})(void) = (void (*)(void))0;\n", encoding="utf-8"))
+    f.write(bytes(f"void {name[1:]}(void) {{ {name}(); }}\n", encoding="utf-8"))
 
 so_name = os.path.basename(sys.argv[1]).replace("-", "_").replace(".", "_")
 f.write(bytes(f"\nvoid init_{so_name}_ptrs(void *so)\n{{\n", encoding="utf-8"))
 
 for name in names:
-    f.write(bytes(f"\t*(void **)(&_{name}) = dlsym(so, \"{name}\");\n", encoding="utf-8"))
+    f.write(bytes(f"\t*(void **)(&{name}) = dlsym(so, \"{name}\");\n", encoding="utf-8"))
 
 f.write(bytes("}\n", encoding="utf-8"))
 f.close()
