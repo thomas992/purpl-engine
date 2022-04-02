@@ -101,7 +101,7 @@ bool vulkan_pick_physical_device(void)
 		}
 	}
 
-	if (!vulkan->phys_device) {
+	if (!vulkan->phys_device || best_score == 0) {
 		PURPL_LOG_ERROR(
 			purpl_inst->logger,
 			"Failed to locate a device with Vulkan support");

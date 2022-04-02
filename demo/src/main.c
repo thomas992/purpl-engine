@@ -15,7 +15,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "purpl/graphics/window.h"
 #include <errno.h>
 
 #include <purpl/purpl.h>
@@ -33,11 +32,8 @@ int32_t main(int32_t argc, char *argv[])
 {
 	struct demo_info info = { 0 };
 	
-	PURPL_IGNORE(argc);
-	PURPL_IGNORE(argv);
-	
 	// Make sure the engine is ready (loads the DLL on Windows)
-	purpl_preinit();
+	purpl_preinit(argc, argv);
 
 	// Initialize the engine
 	if (!purpl_init("purpl-demo", PURPL_MAKE_VERSION(1, 0, 0))) {

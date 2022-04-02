@@ -39,7 +39,12 @@ typedef bool (*purpl_frame_func)(u32 delta, void *user_data);
 /// Make sure the engine is ready to be used. You MUST call this function
 /// before calling ANY functions from the engine other than this one, or
 /// there is a solid chance your program will crash.
-extern void purpl_preinit(void);
+///
+/// \param argc The number of arguments passed to the program, the first
+///		parameter of main
+/// \param argv The array of arguments passed to the program, the second
+///		parameter of main
+extern void purpl_preinit(int argc, char *argv[]);
 
 /// Initialize the engine
 ///

@@ -3,11 +3,9 @@ cmake_minimum_required(VERSION 3.10)
 set(DEMO_SOURCES src/main.c)
 
 add_executable(demo ${DEMO_SOURCES})
-# This is to get around PE executables not having pre-defined runtime paths embedded like ELF and Mach-O do
+
+# This library handles loading the shared library
 target_link_libraries(demo PRIVATE engine_preinit)
-if (NOT WIN32)
-	target_link_libraries(demo PRIVATE engine)
-endif()
 
 if (WIN32)
 	add_custom_command(TARGET demo PRE_BUILD
