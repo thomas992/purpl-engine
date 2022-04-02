@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-# Garbage fire script to get the exports from the engine so that it can be dynamically loaded on Linux
+# Garbage fire script to get the exports from the engine so that it can be dynamically loaded on macOS
 
 import os
 import subprocess
 import sys
 
 if len(sys.argv) < 2:
-    print("Missing SO name and output file")
+    print("Missing dylib name and output file")
     exit(1)
 elif len(sys.argv) < 3:
     print("Missing output file")

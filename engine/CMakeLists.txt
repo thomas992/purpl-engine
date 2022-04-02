@@ -105,10 +105,15 @@ if (WIN32)
 	add_custom_command(OUTPUT ${EXPORTS_HEADER}
 			   COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tools/dumppe.py $<TARGET_FILE:engine> ${EXPORTS_HEADER}
 			   DEPENDS engine ${CMAKE_SOURCE_DIR}/tools/dumppe.py)
-elseif (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+elseif (${CMAKE_SYSTEM_NAME} MATCHES "Linux" OR APPLE))
+	if (APPLE)
+		set(DUMPEXPORTS_NAME dumpmacho.py)
+	else()
+		set(DUMPEXPORTS_NAME dumpelf.py)
+	endif()
 	add_custom_command(OUTPUT ${EXPORTS_HEADER}
-			   COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tools/dumpelf.py $<TARGET_FILE:engine> ${EXPORTS_HEADER}
-			   DEPENDS engine ${CMAKE_SOURCE_DIR}/tools/dumpelf.py)
+			   COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tools/${DUMPEXPORTS_NAME} $<TARGET_FILE:engine> ${EXPORTS_HEADER}
+			   DEPENDS engine ${CMAKE_SOURCE_DIR}/tools/${DUMPEXPORTS_NAME})
 	target_link_libraries(engine_preinit PUBLIC dl)
 endif()
 

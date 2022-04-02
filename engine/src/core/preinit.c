@@ -35,6 +35,14 @@
 
 void *engine_lib = NULL;
 
+#ifdef __APPLE__
+#define LIB_EXT ".dylib"
+#define init_libengine_ptrs init_libengine_dylib_ptrs
+#elif __linux__ // __APPLE__
+#define LIB_EXT ".so"
+#define init_libengine_ptrs init_libengine_so_ptrs
+#endif // __APPLE__
+
 #ifdef _WIN32
 #define purpl_complete_preinit __imp_purpl_complete_preinit
 #endif // _WIN32
@@ -95,7 +103,7 @@ void purpl_preinit(int argc, char *argv[])
 
 	PURPL_IGNORE(argc);
 
-	engine_lib = dlopen("./libengine.so", RTLD_NOW);
+	engine_lib = dlopen("./libengine" LIB_EXT, RTLD_NOW);
 	if (!engine_lib) {
 		// 16 is for the length of "bin/libengine.so\0", because that's
 		// the longest the path can be
@@ -107,7 +115,7 @@ void purpl_preinit(int argc, char *argv[])
 		}
 
 		strncpy(path, argv[0], strlen(argv[0]));
-		strncpy(strrchr(path, '/') + 1, "bin/libengine.so", 16);
+		strncpy(strrchr(path, '/') + 1, "bin/libengine" LIB_EXT, 16);
 
 		engine_lib = dlopen(path, RTLD_NOW);
 
@@ -115,11 +123,11 @@ void purpl_preinit(int argc, char *argv[])
 	}
 
 	if (!engine_lib) {
-		fprintf(stderr, "Failed to load libengine.so, exiting\n");
+		fprintf(stderr, "Failed to load libengine" LIB_EXT ", exiting\n");
 		exit(1);
 	}
 
-	init_libengine_so_ptrs(engine_lib);
+	init_libengine_ptrs(engine_lib);
 #endif // _WIN32
 
 	// Tell the engine that preinit was called so it doesn't print a
