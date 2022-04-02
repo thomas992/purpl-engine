@@ -86,7 +86,7 @@ bool vulkan_pick_physical_device(void)
 		return false;
 	}
 
-	PURPL_LOG_INFO(purpl_inst->logger, "Found %u devices", device_count);
+	PURPL_LOG_INFO(purpl_inst->logger, "Found %u device%s", device_count, device_count == 1 ? "" : "s");
 
 	stbds_arrsetlen(devices, device_count);
 	vkEnumeratePhysicalDevices(vulkan->inst, &device_count, devices);
@@ -99,6 +99,13 @@ bool vulkan_pick_physical_device(void)
 			best_score = score;
 			best_idx = i;
 		}
+	}
+
+	if (!vulkan->phys_device) {
+		PURPL_LOG_ERROR(
+			purpl_inst->logger,
+			"Failed to locate a device with Vulkan support");
+		return false;
 	}
 
 	vkGetPhysicalDeviceProperties(vulkan->phys_device, &properties);
@@ -134,7 +141,7 @@ bool vulkan_get_device_queue_families(
 	vkGetPhysicalDeviceQueueFamilyProperties(device, &queue_family_count,
 						 queue_family_list);
 
-	for (i = 0; i < stbds_arrlenu(queue_family_list) && !all_found; i++) {
+	for (i = 0; i < stbds_arrlenu(queue_family_list); i++) {
 		if (queue_family_list[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) {
 			queue_families->graphics_family_present = true;
 			queue_families->graphics_family = i;
@@ -146,11 +153,13 @@ bool vulkan_get_device_queue_families(
 		vkGetPhysicalDeviceSurfaceSupportKHR(
 			device, i, vulkan->surface, &presentation_support);
 		if (presentation_support) {
-			queue_families->graphics_family_present = true;
+			queue_families->presentation_family_present = true;
 			queue_families->presentation_family = i;
 		}
 
 		all_found = (queue_families->graphics_family_present && queue_families->presentation_family_present);
+		if (all_found)
+			break;
 	}
 
 	return all_found;

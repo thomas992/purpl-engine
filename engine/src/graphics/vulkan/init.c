@@ -23,15 +23,6 @@
 #include "purpl/graphics/vulkan/logical_device.h"
 #include "vulkan/vulkan_core.h"
 
-/// Loads a Vulkan function for glad
-///
-/// \param inst The engine's Vulkan instance
-/// \param name The name of the function to load
-///
-/// \return Returns the return value of vkGetInstanceProcAddr with the same
-///	    parameters
-static GLADapiproc vulkan_load_func(VkInstance inst, const char *name);
-
 bool purpl_vulkan_init(void)
 {
 	struct purpl_instance_vulkan *vulkan = &purpl_inst->graphics.vulkan;
