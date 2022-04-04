@@ -16,6 +16,7 @@
 // limitations under the License.
 
 #include "purpl/graphics/vulkan/logical_device.h"
+#include <vulkan/vulkan_core.h>
 
 bool vulkan_create_logical_device(void)
 {
@@ -23,41 +24,44 @@ bool vulkan_create_logical_device(void)
 	VkPhysicalDeviceFeatures phys_device_features = { 0 }; // This will be
 							       // used later
 	VkDeviceCreateInfo device_create_info = { 0 };
-	float queue_priority = 1.0f; // Only need one queue
+	float queue_priority = 1.0f;
 	VkDeviceQueueCreateInfo *queue_create_infos = NULL;
-	size_t unique_queue_families[] = {
-		vulkan->phys_device_queue_families.graphics_family,
-		vulkan->phys_device_queue_families.presentation_family
-	};
-	size_t i;
+	size_t queue_create_info_count = 1;
 	VkResult result;
 
 	PURPL_LOG_INFO(purpl_inst->logger, "Creating logical device");
 
-	stbds_arrsetcap(queue_create_infos, PURPL_SIZEOF_ARRAY(unique_queue_families));
+	stbds_arrsetlen(queue_create_infos, queue_create_info_count);
 
-	for (i = 0; i < PURPL_SIZEOF_ARRAY(unique_queue_families); i++) {
-		VkDeviceQueueCreateInfo queue_create_info = { 0 };
-
+	memset(&queue_create_infos[0], 0, sizeof(VkDeviceQueueCreateInfo));
+	queue_create_infos[0].sType =
+		VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+	queue_create_infos[0].queueFamilyIndex =
+		vulkan->phys_device_queue_families.graphics_family;
+	queue_create_infos[0].queueCount = 1;
+	queue_create_infos[0].pQueuePriorities = &queue_priority;
+	if (vulkan->phys_device_queue_families.graphics_family !=
+	    vulkan->phys_device_queue_families.presentation_family) {
 		PURPL_LOG_INFO(
 			purpl_inst->logger,
-			"Filling creation information for queue family %zu (index %zu)",
-			i + 1, unique_queue_families[i]);
+			"Graphics queue family is different from presentation queue family, performance might be slightly worse");
+		queue_create_info_count = 2;
+		stbds_arrsetlen(queue_create_infos, queue_create_info_count);
+		memset(&queue_create_infos[1], 0,
+		       sizeof(VkDeviceQueueCreateInfo));
 
-		queue_create_info.sType =
+		queue_create_infos[1].sType =
 			VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-		queue_create_info.queueFamilyIndex = unique_queue_families[i];
-		queue_create_info.queueCount = 1;
-		queue_create_info.pQueuePriorities = &queue_priority;
-
-		stbds_arrput(queue_create_infos, queue_create_info);
+		queue_create_infos[1].queueFamilyIndex =
+			vulkan->phys_device_queue_families.presentation_family;
+		queue_create_infos[1].queueCount = 1;
+		queue_create_infos[1].pQueuePriorities = &queue_priority;
 	}
 
 	device_create_info.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
 	device_create_info.pEnabledFeatures = &phys_device_features;
 	device_create_info.enabledExtensionCount = 0;
-	device_create_info.queueCreateInfoCount =
-		PURPL_SIZEOF_ARRAY(unique_queue_families);
+	device_create_info.queueCreateInfoCount = queue_create_info_count;
 	device_create_info.pQueueCreateInfos = queue_create_infos;
 
 	result = vkCreateDevice(vulkan->phys_device, &device_create_info, NULL,
