@@ -26,7 +26,7 @@
 #ifdef _MSC_VER
 #define PURPL_API __declspec(dllexport)
 #else
-#define PURPL_API
+#define PURPL_API __attribute__((visibility("default")))
 #endif // _MSC_VER
 #else // !PURPL_BUILD
 #ifdef _MSC_VER
