@@ -29,11 +29,14 @@
 #include "purpl/core/inst.h"
 #include "purpl/core/types.h"
 
+#include "purpl/graphics/window.h"
+
 #include "purpl/util/util.h"
 
 #include "debug.h"
 #include "device.h"
 #include "inst.h"
+#include "logical_device.h"
 
 /// Initialize Vulkan
 ///

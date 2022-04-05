@@ -20,6 +20,17 @@
 
 #include "purpl/graphics/window.h"
 
+char *purpl_get_initial_window_title(void)
+{
+	return purpl_strfmt(NULL,
+			    "%s v%s - Vulkan - Purpl Engine v%s+%s-%s-%s",
+			    purpl_inst->app_name,
+			    purpl_format_version(purpl_inst->app_version),
+			    purpl_format_version(purpl_inst->app_version),
+			    PURPL_SOURCE_BRANCH, PURPL_SOURCE_COMMIT,
+			    PURPL_BUILD_TYPE);
+}
+
 PURPL_API char *purpl_graphics_window_get_title(void)
 {
 	return purpl_strdup(purpl_inst->wnd_title);

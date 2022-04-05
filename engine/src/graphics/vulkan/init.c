@@ -20,8 +20,6 @@
 #include "SDL.h"
 
 #include "purpl/graphics/vulkan/init.h"
-#include "purpl/graphics/vulkan/logical_device.h"
-#include "vulkan/vulkan_core.h"
 
 bool purpl_vulkan_init(void)
 {
@@ -36,12 +34,7 @@ bool purpl_vulkan_init(void)
 
 	// The window is created here because SDL doesn't support OpenGL and
 	// Vulkan in the same window
-	purpl_inst->wnd_title = purpl_strfmt(
-		NULL, "%s v%s - Vulkan - engine v%s+%s-%s-%s",
-		purpl_inst->app_name,
-		purpl_format_version(purpl_inst->app_version),
-		purpl_format_version(purpl_inst->app_version),
-		PURPL_SOURCE_BRANCH, PURPL_SOURCE_COMMIT, PURPL_BUILD_TYPE);
+	purpl_inst->wnd_title = purpl_get_initial_window_title();
 
 	PURPL_LOG_INFO(purpl_inst->logger, "Creating a window titled \"%s\"",
 		       purpl_inst->wnd_title);

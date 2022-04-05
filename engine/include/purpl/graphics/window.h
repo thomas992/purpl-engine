@@ -26,6 +26,14 @@
 
 #include "purpl/util/util.h"
 
+#ifdef PURPL_BUILD
+/// Gets the default window title so that it doesn't need to be in every
+/// graphics initialization function
+///
+/// \reutrn Returns the default window title
+extern char *purpl_get_initial_window_title(void);
+#endif // PURPL_BUILD
+
 /// Gets the window title
 ///
 /// \return Returns the current title of the engine's window. Must be freed.
