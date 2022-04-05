@@ -102,7 +102,7 @@ target_link_libraries(engine PRIVATE ${SDL2_LIBRARIES})
 if (MSVC)
 	target_compile_options(engine_preinit PRIVATE /wd4152)
 elseif(NOT WIN32)
-	target_compile_options(engine PRIVATE -fvisibility=hidden)
+	set_target_properties(engine PROPERTIES C_VISIBILITY_PRESET hidden)
 endif()
 
 if (WIN32)
