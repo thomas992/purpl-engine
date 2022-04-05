@@ -105,9 +105,9 @@ void purpl_preinit(int argc, char *argv[])
 
 	engine_lib = dlopen("./libengine" LIB_EXT, RTLD_NOW);
 	if (!engine_lib) {
-		// 16 is for the length of "bin/libengine.so\0", because that's
+		// 16 is for the length of "bin/libengine.<extension>\0", because that's
 		// the longest the path can be
-		path = calloc(strlen(argv[0]) + 16, sizeof(char));
+		path = calloc(strlen(argv[0]) + strlen("bin/libengine" LIB_EXT) + 1, sizeof(char));
 		if (!path) {
 			fprintf(stderr,
 				"Failed to allocate memory for preinit, exiting to avoid crash\n");
@@ -115,7 +115,7 @@ void purpl_preinit(int argc, char *argv[])
 		}
 
 		strncpy(path, argv[0], strlen(argv[0]));
-		strncpy(strrchr(path, '/') + 1, "bin/libengine" LIB_EXT, 16);
+		strncpy(strrchr(path, '/') + 1, "bin/libengine" LIB_EXT, strlen("bin/libengine" LIB_EXT) + 1);
 
 		engine_lib = dlopen(path, RTLD_NOW);
 

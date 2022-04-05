@@ -97,6 +97,8 @@ add_library(engine SHARED ${ENGINE_ALL_HEADERS} ${ENGINE_ALL_SOURCES} ${CMAKE_CU
 target_compile_definitions(engine_preinit PRIVATE PURPL_BUILD=1)
 target_compile_definitions(engine PRIVATE PURPL_BUILD=1)
 
+target_link_libraries(engine PRIVATE ${SDL2_LIBRARIES})
+
 if (MSVC)
 	target_compile_options(engine_preinit PRIVATE /wd4152)
 endif()
@@ -134,9 +136,9 @@ target_include_directories(engine_preinit
 				${CMAKE_CURRENT_BINARY_DIR}
 			   PRIVATE
 				${Vulkan_INCLUDE_DIRS}
+				${SDL2_INCLUDE_DIRS}
 				${CMAKE_SOURCE_DIR}/deps/glad2/include
 				${CMAKE_SOURCE_DIR}/deps/processhacker/phnt/include
-				${CMAKE_SOURCE_DIR}/deps/sdl2/include
 				${CMAKE_SOURCE_DIR}/deps/stb)
 target_include_directories(engine
 			   PUBLIC
@@ -144,6 +146,7 @@ target_include_directories(engine
 				${CMAKE_CURRENT_BINARY_DIR}
 			   PRIVATE
 				${Vulkan_INCLUDE_DIRS}
+				${SDL2_INCLUDE_DIRS}
 				${CMAKE_SOURCE_DIR}/deps/glad2/include
 				${CMAKE_SOURCE_DIR}/deps/processhacker/phnt/include
 				${CMAKE_SOURCE_DIR}/deps/sdl2/include

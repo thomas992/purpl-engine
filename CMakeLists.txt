@@ -11,18 +11,12 @@ if (${CMAKE_GENERATOR} MATCHES "Ninja")
 	endif()
 endif()
 
-# Dependencies (have to go before the custom rules but after the fix for Ninja)
-if (NOT APPLE)
-	add_subdirectory(deps/glad/cmake glad_cmake)
-endif()
-set(SDL_STATIC OFF CACHE BOOL "" FORCE)
-set(SDL_CMAKE_DEBUG_POSTFIX "" CACHE STRING "" FORCE)
-add_subdirectory(deps/sdl2 EXCLUDE_FROM_ALL)
-
 # Don't link to anything
 file(WRITE ${CMAKE_BINARY_DIR}/MakeRulesOverwrite.cmake
 [=[
 if (MSVC)
+	set(DEFAULT_C_LIBRARIES ${CMAKE_C_STANDARD_LIBRARIES_INIT})
+	set(DEFAULT_CXX_LIBRARIES ${CMAKE_C_STANDARD_LIBRARIES_INIT})
 	set(CMAKE_C_STANDARD_LIBRARIES_INIT "kernel32.lib")
 	set(CMAKE_CXX_STANDARD_LIBRARIES_INIT "kernel32.lib")
 endif()
@@ -34,7 +28,7 @@ set(CMAKE_USER_MAKE_RULES_OVERRIDE "${CMAKE_BINARY_DIR}/MakeRulesOverwrite.cmake
 project(purpl-engine VERSION 1.0.0 LANGUAGES C CXX)
 
 # Settings
-if (NOT DEFINED CMAKE_BUILD_TYPE OR ${CMAKE_BUILD_TYPE} STREQUAL "")
+if (NOT DEFINED CMAKE_BUILD_TYPE OR "${CMAKE_BUILD_TYPE}" STREQUAL "")
 	message(WARNING "CMAKE_BUILD_TYPE was not set, setting it to Debug")
 	set(CMAKE_BUILD_TYPE Debug CACHE STRING "" FORCE)
 endif()
@@ -45,6 +39,27 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 option(PURPL_ENABLE_DEMO "Build the demo" ON)
 option(PURPL_ENABLE_MEMING "Easter Eggs" OFF)
+option(PURPL_USE_SYSTEM_SDL "Use the system installation of SDL" OFF)
+
+# Dependencies
+if (NOT APPLE)
+	add_subdirectory(deps/glad/cmake glad_cmake)
+endif()
+if (PURPL_USE_SYSTEM_SDL)
+	find_package(SDL2)
+endif()
+
+if (NOT PURPL_USE_SYSTEM_SDL OR NOT SDL2_FOUND)
+	message(STATUS "Using bundled SDL")
+	set(SDL_STATIC OFF CACHE BOOL "" FORCE)
+	set(SDL_CMAKE_DEBUG_POSTFIX "" CACHE STRING "" FORCE)
+	add_subdirectory(deps/sdl2 EXCLUDE_FROM_ALL)
+	if (DEFINED DEFAULT_C_LIBRARIES)
+		target_link_libraries(${DEFAULT_C_LIBRARIES})
+	endif()
+	set(SDL2_LIBRARIES SDL2::SDL2)
+	set(SDL2_INCLUDE_DIRS deps/sdl2/include)
+endif()
 
 # Compiler and linker flags
 if (MSVC)
@@ -67,7 +82,7 @@ else()
 	if (${CMAKE_C_COMPILER_ID} MATCHES "Clang")
 		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-deprecated-declarations -Wno-gnu-folding-constant -Wno-incompatible-pointer-types-discards-qualifiers -Wno-microsoft-enum-forward-reference -Wno-pragma-pack -Wno-sign-compare -Wno-visibility")
 	else() # Assume GCC warning names
-		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-discarded-qualifiers -Wno-pointer-sign -Wno-sign-compare -Wno-unused-parameter")
+		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-discarded-qualifiers -Wno-incompatible-pointer-types -Wno-pointer-sign -Wno-sign-compare -Wno-unused-parameter")
 	endif()
 endif()
 
@@ -86,10 +101,6 @@ if (${CMAKE_BUILD_TYPE} MATCHES "Rel")
 	string(SUBSTRING "${ENGINE_COMMIT}" 0 7 ENGINE_COMMIT)
 endif()
 git_branch_name(ENGINE_BRANCH)
-
-if (NOT DEFINED GENERATOR_IS_MULTICONFIG AND NOT DEFINED CMAKE_BUILD_TYPE)
-	set(CMAKE_BUILD_TYPE Debug CACHE STRING "" FORCE)
-endif()
 
 message(STATUS "")
 message(STATUS "Purpl Engine configuration: ")
@@ -118,6 +129,11 @@ else()
 	message(STATUS "\tVulkan SDK: $ENV{VULKAN_SDK}")
 endif()
 message(STATUS "")
+if (${SDL2_FOUND})
+	message(STATUS "SDL: system")
+else()
+	message(STATUS "SDL: bundled")
+endif()
 message(STATUS "\tVulkan libraries: ${Vulkan_LIBRARIES}")
 message(STATUS "")
 
@@ -146,9 +162,11 @@ install(FILES LICENSE
 	DESTINATION ${CMAKE_INSTALL_PREFIX}/licenses)
 
 # Install select files from dependencies
-install(TARGETS SDL2
-	LIBRARY
-	DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+if (NOT PURPL_USE_SYSTEM_SDL)
+	install(TARGETS SDL2
+		LIBRARY
+		DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+endif()
 
 if (MSVC AND ${CMAKE_BUILD_TYPE} MATCHES "Deb")
 	install(PROGRAMS $<TARGET_PDB_FILE:SDL2>
