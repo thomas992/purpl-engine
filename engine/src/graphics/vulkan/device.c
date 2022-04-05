@@ -16,6 +16,7 @@
 // limitations under the License.
 
 #include "purpl/graphics/vulkan/device.h"
+#include "purpl/core/log.h"
 
 u64 vulkan_score_device(VkPhysicalDevice device, size_t idx)
 {
@@ -23,6 +24,7 @@ u64 vulkan_score_device(VkPhysicalDevice device, size_t idx)
 	VkPhysicalDeviceProperties properties;
 	VkPhysicalDeviceFeatures features;
 	struct vulkan_queue_families queue_families;
+	size_t extension_count;
 
 	if (!device) {
 		PURPL_LOG_DEBUG(purpl_inst->logger,
@@ -41,6 +43,13 @@ u64 vulkan_score_device(VkPhysicalDevice device, size_t idx)
 		return 0;
 	}
 
+	if (!vulkan_check_device_extensions(device, &extension_count)) {
+		PURPL_LOG_INFO(
+			purpl_inst->logger,
+			"Device %zu (%s) does not have the necessary extensions, ignoring",
+			idx + 1, properties.deviceName);
+	}
+
 	// iGPUs are usually shit, and on a system that doesn't follow that
 	// rule (i.e. the Steam Deck or a mobile device) there probably
 	// won't be a dGPU
@@ -53,10 +62,13 @@ u64 vulkan_score_device(VkPhysicalDevice device, size_t idx)
 		score += 100;
 
 	score += properties.limits.maxImageDimension2D;
+	score += extension_count * 10;
+
 	PURPL_LOG_INFO(purpl_inst->logger, "Device %zu (handle 0x%X):", idx + 1, device);
 	PURPL_LOG_INFO(purpl_inst->logger, "\tName: %s",
 		       properties.deviceName);
 	PURPL_LOG_INFO(purpl_inst->logger, "\tScore: %d", score);
+	PURPL_LOG_INFO(purpl_inst->logger, "\tSupported extension count: %zu", extension_count);
 	PURPL_LOG_INFO(purpl_inst->logger, "\tQueue family indices:");
 	PURPL_LOG_INFO(purpl_inst->logger, "\t\tGraphics: %zu",
 		       queue_families.graphics_family);
@@ -118,6 +130,69 @@ bool vulkan_pick_physical_device(void)
 
 	stbds_arrfree(devices);
 	return true;
+}
+
+char **vulkan_get_device_extensions(void)
+{
+	char **extensions = NULL;
+
+	stbds_arrput(extensions, VK_KHR_SWAPCHAIN_EXTENSION_NAME);
+
+	return extensions;
+}
+
+bool vulkan_check_device_extensions(VkPhysicalDevice device, size_t *extension_count)
+{
+	// GitHub Copilot autocompleted this entire function (but I had to change it a
+	// bit to get more information for the device score)
+	u32 extension_count_tmp = 0;
+	VkExtensionProperties *extensions = NULL;
+	char **extension_names;
+	size_t found = 0;
+	bool all_found = false;
+	size_t i;
+	size_t j;
+
+	vkEnumerateDeviceExtensionProperties(device, NULL, &extension_count_tmp, NULL);
+	if (!extension_count) {
+		PURPL_LOG_ERROR(
+			purpl_inst->logger,
+			"Failed to locate any device extensions");
+		return false;
+	}
+
+	extension_names = vulkan_get_device_extensions();
+
+	stbds_arrsetlen(extensions, extension_count_tmp);
+	vkEnumerateDeviceExtensionProperties(device, NULL, &extension_count_tmp,
+					     extensions);
+
+	for (i = 0; i < stbds_arrlenu(extensions); i++) {
+		for (j = 0; j < stbds_arrlenu(extension_names); j++) {
+			if (strcmp(extensions[i].extensionName,
+				   extension_names[j]) == 0) {
+				PURPL_LOG_INFO(
+					purpl_inst->logger,
+					"Found extension %s for device with handle 0x%X (total found so far: %zu)",
+					device, extensions[i].extensionName, found + 1);
+				found++;
+				break;
+			}
+		}
+	}
+
+	all_found = found >= stbds_arrlenu(extension_names);
+	if (all_found)
+		PURPL_LOG_INFO(
+			purpl_inst->logger,
+			"All device %zu extensions found", found);
+
+	stbds_arrfree(extensions);
+	stbds_arrfree(extension_names);
+
+	if (extension_count)
+		*extension_count = extension_count_tmp;
+	return all_found;
 }
 
 bool vulkan_get_device_queue_families(

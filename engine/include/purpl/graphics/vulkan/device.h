@@ -44,6 +44,19 @@ extern u64 vulkan_score_device(VkPhysicalDevice device, size_t idx);
 /// \return Returns the device chosen
 extern bool vulkan_pick_physical_device(void);
 
+/// Get the required extensions for devices
+///
+/// \return Returns the required extensions (free with stbds_arrfree)
+extern char **vulkan_get_device_extensions(void);
+
+/// Check if the device supports the required extensions
+///
+/// \param device The device to check
+/// \param extension_count The number of supported extensions
+///
+/// \return Returns true if the device supports the required extensions
+extern bool vulkan_check_device_extensions(VkPhysicalDevice device, size_t *extension_count);
+
 /// Get the queue families to be used for a device
 ///
 /// \param device The device to get queue families for

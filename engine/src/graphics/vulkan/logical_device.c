@@ -16,7 +16,6 @@
 // limitations under the License.
 
 #include "purpl/graphics/vulkan/logical_device.h"
-#include <vulkan/vulkan_core.h>
 
 bool vulkan_create_logical_device(void)
 {
@@ -27,6 +26,7 @@ bool vulkan_create_logical_device(void)
 	float queue_priority = 1.0f;
 	VkDeviceQueueCreateInfo *queue_create_infos = NULL;
 	size_t queue_create_info_count = 1;
+	char **required_extensions = vulkan_get_device_extensions();
 	VkResult result;
 
 	PURPL_LOG_INFO(purpl_inst->logger, "Creating logical device");
@@ -60,7 +60,8 @@ bool vulkan_create_logical_device(void)
 
 	device_create_info.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
 	device_create_info.pEnabledFeatures = &phys_device_features;
-	device_create_info.enabledExtensionCount = 0;
+	device_create_info.enabledExtensionCount = stbds_arrlenu(required_extensions);
+	device_create_info.ppEnabledExtensionNames = required_extensions;
 	device_create_info.queueCreateInfoCount = queue_create_info_count;
 	device_create_info.pQueueCreateInfos = queue_create_infos;
 
@@ -74,6 +75,7 @@ bool vulkan_create_logical_device(void)
 	}
 
 	stbds_arrfree(queue_create_infos);
+	stbds_arrfree(required_extensions);
 
 	PURPL_LOG_INFO(purpl_inst->logger,
 		       "Successfully created logical device with handle 0x%X",

@@ -25,6 +25,8 @@
 #include "purpl/core/inst.h"
 #include "purpl/core/types.h"
 
+#include "device.h"
+
 /// Creates a logical device
 ///
 /// \return Returns true if the creation succeeded
