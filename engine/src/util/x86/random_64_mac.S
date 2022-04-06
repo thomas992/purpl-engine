@@ -1,4 +1,4 @@
-;  Windows RNG using RDSEED
+;  Unix-like RNG using RDSEED
 ;
 ;  Copyright 2022 MobSlicer152
 ;  This file is part of Purpl Engine
@@ -16,31 +16,31 @@
 ;  limitations under the License.
 
 
-OPTION PROLOGUE:NONE
+BITS 64
+DEFAULT REL
 
-.code
+EXTERN rand
 
-PUBLIC purpl_arch_random
-purpl_arch_random PROC
+SECTION .text
+
+GLOBAL purpl_arch_random
+purpl_arch_random:
 	; Check for RDSEED
 	mov eax, 7
 	mov ecx, 0
 	cpuid
 	shr rbx, 18
 	and ebx, 1
-	jz fail
+	jz .fail
 
-	mov ecx, 100
-	retry:
+	mov ecx, 100 ; Number of retries
+	.retry:
 		rdseed rax
-		jc done
-		jmp retry
-	fail:
-		call rand
+		jc .done ; Carry flag set on success
+		jmp .retry
+	.fail:
+		; Call rand
+		call rand wrt ..got
+	.done:
 		ret
-	done:
-		ret
-purpl_arch_random ENDP
-
-END
 
