@@ -18,6 +18,8 @@
 
 OPTION PROLOGUE:NONE
 
+EXTERN rand
+
 .code
 
 PUBLIC purpl_arch_random
