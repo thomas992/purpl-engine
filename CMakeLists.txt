@@ -27,6 +27,21 @@ set(CMAKE_USER_MAKE_RULES_OVERRIDE "${CMAKE_BINARY_DIR}/MakeRulesOverwrite.cmake
 # Declare the project
 project(purpl-engine VERSION 1.0.0 LANGUAGES C CXX)
 
+if (WIN32)
+	enable_language(ASM_MASM)
+else()
+	set(CMAKE_ASM_NASM_EXECUTABLE ${CMAKE_SOURCE_DIR}/tools/nasm)
+	set(CMAKE_ASM_NASM_LINK_EXECUTABLE "ld <CMAKE_ASM_NASM_LINK_FLAGS> <LINK_FLAGS> <OBJECTS>  -o <TARGET> <LINK_LIBRARIES>")
+	set(CMAKE_ASM_NASM_SOURCE_FILE_EXTENSIONS S)
+	if (APPLE)
+		set(CMAKE_ASM_NASM_OBJECT_FORMAT macho64)
+	else()
+		set(CMAKE_ASM_NASM_OBJECT_FORMAT elf64)
+	endif()
+	set(CMAKE_ASM_NASM_FLAGS_DEBUG "-gdwarf")
+	enable_language(ASM_NASM)
+endif()
+
 cmake_policy(SET CMP0079 NEW)
 
 # Settings

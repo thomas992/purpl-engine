@@ -42,16 +42,14 @@
 /// True if c is a vowel in the Latin alphabet
 #define PURPL_ISVOWEL(c) ((c) == 'a' || (c) == 'e' || (c) == 'i' || (c) == 'o' || (c) == 'u')
 
-/// Generates a random number by calling srand with the seed, calling rand,
-/// shifting the result left by 32 bits, seeding again with the seed shifted
-/// by the major version of the engine, then ORing it with another call to rand.
-/// This isn't supposed to be secure at all, but if there's enough reason I'll
-/// just make something using OpenSSL.
+/// Generates a random number by using RDSEED (x86) or RNDR (ARM), but if that
+/// fails then it uses rand() twice. This isn't supposed to be secure at all,
+/// but if there's enough reason I'll just make something using OpenSSL.
 ///
 /// \param limit The maximum value
 ///
 /// \return A random number between 0 and limit
-extern PURPL_API u64 purpl_random(u32 seed, u64 limit);
+extern PURPL_API u64 purpl_random(u64 limit);
 
 /// The current process ID
 ///

@@ -30,15 +30,11 @@
 
 #include "purpl/util/misc.h"
 
-PURPL_API u64 purpl_random(u32 seed, u64 limit)
+extern PURPL_ASM_CALL u64 purpl_arch_random(void);
+
+PURPL_API u64 purpl_random(u64 limit)
 {
-	u64 result;
-	srand(seed);
-	result = rand();
-	result = result << 32;
-	srand(seed << PURPL_MAJOR_VERSION);
-	result |= rand();
-	return result % limit;
+	return purpl_arch_random() % limit;
 }
 
 PURPL_API u32 purpl_get_pid(void)

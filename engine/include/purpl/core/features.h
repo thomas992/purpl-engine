@@ -23,3 +23,12 @@
 // Defined if 128-bit integers are available
 #define PURPL_INT128_AVAILABLE 1
 #endif // __clang__ || __GNUC__
+
+#ifdef PURPL_X86_64
+#if defined _MSC_VER
+#define PURPL_ASM_CALL
+#else // _MSC_VER
+#define PURPL_ASM_CALL __attribute__((__ms_abi__))
+#endif // _MSC_VER
+#endif // PURPL_X86_64
+

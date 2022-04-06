@@ -381,8 +381,7 @@ PURPL_API void purpl_log_close(struct purpl_logger *logger, bool last_message)
 	const char *adjectives[] = { "nice", "good", "pleasant", "amazing" };
 	const char *time_of_day = "day";
 	struct tm *t;
-	size_t random = purpl_random((u32)(u64)adjectives, 100) %
-			PURPL_SIZEOF_ARRAY(adjectives);
+	size_t random = purpl_random(100) % PURPL_SIZEOF_ARRAY(adjectives);
 
 	if (!logger)
 		return;
