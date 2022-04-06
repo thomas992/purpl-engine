@@ -47,8 +47,8 @@ PURPL_API struct purpl_logger *purpl_log_create(const char *file,
 				    t2->tm_mon + 1, t2->tm_year + 1900);
 	else
 		date = purpl_strfmt(NULL, "?\?-?\?-????"); // Escapes are to
-								   // prevent trigraph
-								   // expansion
+							   // prevent trigraph
+							   // expansion
 
 	filename = purpl_strrplc(file ? file : PURPL_LOG_DEFAULT_NAME,
 				 "<date>", date, NULL);
@@ -378,10 +378,11 @@ purpl_log_set_max_level(struct purpl_logger *logger,
 PURPL_API void purpl_log_close(struct purpl_logger *logger, bool last_message)
 {
 	char *msg;
-	const char *adjectives[] = { "nice", "good", "pleasant" };
+	const char *adjectives[] = { "nice", "good", "pleasant", "amazing" };
 	const char *time_of_day = "day";
 	struct tm *t;
-	size_t random = PURPL_RANDOM(100) % PURPL_SIZEOF_ARRAY(adjectives);
+	size_t random = purpl_random((u32)(u64)adjectives, 100) %
+			PURPL_SIZEOF_ARRAY(adjectives);
 
 	if (!logger)
 		return;
@@ -399,9 +400,9 @@ PURPL_API void purpl_log_close(struct purpl_logger *logger, bool last_message)
 			time_of_day = "night";
 
 		msg = purpl_strfmt(
-			NULL, "This logger is shutting down. Have a %s %s.",
-			adjectives[random], time_of_day, random,
-			PURPL_SIZEOF_ARRAY(adjectives) - 1);
+			NULL, "This logger is shutting down. Have a%s %s %s.",
+			PURPL_ISVOWEL(adjectives[random][0]) ? "n" : "",
+			adjectives[random], time_of_day);
 		PURPL_LOG_INFO(purpl_inst->logger, "%s", msg);
 		free(msg);
 	}

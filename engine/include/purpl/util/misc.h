@@ -17,6 +17,8 @@
 
 #pragma once
 
+#include <stdlib.h>
+
 #include "purpl/core/coredefs.h"
 #include "purpl/core/types.h"
 
@@ -37,8 +39,15 @@
 /// Ignore x
 #define PURPL_IGNORE(x) ((void)(x))
 
+/// True if c is a vowel in the Latin alphabet
+#define PURPL_ISVOWEL(c) ((c) == 'a' || (c) == 'e' || (c) == 'i' || (c) == 'o' || (c) == 'u')
+
 /// Generates a random number
-#define PURPL_RANDOM(limit) (rand() % (limit))
+///
+/// \param limit The maximum value
+///
+/// \return A random number between 0 and limit
+extern PURPL_API u32 purpl_random(u32 seed, u32 limit);
 
 /// The current process ID
 ///

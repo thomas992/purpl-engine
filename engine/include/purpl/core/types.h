@@ -17,6 +17,7 @@
 
 #pragma once
 
+#include <ctype.h>
 #include <inttypes.h>
 #include <stdbool.h>
 #include <stddef.h>
