@@ -96,6 +96,10 @@ add_library(engine_preinit STATIC ${CMAKE_SOURCE_DIR}/tools/dumppe.py ${CMAKE_SO
 add_library(engine SHARED ${ENGINE_ALL_HEADERS} ${ENGINE_ALL_SOURCES} ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 target_compile_definitions(engine_preinit PRIVATE PURPL_BUILD=1)
 target_compile_definitions(engine PRIVATE PURPL_BUILD=1)
+if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+	target_compile_definitions(engine_preinit PRIVATE PURPL_DEBUG=1)
+	target_compile_definitions(engine PRIVATE PURPL_DEBUG=1)
+endif()
 
 target_link_libraries(engine PRIVATE ${SDL2_LIBRARIES})
 

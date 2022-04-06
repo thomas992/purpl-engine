@@ -36,11 +36,6 @@
 #endif // _MSC_VER
 #endif // PURPL_BUILD
 
-/// Whether debugging features should be enabled
-#ifndef NDEBUG
-#define PURPL_DEBUG 1
-#endif // !NDEBUG
-
 /// Make a version number from major, minor, and patch numbers
 #define PURPL_MAKE_VERSION(major, minor, patch) \
 	((((major)&0xFF) << 16) | (((minor)&0xFF) << 8) | ((patch)&0xFF))
