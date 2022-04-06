@@ -53,7 +53,7 @@ set(ENGINE_UTIL_SOURCES
     src/util/string.c)
 
 set(ENGINE_WINDOWS_AMD64_SOURCES
-    src/util/x86/random_64.asm
+    src/util/x86/random_64.asm)
 
 set(ENGINE_x86_64_SOURCES
     src/util/x86/random_64.S)
