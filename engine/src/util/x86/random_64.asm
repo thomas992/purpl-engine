@@ -18,7 +18,7 @@
 
 OPTION PROLOGUE:NONE
 
-EXTERN rand
+EXTERN rand:PROC
 
 .code
 
