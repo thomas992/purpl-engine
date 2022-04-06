@@ -104,8 +104,6 @@ PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 		return false;
 	}
 
-	srand((u32)((u64)purpl_inst & ((u64)purpl_inst->logger) * time(NULL)));
-
 	PURPL_LOG_INFO(purpl_inst->logger,
 		       "Purpl Engine #V initialized for application #n #v");
 
