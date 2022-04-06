@@ -19,12 +19,12 @@
 BITS 64
 DEFAULT REL
 
-EXTERN rand
+EXTERN _rand
 
 SECTION .text
 
-GLOBAL purpl_arch_random
-purpl_arch_random:
+GLOBAL _purpl_arch_random
+_purpl_arch_random:
 	; Check for RDSEED
 	mov eax, 7
 	mov ecx, 0
