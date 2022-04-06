@@ -40,7 +40,7 @@ purpl_arch_random:
 		jmp .retry
 	.fail:
 		; Call rand
-		call rand wrt ..got
+		call rand
 	.done:
 		ret
 
