@@ -20,6 +20,7 @@ OPTION PROLOGUE:NONE
 
 .code
 
+PUBLIC purpl_arch_random
 purpl_arch_random PROC
 	; Check for RDSEED
 	mov eax, 7
