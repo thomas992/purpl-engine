@@ -46,7 +46,7 @@ so_name = os.path.basename(sys.argv[1]).replace("-", "_").replace(".", "_")
 f.write(bytes(f"\nvoid init_{so_name}_ptrs(void *so)\n{{\n", encoding="utf-8"))
 
 for name in names:
-    f.write(bytes(f"\t*(void **)(&{name}) = dlsym(so, \"{name}\");\n", encoding="utf-8"))
+    f.write(bytes(f"\t*(void **)(&{name}) = dlsym(so, \"{name[1:]}\");\n", encoding="utf-8"))
 
 f.write(bytes("}\n", encoding="utf-8"))
 f.close()
