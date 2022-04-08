@@ -16,14 +16,14 @@
 // limitations under the License.
 
 #include "purpl/graphics/vulkan/device.h"
-#include "purpl/core/log.h"
 
 u64 vulkan_score_device(VkPhysicalDevice device, size_t idx)
 {
 	u64 score = 0;
 	VkPhysicalDeviceProperties properties;
 	VkPhysicalDeviceFeatures features;
-	struct vulkan_queue_families queue_families;
+	struct vulkan_queue_families queue_families = { 0 };
+	struct vulkan_swapchain_info swapchain_info = { 0 };
 	size_t extension_count;
 
 	if (!device) {
@@ -48,6 +48,15 @@ u64 vulkan_score_device(VkPhysicalDevice device, size_t idx)
 			purpl_inst->logger,
 			"Device %zu (%s) does not have the necessary extensions, ignoring",
 			idx + 1, properties.deviceName);
+		return 0;
+	}
+
+	if (!vulkan_get_swapchain_info(device, &swapchain_info)) {
+		PURPL_LOG_INFO(
+			purpl_inst->logger,
+			"Device %zu (%s) does not have the necessary swapchain info, ignoring",
+			idx + 1, properties.deviceName);
+		return 0;
 	}
 
 	// iGPUs are usually shit, and on a system that doesn't follow that
@@ -62,9 +71,9 @@ u64 vulkan_score_device(VkPhysicalDevice device, size_t idx)
 		score += 100;
 
 	score += properties.limits.maxImageDimension2D;
-	score += extension_count * 10;
+	score += extension_count * 10; // More extensions == more better
 
-	PURPL_LOG_INFO(purpl_inst->logger, "Device %zu (handle 0x%X):", idx + 1, device);
+	PURPL_LOG_INFO(purpl_inst->logger, "Device %zu (handle 0x%" PRIX64 "):", idx + 1, device);
 	PURPL_LOG_INFO(purpl_inst->logger, "\tName: %s",
 		       properties.deviceName);
 	PURPL_LOG_INFO(purpl_inst->logger, "\tScore: %d", score);
@@ -74,13 +83,22 @@ u64 vulkan_score_device(VkPhysicalDevice device, size_t idx)
 		       queue_families.graphics_family);
 	PURPL_LOG_INFO(purpl_inst->logger, "\t\tPresentation: %zu",
 		       queue_families.presentation_family);
+	PURPL_LOG_INFO(purpl_inst->logger, "\tSwapchain information:");
+	PURPL_LOG_INFO(purpl_inst->logger, "\t\tSurface format count: %zu",
+		       stbds_arrlenu(swapchain_info.formats));
+	PURPL_LOG_INFO(purpl_inst->logger, "\t\tPresent mode count: %zu",
+		       stbds_arrlenu(swapchain_info.present_modes));
+
+	stbds_arrfree(swapchain_info.formats);
+	stbds_arrfree(swapchain_info.present_modes);
 
 	return score;
 }
 
 bool vulkan_pick_physical_device(void)
 {
-	struct purpl_instance_vulkan *vulkan = &purpl_inst->graphics.vulkan;
+	PURPL_ALIAS_GRAPHICS_DATA(vulkan);
+
 	VkPhysicalDeviceProperties properties;
 	VkPhysicalDevice *devices = NULL;
 	u32 device_count = 0;
@@ -123,10 +141,11 @@ bool vulkan_pick_physical_device(void)
 	vkGetPhysicalDeviceProperties(vulkan->phys_device, &properties);
 	PURPL_LOG_INFO(
 		purpl_inst->logger,
-		"Device %zu (%s, handle 0x%X) has the best score (its score is %llu)",
+		"Device %zu (%s, handle 0x%" PRIX64 ") has the best score (its score is %llu)",
 		best_idx + 1, properties.deviceName, vulkan->phys_device, best_score);
 	vulkan_get_device_queue_families(vulkan->phys_device,
 					 &vulkan->phys_device_queue_families);
+	vulkan_get_swapchain_info(vulkan->phys_device, &vulkan->swapchain_info);
 
 	stbds_arrfree(devices);
 	return true;
@@ -173,8 +192,8 @@ bool vulkan_check_device_extensions(VkPhysicalDevice device, size_t *extension_c
 				   extension_names[j]) == 0) {
 				PURPL_LOG_INFO(
 					purpl_inst->logger,
-					"Found extension %s for device with handle 0x%X (total found so far: %zu)",
-					device, extensions[i].extensionName, found + 1);
+					"Found extension %s for device with handle 0x%" PRIX64 " (total found so far: %zu)",
+					extensions[i].extensionName, device, found + 1);
 				found++;
 				break;
 			}
@@ -185,7 +204,7 @@ bool vulkan_check_device_extensions(VkPhysicalDevice device, size_t *extension_c
 	if (all_found)
 		PURPL_LOG_INFO(
 			purpl_inst->logger,
-			"All device %zu extensions found", found);
+			"All %zu device extensions found for device with handle 0x%" PRIX64, found, device);
 
 	stbds_arrfree(extensions);
 	stbds_arrfree(extension_names);
@@ -198,7 +217,8 @@ bool vulkan_check_device_extensions(VkPhysicalDevice device, size_t *extension_c
 bool vulkan_get_device_queue_families(
 	VkPhysicalDevice device, struct vulkan_queue_families *queue_families)
 {
-	struct purpl_instance_vulkan *vulkan = &purpl_inst->graphics.vulkan;
+	PURPL_ALIAS_GRAPHICS_DATA(vulkan);
+
 	VkQueueFamilyProperties *queue_family_list = NULL;
 	u32 queue_family_count = 0;
 	bool all_found = false;
@@ -222,8 +242,6 @@ bool vulkan_get_device_queue_families(
 			queue_families->graphics_family = i;
 		}
 
-		// 32 fucking bits for a BOOLEAN? 8 is already too many, but at least that's
-		// due to everything already operating at byte granularity at minimum.
 		VkBool32 presentation_support = 0;
 		vkGetPhysicalDeviceSurfaceSupportKHR(
 			device, i, vulkan->surface, &presentation_support);

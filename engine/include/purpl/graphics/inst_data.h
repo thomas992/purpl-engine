@@ -24,11 +24,16 @@
 #include "purpl/core/coredefs.h"
 #include "purpl/core/types.h"
 
+#define PURPL_ALIAS_GRAPHICS_DATA(api) struct purpl_instance_ ## api  *api = \
+						&purpl_inst->graphics.api
+
 // Vulkan supports everything except macOS (MoltenVK exists,
 // but I'd rather just write it in Metal eventually)
 // Vulkan information
 #ifndef __APPLE__
 #include <vulkan/vulkan.h>
+
+// Unfourtunately, this is the best place to put these structures, even though I hate it
 
 /// Vulkan queue family information
 struct vulkan_queue_families {
@@ -38,6 +43,14 @@ struct vulkan_queue_families {
 				    // family
 	bool presentation_family_present; // Whether presentation_family is
 					  // present
+};
+
+/// Vulkan swapchain information
+struct vulkan_swapchain_info {
+	VkSurfaceCapabilitiesKHR capabilities; // The capabilities of the swapchain
+					       // surface
+	VkSurfaceFormatKHR *formats; // The formats of the surface
+	VkPresentModeKHR *present_modes; // The presentation modes of the surface
 };
 
 struct purpl_instance_vulkan {
@@ -54,5 +67,8 @@ struct purpl_instance_vulkan {
 	VkSurfaceKHR surface; // Surface
 
 	VkQueue presentation_queue; // Presentation queue
+
+	struct vulkan_swapchain_info swapchain_info; // Swapchain information
+	VkSwapchainKHR swapchain; // Swapchain
 };
 #endif // !__APPLE__

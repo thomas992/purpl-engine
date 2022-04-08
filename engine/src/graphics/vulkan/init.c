@@ -23,7 +23,7 @@
 
 bool purpl_vulkan_init(void)
 {
-	struct purpl_instance_vulkan *vulkan = &purpl_inst->graphics.vulkan;
+	PURPL_ALIAS_GRAPHICS_DATA(vulkan);
 
 #ifdef __APPLE__
 	return false;
@@ -53,6 +53,8 @@ bool purpl_vulkan_init(void)
 		return false;
 	}
 
+	gladLoaderLoadVulkan(vulkan->inst, NULL, NULL);
+
 	// Surface creation is only one line (excluding error checking, which
 	// is about the same here as it would be in a separate function), it
 	// really doesn't need its own file or function
@@ -66,7 +68,7 @@ bool purpl_vulkan_init(void)
 		return false;
 	}
 	PURPL_LOG_INFO(purpl_inst->logger,
-		       "Successfully created surface with handle 0x%X",
+		       "Successfully created surface with handle 0x%" PRIX64,
 		       vulkan->surface);
 
 	if (!vulkan_pick_physical_device()) {
@@ -88,25 +90,25 @@ bool purpl_vulkan_init(void)
 
 void purpl_vulkan_shutdown(void)
 {
-	struct purpl_instance_vulkan *vulkan = &purpl_inst->graphics.vulkan;
+	PURPL_ALIAS_GRAPHICS_DATA(vulkan);
 
 	if (vulkan->device) {
 		vkDestroyDevice(vulkan->device, NULL);
 		PURPL_LOG_INFO(purpl_inst->logger,
-			       "Destroyed logical device with handle 0x%X",
+			       "Destroyed logical device with handle 0x%" PRIX64,
 			       vulkan->device);
 	}
 
 	if (vulkan->surface) {
 		vkDestroySurfaceKHR(vulkan->inst, vulkan->surface, NULL);
-		PURPL_LOG_INFO(purpl_inst->logger, "Destroyed surface with handle 0x%X",
+		PURPL_LOG_INFO(purpl_inst->logger, "Destroyed surface with handle 0x%" PRIX64,
 			       vulkan->surface);
 	}
 
 	if (vulkan->inst) {
 		vkDestroyInstance(vulkan->inst, NULL);
 		PURPL_LOG_INFO(purpl_inst->logger,
-			       "Destroyed Vulkan instance with handle 0x%X",
+			       "Destroyed Vulkan instance with handle 0x%" PRIX64,
 			       vulkan->device);
 	}
 }

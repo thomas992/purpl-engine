@@ -32,6 +32,8 @@
 
 #include "purpl/util/util.h"
 
+#include "swapchain.h"
+
 /// Score a device based on its properties
 ///
 /// \param device The device to score

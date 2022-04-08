@@ -18,7 +18,8 @@ set(ENGINE_VULKAN_HEADERS
     include/purpl/graphics/vulkan/device.h
     include/purpl/graphics/vulkan/init.h
     include/purpl/graphics/vulkan/inst.h
-    include/purpl/graphics/vulkan/logical_device.h)
+    include/purpl/graphics/vulkan/logical_device.h
+    include/purpl/graphics/vulkan/swapchain.h)
 
 set(ENGINE_UTIL_HEADERS
     include/purpl/util/error.h
@@ -43,7 +44,8 @@ set(ENGINE_VULKAN_SOURCES
     src/graphics/vulkan/device.c
     src/graphics/vulkan/init.c
     src/graphics/vulkan/inst.c
-    src/graphics/vulkan/logical_device.c)
+    src/graphics/vulkan/logical_device.c
+    src/graphics/vulkan/swapchain.c)
 
 set(ENGINE_UTIL_SOURCES
     src/util/error.c

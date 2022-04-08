@@ -19,7 +19,8 @@
 
 bool vulkan_create_instance(void)
 {
-	struct purpl_instance_vulkan *vulkan = &purpl_inst->graphics.vulkan;
+	PURPL_ALIAS_GRAPHICS_DATA(vulkan);
+
 	VkResult res = 0;
 	VkInstanceCreateInfo create_info = { 0 };
 	VkApplicationInfo app_info = { 0 };
@@ -87,9 +88,10 @@ bool vulkan_create_instance(void)
 
 	PURPL_LOG_INFO(
 		purpl_inst->logger,
-		"Successfully created a Vulkan instance with handle 0x%X with %zu extension%s and %zu validation layer%s enabled",
-		vulkan->inst, ext_count, ext_count == 1 ? "" : "s", layer_count,
-		layer_count == 1 ? "" : "s");
+		"Successfully created a Vulkan instance with handle 0x%" PRIX64
+		" with %zu extension%s and %zu validation layer%s enabled",
+		vulkan->inst, ext_count, ext_count == 1 ? "" : "s",
+		layer_count, layer_count == 1 ? "" : "s");
 
 	stbds_arrfree(required_exts);
 	stbds_arrfree(ext_props);

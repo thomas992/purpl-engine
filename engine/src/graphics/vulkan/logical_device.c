@@ -19,7 +19,8 @@
 
 bool vulkan_create_logical_device(void)
 {
-	struct purpl_instance_vulkan *vulkan = &purpl_inst->graphics.vulkan;
+	PURPL_ALIAS_GRAPHICS_DATA(vulkan);
+
 	VkPhysicalDeviceFeatures phys_device_features = { 0 }; // This will be
 							       // used later
 	VkDeviceCreateInfo device_create_info = { 0 };
@@ -78,7 +79,7 @@ bool vulkan_create_logical_device(void)
 	stbds_arrfree(required_extensions);
 
 	PURPL_LOG_INFO(purpl_inst->logger,
-		       "Successfully created logical device with handle 0x%X",
+		       "Successfully created logical device with handle 0x%" PRIX64,
 		       vulkan->device);
 
 	vkGetDeviceQueue(
@@ -86,7 +87,7 @@ bool vulkan_create_logical_device(void)
 		vulkan->phys_device_queue_families.presentation_family, 0,
 		&vulkan->presentation_queue);
 	PURPL_LOG_INFO(purpl_inst->logger,
-		       "Retrieved handle 0x%X for presentation queue",
+		       "Retrieved handle 0x%" PRIX64 " for presentation queue",
 		       vulkan->presentation_queue);
 
 	return true;
