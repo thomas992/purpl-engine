@@ -204,7 +204,7 @@ bool vulkan_check_device_extensions(VkPhysicalDevice device, size_t *extension_c
 	if (all_found)
 		PURPL_LOG_INFO(
 			purpl_inst->logger,
-			"All %zu device extensions found for device with handle 0x%" PRIX64, found, device);
+			"All device extensions (%zu in total) found for device with handle 0x%" PRIX64, found, device);
 
 	stbds_arrfree(extensions);
 	stbds_arrfree(extension_names);

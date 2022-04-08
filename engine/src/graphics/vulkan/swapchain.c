@@ -29,11 +29,8 @@ bool vulkan_get_swapchain_info(VkPhysicalDevice device, struct vulkan_swapchain_
 		return false;
 	}
 
-	PURPL_LOG_INFO(purpl_inst->logger, "Checking device with handle 0x%" PRIX64 " for swapchain support", device);
-
 	vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, vulkan->surface, &info->capabilities);
 	
-	PURPL_LOG_INFO(purpl_inst->logger, "Checking device surface formats");
 	vkGetPhysicalDeviceSurfaceFormatsKHR(device, vulkan->surface, &format_count, NULL);
 	if (!format_count) {
 		PURPL_LOG_ERROR(purpl_inst->logger, "Failed to get surface formats");
@@ -41,9 +38,7 @@ bool vulkan_get_swapchain_info(VkPhysicalDevice device, struct vulkan_swapchain_
 	}
 	stbds_arrsetlen(info->formats, format_count);
 	vkGetPhysicalDeviceSurfaceFormatsKHR(device, vulkan->surface, &format_count, info->formats);
-	PURPL_LOG_INFO(purpl_inst->logger, "Found %u surface formats for device with handle 0x%" PRIX64, format_count, device);
 
-	PURPL_LOG_INFO(purpl_inst->logger, "Checking device surface present modes");
 	vkGetPhysicalDeviceSurfacePresentModesKHR(device, vulkan->surface, &present_mode_count, NULL);
 	if (!present_mode_count) {
 		PURPL_LOG_ERROR(purpl_inst->logger, "Failed to get surface present modes");
@@ -51,7 +46,6 @@ bool vulkan_get_swapchain_info(VkPhysicalDevice device, struct vulkan_swapchain_
 	}
 	stbds_arrsetlen(info->present_modes, present_mode_count);
 	vkGetPhysicalDeviceSurfacePresentModesKHR(device, vulkan->surface, &present_mode_count, info->present_modes);
-	PURPL_LOG_INFO(purpl_inst->logger, "Found %u surface present modes for device with handle 0x%" PRIX64, present_mode_count, device);
 
 	return true;
 }
