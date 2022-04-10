@@ -21,8 +21,8 @@
 
 // A structure to store information for the application
 struct demo_info {
-	double frames; // Number of times frame_func was called
-	double deltas; // Sum of every frame delta
+	long double frames; // Number of times frame_func was called
+	long double deltas; // Sum of every frame delta
 };
 
 // This will be called each frame by the engine
@@ -48,7 +48,7 @@ int32_t main(int32_t argc, char *argv[])
 	// Shut down the engine
 	purpl_shutdown();
 
-	printf("Rendered a total of %lf frames, with an average delta of %lf\n", info.frames, info.deltas / info.frames);
+	printf("Rendered a total of %*.Lf frames, with an average delta of %Lf milliseconds\n", 0, info.frames, info.deltas / info.frames);
 	
 	return 0;
 }

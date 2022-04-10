@@ -92,25 +92,30 @@ steps:
       call tools\buildenv.bat
       cmake -S. -Bbuild -GNinja -DVULKAN_SDK=$(vulkanSdk) -DVulkan_LIBRARY=$(vulkanSdk)/Lib/vulkan-1.lib -DVulkan_INCLUDE_DIR=$(vulkanSdk)/Include -DCMAKE_C_COMPILER=$(cc) -DCMAKE_BUILD_TYPE=$(config)
     condition: eq(variables['Agent.OS'], 'Windows_NT')
-    displayName: Generate build files
+    displayName: Generate build files (Windows)
 
   - script: |
       cmake -S. -Bbuild -GNinja -DVulkan_LIBRARY=/usr/lib/x86_64-linux-gnu/libvulkan.so -DCMAKE_C_COMPILER=$(cc) -DCMAKE_BUILD_TYPE=$(config)
-    condition: not(eq(variables['Agent.OS'], 'Windows_NT'))
-    displayName: Generate build files
+    condition: eq(variables['Agent.OS'], 'Linux')
+    displayName: Generate build files (Linux)
+
+  - script: |
+      cmake -S. -Bbuild -GXcode -DCMAKE_C_COMPILER=$(cc) -DCMAKE_BUILD_TYPE=$(config)
+    condition: eq(variables['Agent.OS'], 'Darwin')
+    displayName: Generate build files (macOS)
 
   - script: |
       call tools\buildenv.bat
       cmake --build build --config $(config)
       cmake --install build --config $(config)
     condition: eq(variables['Agent.OS'], 'Windows_NT')
-    displayName: Build
+    displayName: Build (Windows)
 
   - script: |
       cmake --build build --config $(config)
       cmake --install build --config $(config)
     condition: not(eq(variables['Agent.OS'], 'Windows_NT'))
-    displayName: Build
+    displayName: Build (non-Windows)
 
   - task: ArchiveFiles@2
     inputs:

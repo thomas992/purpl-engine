@@ -2,6 +2,10 @@ cmake_minimum_required(VERSION 3.15)
 
 include(cmake/GetGitRevisionDescription.cmake)
 
+if (APPLE AND NOT ${CMAKE_GENERATOR} MATCHES "XCode")
+	message(FATAL "Only XCode is supported on Apple platforms due to otherwise incomplete compatibility with mixing C and Swift code in CMake")
+endif()
+
 # Use the engine's Ninja
 if (${CMAKE_GENERATOR} MATCHES "Ninja")
 	if (WIN32)
