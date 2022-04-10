@@ -16,5 +16,12 @@ cmake --build build
 cmake --install build # Installs to `build/install`
 ```
 
-On Windows, if you use `clang-cl`, at the time of this writing it doesn't support `/MP`, making it slower and also causing warnings about it. Building with the regular `clang` frontend instead has no such issue, and is faster, so use it unless you have good reason.
+## Extra CMake options
+- `PURPL_ENABLE_DEMO` - Whether to build the demo
+- `PURPL_ENABLE_MEMING` - Whether to enable small Easter Eggs in the engine
+- `PURPL_USE_SYSTEM_SDL` - Whether to build the engine with the system installation of SDL
+
+## System-specific notes
+
+On Windows, if you use `clang-cl`, at the time of this writing it doesn't support `/MP`, making it slower and also causing warnings about it. Building with the regular `clang` frontend instead has no such issue, and is faster, so use it unless you have good reason. On macOS, due to limitations in CMake, it is necessary to use XCode for the engine, but it doesn't seem to be working with SDL currently. This makes it necessary to use the system installation of SDL, but at least that shouldn't be too big an issue.
 
