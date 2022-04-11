@@ -48,8 +48,6 @@ void *engine_lib = NULL;
 #define purpl_internal_shutdown __imp_purpl_internal_shutdown
 #endif // _WIN32
 
-extern void purpl_internal_shutdown(void);
-
 void purpl_preinit(int argc, char *argv[])
 {
 	// On Windows, the pre-initialization requires loading the engine DLL,
