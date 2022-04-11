@@ -37,10 +37,10 @@ void *engine_lib = NULL;
 
 #ifdef __APPLE__
 #define LIB_EXT ".dylib"
-#define init_libengine_ptrs init_libengine_dylib_ptrs
+#define init_engine_ptrs init_engine_dylib_ptrs
 #elif __linux__ // __APPLE__
 #define LIB_EXT ".so"
-#define init_libengine_ptrs init_libengine_so_ptrs
+#define init_engine_ptrs init_engine_so_ptrs
 #endif // __APPLE__
 
 #ifdef _WIN32
@@ -128,7 +128,7 @@ void purpl_preinit(int argc, char *argv[])
 		exit(1);
 	}
 
-	init_libengine_ptrs(engine_lib);
+	init_engine_ptrs(engine_lib);
 #endif // _WIN32
 
 	// Tell the engine that preinit was called so it doesn't print a

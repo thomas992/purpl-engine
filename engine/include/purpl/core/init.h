@@ -68,4 +68,4 @@ extern PURPL_API bool purpl_init(const char *app_name, u32 app_version);
 extern PURPL_API void purpl_run(purpl_frame_func frame, void *user_data);
 
 /// Shut down the engine
-extern PURPL_API void purpl_shutdown(void);
+extern void purpl_shutdown(void);

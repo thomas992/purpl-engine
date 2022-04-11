@@ -176,8 +176,8 @@ target_include_directories(engine
 				${CMAKE_SOURCE_DIR}/deps/stb)
 target_link_libraries(engine PRIVATE SDL2::SDL2)
 if (APPLE)
-    set_target_properties(engine
-			  PROPERTIES
+	set_target_properties(engine
+			      PROPERTIES
 				XCODE_ATTRIBUTE_SWIFT_OBJC_BRIDGING_HEADER ${CMAKE_CURRENT_SOURCE_DIR}/include/purpl/core/swift.h)
 else()
 	target_link_libraries(engine
@@ -186,6 +186,8 @@ else()
 				glad_vulkan
 				${Vulkan_LIBRARIES})
 endif()
+set_target_properties(engine PROPERTIES PREFIX "")
+set_target_properties(engine_preinit PROPERTIES PREFIX "")
 
 if (WIN32)
 	set(ENGINE_RUNTIME_FILES_ $<TARGET_FILE:engine> $<TARGET_FILE:SDL2::SDL2>)
