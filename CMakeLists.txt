@@ -32,6 +32,9 @@ set(CMAKE_USER_MAKE_RULES_OVERRIDE "${CMAKE_BINARY_DIR}/MakeRulesOverwrite.cmake
 project(purpl-engine VERSION 1.0.0 LANGUAGES C CXX)
 
 enable_language(ASM)
+if (APPLE)
+	enable_language(Swift)
+endif()
 
 cmake_policy(SET CMP0079 NEW)
 
@@ -133,6 +136,9 @@ foreach (X ${COMPILER_VERSION})
 	message(STATUS "\t\t${X}")
 endforeach()
 message(STATUS "\tC flags: ${CMAKE_C_FLAGS}")
+if (APPLE)
+	message(STATUS "\tSwift compiler: ${CMAKE_Swift_COMPILER}")
+endif()
 message(STATUS "")
 message(STATUS "\tPython: ${Python3_EXECUTABLE}")
 message(STATUS "")
