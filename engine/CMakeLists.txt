@@ -47,6 +47,9 @@ set(ENGINE_VULKAN_SOURCES
     src/graphics/vulkan/logical_device.c
     src/graphics/vulkan/swapchain.c)
 
+set(ENGINE_METAL_SOURCES
+    src/graphics/metal/init.swift)
+
 set(ENGINE_UTIL_SOURCES
     src/util/error.c
     src/util/fs.c
@@ -65,7 +68,10 @@ set(ENGINE_LINUX_x86_64_SOURCES
 
 set(ENGINE_WINDOWS_SOURCES src/engine.rc)
 
-if (NOT APPLE)
+if (APPLE)
+	list(APPEND ENGINE_GRAPHICS_HEADERS ${ENGINE_METAL_HEADERS})
+	list(APPEND ENGINE_GRAPHICS_SOURCES ${ENGINE_METAL_SOURCES})
+else()
 	list(APPEND ENGINE_GRAPHICS_HEADERS ${ENGINE_VULKAN_HEADERS})
 	list(APPEND ENGINE_GRAPHICS_SOURCES ${ENGINE_VULKAN_SOURCES})
 endif()
@@ -169,7 +175,11 @@ target_include_directories(engine
 				${CMAKE_SOURCE_DIR}/deps/sdl2/include
 				${CMAKE_SOURCE_DIR}/deps/stb)
 target_link_libraries(engine PRIVATE SDL2::SDL2)
-if (NOT APPLE)
+if (APPLE)
+    set_target_properties(engine
+			  PROPERTIES
+				XCODE_ATTRIBUTE_SWIFT_OBJC_BRIDGING_HEADER ${CMAKE_CURRENT_SOURCE_DIR}/include/purpl/core/swift.h)
+else()
 	target_link_libraries(engine
 			      PRIVATE
 				glad_opengl

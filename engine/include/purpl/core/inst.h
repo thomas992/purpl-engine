@@ -67,7 +67,9 @@ struct purpl_instance {
 	s32 wnd_y; // The Y position of the window
 
 	union {
-#ifndef __APPLE__
+#ifdef __APPLE__
+        purpl_instance_metal_t metal; // Metal data
+#else // __APPLE__
 		struct purpl_instance_vulkan vulkan; // Vulkan data
 #endif // __APPLE__
 	} graphics;
@@ -75,5 +77,6 @@ struct purpl_instance {
 					      // on startup
 };
 
+/// Global engine instance
 extern struct purpl_instance *purpl_inst;
 #endif

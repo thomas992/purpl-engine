@@ -1,4 +1,4 @@
-// Graphics initialization/shutdown functions
+// Vulkan initialization
 //
 // Copyright 2022 MobSlicer152
 // This file is part of Purpl Engine
@@ -17,22 +17,17 @@
 
 #pragma once
 
-#include "purpl/core/coredefs.h"
-#include "purpl/core/inst.h"
+#ifndef PURPL_BUILD
+#error This header should only be included in engine files
+#endif // !PURPL_BUILD
+
 #include "purpl/core/types.h"
 
-#include "purpl/util/util.h"
-
-#ifdef __APPLE__
-#include "metal/init.h"
-#else // __APPLE__
-#include "vulkan/init.h"
-#endif // __APPLE__
-
-/// Initialize graphics for the engine
+/// Initialize Metal
 ///
-/// \return Returns true if initialization succeeded, false otherwise
-extern PURPL_API bool purpl_graphics_init(void);
+/// \return Returns true if initialization was successful, false otherwise
+extern bool purpl_metal_init(void);
 
-/// Shut down graphics
-extern PURPL_API void purpl_graphics_shutdown(void);
+/// Shut down Metal (if it's initialized)
+extern void purpl_metal_shutdown(void);
+

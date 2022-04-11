@@ -134,3 +134,9 @@ void purpl_preinit(int argc, char *argv[])
 	// warning
 	purpl_complete_preinit();
 }
+
+void purpl_shutdown(void)
+{
+	purpl_internal_shutdown();
+	dlclose(engine_lib);
+}

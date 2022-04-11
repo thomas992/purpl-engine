@@ -27,13 +27,12 @@
 #define PURPL_ALIAS_GRAPHICS_DATA(api) struct purpl_instance_ ## api  *api = \
 						&purpl_inst->graphics.api
 
-// Vulkan supports everything except macOS (MoltenVK exists,
-// but I'd rather just write it in Metal eventually)
 // Vulkan information
-#ifndef __APPLE__
+#ifdef __APPLE__
+/// This is going to be a pointer to a Swift structure
+typedef void *purpl_instance_metal_t;
+#else // __APPLE__
 #include <vulkan/vulkan.h>
-
-// Unfourtunately, this is the best place to put these structures, even though I hate it
 
 /// Vulkan queue family information
 struct vulkan_queue_families {
@@ -71,4 +70,4 @@ struct purpl_instance_vulkan {
 	struct vulkan_swapchain_info swapchain_info; // Swapchain information
 	VkSwapchainKHR swapchain; // Swapchain
 };
-#endif // !__APPLE__
+#endif // __APPLE__

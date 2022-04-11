@@ -32,6 +32,8 @@ PURPL_API void purpl_complete_preinit(void)
 	preinit_called = PREINIT_MAGIC;
 }
 
+PURPL_API void purpl_internal_shutdown(void);
+
 PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 {
 	purpl_inst = calloc(1, sizeof(struct purpl_instance));
@@ -55,7 +57,7 @@ PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 			purpl_strerror());
 		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Purpl Engine",
 					 "Failed to create a logger", NULL);
-		purpl_shutdown();
+		purpl_internal_shutdown();
 		return false;
 	}
 
@@ -88,7 +90,7 @@ PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 			SDL_MESSAGEBOX_ERROR, "Purpl Engine",
 			"Failed to initialize SDL. See the logs for more information.",
 			NULL);
-		purpl_shutdown();
+		purpl_internal_shutdown();
 		return false;
 	}
 
@@ -100,7 +102,7 @@ PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 			SDL_MESSAGEBOX_ERROR, "Purpl Engine",
 			"Failed to initialize graphics. See the logs for more information.",
 			NULL);
-		purpl_shutdown();
+		purpl_internal_shutdown();
 		return false;
 	}
 
@@ -185,7 +187,7 @@ PURPL_API void purpl_run(purpl_frame_func frame, void *user_data)
 	}
 }
 
-PURPL_API void purpl_shutdown(void)
+PURPL_API void purpl_internal_shutdown(void)
 {
 	PURPL_LOG_WARNING(purpl_inst->logger, "Engine shutting down");
 
