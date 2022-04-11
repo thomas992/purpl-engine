@@ -45,8 +45,10 @@ void *engine_lib = NULL;
 
 #ifdef _WIN32
 #define purpl_complete_preinit __imp_purpl_complete_preinit
-#define purpl_internpurpl_internal_shutdown __imp_purpl_internal_shutdown
+#define purpl_internal_shutdown __imp_purpl_internal_shutdown
 #endif // _WIN32
+
+extern void purpl_internal_shutdown(void);
 
 void purpl_preinit(int argc, char *argv[])
 {
