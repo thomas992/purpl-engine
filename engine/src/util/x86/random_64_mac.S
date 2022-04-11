@@ -17,7 +17,7 @@
 
 .extern _rand
 
-.section .text
+.text
 
 .global _purpl_arch_random
 _purpl_arch_random:
