@@ -17,6 +17,7 @@ set(ENGINE_VULKAN_HEADERS
     include/purpl/graphics/vulkan/debug.h
     include/purpl/graphics/vulkan/device.h
     include/purpl/graphics/vulkan/init.h
+    include/purpl/graphics/vulkan/inst_data.h
     include/purpl/graphics/vulkan/inst.h
     include/purpl/graphics/vulkan/logical_device.h
     include/purpl/graphics/vulkan/swapchain.h)

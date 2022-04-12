@@ -42,6 +42,9 @@
 /// True if c is a vowel in the Latin alphabet
 #define PURPL_ISVOWEL(c) ((c) == 'a' || (c) == 'e' || (c) == 'i' || (c) == 'o' || (c) == 'u')
 
+/// Clamp x to the range [min, max]
+#define PURPL_CLAMP(x, min, max) ((x) < (min) ? (min) : ((x) > (max) ? (max) : (x)))
+
 /// Generates a random number by using RDSEED (x86) or RNDR (ARM), but if that
 /// fails then it uses rand() twice. This isn't supposed to be secure at all,
 /// but if there's enough reason I'll just make something using OpenSSL.

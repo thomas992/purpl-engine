@@ -38,11 +38,11 @@ bool vulkan_create_logical_device(void)
 	queue_create_infos[0].sType =
 		VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
 	queue_create_infos[0].queueFamilyIndex =
-		vulkan->phys_device_queue_families.graphics_family;
+		vulkan->queue_families.graphics_family;
 	queue_create_infos[0].queueCount = 1;
 	queue_create_infos[0].pQueuePriorities = &queue_priority;
-	if (vulkan->phys_device_queue_families.graphics_family !=
-	    vulkan->phys_device_queue_families.presentation_family) {
+	if (vulkan->queue_families.graphics_family !=
+	    vulkan->queue_families.presentation_family) {
 		PURPL_LOG_INFO(
 			purpl_inst->logger,
 			"Graphics queue family is different from presentation queue family, performance might be slightly worse");
@@ -54,7 +54,7 @@ bool vulkan_create_logical_device(void)
 		queue_create_infos[1].sType =
 			VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
 		queue_create_infos[1].queueFamilyIndex =
-			vulkan->phys_device_queue_families.presentation_family;
+			vulkan->queue_families.presentation_family;
 		queue_create_infos[1].queueCount = 1;
 		queue_create_infos[1].pQueuePriorities = &queue_priority;
 	}
@@ -84,7 +84,7 @@ bool vulkan_create_logical_device(void)
 
 	vkGetDeviceQueue(
 		vulkan->device,
-		vulkan->phys_device_queue_families.presentation_family, 0,
+		vulkan->queue_families.presentation_family, 0,
 		&vulkan->presentation_queue);
 	PURPL_LOG_INFO(purpl_inst->logger,
 		       "Retrieved handle 0x%" PRIX64 " for presentation queue",

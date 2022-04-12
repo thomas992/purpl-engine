@@ -28,11 +28,37 @@
 
 #include "purpl/util/util.h"
 
+/// Creates a swapchain
+///
+/// \return Returns true if the swapchain was created successfully, false otherwise
+extern bool vulkan_create_swapchain(void);
+
+/// Destroys the swapchain and related information
+extern void vulkan_destroy_swapchain(void);
+
 /// Determines if the device is supported for swapchain creation
 ///
 /// \param device The device to check
 /// \param info Receives the swapchain information
 ///
 /// \returns Returns true if the device is supported, false otherwise
-extern bool vulkan_get_swapchain_info(VkPhysicalDevice device, struct vulkan_swapchain_info *info);
+extern bool vulkan_get_swapchain_info(VkPhysicalDevice device,
+				      struct vulkan_swapchain_info *info);
+
+/// Chooses the best surface format for the swapchain
+///
+/// \param formats The list of available surface formats
+///
+/// \return Returns the best surface format
+extern VkSurfaceFormatKHR *vulkan_choose_swap_surface_format(void);
+
+/// Chooses the best presentation mode for the swapchain
+///
+/// \return Returns the best presentation mode
+extern VkPresentModeKHR vulkan_choose_swap_present_mode(void);
+
+/// Chooses the size for the swapchain images
+///
+/// \return Returns the extent of the images
+extern VkExtent2D vulkan_choose_swap_extent(void);
 

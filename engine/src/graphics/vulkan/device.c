@@ -144,7 +144,7 @@ bool vulkan_pick_physical_device(void)
 		"Device %zu (%s, handle 0x%" PRIX64 ") has the best score (its score is %llu)",
 		best_idx + 1, properties.deviceName, vulkan->phys_device, best_score);
 	vulkan_get_device_queue_families(vulkan->phys_device,
-					 &vulkan->phys_device_queue_families);
+					 &vulkan->queue_families);
 	vulkan_get_swapchain_info(vulkan->phys_device, &vulkan->swapchain_info);
 
 	stbds_arrfree(devices);

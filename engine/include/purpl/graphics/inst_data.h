@@ -32,42 +32,5 @@
 /// This is going to be a pointer to a Swift structure
 typedef void *purpl_instance_metal_t;
 #else // __APPLE__
-#include <vulkan/vulkan.h>
-
-/// Vulkan queue family information
-struct vulkan_queue_families {
-	size_t graphics_family; // The index of the graphics queue family
-	bool graphics_family_present; // Whether graphics_family is present
-	size_t presentation_family; // The index of the presentation queue
-				    // family
-	bool presentation_family_present; // Whether presentation_family is
-					  // present
-};
-
-/// Vulkan swapchain information
-struct vulkan_swapchain_info {
-	VkSurfaceCapabilitiesKHR capabilities; // The capabilities of the swapchain
-					       // surface
-	VkSurfaceFormatKHR *formats; // The formats of the surface
-	VkPresentModeKHR *present_modes; // The presentation modes of the surface
-};
-
-struct purpl_instance_vulkan {
-	VkInstance inst; // Vulkan instance
-	VkDebugUtilsMessengerEXT debug_messenger; // Debug messenger
-
-	VkPhysicalDevice phys_device; // Physical device
-	struct vulkan_queue_families phys_device_queue_families; // The queue
-								 // families to
-								 // use with
-								 // phys_device
-	VkDevice device; // Logical device
-
-	VkSurfaceKHR surface; // Surface
-
-	VkQueue presentation_queue; // Presentation queue
-
-	struct vulkan_swapchain_info swapchain_info; // Swapchain information
-	VkSwapchainKHR swapchain; // Swapchain
-};
+#include "vulkan/inst_data.h"
 #endif // __APPLE__

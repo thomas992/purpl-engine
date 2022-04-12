@@ -42,7 +42,7 @@ bool purpl_vulkan_init(void)
 		purpl_inst->wnd_title, SDL_WINDOWPOS_UNDEFINED,
 		SDL_WINDOWPOS_UNDEFINED, PURPL_INITIAL_WINDOW_WIDTH,
 		PURPL_INITIAL_WINDOW_HEIGHT,
-		SDL_WINDOW_RESIZABLE | SDL_WINDOW_VULKAN);
+		PURPL_DEFAULT_WINDOW_FLAGS | SDL_WINDOW_VULKAN);
 	if (!purpl_inst->wnd) {
 		purpl_vulkan_shutdown();
 		return false;
@@ -81,6 +81,11 @@ bool purpl_vulkan_init(void)
 		return false;
 	}
 
+	if (!vulkan_create_swapchain()) {
+		purpl_vulkan_shutdown();
+		return false;
+	}
+
 	gladLoaderLoadVulkan(vulkan->inst, vulkan->phys_device,
 			     vulkan->device);
 
@@ -91,6 +96,8 @@ bool purpl_vulkan_init(void)
 void purpl_vulkan_shutdown(void)
 {
 	PURPL_ALIAS_GRAPHICS_DATA(vulkan);
+
+	vulkan_destroy_swapchain();
 
 	if (vulkan->device) {
 		vkDestroyDevice(vulkan->device, NULL);
