@@ -65,7 +65,8 @@ struct purpl_logger {
 
 /// Initialize a logger
 ///
-/// \param file The name of the log file to use
+/// \param file The name of the log file to use. <date> will be replaced with
+/// 		the current date in the form "dd-mm-yyyy".
 /// \param level The level to write messages at when PURPL_LOG_LEVEL_CURRENT is
 ///		 given to purpl_log_write
 /// \param max_level The maximum level of messages to keep.
