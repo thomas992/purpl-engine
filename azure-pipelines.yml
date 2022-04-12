@@ -70,9 +70,10 @@ steps:
     displayName: Install Vulkan SDK
 
   - bash: |
-      chmod a+x tools/ninja
+      chmod a+x tools/fixperms.sh
+      tools/fixperms.sh
     condition: not(eq(variables['Agent.OS'], 'Windows_NT'))
-    displayName: Set executable bit on Ninja
+    displayName: Set executable bit on tools
 
   - bash: |
       curl -fsGL https://packages.lunarg.com/lunarg-signing-key-pub.asc | sudo apt-key add -
