@@ -60,4 +60,5 @@ struct purpl_instance_vulkan {
 	VkImage *swapchain_images; // Swapchain images
 	VkFormat swapchain_format; // Swapchain format
 	VkExtent2D swapchain_extent; // Swapchain extent
+	VkImageView *swapchain_image_views; // Swapchain image views
 };

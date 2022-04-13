@@ -99,8 +99,10 @@ bool vulkan_create_swapchain(void)
 	vkGetSwapchainImagesKHR(vulkan->device, vulkan->swapchain,
 				&image_count, vulkan->swapchain_images);
 
-	PURPL_LOG_INFO(purpl_inst->logger, "Got %zu swapchain images",
-		       stbds_arrlenu(vulkan->swapchain_images));
+	PURPL_LOG_INFO(
+		purpl_inst->logger,
+		"Got %zu swapchain image handles from swapchain with handle 0x%" PRIx64,
+		stbds_arrlenu(vulkan->swapchain_images), vulkan->swapchain);
 	for (i = 0; i < image_count; i++)
 		PURPL_LOG_INFO(purpl_inst->logger,
 			       "Swapchain image %zu has handle 0x%" PRIx64,
@@ -140,6 +142,13 @@ void vulkan_destroy_swapchain(void)
 			       "Destroyed swapchain with handle 0x%" PRIx64,
 			       vulkan->swapchain);
 	}
+}
+
+bool vulkan_create_image_views(void)
+{
+	PURPL_ALIAS_GRAPHICS_DATA(vulkan);
+
+	
 }
 
 bool vulkan_get_swapchain_info(VkPhysicalDevice device,
@@ -225,10 +234,11 @@ VkExtent2D vulkan_choose_swap_extent(void)
 	PURPL_ALIAS_GRAPHICS_DATA(vulkan);
 
 	VkExtent2D extent;
-	int32_t width;
-	int32_t height;
+	u32 width;
+	u32 height;
 
-	SDL_Vulkan_GetDrawableSize(purpl_inst->wnd, &width, &height);
+	SDL_Vulkan_GetDrawableSize(purpl_inst->wnd, (s32 *)&width,
+				   (s32 *)&height);
 	extent.width = PURPL_CLAMP(
 		width,
 		vulkan->swapchain_info.capabilities.minImageExtent.width,

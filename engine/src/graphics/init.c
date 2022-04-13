@@ -24,7 +24,6 @@ PURPL_API bool purpl_graphics_init(void)
 	if (!purpl_inst)
 		return false;
 
-		// TODO: when other APIs are supported, make this better
 #ifdef __APPLE__
 	init = purpl_metal_init();
 	if (!init) {
