@@ -17,6 +17,139 @@
 
 #include "purpl/graphics/vulkan/device.h"
 
+bool vulkan_pick_physical_device(void)
+{
+	PURPL_ALIAS_GRAPHICS_DATA(vulkan);
+
+	VkPhysicalDeviceProperties properties;
+	VkPhysicalDevice *devices = NULL;
+	u32 device_count = 0;
+	u64 best_score = 0;
+	size_t best_idx = 0;
+	size_t i;
+
+	PURPL_LOG_INFO(purpl_inst->logger, "Enumerating render devices");
+
+	vkEnumeratePhysicalDevices(vulkan->inst, &device_count, NULL);
+	if (!device_count) {
+		PURPL_LOG_ERROR(
+			purpl_inst->logger,
+			"Failed to locate a device with Vulkan support");
+		return false;
+	}
+
+	PURPL_LOG_INFO(purpl_inst->logger, "Found %u device%s", device_count, device_count == 1 ? "" : "s");
+
+	stbds_arrsetlen(devices, device_count);
+	vkEnumeratePhysicalDevices(vulkan->inst, &device_count, devices);
+
+	for (i = 0; i < stbds_arrlenu(devices); i++) {
+		u64 score = vulkan_score_device(devices[i], i);
+
+		if (score > best_score) {
+			vulkan->phys_device = devices[i];
+			best_score = score;
+			best_idx = i;
+		}
+	}
+
+	if (!vulkan->phys_device || best_score == 0) {
+		PURPL_LOG_ERROR(
+			purpl_inst->logger,
+			"Failed to locate a device with Vulkan support");
+		return false;
+	}
+
+	vkGetPhysicalDeviceProperties(vulkan->phys_device, &properties);
+	PURPL_LOG_INFO(
+		purpl_inst->logger,
+		"Device %zu (%s, handle 0x%" PRIX64 ") has the best score (its score is %llu)",
+		best_idx + 1, properties.deviceName, vulkan->phys_device, best_score);
+	vulkan_get_device_queue_families(vulkan->phys_device,
+					 &vulkan->queue_families);
+	vulkan_get_swapchain_info(vulkan->phys_device, &vulkan->swapchain_info);
+
+	stbds_arrfree(devices);
+	return true;
+}
+
+bool vulkan_create_logical_device(void)
+{
+	PURPL_ALIAS_GRAPHICS_DATA(vulkan);
+
+	VkPhysicalDeviceFeatures phys_device_features = { 0 }; // This will be
+							       // used later
+	VkDeviceCreateInfo device_create_info = { 0 };
+	float queue_priority = 1.0f;
+	VkDeviceQueueCreateInfo *queue_create_infos = NULL;
+	size_t queue_create_info_count = 1;
+	char **required_extensions = vulkan_get_device_extensions();
+	VkResult result;
+
+	PURPL_LOG_INFO(purpl_inst->logger, "Creating logical device");
+
+	stbds_arrsetlen(queue_create_infos, queue_create_info_count);
+
+	memset(&queue_create_infos[0], 0, sizeof(VkDeviceQueueCreateInfo));
+	queue_create_infos[0].sType =
+		VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+	queue_create_infos[0].queueFamilyIndex =
+		vulkan->queue_families.graphics_family;
+	queue_create_infos[0].queueCount = 1;
+	queue_create_infos[0].pQueuePriorities = &queue_priority;
+	if (vulkan->queue_families.graphics_family !=
+	    vulkan->queue_families.presentation_family) {
+		PURPL_LOG_INFO(
+			purpl_inst->logger,
+			"Graphics queue family is different from presentation queue family, performance might be slightly worse");
+		queue_create_info_count = 2;
+		stbds_arrsetlen(queue_create_infos, queue_create_info_count);
+		memset(&queue_create_infos[1], 0,
+		       sizeof(VkDeviceQueueCreateInfo));
+
+		queue_create_infos[1].sType =
+			VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+		queue_create_infos[1].queueFamilyIndex =
+			vulkan->queue_families.presentation_family;
+		queue_create_infos[1].queueCount = 1;
+		queue_create_infos[1].pQueuePriorities = &queue_priority;
+	}
+
+	device_create_info.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+	device_create_info.pEnabledFeatures = &phys_device_features;
+	device_create_info.enabledExtensionCount =
+		stbds_arrlenu(required_extensions);
+	device_create_info.ppEnabledExtensionNames = required_extensions;
+	device_create_info.queueCreateInfoCount = queue_create_info_count;
+	device_create_info.pQueueCreateInfos = queue_create_infos;
+
+	result = vkCreateDevice(vulkan->phys_device, &device_create_info, NULL,
+				&vulkan->device);
+	if (result != VK_SUCCESS) {
+		PURPL_LOG_ERROR(purpl_inst->logger,
+				"Failed to create logical device: VkResult %d",
+				result);
+		return false;
+	}
+
+	stbds_arrfree(queue_create_infos);
+	stbds_arrfree(required_extensions);
+
+	PURPL_LOG_INFO(
+		purpl_inst->logger,
+		"Successfully created logical device with handle 0x%" PRIX64,
+		vulkan->device);
+
+	vkGetDeviceQueue(vulkan->device,
+			 vulkan->queue_families.presentation_family, 0,
+			 &vulkan->presentation_queue);
+	PURPL_LOG_INFO(purpl_inst->logger,
+		       "Retrieved handle 0x%" PRIX64 " for presentation queue",
+		       vulkan->presentation_queue);
+
+	return true;
+}
+
 u64 vulkan_score_device(VkPhysicalDevice device, size_t idx)
 {
 	u64 score = 0;
@@ -73,11 +206,13 @@ u64 vulkan_score_device(VkPhysicalDevice device, size_t idx)
 	score += properties.limits.maxImageDimension2D;
 	score += extension_count * 10; // More extensions == more better
 
-	PURPL_LOG_INFO(purpl_inst->logger, "Device %zu (handle 0x%" PRIX64 "):", idx + 1, device);
+	PURPL_LOG_INFO(purpl_inst->logger,
+		       "Device %zu (handle 0x%" PRIX64 "):", idx + 1, device);
 	PURPL_LOG_INFO(purpl_inst->logger, "\tName: %s",
 		       properties.deviceName);
 	PURPL_LOG_INFO(purpl_inst->logger, "\tScore: %d", score);
-	PURPL_LOG_INFO(purpl_inst->logger, "\tSupported extension count: %zu", extension_count);
+	PURPL_LOG_INFO(purpl_inst->logger, "\tSupported extension count: %zu",
+		       extension_count);
 	PURPL_LOG_INFO(purpl_inst->logger, "\tQueue family indices:");
 	PURPL_LOG_INFO(purpl_inst->logger, "\t\tGraphics: %zu",
 		       queue_families.graphics_family);
@@ -93,62 +228,6 @@ u64 vulkan_score_device(VkPhysicalDevice device, size_t idx)
 	stbds_arrfree(swapchain_info.present_modes);
 
 	return score;
-}
-
-bool vulkan_pick_physical_device(void)
-{
-	PURPL_ALIAS_GRAPHICS_DATA(vulkan);
-
-	VkPhysicalDeviceProperties properties;
-	VkPhysicalDevice *devices = NULL;
-	u32 device_count = 0;
-	u64 best_score = 0;
-	size_t best_idx = 0;
-	size_t i;
-
-	PURPL_LOG_INFO(purpl_inst->logger, "Enumerating render devices");
-
-	vkEnumeratePhysicalDevices(vulkan->inst, &device_count, NULL);
-	if (!device_count) {
-		PURPL_LOG_ERROR(
-			purpl_inst->logger,
-			"Failed to locate a device with Vulkan support");
-		return false;
-	}
-
-	PURPL_LOG_INFO(purpl_inst->logger, "Found %u device%s", device_count, device_count == 1 ? "" : "s");
-
-	stbds_arrsetlen(devices, device_count);
-	vkEnumeratePhysicalDevices(vulkan->inst, &device_count, devices);
-
-	for (i = 0; i < stbds_arrlenu(devices); i++) {
-		u64 score = vulkan_score_device(devices[i], i);
-
-		if (score > best_score) {
-			vulkan->phys_device = devices[i];
-			best_score = score;
-			best_idx = i;
-		}
-	}
-
-	if (!vulkan->phys_device || best_score == 0) {
-		PURPL_LOG_ERROR(
-			purpl_inst->logger,
-			"Failed to locate a device with Vulkan support");
-		return false;
-	}
-
-	vkGetPhysicalDeviceProperties(vulkan->phys_device, &properties);
-	PURPL_LOG_INFO(
-		purpl_inst->logger,
-		"Device %zu (%s, handle 0x%" PRIX64 ") has the best score (its score is %llu)",
-		best_idx + 1, properties.deviceName, vulkan->phys_device, best_score);
-	vulkan_get_device_queue_families(vulkan->phys_device,
-					 &vulkan->queue_families);
-	vulkan_get_swapchain_info(vulkan->phys_device, &vulkan->swapchain_info);
-
-	stbds_arrfree(devices);
-	return true;
 }
 
 char **vulkan_get_device_extensions(void)

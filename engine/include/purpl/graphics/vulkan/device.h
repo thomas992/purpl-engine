@@ -34,17 +34,22 @@
 
 #include "swapchain.h"
 
+/// Pick the best physical device
+///
+/// \return Returns the device chosen
+extern bool vulkan_pick_physical_device(void);
+
+/// Creates a logical device
+///
+/// \return Returns true if the creation succeeded
+extern bool vulkan_create_logical_device(void);
+
 /// Score a device based on its properties
 ///
 /// \param device The device to score
 ///
 /// \return Returns the device's score
 extern u64 vulkan_score_device(VkPhysicalDevice device, size_t idx);
-
-/// Pick the best physical device
-///
-/// \return Returns the device chosen
-extern bool vulkan_pick_physical_device(void);
 
 /// Get the required extensions for devices
 ///
