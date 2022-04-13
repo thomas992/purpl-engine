@@ -146,9 +146,72 @@ void vulkan_destroy_swapchain(void)
 
 bool vulkan_create_image_views(void)
 {
-	// PURPL_ALIAS_GRAPHICS_DATA(vulkan);
+	PURPL_ALIAS_GRAPHICS_DATA(vulkan);
+
+	VkResult result;
+	VkImageViewCreateInfo image_view_create_info = { 0 };
+	size_t i;
+
+	PURPL_LOG_INFO(purpl_inst->logger, "Creating %zu image views", stbds_arrlenu(vulkan->swapchain_images));
+
+	stbds_arrsetlen(vulkan->swapchain_image_views,
+			stbds_arrlenu(vulkan->swapchain_images));
+
+	for (i = 0; i < stbds_arrlenu(vulkan->swapchain_images); i++) {
+		image_view_create_info.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+		image_view_create_info.image = vulkan->swapchain_images[i];
+
+		image_view_create_info.viewType = VK_IMAGE_VIEW_TYPE_2D;
+		image_view_create_info.format = vulkan->swapchain_format;
+
+		image_view_create_info.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
+		image_view_create_info.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
+		image_view_create_info.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
+		image_view_create_info.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
+
+		image_view_create_info.subresourceRange.aspectMask =
+			VK_IMAGE_ASPECT_COLOR_BIT;
+		image_view_create_info.subresourceRange.baseMipLevel = 0;
+		image_view_create_info.subresourceRange.levelCount = 1;
+		image_view_create_info.subresourceRange.baseArrayLayer = 0;
+		image_view_create_info.subresourceRange.layerCount = 1;
+
+		result = vkCreateImageView(vulkan->device, &image_view_create_info,
+					   NULL, &vulkan->swapchain_image_views[i]);
+		if (result != VK_SUCCESS) {
+			PURPL_LOG_ERROR(purpl_inst->logger,
+					"Failed to create image view for image %zu with handle 0x%" PRIX64 ": VkResult %d",
+					i + 1, vulkan->swapchain_images[i], result);
+			vulkan_destroy_image_views();
+			return false;
+		}
+	}
 
 	return true;
+}
+
+void vulkan_destroy_image_views(void)
+{
+	PURPL_ALIAS_GRAPHICS_DATA(vulkan);
+
+	size_t i;
+
+	if (vulkan->swapchain_image_views) {
+		for (i = 0; i < stbds_arrlenu(vulkan->swapchain_image_views); i++) {
+			if (vulkan->swapchain_image_views[i]) {
+				vkDestroyImageView(vulkan->device,
+						   vulkan->swapchain_image_views[i],
+						   NULL);
+				PURPL_LOG_INFO(purpl_inst->logger,
+					       "Destroyed image view for image %zu with handle 0x%" PRIX64,
+					       i + 1, vulkan->swapchain_images[i]);
+			}
+		}
+
+		stbds_arrfree(vulkan->swapchain_image_views);
+		PURPL_LOG_INFO(purpl_inst->logger,
+			       "Freed swapchain image view array");
+	}
 }
 
 bool vulkan_get_swapchain_info(VkPhysicalDevice device,

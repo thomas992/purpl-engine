@@ -36,6 +36,14 @@ extern bool vulkan_create_swapchain(void);
 /// Destroys the swapchain and related information
 extern void vulkan_destroy_swapchain(void);
 
+/// Creates image views for the swapchain images
+///
+/// \return Returns true if the image views were created successfully, false otherwise
+extern bool vulkan_create_image_views(void);
+
+/// Destroys the image views
+extern void vulkan_destroy_image_views(void);
+
 /// Determines if the device is supported for swapchain creation
 ///
 /// \param device The device to check

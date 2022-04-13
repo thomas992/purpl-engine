@@ -84,6 +84,11 @@ bool purpl_vulkan_init(void)
 		return false;
 	}
 
+	if (!vulkan_create_image_views()) {
+		purpl_vulkan_shutdown();
+		return false;
+	}
+
 	gladLoaderLoadVulkan(vulkan->inst, vulkan->phys_device,
 			     vulkan->device);
 
@@ -95,6 +100,8 @@ void purpl_vulkan_shutdown(void)
 {
 	PURPL_ALIAS_GRAPHICS_DATA(vulkan);
 
+	// These check the pointers for themselves
+	vulkan_destroy_image_views();
 	vulkan_destroy_swapchain();
 
 	if (vulkan->device) {
