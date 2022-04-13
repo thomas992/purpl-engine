@@ -17,8 +17,6 @@
 
 #include "glad/vulkan.h"
 
-#include "SDL.h"
-
 #include "purpl/graphics/vulkan/init.h"
 
 bool purpl_vulkan_init(void)

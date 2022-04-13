@@ -36,7 +36,7 @@
 #include "debug.h"
 #include "device.h"
 #include "inst.h"
-#include "logical_device.h"
+#include "swapchain.h"
 
 /// Initialize Vulkan
 ///

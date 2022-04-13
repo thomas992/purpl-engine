@@ -146,9 +146,9 @@ void vulkan_destroy_swapchain(void)
 
 bool vulkan_create_image_views(void)
 {
-	PURPL_ALIAS_GRAPHICS_DATA(vulkan);
+	// PURPL_ALIAS_GRAPHICS_DATA(vulkan);
 
-	
+	return true;
 }
 
 bool vulkan_get_swapchain_info(VkPhysicalDevice device,
