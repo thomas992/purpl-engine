@@ -65,11 +65,16 @@ PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 					   "initialization started.");
 
 	// Check that preinit was called so a warning can be issued otherwise
+	PURPL_LOG_DEBUG(purpl_inst->logger,
+		       "preinit_called = 0x%" PRIX64
+		       " (PREINIT_MAGIC = 0x%" PRIX64 ")",
+		       preinit_called, PREINIT_MAGIC);
 	if (preinit_called != PREINIT_MAGIC)
 		PURPL_LOG_DEBUG(
 			purpl_inst->logger,
-			"This application has not called purpl_preinit, it is likely only working"
-			" because only Windows currently requires preinit\n");
+			"This application has not called purpl_preinit (preinit_called (0x%" PRIX64
+			") != PREINIT_MAGIC (0x%" PRIX64 "))",
+			preinit_called, PREINIT_MAGIC);
 	purpl_inst->start_time = time(NULL);
 
 	purpl_inst->app_name = purpl_strfmt(

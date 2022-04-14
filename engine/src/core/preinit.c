@@ -35,13 +35,16 @@
 
 void *engine_lib = NULL;
 
-#ifdef __APPLE__
+#ifdef _WIN32
+#define LIB_EXT ".dll"
+#define init_engine_ptrs init_engine_dll_ptrs
+#elif __APPLE__
 #define LIB_EXT ".dylib"
 #define init_engine_ptrs init_engine_dylib_ptrs
-#elif __linux__ // __APPLE__
+#elif __linux__ // _WIN32
 #define LIB_EXT ".so"
 #define init_engine_ptrs init_engine_so_ptrs
-#endif // __APPLE__
+#endif // _WIN32
 
 #ifdef _WIN32
 #define purpl_complete_preinit __imp_purpl_complete_preinit
@@ -94,8 +97,6 @@ void purpl_preinit(int argc, char *argv[])
 	// Get rid of the console window in non-debug mode
 	FreeConsole();
 #endif // !PURPL_DEBUG
-
-	init_engine_dll_ptrs(engine_lib);
 #else // _WIN32
       // On POSIX platforms, due to RPATHs being absolute, the engine has to
       // be loaded in a similar way
@@ -127,9 +128,12 @@ void purpl_preinit(int argc, char *argv[])
 		fprintf(stderr, "Failed to load engine" LIB_EXT ", exiting\n");
 		exit(1);
 	}
+#endif // _WIN32
 
 	init_engine_ptrs(engine_lib);
-#endif // _WIN32
+#ifdef PURPL_DEBUG
+	printf("Successfully loaded engine" LIB_EXT "\n");
+#endif // PURPL_DEBUG
 
 	// Tell the engine that preinit was called so it doesn't print a
 	// warning
