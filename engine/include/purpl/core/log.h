@@ -30,9 +30,9 @@
 
 /// Levels for the logging functions
 enum purpl_log_level {
-	PURPL_LOG_LEVEL_CURRENT, // Use this to use the logger's current log
+	PURPL_LOG_LEVEL_CURRENT = -1, // Use this to use the logger's current log
 				 // level
-	PURPL_LOG_LEVEL_CRITICAL = 0, // Very bad errors
+	PURPL_LOG_LEVEL_CRITICAL, // Very bad errors
 	PURPL_LOG_LEVEL_ERROR, // Minor errors (most of them)
 	PURPL_LOG_LEVEL_WARNING, // Minor errors unlikely to impact anything
 	PURPL_LOG_LEVEL_INFO, // Information
