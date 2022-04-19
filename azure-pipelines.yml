@@ -84,9 +84,9 @@ steps:
     displayName: Install SDL and Vulkan SDK with APT
 
   - bash: |
-      brew install glslc sdl2
+      brew install sdl2
     condition: eq(variables['Agent.OS'], 'Darwin')
-    displayName: Install SDL and GLSLC with Homebrew
+    displayName: Install SDL with Homebrew
 
   - script: |
       pip install MarkupSafe==2.1.0
