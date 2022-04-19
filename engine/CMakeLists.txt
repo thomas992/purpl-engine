@@ -115,7 +115,7 @@ add_library(engine_preinit STATIC src/core/main.c src/core/preinit.cc ${CMAKE_SO
 add_library(engine SHARED ${ENGINE_ALL_HEADERS} ${ENGINE_ALL_SOURCES} ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 target_compile_definitions(engine_preinit PRIVATE PURPL_BUILD=1)
 target_compile_definitions(engine PRIVATE PURPL_BUILD=1)
-if (${CMAKE_SYSTEM_NAME} MATCHES "WindowsStore")
+if (${CMAKE_SYSTEM_NAME} STREQUAL "WindowsStore")
 	target_compile_definitions(engine_preinit PRIVATE PURPL_WINRT=1)
 	target_compile_definitions(engine PRIVATE PURPL_WINRT=1)
 endif()

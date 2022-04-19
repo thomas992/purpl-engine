@@ -19,7 +19,7 @@ endif()
 # Don't link to anything
 file(WRITE ${CMAKE_BINARY_DIR}/MakeRulesOverwrite.cmake
 [=[
-if (MSVC AND NOT ${CMAKE_SYSTEM_NAME} MATCHES "WindowsStore")
+if (MSVC AND NOT ${CMAKE_SYSTEM_NAME} STREQUAL "WindowsStore")
 	set(DEFAULT_C_LIBRARIES ${CMAKE_C_STANDARD_LIBRARIES_INIT})
 	set(DEFAULT_CXX_LIBRARIES ${CMAKE_C_STANDARD_LIBRARIES_INIT})
 	set(CMAKE_C_STANDARD_LIBRARIES_INIT "kernel32.lib ntdll.lib shell32.lib user32.lib")
@@ -61,7 +61,7 @@ option(PURPL_ENABLE_DEMO "Build the demo" ON)
 option(PURPL_ENABLE_MEMING "Easter Eggs" OFF)
 option(PURPL_USE_SYSTEM_SDL "Use the system installation of SDL" OFF)
 
-if (${CMAKE_SYSTEM_NAME} MATCHES "WindowsStore" AND ${CMAKE_BUILD_TYPE} MATCHES "Deb")
+if (${CMAKE_SYSTEM_NAME} STREQUAL "WindowsStore" AND ${CMAKE_BUILD_TYPE} MATCHES "Deb")
 	set(_MSIX_VCLIBS_EXTRA .Debug)
 endif()
 

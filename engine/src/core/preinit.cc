@@ -22,10 +22,12 @@
 
 #ifdef _WIN32
 #include <windows.h>
+#ifdef PURPL_WINRT
 #include <winrt/windows.foundation.h>
 #include <winrt/windows.storage.h>
 #include <winrt/windows.ui.core.h>
 #include <winrt/windows.ui.popups.h>
+#endif // PURPL_WINRT
 #else // _WIN32
 #include <dlfcn.h>
 #endif // _WIN32
@@ -36,7 +38,7 @@ typedef int32_t (*purpl_main_t)(int32_t argc, char *argv[]);
 
 #include "exports.h"
 
-#ifdef PURPL_WINRT
+#if defined _WIN32 || defined PURPL_WINRT
 HMODULE engine_lib = NULL;
 #else // PURPL_WINRT
 void *engine_lib = NULL;
