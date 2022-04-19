@@ -28,7 +28,8 @@ function(add_shader target shader shaders_dir)
 			  COMMAND ${Vulkan_GLSLC_EXECUTABLE} -o ${current-output-path} ${current-shader-path}
 			  COMMAND ${SPIRV_CROSS_EXECUTABLE} --hlsl --shader-model 50 ${current-output-path} --output ${hlsl_output}
 			  COMMAND ${SPIRV_CROSS_EXECUTABLE} --msl ${current-output-path} --output ${msl_output}
-			  DEPENDS ${current-shader-path}
+			  COMMENT "Building shader object ${current-shader-path}"
+			  DEPENDS ${SPIRV_CROSS_EXECUTABLE}
 			  BYPRODUCTS ${current-output-path}
 			  VERBATIM
 			  SOURCES ${current-shader-path})
