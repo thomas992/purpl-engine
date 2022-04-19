@@ -84,9 +84,9 @@ steps:
     displayName: Install SDL and Vulkan SDK with APT
 
   - bash: |
-      brew install sdl2
+      brew install glslc sdl2
     condition: eq(variables['Agent.OS'], 'Darwin')
-    displayName: Install SDL with Homebrew
+    displayName: Install SDL and GLSLC with Homebrew
 
   - script: |
       pip install MarkupSafe==2.1.0
@@ -95,7 +95,7 @@ steps:
     displayName: Install requirements for glad
 
   - script: |
-      call tools\buildenv.bat
+      call tools\buildenvamd64.bat
       cmake -S. -Bbuild -GNinja -DVULKAN_SDK=$(vulkanSdk) -DVulkan_LIBRARY=$(vulkanSdk)/Lib/vulkan-1.lib -DVulkan_INCLUDE_DIR=$(vulkanSdk)/Include -DCMAKE_C_COMPILER=$(cc) -DCMAKE_BUILD_TYPE=$(config)
     condition: eq(variables['Agent.OS'], 'Windows_NT')
     displayName: Generate build files (Windows)
@@ -111,7 +111,7 @@ steps:
     displayName: Generate build files (macOS)
 
   - script: |
-      call tools\buildenv.bat
+      call tools\buildenvamd64.bat
       cmake --build build --config $(config)
       cmake --install build --config $(config)
     condition: eq(variables['Agent.OS'], 'Windows_NT')

@@ -121,14 +121,18 @@ endif()
 
 # Graphics APIs
 if (APPLE)
-	find_program(Vulkan_GLSLC_EXECUTABLE glslc)
+	set(Vulkan_GLSLC_EXECUTABLE ${CMAKE_SOURCE_DIR}/tools/glslc)
 else()
 	find_package(Vulkan REQUIRED)
+
+	if ("${Vulkan_GLSLC_EXECUTABLE}" STREQUAL "Vulkan_GLSLC_EXECUTABLE-NOTFOUND")
+		set(Vulkan_GLSLC_EXECUTABLE ${CMAKE_SOURCE_DIR}/tools/glslc)
+	endif()
 
 	glad_add_library(glad_opengl REPRODUCIBLE LANGUAGE c LOADER API gl:core=4.6)
 	glad_add_library(glad_vulkan REPRODUCIBLE LANGUAGE c LOADER API vulkan=1.3)
 endif()
-find_program(SPIRV_CROSS_EXECUTABLE spirv-cross)
+
 include(cmake/Shader.cmake)
 
 find_package(Python3 REQUIRED)
