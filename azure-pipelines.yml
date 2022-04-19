@@ -95,7 +95,7 @@ steps:
     displayName: Install requirements for glad
 
   - script: |
-      call tools\buildenvamd64.bat
+      call tools\buildenv.bat x64
       cmake -S. -Bbuild -GNinja -DVULKAN_SDK=$(vulkanSdk) -DVulkan_LIBRARY=$(vulkanSdk)/Lib/vulkan-1.lib -DVulkan_INCLUDE_DIR=$(vulkanSdk)/Include -DCMAKE_C_COMPILER=$(cc) -DCMAKE_BUILD_TYPE=$(config)
     condition: eq(variables['Agent.OS'], 'Windows_NT')
     displayName: Generate build files (Windows)
@@ -111,7 +111,7 @@ steps:
     displayName: Generate build files (macOS)
 
   - script: |
-      call tools\buildenvamd64.bat
+      call tools\buildenv.bat x64
       cmake --build build --config $(config)
       cmake --install build --config $(config)
     condition: eq(variables['Agent.OS'], 'Windows_NT')
