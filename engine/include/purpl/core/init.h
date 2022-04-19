@@ -26,6 +26,15 @@
 
 #include "purpl/util/util.h"
 
+/// The entry point of the application
+///
+/// \param argc The number of arguments passed to the application
+/// \param argv The arguments passed to the application
+/// 
+/// \return Returns the exit code of the application
+extern int32_t purpl_main(int32_t argc, char *argv[]);
+typedef int32_t (*purpl_main_t)(int32_t argc, char *argv[]);
+
 /// A user-supplied function to be called each frame
 ///
 /// \param delta The number of milliseconds that have passed since the last
@@ -40,11 +49,12 @@ typedef bool (*purpl_frame_func)(u32 delta, void *user_data);
 /// before calling ANY functions from the engine other than this one, or
 /// there is a solid chance your program will crash.
 ///
+/// \param main The entry point of the application
 /// \param argc The number of arguments passed to the program, the first
 ///		parameter of main
 /// \param argv The array of arguments passed to the program, the second
 ///		parameter of main
-extern void purpl_preinit(int argc, char *argv[]);
+extern void purpl_preinit(purpl_main_t main_func, int argc, char *argv[]);
 
 /// Initialize the engine
 ///

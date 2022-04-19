@@ -4,6 +4,7 @@ set(DEMO_SOURCES src/main.c)
 
 # Needs semicolons
 set(DEMO_CONTENTS
+    assets/textures/icon_44.png;
     assets/textures/icon_50.png;
     assets/textures/icon_150.png;
     assets/textures/splash.png;)

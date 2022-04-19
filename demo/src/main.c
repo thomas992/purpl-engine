@@ -28,12 +28,12 @@ struct demo_info {
 // This will be called each frame by the engine
 bool frame_func(u32 delta, void *data);
 
-int32_t main(int32_t argc, char *argv[])
+int32_t purpl_main(int32_t argc, char *argv[])
 {
 	struct demo_info info = { 0 };
-	
-	// Make sure the engine is ready
-	purpl_preinit(argc, argv);
+
+	PURPL_IGNORE(argc);
+	PURPL_IGNORE(argv);
 
 	// Initialize the engine
 	if (!purpl_init("purpl-demo", PURPL_MAKE_VERSION(1, 0, 0))) {

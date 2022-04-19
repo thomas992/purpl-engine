@@ -32,6 +32,8 @@
 
 #define PURPL_IGNORE(x) (void)(x)
 
+typedef int32_t (*purpl_main_t)(int32_t argc, char *argv[]);
+
 #include "exports.h"
 
 #ifdef PURPL_WINRT
@@ -52,12 +54,14 @@ void *engine_lib = NULL;
 #endif // _WIN32
 
 #ifdef _WIN32
-#define purpl_complete_preinit ((void (*)(const char *argv0))__imp_purpl_complete_preinit)
+#define purpl_complete_preinit ((void (*)(purpl_main_t main_func, const char *argv0))__imp_purpl_complete_preinit)
 #define purpl_internal_shutdown __imp_purpl_internal_shutdown
+#else // _WIN32
+#define purpl_complete_preinit ((void (*)(purpl_main_t main_func, const char *argv0))purpl_complete_preinit)
 #endif // _WIN32
 
 // EXTERN_C is provided by exports.h
-EXTERN_C void purpl_preinit(int argc, char *argv[])
+EXTERN_C void purpl_preinit(purpl_main_t main_func, int argc, char *argv[])
 {
 	PURPL_IGNORE(argc);
 
@@ -153,7 +157,7 @@ EXTERN_C void purpl_preinit(int argc, char *argv[])
 	winrt::Windows::Storage::ApplicationData local_storage =
 		winrt::Windows::Storage::ApplicationData::Current();
 	winrt::hstring appdata = local_storage.LocalFolder().Path();
-	purpl_complete_preinit(winrt::to_string(appdata).c_str());
+	purpl_complete_preinit(main_func, winrt::to_string(appdata).c_str());
 #else // PURPL_WINRT
 	purpl_complete_preinit(argv[0]);
 #endif // PURPL_WINRT

@@ -107,7 +107,7 @@ configure_file(include/purpl/core/config.h.in config.h @ONLY)
 
 set(EXPORTS_HEADER ${CMAKE_CURRENT_BINARY_DIR}/exports.h)
 
-add_library(engine_preinit STATIC ${CMAKE_SOURCE_DIR}/tools/dumppe.py ${CMAKE_SOURCE_DIR}/tools/dumpelf.py ${CMAKE_SOURCE_DIR}/tools/dumpmacho.py src/core/preinit.cc ${EXPORTS_HEADER})
+add_library(engine_preinit STATIC src/core/main.c src/core/preinit.cc ${CMAKE_SOURCE_DIR}/tools/dumppe.py ${CMAKE_SOURCE_DIR}/tools/dumpelf.py ${CMAKE_SOURCE_DIR}/tools/dumpmacho.py ${EXPORTS_HEADER})
 add_library(engine SHARED ${ENGINE_ALL_HEADERS} ${ENGINE_ALL_SOURCES} ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 target_compile_definitions(engine_preinit PRIVATE PURPL_BUILD=1)
 target_compile_definitions(engine PRIVATE PURPL_BUILD=1)
@@ -163,6 +163,7 @@ target_include_directories(engine_preinit
 				${Vulkan_INCLUDE_DIRS}
 				${SDL2_INCLUDE_DIRS}
 				${CMAKE_SOURCE_DIR}/deps/glad2/include
+				${CMAKE_SOURCE_DIR}/deps/sdl2/include
 				${CMAKE_SOURCE_DIR}/deps/stb)
 target_include_directories(engine
 			   PUBLIC

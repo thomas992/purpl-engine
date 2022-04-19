@@ -30,10 +30,9 @@
 			     EntryPoint="main">
 			<uap:VisualElements DisplayName="@PURPL_APP_DISPLAY_NAME@"
 					    Description="@PURPL_APP_DESCRIPTION@"
-					    ForegroundText="light"
 					    BackgroundColor="transparent"
 					    Square150x150Logo="Assets\icon_150.png"
-					    Square44x44Logo="Assets\icon_50.png">
+					    Square44x44Logo="Assets\icon_44.png">
 				<uap:SplashScreen Image="Assets\splash.png" />
 			</uap:VisualElements>
 		</Application>

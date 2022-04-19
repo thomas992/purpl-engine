@@ -15,10 +15,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifdef PURPL_WINRT
-#include <shlobj.h>
-#endif // PURPL_WINRT
-
 #include "SDL.h"
 #include "SDL_syswm.h"
 
@@ -32,14 +28,16 @@ u64 preinit_called;
 char *engine_dir;
 
 // Sets preinit_called to PREINIT_MAGIC
-PURPL_API void purpl_complete_preinit(const char *argv0)
+PURPL_API void purpl_complete_preinit(purpl_main_t main_func, const char *argv0)
 {
 	preinit_called = PREINIT_MAGIC;
 
 #ifdef PURPL_WINRT
 	engine_dir = purpl_pathfmt(NULL, argv0, 0, false);
+	SDL_WinRTRunApp(main_func, NULL);
 #else // PURPL_WINRT
 	engine_dir = purpl_path_directory(argv0, NULL, false);
+	SDL_SetMainReady();
 #endif // PURPL_WINRT
 }
 
@@ -93,9 +91,6 @@ PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 	purpl_inst->app_name = purpl_strfmt(
 		NULL, "%s", app_name ? app_name : "purpl-unknown-app");
 	purpl_inst->app_version = app_version;
-
-	// SDL is annoying about this
-	SDL_SetMainReady();
 
 	PURPL_LOG_INFO(purpl_inst->logger, "Initializing SDL");
 
