@@ -73,7 +73,7 @@ if (${PURPL_USE_SYSTEM_SDL})
 	find_package(SDL2)
 endif()
 
-set(SPIRV_CROSS_SKIP_INSTALL TRUE)
+set(SPIRV_CROSS_SKIP_INSTALL ON)
 set(SPIRV_CROSS_SHARED OFF)
 add_subdirectory(deps/spirv-cross)
 set(SPIRV_CROSS_EXECUTABLE $<TARGET_FILE:spirv-cross>)
@@ -231,9 +231,6 @@ if (NOT ${SDL_FOUND})
 		LIBRARY
 		DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 endif()
-install(TARGETS spirv-cross
-	RUNTIME
-	DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 
 if (MSVC AND ${CMAKE_BUILD_TYPE} MATCHES "Deb")
 	install(PROGRAMS $<TARGET_PDB_FILE:SDL2>

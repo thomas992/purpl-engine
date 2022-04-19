@@ -55,7 +55,7 @@ strategy:
 variables:
   artifactArchive: $(Build.ArtifactStagingDirectory)/purpl-$(imageName)-$(config)-$(cc).7z
   vulkanSdkVersion: 1.3.211
-  vulkanSdk: C:\VulkanSDK\$(vulkanSdkVersion).1
+  vulkanSdk: C:\VulkanSDK\$(vulkanSdkVersion).0
 
 pool:
   vmImage: $(imageName)
