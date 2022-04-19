@@ -39,6 +39,10 @@ set(ENGINE_GRAPHICS_SOURCES
     src/graphics/init.c
     src/graphics/window.c)
 
+set(ENGINE_SHADERS
+    src/graphics/shaders/triangle.vert
+    src/graphics/shaders/triangle.frag)
+
 set(ENGINE_VULKAN_SOURCES
     src/graphics/vulkan/debug.c
     src/graphics/vulkan/device.c
@@ -189,6 +193,15 @@ else()
 endif()
 set_target_properties(engine PROPERTIES PREFIX "")
 set_target_properties(engine_preinit PROPERTIES PREFIX "")
+
+foreach(shader ${ENGINE_SHADERS})
+	string(REPLACE "." "_" shader_name ${shader})
+	string(FIND "${shader}" "/" shader_basename_start REVERSE)
+	math(EXPR shader_basename_start "${shader_basename_start} + 1" OUTPUT_FORMAT DECIMAL)
+	string(SUBSTRING "${shader_name}" ${shader_basename_start} -1 shader_basename)
+	add_shader(${shader_basename} ${shader} assets/shaders)
+	add_dependencies(engine ${shader_basename})
+endforeach()
 
 if (WIN32)
 	set(ENGINE_RUNTIME_FILES_ $<TARGET_FILE:engine> $<TARGET_FILE:SDL2::SDL2>)

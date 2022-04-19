@@ -115,12 +115,16 @@ else()
 endif()
 
 # Graphics APIs
-if (NOT APPLE)
+if (APPLE)
+	find_program(Vulkan_GLSLC_EXECUTABLE glslc)
+else()
 	find_package(Vulkan REQUIRED)
 
 	glad_add_library(glad_opengl REPRODUCIBLE LANGUAGE c LOADER API gl:core=4.6)
 	glad_add_library(glad_vulkan REPRODUCIBLE LANGUAGE c LOADER API vulkan=1.3)
 endif()
+find_program(SPIRV_CROSS_EXECUTABLE spirv-cross)
+include(cmake/Shader.cmake)
 
 find_package(Python3 REQUIRED)
 
@@ -160,6 +164,8 @@ foreach (X ${COMPILER_VERSION})
 	message(STATUS "\t\t${X}")
 endforeach()
 message(STATUS "\tC flags: ${CMAKE_C_FLAGS}")
+message(STATUS "\tGLSL compiler: ${Vulkan_GLSLC_EXECUTABLE}")
+message(STATUS "\tSPIRV-Cross: ${SPIRV_CROSS_EXECUTABLE}")
 if (APPLE)
 	message(STATUS "\tSwift compiler: ${CMAKE_Swift_COMPILER}")
 endif()
