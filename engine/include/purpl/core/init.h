@@ -32,8 +32,8 @@
 /// \param argv The arguments passed to the application
 /// 
 /// \return Returns the exit code of the application
-extern int32_t purpl_main(int32_t argc, char *argv[]);
-typedef int32_t (*purpl_main_t)(int32_t argc, char *argv[]);
+extern s32 purpl_main(s32 argc, char *argv[]);
+typedef s32 (*purpl_main_t)(s32 argc, char *argv[]);
 
 /// A user-supplied function to be called each frame
 ///
@@ -54,7 +54,9 @@ typedef bool (*purpl_frame_func)(u32 delta, void *user_data);
 ///		parameter of main
 /// \param argv The array of arguments passed to the program, the second
 ///		parameter of main
-extern void purpl_preinit(purpl_main_t main_func, int argc, char *argv[]);
+///
+/// \return Returns the value returned by the application
+extern s32 purpl_preinit(purpl_main_t main_func, s32 argc, char *argv[]);
 
 /// Initialize the engine
 ///

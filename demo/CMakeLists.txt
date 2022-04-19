@@ -2,6 +2,10 @@ cmake_minimum_required(VERSION 3.10)
 
 set(DEMO_SOURCES src/main.c)
 
+if (${CMAKE_SYSTEM_NAME} MATCHES "WindowsStore")
+	set(DEMO_SOURCES ${DEMO_SOURCES} ${CMAKE_CURRENT_BINARY_DIR}/Package.appxmanifest Package.appxmanifest.in)
+endif()
+
 # Needs semicolons
 set(DEMO_CONTENTS
     assets/textures/icon_44.png;
@@ -9,7 +13,7 @@ set(DEMO_CONTENTS
     assets/textures/icon_150.png;
     assets/textures/splash.png;)
 
-add_executable(demo ${DEMO_SOURCES} ${DEMO_CONTENTS} ${CMAKE_CURRENT_BINARY_DIR}/Package.appxmanifest Package.appxmanifest.in)
+add_executable(demo ${DEMO_SOURCES} ${DEMO_CONTENTS})
 
 # This library handles loading the shared library
 target_link_libraries(demo PRIVATE engine_preinit)

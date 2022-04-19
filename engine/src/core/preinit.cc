@@ -54,10 +54,10 @@ void *engine_lib = NULL;
 #endif // _WIN32
 
 #ifdef _WIN32
-#define purpl_complete_preinit ((void (*)(purpl_main_t main_func, const char *argv0))__imp_purpl_complete_preinit)
+#define purpl_complete_preinit ((void (*)(purpl_main_t main_func, int argc, char *argv[]))__imp_purpl_complete_preinit)
 #define purpl_internal_shutdown __imp_purpl_internal_shutdown
 #else // _WIN32
-#define purpl_complete_preinit ((void (*)(purpl_main_t main_func, const char *argv0))purpl_complete_preinit)
+#define purpl_complete_preinit ((void (*)(purpl_main_t main_func, int argc, char *argv[]))purpl_complete_preinit)
 #endif // _WIN32
 
 // EXTERN_C is provided by exports.h
@@ -122,9 +122,7 @@ EXTERN_C void purpl_preinit(purpl_main_t main_func, int argc, char *argv[])
 	if (!engine_lib) {
 		// 16 is for the length of "bin/engine.<extension>\0", because
 		// that's the longest the path can be
-		path = calloc(strlen(argv[0]) + strlen("bin/engine" LIB_EXT) +
-				      1,
-			      sizeof(char));
+		path = (char *)calloc(strlen(argv[0]) + strlen("bin/engine" LIB_EXT) + 1, sizeof(char));
 		if (!path) {
 			fprintf(stderr,
 				"Failed to allocate memory for preinit, exiting to avoid crash\n");
@@ -153,14 +151,7 @@ EXTERN_C void purpl_preinit(purpl_main_t main_func, int argc, char *argv[])
 
 	// Tell the engine that preinit was called so it doesn't print a
 	// warning
-#ifdef PURPL_WINRT
-	winrt::Windows::Storage::ApplicationData local_storage =
-		winrt::Windows::Storage::ApplicationData::Current();
-	winrt::hstring appdata = local_storage.LocalFolder().Path();
-	purpl_complete_preinit(main_func, winrt::to_string(appdata).c_str());
-#else // PURPL_WINRT
-	purpl_complete_preinit(argv[0]);
-#endif // PURPL_WINRT
+	purpl_complete_preinit(main_func, argc, argv);
 }
 
 EXTERN_C void purpl_shutdown(void)

@@ -273,7 +273,7 @@ PURPL_API void purpl_stat(const char *path, struct purpl_file_info *info, bool r
 	info->mtime = sb.st_mtim.tv_sec;
 #endif // __APPLE__
 
-	file = purpl_path_file(path2, NULL);
+	file = purpl_path_file(path2, NULL, false);
 	if (!file) {
 		free(path2);
 		return;

@@ -25,5 +25,10 @@
 
 int32_t main(int32_t argc, char* argv[])
 {
-	purpl_preinit(purpl_main, argc, argv);
+	int32_t ret;
+
+	ret = purpl_preinit(purpl_main, argc, argv);
+	purpl_shutdown();
+
+	exit(ret);
 }
