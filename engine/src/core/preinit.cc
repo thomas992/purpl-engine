@@ -15,10 +15,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <wchar.h>
+
+#include <functional>
 
 #ifdef _WIN32
 #include <windows.h>
@@ -34,7 +37,7 @@
 
 #define PURPL_IGNORE(x) (void)(x)
 
-typedef int32_t (*purpl_main_t)(int32_t argc, char *argv[]);
+typedef std::function<int32_t(int32_t argc, char *argv[])> purpl_main_t;
 
 #include "exports.h"
 
@@ -165,3 +168,4 @@ EXTERN_C void purpl_shutdown(void)
 	dlclose(engine_lib);
 #endif // _WIN32
 }
+
