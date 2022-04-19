@@ -37,7 +37,7 @@
 
 #define PURPL_IGNORE(x) (void)(x)
 
-typedef std::function<int32_t(int32_t argc, char *argv[])> purpl_main_t;
+typedef int32_t (*purpl_main_t)(int32_t argc, char *argv[]);
 
 #include "exports.h"
 

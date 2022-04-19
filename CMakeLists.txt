@@ -73,11 +73,6 @@ if (${PURPL_USE_SYSTEM_SDL})
 	find_package(SDL2)
 endif()
 
-set(SPIRV_CROSS_SKIP_INSTALL ON)
-set(SPIRV_CROSS_SHARED OFF)
-add_subdirectory(deps/spirv-cross)
-set(SPIRV_CROSS_EXECUTABLE $<TARGET_FILE:spirv-cross>)
-
 if (NOT ${PURPL_USE_SYSTEM_SDL} OR NOT ${SDL2_FOUND})
 	message(STATUS "Using bundled SDL")
 	set(SDL_STATIC OFF CACHE BOOL "" FORCE)
@@ -88,7 +83,21 @@ if (NOT ${PURPL_USE_SYSTEM_SDL} OR NOT ${SDL2_FOUND})
 	endif()
 	set(SDL2_LIBRARIES SDL2::SDL2)
 	set(SDL2_INCLUDE_DIRS deps/sdl2/include)
+	set(SDL2_FOUND FALSE CACHE BOOL "" FORCE)
+
+	install(TARGETS SDL2
+		LIBRARY
+		DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+	if (MSVC AND ${CMAKE_BUILD_TYPE} MATCHES "Deb")
+		install(PROGRAMS $<TARGET_PDB_FILE:SDL2>
+			DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+	endif()
 endif()
+
+set(SPIRV_CROSS_SKIP_INSTALL ON CACHE BOOL "" FORCE)
+set(SPIRV_CROSS_SHARED OFF CACHE BOOL "" FORCE)
+add_subdirectory(deps/spirv-cross)
+set(SPIRV_CROSS_EXECUTABLE $<TARGET_FILE:spirv-cross>)
 
 # Compiler and linker flags
 if (MSVC)
@@ -225,14 +234,3 @@ install(FILES LICENSE
 	RENAME purpl.txt
 	DESTINATION ${CMAKE_INSTALL_PREFIX}/licenses)
 
-# Install select files from dependencies
-if (NOT ${SDL_FOUND})
-	install(TARGETS SDL2
-		LIBRARY
-		DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
-endif()
-
-if (MSVC AND ${CMAKE_BUILD_TYPE} MATCHES "Deb")
-	install(PROGRAMS $<TARGET_PDB_FILE:SDL2>
-		DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
-endif()

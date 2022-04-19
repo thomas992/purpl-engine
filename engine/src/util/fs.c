@@ -205,6 +205,7 @@ PURPL_API char *purpl_path_directory(const char *path, size_t *size, bool relati
 	}
 
 	p = strrchr(buf, '/');
+	*p = '\0';
 	buf2 = purpl_strndup(buf, p - buf + 1);
 
 	if (size)

@@ -60,6 +60,7 @@ PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 	}
 
 	purpl_inst->engine_dir = purpl_strdup(engine_dir);
+	free(engine_dir);
 
 	if (!purpl_path_exists("logs", true))
 		purpl_mkdir("logs", true, 0, PURPL_FS_MODE_ALL);
