@@ -44,11 +44,12 @@ for x in out.split("\n"):
         names.append(name)
 
 f = open(sys.argv[2], "wb+")
+f.write(bytes(f"#ifdef __cplusplus\n#define EXTERN_C extern \"C\"\n#else // __cplusplus\n#define EXTERN_C\n#endif // __cplusplus\n\n", encoding="utf-8"))
 for name in names:
-    f.write(bytes(f"void (*__imp_{name})(void) = (void (*)(void))0;\n", encoding="utf-8"))
+    f.write(bytes(f"EXTERN_C void (*__imp_{name})(void) = (void (*)(void))0;\n", encoding="utf-8"))
 
 dll_name = os.path.basename(sys.argv[1]).replace("-", "_").replace(".", "_")
-f.write(bytes(f"\nvoid init_{dll_name}_ptrs(void *dll)\n", encoding="utf-8"))
+f.write(bytes(f"\nEXTERN_C void init_{dll_name}_ptrs(HMODULE dll)\n", encoding="utf-8"))
 f.write(bytes("{\n", encoding="utf-8"))
 
 for name in names:

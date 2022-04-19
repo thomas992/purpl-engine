@@ -16,6 +16,7 @@
 // limitations under the License.
 
 #ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #endif
 
@@ -31,6 +32,7 @@ PURPL_API struct purpl_logger *purpl_log_create(const char *file,
 	struct tm *t2;
 	char *date;
 	char *filename;
+	char *filename2;
 	char *message_format;
 
 	if (!purpl_inst)
@@ -50,9 +52,11 @@ PURPL_API struct purpl_logger *purpl_log_create(const char *file,
 							   // prevent trigraph
 							   // expansion
 
-	filename = purpl_strrplc(file ? file : PURPL_LOG_DEFAULT_NAME,
+	filename2 = purpl_strrplc(file ? file : PURPL_LOG_DEFAULT_NAME,
 				 "<date>", date, NULL);
 	free(date);
+	filename = purpl_pathfmt(NULL, filename2, 0, true);
+	free(filename2);
 
 	logger->file = fopen(filename, "ab+");
 	if (!logger->file) {
@@ -212,12 +216,12 @@ static char *purpl_log_format(struct purpl_logger *logger,
 	free(p2);
 	free(p3);
 
-	p3 = purpl_strfmt(NULL, "%lu", purpl_get_pid());
+	p3 = purpl_strfmt(NULL, "%" PRId64, purpl_get_pid());
 	p2 = purpl_strrplc(p1, "#P", p3, NULL);
 	free(p1);
 	free(p3);
 
-	p3 = purpl_strfmt(NULL, "%lu", purpl_get_tid());
+	p3 = purpl_strfmt(NULL, "%" PRId64, purpl_get_tid());
 	p1 = purpl_strrplc(p2, "#T", p3, NULL);
 	free(p2);
 	free(p3);
@@ -225,7 +229,7 @@ static char *purpl_log_format(struct purpl_logger *logger,
 	p2 = purpl_strrplc(p1, "#W", "#F:#sl@#f", NULL);
 	free(p1);
 
-	p3 = purpl_pathfmt(NULL, file, 0);
+	p3 = purpl_pathfmt(NULL, file, 0, false);
 	len = strlen(PURPL_SOURCE_DIR);
 	if (strncmp(p3, PURPL_SOURCE_DIR, len) == 0) {
 		p5 = file + len + 1;

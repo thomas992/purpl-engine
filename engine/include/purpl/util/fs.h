@@ -22,6 +22,7 @@
 #include <stdio.h>
 
 #include "purpl/core/coredefs.h"
+#include "purpl/core/inst.h"
 #include "purpl/core/types.h"
 
 #include "error.h"
@@ -90,53 +91,60 @@ extern PURPL_API u32 purpl_translate_file_attrs(u32 attrs, bool to_native);
 /// \param size The size of the formatted path
 /// \param path The path to format
 /// \param flags The flags to apply
+/// \param relative Whether to format the path relative to the engine executable
 extern PURPL_API char *purpl_pathfmt(size_t *size, const char *path,
-				     enum purpl_fs_flags flags);
+				     enum purpl_fs_flags flags, bool relative);
 
 /// Checks if a file exists
 ///
 /// \param path The path to check
+/// \param relative Whether the path is relative to the engine executable
 ///
 /// \return Returns true if the file exists, false otherwise
-extern PURPL_API bool purpl_path_exists(const char *path);
+extern PURPL_API bool purpl_path_exists(const char *path, bool relative);
 
 /// Create a directory
 ///
 /// \param path The path of the directory
 /// \param flags The flags for the directory's creation
 /// \param mode The mode for the directory
+/// \param relative Whether the path is relative to the engine executable
 ///
 /// \return Returns true on success, and sets errno on Windows
 extern PURPL_API bool purpl_mkdir(const char *path, enum purpl_fs_flags flags,
-				  enum purpl_file_mode mode);
+				  enum purpl_file_mode mode, bool relative);
 
 /// Get the directory component of a path
 ///
 /// \param path The path
 /// \param size The size of the buffer, optional
+/// \param relative Whether the path is relative to the engine executable
 ///
 /// \return Returns the directory name in a new buffer, or NULL on failure
-extern PURPL_API char *purpl_path_directory(const char *path, size_t *size);
+extern PURPL_API char *purpl_path_directory(const char *path, size_t *size, bool relative);
 
 /// Get the file component of a path
 ///
 /// \param path The path
 /// \param size The size of the buffer, optional
+/// \param relative Whether the path is relative to the engine executable
 ///
 /// \return Returns the file name in a new buffer, or NULL on failure
-extern PURPL_API char *purpl_path_file(const char *path, size_t *size);
+extern PURPL_API char *purpl_path_file(const char *path, size_t *size, bool relative);
 
 /// stat abstraction
 ///
 /// \param path The path to stat
 /// \param info A purpl_file_info struct to store the information in. Will be
 /// 		NULL on failure
+/// \param relative Whether the path is relative to the engine executable
 extern PURPL_API void purpl_stat(const char *path,
-				 struct purpl_file_info *info);
+				 struct purpl_file_info *info, bool relative);
 
 /// Get the size of a file
 ///
 /// \param path The path to check
+/// \param relative Whether the path is relative to the engine executable
 ///
 /// \return Returns the size of the file
-extern PURPL_API size_t purpl_get_size(const char *path);
+extern PURPL_API size_t purpl_get_size(const char *path, bool relative);

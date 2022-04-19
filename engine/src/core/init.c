@@ -15,6 +15,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#ifdef PURPL_WINRT
+#include <shlobj.h>
+#endif // PURPL_WINRT
+
 #include "SDL.h"
 #include "SDL_syswm.h"
 
@@ -25,11 +29,18 @@
 #define PREINIT_MAGIC (PURPL_VERSION << 8 | 0x01)
 
 u64 preinit_called;
+char *engine_dir;
 
 // Sets preinit_called to PREINIT_MAGIC
-PURPL_API void purpl_complete_preinit(void)
+PURPL_API void purpl_complete_preinit(const char *argv0)
 {
 	preinit_called = PREINIT_MAGIC;
+
+#ifdef PURPL_WINRT
+	engine_dir = purpl_pathfmt(NULL, argv0, 0, false);
+#else // PURPL_WINRT
+	engine_dir = purpl_path_directory(argv0, NULL, false);
+#endif // PURPL_WINRT
 }
 
 PURPL_API void purpl_internal_shutdown(void);
@@ -47,8 +58,10 @@ PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 		return false;
 	}
 
-	if (!purpl_path_exists("logs"))
-		purpl_mkdir("logs", 0, PURPL_FS_MODE_ALL);
+	purpl_inst->engine_dir = purpl_strdup(engine_dir);
+
+	if (!purpl_path_exists("logs", true))
+		purpl_mkdir("logs", true, 0, PURPL_FS_MODE_ALL);
 
 	purpl_inst->logger = purpl_log_create(NULL, PURPL_LOG_LEVEL_INFO,
 					      PURPL_LOG_LEVEL_MAX, NULL);
@@ -201,6 +214,8 @@ PURPL_API void purpl_internal_shutdown(void)
 	SDL_Quit();
 
 	purpl_log_close(purpl_inst->logger, true);
+
+	free(purpl_inst->engine_dir);
 
 	if (purpl_inst->app_name)
 		free(purpl_inst->app_name);

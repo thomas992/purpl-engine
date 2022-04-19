@@ -32,7 +32,7 @@ int32_t main(int32_t argc, char *argv[])
 {
 	struct demo_info info = { 0 };
 	
-	// Make sure the engine is ready (loads the DLL on Windows)
+	// Make sure the engine is ready
 	purpl_preinit(argc, argv);
 
 	// Initialize the engine

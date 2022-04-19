@@ -65,3 +65,4 @@
 
 /// The size of the static buffers returned by some string functions
 #define PURPL_STATIC_BUF_MAX 128
+

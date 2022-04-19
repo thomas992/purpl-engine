@@ -16,9 +16,9 @@
 // limitations under the License.
 
 #if defined _WIN32
-#define PHNT_VERSION PHNT_THRESHOLD
-#include <phnt_windows.h>
-#include <phnt.h>
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#include <processthreadsapi.h>
 #elif defined __APPLE__
 #define _GNU_SOURCE
 #include <pthread.h>
@@ -37,19 +37,19 @@ PURPL_API u64 purpl_random(u64 limit)
 	return purpl_arch_random() % limit;
 }
 
-PURPL_API u32 purpl_get_pid(void)
+PURPL_API u64 purpl_get_pid(void)
 {
 #ifdef _WIN32
-	return (u32)(size_t)(NtCurrentTeb()->ClientId.UniqueProcess);
+	return GetCurrentProcessId();
 #else
 	return getpid();
 #endif // _WIN32
 }
 
-PURPL_API u32 purpl_get_tid(void)
+PURPL_API u64 purpl_get_tid(void)
 {
 #if defined _WIN32
-	return (u32)(size_t)(NtCurrentTeb()->ClientId.UniqueThread);
+	return GetCurrentThreadId();
 #elif defined __APPLE__
 	u64 id;
 

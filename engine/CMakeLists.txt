@@ -103,15 +103,18 @@ set(ENGINE_ALL_SOURCES
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/include PREFIX "Header Files" FILES ${ENGINE_ALL_HEADERS})
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/src PREFIX "Source Files" FILES ${ENGINE_ALL_SOURCES})
 
-file(RELATIVE_PATH ENGINE_RELATIVE_SOURCE_DIR ${CMAKE_BINARY_DIR} ${CMAKE_SOURCE_DIR})
 configure_file(include/purpl/core/config.h.in config.h @ONLY)
 
 set(EXPORTS_HEADER ${CMAKE_CURRENT_BINARY_DIR}/exports.h)
 
-add_library(engine_preinit STATIC ${CMAKE_SOURCE_DIR}/tools/dumppe.py ${CMAKE_SOURCE_DIR}/tools/dumpelf.py src/core/preinit.c ${EXPORTS_HEADER})
+add_library(engine_preinit STATIC ${CMAKE_SOURCE_DIR}/tools/dumppe.py ${CMAKE_SOURCE_DIR}/tools/dumpelf.py ${CMAKE_SOURCE_DIR}/tools/dumpmacho.py src/core/preinit.cc ${EXPORTS_HEADER})
 add_library(engine SHARED ${ENGINE_ALL_HEADERS} ${ENGINE_ALL_SOURCES} ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 target_compile_definitions(engine_preinit PRIVATE PURPL_BUILD=1)
 target_compile_definitions(engine PRIVATE PURPL_BUILD=1)
+if (${CMAKE_SYSTEM_NAME} MATCHES "WindowsStore")
+	target_compile_definitions(engine_preinit PRIVATE PURPL_WINRT=1)
+	target_compile_definitions(engine PRIVATE PURPL_WINRT=1)
+endif()
 if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
 	target_compile_definitions(engine_preinit PRIVATE PURPL_DEBUG=1)
 	target_compile_definitions(engine PRIVATE PURPL_DEBUG=1)
@@ -160,7 +163,6 @@ target_include_directories(engine_preinit
 				${Vulkan_INCLUDE_DIRS}
 				${SDL2_INCLUDE_DIRS}
 				${CMAKE_SOURCE_DIR}/deps/glad2/include
-				${CMAKE_SOURCE_DIR}/deps/processhacker/phnt/include
 				${CMAKE_SOURCE_DIR}/deps/stb)
 target_include_directories(engine
 			   PUBLIC
@@ -170,7 +172,6 @@ target_include_directories(engine
 				${Vulkan_INCLUDE_DIRS}
 				${SDL2_INCLUDE_DIRS}
 				${CMAKE_SOURCE_DIR}/deps/glad2/include
-				${CMAKE_SOURCE_DIR}/deps/processhacker/phnt/include
 				${CMAKE_SOURCE_DIR}/deps/sdl2/include
 				${CMAKE_SOURCE_DIR}/deps/stb)
 target_link_libraries(engine PRIVATE SDL2::SDL2)

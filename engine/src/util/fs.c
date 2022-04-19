@@ -16,14 +16,11 @@
 // limitations under the License.
 
 #ifdef _WIN32
-#define PHNT_VERSION PHNT_THRESHOLD
-#include <phnt_windows.h>
-#include <phnt.h>
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
 #else // _WIN32
 #define _GNU_SOURCE
-
 #include <sys/stat.h>
-
 #include <fcntl.h>
 #include <unistd.h>
 #endif // _WIN32
@@ -102,28 +99,40 @@ PURPL_API u32 purpl_translate_file_attrs(u32 attrs, bool to_native)
 }
 
 PURPL_API char *purpl_pathfmt(size_t *size, const char *path,
-			      enum purpl_fs_flags flags)
+			      enum purpl_fs_flags flags, bool relative)
 {
 	char *path2;
+	char *path3;
 
 	PURPL_IGNORE(flags);
 
 	path2 = purpl_strrplc(path, "\\", "/", size);
+	if (relative) {
+		path3 = purpl_strfmt(NULL, "%s/%s", purpl_inst->engine_dir, path2);
+		free(path2);
+		path2 = path3;
+	}
 
 	return path2;
 }
 
-PURPL_API bool purpl_path_exists(const char *path)
+PURPL_API bool purpl_path_exists(const char *path, bool relative)
 {
+	char *path2;
+	bool ret;
+
 	if (!path)
 		return false;
 
-	// Mode and directories don't matter, this would occur first
-	return !(!fopen(path, "rb") && errno == ENOENT);
+	path2 = purpl_pathfmt(NULL, path, 0, relative);
+	ret = !(!fopen(path2, "rb") && errno == ENOENT);
+	free(path2);
+
+	return ret;
 }
 
 PURPL_API bool purpl_mkdir(const char *path, enum purpl_fs_flags flags,
-			   enum purpl_file_mode mode)
+			   enum purpl_file_mode mode, bool relative)
 {
 	char *path2;
 	char **dir_names = NULL;
@@ -135,20 +144,17 @@ PURPL_API bool purpl_mkdir(const char *path, enum purpl_fs_flags flags,
 	if (mode == 0)
 		mode = PURPL_FS_MODE_ALL;
 
-	path2 = purpl_pathfmt(NULL, path, flags);
+	path2 = purpl_pathfmt(NULL, path, flags, relative);
 	if (flags & PURPL_FS_MKDIR_RECURSE) {
 		for (i = 0; i < (purpl_strcount(path, "/") -
 				 purpl_strcount(path, "//")) +
 					1;
 		     i++) {
 			char *p;
-			size_t j = 0;
 
 			p = strstr(path2, "/");
-			while (p && j < i) {
-				j++;
-				p = strstr(p + j, "/");
-			}
+			while (p)
+				p = strstr(++p, "/");
 			stbds_arrput(dir_names,
 				     purpl_strfmt(NULL, "%.*s",
 						  (s32)(p - path2), path2));
@@ -182,7 +188,7 @@ PURPL_API bool purpl_mkdir(const char *path, enum purpl_fs_flags flags,
 	return true;
 }
 
-PURPL_API char *purpl_path_directory(const char *path, size_t *size)
+PURPL_API char *purpl_path_directory(const char *path, size_t *size, bool relative)
 {
 	char *buf;
 	char *buf2;
@@ -191,7 +197,7 @@ PURPL_API char *purpl_path_directory(const char *path, size_t *size)
 	if (!path)
 		return NULL;
 
-	buf = purpl_pathfmt(size, path, 0);
+	buf = purpl_pathfmt(size, path, 0, relative);
 	if (!buf) {
 		if (size)
 			*size = 0;
@@ -207,7 +213,7 @@ PURPL_API char *purpl_path_directory(const char *path, size_t *size)
 	return buf2;
 }
 
-PURPL_API char *purpl_path_file(const char *path, size_t *size)
+PURPL_API char *purpl_path_file(const char *path, size_t *size, bool relative)
 {
 	char *buf;
 	char *buf2;
@@ -216,7 +222,7 @@ PURPL_API char *purpl_path_file(const char *path, size_t *size)
 	if (!path)
 		return NULL;
 
-	buf = purpl_pathfmt(size, path, 0);
+	buf = purpl_pathfmt(size, path, 0, relative);
 	if (!buf) {
 		if (size)
 			*size = 0;
@@ -239,7 +245,7 @@ PURPL_API char *purpl_path_file(const char *path, size_t *size)
 	return buf2;
 }
 
-PURPL_API void purpl_stat(const char *path, struct purpl_file_info *info)
+PURPL_API void purpl_stat(const char *path, struct purpl_file_info *info, bool relative)
 {
 	char *path2;
 	char *file = NULL;
@@ -247,7 +253,7 @@ PURPL_API void purpl_stat(const char *path, struct purpl_file_info *info)
 	if (!path || !info)
 		return;
 
-	path2 = purpl_pathfmt(NULL, path, 0);
+	path2 = purpl_pathfmt(NULL, path, 0, relative);
 
 #ifdef _WIN32
 #else // _WIN32
@@ -281,11 +287,20 @@ PURPL_API void purpl_stat(const char *path, struct purpl_file_info *info)
 	free(path2);
 }
 
-PURPL_API size_t purpl_get_size(const char *path)
+PURPL_API size_t purpl_get_size(const char *path, bool relative)
 {
+	char *path2;
 	struct purpl_file_info info;
 
-	purpl_stat(path, &info);
+	if (!path)
+		return 0;
+
+	path2 = purpl_pathfmt(NULL, path, 0, relative);
+	if (!path2)
+		return 0;
+
+	purpl_stat(path2, &info, false);
+	free(path2);
 
 	return info.size;
 }

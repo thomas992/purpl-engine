@@ -38,9 +38,10 @@ for x in out.split("\n"):
         names.append(name)
 
 f = open(sys.argv[2], "wb+")
+f.write(bytes(f"#ifdef __cplusplus\n#define EXTERN_C extern \"C\"\n#else // __cplusplus\n#define EXTERN_C\n#endif // __cplusplus\n\n", encoding="utf-8"))
 for name in names:
-    f.write(bytes(f"void (*{name})(void) = (void (*)(void))0;\n", encoding="utf-8"))
-    f.write(bytes(f"void {name[1:]}(void) {{ {name}(); }}\n", encoding="utf-8"))
+    f.write(bytes(f"EXTERN_C void (*{name})(void) = (void (*)(void))0;\n", encoding="utf-8"))
+    f.write(bytes(f"EXTERN_C void {name[1:]}(void) {{ {name}(); }}\n", encoding="utf-8"))
 
 so_name = os.path.basename(sys.argv[1]).replace("-", "_").replace(".", "_")
 f.write(bytes(f"\nvoid init_{so_name}_ptrs(void *so)\n{{\n", encoding="utf-8"))

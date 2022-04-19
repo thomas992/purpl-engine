@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.15)
 
 include(cmake/GetGitRevisionDescription.cmake)
+include(cmake/WinRT.cmake)
 
 if (APPLE AND NOT ${CMAKE_GENERATOR} MATCHES "Xcode")
 	message(FATAL_ERROR "Only Xcode is supported on Apple platforms due to otherwise incomplete compatibility with mixing C and Swift code in CMake")
@@ -18,11 +19,11 @@ endif()
 # Don't link to anything
 file(WRITE ${CMAKE_BINARY_DIR}/MakeRulesOverwrite.cmake
 [=[
-if (MSVC)
+if (MSVC AND NOT ${CMAKE_SYSTEM_NAME} MATCHES "WindowsStore")
 	set(DEFAULT_C_LIBRARIES ${CMAKE_C_STANDARD_LIBRARIES_INIT})
 	set(DEFAULT_CXX_LIBRARIES ${CMAKE_C_STANDARD_LIBRARIES_INIT})
-	set(CMAKE_C_STANDARD_LIBRARIES_INIT "kernel32.lib ntdll.lib user32.lib")
-	set(CMAKE_CXX_STANDARD_LIBRARIES_INIT "kernel32.lib ntdll.lib user32.lib")
+	set(CMAKE_C_STANDARD_LIBRARIES_INIT "kernel32.lib ntdll.lib shell32.lib user32.lib")
+	set(CMAKE_CXX_STANDARD_LIBRARIES_INIT "kernel32.lib ntdll.lib shell32.lib user32.lib")
 endif()
 ]=]
 )
@@ -30,6 +31,10 @@ set(CMAKE_USER_MAKE_RULES_OVERRIDE "${CMAKE_BINARY_DIR}/MakeRulesOverwrite.cmake
 
 # Declare the project
 project(purpl-engine VERSION 1.0.0 LANGUAGES C CXX)
+
+if (NOT DEFINED CMAKE_SYSTEM_PROCESSOR OR "${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "")
+	set(CMAKE_SYSTEM_PROCESSOR ${CMAKE_HOST_SYSTEM_PROCESSOR})
+endif()
 
 if (WIN32)
 	enable_language(ASM_MASM)
@@ -56,15 +61,19 @@ option(PURPL_ENABLE_DEMO "Build the demo" ON)
 option(PURPL_ENABLE_MEMING "Easter Eggs" OFF)
 option(PURPL_USE_SYSTEM_SDL "Use the system installation of SDL" OFF)
 
+if (${CMAKE_SYSTEM_NAME} MATCHES "WindowsStore" AND ${CMAKE_BUILD_TYPE} MATCHES "Deb")
+	set(_MSIX_VCLIBS_EXTRA .Debug)
+endif()
+
 # Dependencies
 if (NOT APPLE)
 	add_subdirectory(deps/glad/cmake glad_cmake)
 endif()
-if (PURPL_USE_SYSTEM_SDL)
+if (${PURPL_USE_SYSTEM_SDL})
 	find_package(SDL2)
 endif()
 
-if (NOT PURPL_USE_SYSTEM_SDL OR NOT SDL2_FOUND)
+if (NOT ${PURPL_USE_SYSTEM_SDL} OR NOT ${SDL2_FOUND})
 	message(STATUS "Using bundled SDL")
 	set(SDL_STATIC OFF CACHE BOOL "" FORCE)
 	set(SDL_CMAKE_DEBUG_POSTFIX "" CACHE STRING "" FORCE)
@@ -80,11 +89,15 @@ endif()
 if (MSVC)
 	string(REGEX REPLACE "/W[1-4]" "" CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /std:c17 /W4 /WX")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++17 /W4 /WX")
 	if (${CMAKE_C_COMPILER_ID} MATCHES "Clang")
-		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-deprecated-declarations -Wno-gnu-folding-constant -Wno-microsoft-enum-forward-reference -Wno-pragma-pack -Wno-sign-compare -Wno-visibility")
+		set(_WARNINGS "-Wno-deprecated-declarations -Wno-gnu-folding-constant -Wno-microsoft-enum-forward-reference -Wno-pragma-pack -Wno-sign-compare -Wno-visibility")
 	else()
-		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /wd4115 /wd4244 /wd4267 /wd4324 /wd4335 /wd4996 /wd5105")
+		set(_WARNINGS "/wd4115 /wd4244 /wd4267 /wd4324 /wd4335 /wd4996 /wd5105")
 	endif()
+
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${_WARNINGS}")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${_WARNINGS}")
 else()
 	if (${CMAKE_C_COMPILER_ID} MATCHES "GNU")
 		# GCC 9's C2x support doesn't have [[fallthrough]], but SDL assumes it does
@@ -121,6 +134,9 @@ message(STATUS "")
 message(STATUS "Purpl Engine configuration: ")
 message(STATUS "")
 message(STATUS "\tPlatform: ${CMAKE_SYSTEM} (pointer size: ${CMAKE_SIZEOF_VOID_P})")
+message(STATUS "\tProcessor:")
+message(STATUS "\t\tHost: ${CMAKE_HOST_SYSTEM_PROCESSOR}")
+message(STATUS "\t\tTarget: ${CMAKE_SYSTEM_PROCESSOR}")
 message(STATUS "\tGenerator: ${CMAKE_GENERATOR}")
 message(STATUS "\tBuild type: ${CMAKE_BUILD_TYPE}")
 message(STATUS "\tRevision: ${ENGINE_BRANCH} commit ${ENGINE_COMMIT}")
@@ -184,9 +200,6 @@ endif()
 install(FILES deps/glad/LICENSE
 	RENAME glad.txt
 	DESTINATION ${CMAKE_INSTALL_PREFIX}/licenses)
-install(FILES deps/processhacker/LICENSE.txt
-	RENAME processhacker.txt
-	DESTINATION ${CMAKE_INSTALL_PREFIX}/licenses)
 install(FILES deps/sdl2/LICENSE.txt
 	RENAME sdl2.txt
 	DESTINATION ${CMAKE_INSTALL_PREFIX}/licenses)
@@ -198,7 +211,7 @@ install(FILES LICENSE
 	DESTINATION ${CMAKE_INSTALL_PREFIX}/licenses)
 
 # Install select files from dependencies
-if (NOT PURPL_USE_SYSTEM_SDL)
+if (NOT ${SDL_FOUND})
 	install(TARGETS SDL2
 		LIBRARY
 		DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)

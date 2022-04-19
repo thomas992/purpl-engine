@@ -14,7 +14,7 @@ echo Default MSVC version is %msvc_defaultver%
 set msvc_path=%vs2019_install%\VC\Tools\MSVC\%msvc_defaultver%
 c:
 pushd "%vs2019_install%\VC\Auxiliary\Build"
-call vcvarsall.bat x64
+call vcvarsall.bat %PURPL_BUILDENV_ARCH% %*
 popd
 %~d0
 

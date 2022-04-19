@@ -56,6 +56,9 @@ struct purpl_instance {
 	u32 app_version; // The version of the application that initialized the
 			 // engine
 
+	char *engine_dir; // The directory where the engine executable is
+			  // located
+
 	struct purpl_logger *logger; // The logger for this instance
 	time_t start_time; // When the engine started
 

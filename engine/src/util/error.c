@@ -20,9 +20,8 @@
 #include <stb_sprintf.h>
 
 #ifdef _WIN32
-#define PHNT_VERSION PHNT_THRESHOLD
-#include <phnt_windows.h>
-#include <phnt.h>
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
 
 u32 win32_errno_map[] = {
 	// Directly stolen from

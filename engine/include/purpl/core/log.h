@@ -31,7 +31,7 @@
 /// Levels for the logging functions
 enum purpl_log_level {
 	PURPL_LOG_LEVEL_CURRENT = -1, // Use this to use the logger's current log
-				 // level
+				      // level
 	PURPL_LOG_LEVEL_CRITICAL, // Very bad errors
 	PURPL_LOG_LEVEL_ERROR, // Minor errors (most of them)
 	PURPL_LOG_LEVEL_WARNING, // Minor errors unlikely to impact anything
@@ -77,7 +77,7 @@ struct purpl_logger {
 ///
 /// clang-format off
 ///
-/// 	#t	- The current time in the format #h:#m:#s
+///	#t	- The current time in the format #h:#m:#s
 ///	#t12	- The current time in the format #h12:#m:#s
 ///	#h	- The current hour in 24-hour format
 ///	#h12	- The current hour in 12-hour format
@@ -85,8 +85,8 @@ struct purpl_logger {
 ///	#s	- The current second of the current minute
 ///
 ///	#d	- The current date in the format #WD, #D/#M/#Y, or #jd if it's
-/// 		  April 1st and PURPL_ENABLE_MEMING is defined (enable_meming
-/// 		  in GN args)
+///		  April 1st and PURPL_ENABLE_MEMING is defined (enable_meming
+///		  in GN args)
 ///	#jd	- The current date in the format #WD, #JD/#JM/#JY
 ///	#D	- The current day of the month
 ///	#JD	- The current day of the month, but 32 if it's April 1st
@@ -117,10 +117,10 @@ struct purpl_logger {
 ///		  or "[#d #t] [#n #v] [#L] #msg",in release builds, or
 ///		  "[PID #P TID #T] [#d #t] [#W] [#L] #msg" in debug builds
 ///
-/// 	The sequences can also be used in messages passed to
-/// 	purpl_log_write (and the macros wrapping it), as they
-/// 	are processed by that function and #msg is expanded
-/// 	before the other sequences.
+///	The sequences can also be used in messages passed to
+///	purpl_log_write (and the macros wrapping it), as they
+///	are processed by that function and #msg is expanded
+///	before the other sequences.
 ///
 /// clang-format on
 ///

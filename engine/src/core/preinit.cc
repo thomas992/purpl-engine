@@ -21,19 +21,24 @@
 #include <wchar.h>
 
 #ifdef _WIN32
-#define PHNT_VERSION PHNT_THRESHOLD
-#include <phnt_windows.h>
-#include <phnt.h>
+#include <windows.h>
+#include <winrt/windows.foundation.h>
+#include <winrt/windows.storage.h>
+#include <winrt/windows.ui.core.h>
+#include <winrt/windows.ui.popups.h>
 #else // _WIN32
 #include <dlfcn.h>
 #endif // _WIN32
 
-#include "purpl/core/types.h"
 #define PURPL_IGNORE(x) (void)(x)
 
 #include "exports.h"
 
+#ifdef PURPL_WINRT
+HMODULE engine_lib = NULL;
+#else // PURPL_WINRT
 void *engine_lib = NULL;
+#endif // PURPL_WINRT
 
 #ifdef _WIN32
 #define LIB_EXT ".dll"
@@ -47,38 +52,37 @@ void *engine_lib = NULL;
 #endif // _WIN32
 
 #ifdef _WIN32
-#define purpl_complete_preinit __imp_purpl_complete_preinit
+#define purpl_complete_preinit ((void (*)(const char *argv0))__imp_purpl_complete_preinit)
 #define purpl_internal_shutdown __imp_purpl_internal_shutdown
 #endif // _WIN32
 
-void purpl_preinit(int argc, char *argv[])
+// EXTERN_C is provided by exports.h
+EXTERN_C void purpl_preinit(int argc, char *argv[])
 {
+	PURPL_IGNORE(argc);
+
 	// On Windows, the pre-initialization requires loading the engine DLL,
 	// which in turn causes NTDLL to automatically load the others
 #ifdef _WIN32
-	PURPL_IGNORE(argc);
-	PURPL_IGNORE(argv);
-
-	UNICODE_STRING *peb_path =
-		&NtCurrentPeb()->ProcessParameters->ImagePathName;
-	wchar_t *path;
+	char *path;
+	size_t size = strlen(argv[0]) + 16;
 
 	engine_lib = LoadLibraryExA("engine.dll", NULL,
 				    LOAD_LIBRARY_SEARCH_DEFAULT_DIRS);
 	if (!engine_lib) {
 		// 16 is for the length of "bin\\engine.dll\0", because that's
 		// the longest the path can be
-		path = calloc(peb_path->Length + 16, sizeof(wchar_t));
+		path = (char *)calloc(size, sizeof(char));
 		if (!path) {
 			fprintf(stderr,
 				"Failed to allocate memory for preinit, exiting to avoid crash\n");
 			exit(1);
 		}
 
-		wcsncpy(path, peb_path->Buffer, peb_path->Length);
-		wcsncpy(wcsrchr(path, L'\\') + 1, L"bin\\engine.dll", 16);
+		snprintf(path, size, "%s", argv[0]);
+		strncpy(strrchr(path, '\\') + 1, "bin\\engine.dll", 16);
 
-		engine_lib = LoadLibraryExW(
+		engine_lib = LoadLibraryExA(
 			path, NULL,
 			LOAD_LIBRARY_SEARCH_DEFAULT_DIRS |
 				LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR);
@@ -87,8 +91,15 @@ void purpl_preinit(int argc, char *argv[])
 	}
 
 	if (!engine_lib) {
+#ifdef PURPL_WINRT
+		winrt::Windows::UI::Popups::MessageDialog box(
+			winrt::hstring(L"Purpl Engine error"),
+			winrt::hstring(L"Failed to load engine.dll"));
+		box.ShowAsync();
+#else // PURPL_WINRT
 		MessageBoxA(NULL, "Failed to load engine.dll", "Purpl Engine",
 			    MB_OK | MB_ICONERROR);
+#endif // PURPL_WINRT
 		fprintf(stderr, "Failed to load engine.dll, exiting\n");
 		exit(STATUS_DLL_NOT_FOUND);
 	}
@@ -103,13 +114,13 @@ void purpl_preinit(int argc, char *argv[])
 
 	char *path;
 
-	PURPL_IGNORE(argc);
-
 	engine_lib = dlopen("./engine" LIB_EXT, RTLD_NOW);
 	if (!engine_lib) {
-		// 16 is for the length of "bin/engine.<extension>\0", because that's
-		// the longest the path can be
-		path = calloc(strlen(argv[0]) + strlen("bin/engine" LIB_EXT) + 1, sizeof(char));
+		// 16 is for the length of "bin/engine.<extension>\0", because
+		// that's the longest the path can be
+		path = calloc(strlen(argv[0]) + strlen("bin/engine" LIB_EXT) +
+				      1,
+			      sizeof(char));
 		if (!path) {
 			fprintf(stderr,
 				"Failed to allocate memory for preinit, exiting to avoid crash\n");
@@ -117,7 +128,8 @@ void purpl_preinit(int argc, char *argv[])
 		}
 
 		strncpy(path, argv[0], strlen(argv[0]));
-		strncpy(strrchr(path, '/') + 1, "bin/engine" LIB_EXT, strlen("bin/engine" LIB_EXT) + 1);
+		strncpy(strrchr(path, '/') + 1, "bin/engine" LIB_EXT,
+			strlen("bin/engine" LIB_EXT) + 1);
 
 		engine_lib = dlopen(path, RTLD_NOW);
 
@@ -137,10 +149,17 @@ void purpl_preinit(int argc, char *argv[])
 
 	// Tell the engine that preinit was called so it doesn't print a
 	// warning
-	purpl_complete_preinit();
+#ifdef PURPL_WINRT
+	winrt::Windows::Storage::ApplicationData local_storage =
+		winrt::Windows::Storage::ApplicationData::Current();
+	winrt::hstring appdata = local_storage.LocalFolder().Path();
+	purpl_complete_preinit(winrt::to_string(appdata).c_str());
+#else // PURPL_WINRT
+	purpl_complete_preinit(argv[0]);
+#endif // PURPL_WINRT
 }
 
-void purpl_shutdown(void)
+EXTERN_C void purpl_shutdown(void)
 {
 	purpl_internal_shutdown();
 #ifdef _WIN32
