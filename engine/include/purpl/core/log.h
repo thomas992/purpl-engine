@@ -46,7 +46,7 @@ enum purpl_log_level {
 #endif // PURPL_DEBUG
 };
 
-/// The default log file name
+/// The default log file name, relative to the data directory
 #ifdef PURPL_DEBUG
 #define PURPL_LOG_DEFAULT_NAME "logs/purpl-<date>-debug.log"
 #else // PURPL_DEBUG

@@ -8,33 +8,32 @@ function(add_shader target shader shaders_dir)
 		message(FATAL_ERROR "spirv-cross executable not found")
 	endif()
 
-	set(current-shader-path ${CMAKE_CURRENT_SOURCE_DIR}/${shader})
-	set(current-output-path ${CMAKE_CURRENT_BINARY_DIR}/${target}.spv)
+	set(current_shader_path ${CMAKE_CURRENT_SOURCE_DIR}/${shader})
+	set(current_output_path ${CMAKE_CURRENT_BINARY_DIR}/${target}.spv)
 
-	# Add a custom command to compile GLSL to SPIR-V.
-	get_filename_component(current-output-dir ${current-output-path} DIRECTORY)
-	file(MAKE_DIRECTORY ${current-output-dir})
+	# Add a custom command to compile GLSL to SPIR_V.
+	get_filename_component(current_output_dir ${current_output_path} DIRECTORY)
+	file(MAKE_DIRECTORY ${current_output_dir})
 
-	string(FIND ${current-output-path} "vert" vert_index)
-	string(FIND ${current-output-path} "frag" frag_index)
-	if (NOT ${vert_index} EQUAL -1)
-		string(REPLACE "_vert.spv" ".vsh" hlsl_output ${current-output-path})
-	elseif(NOT ${frag_index} EQUAL -1)
-		string(REPLACE "_frag.spv" ".fsh" hlsl_output ${current-output-path})
-	endif()
-	string(REPLACE ".spv" ".metal" msl_output ${current-output-path})
+	foreach(shader_type comp;frag;geom;vert)
+		string(FIND ${current_output_path} "${shader_type}" index)
+		if (NOT ${index} EQUAL -1)
+			string(SUBSTRING "${shader_type}" 0 1 shader_type_0)
+			string(REPLACE "_${shader_type}.spv" ".${shader_type_0}sh" hlsl_output ${current_output_path})
+		endif()
+	endforeach()
+	string(REPLACE ".spv" ".metal" msl_output ${current_output_path})
 
 	add_custom_target(${target}
-			  COMMAND ${Vulkan_GLSLC_EXECUTABLE} -o ${current-output-path} ${current-shader-path}
-			  COMMAND ${SPIRV_CROSS_EXECUTABLE} --hlsl --shader-model 50 ${current-output-path} --output ${hlsl_output}
-			  COMMAND ${SPIRV_CROSS_EXECUTABLE} --msl ${current-output-path} --output ${msl_output}
-			  COMMENT "Building shader object ${current-shader-path}"
+			  COMMAND ${Vulkan_GLSLC_EXECUTABLE} -o ${current_output_path} ${current_shader_path}
+			  COMMAND ${SPIRV_CROSS_EXECUTABLE} --hlsl --shader-model 50 ${current_output_path} --output ${hlsl_output}
+			  COMMAND ${SPIRV_CROSS_EXECUTABLE} --msl ${current_output_path} --output ${msl_output}
 			  DEPENDS ${SPIRV_CROSS_EXECUTABLE}
-			  BYPRODUCTS ${current-output-path}
+			  BYPRODUCTS ${current_output_path}
 			  VERBATIM
-			  SOURCES ${current-shader-path})
+			  SOURCES ${current_shader_path})
 
-	install(FILES ${current-output-path}
+	install(FILES ${current_output_path}
 		DESTINATION ${CMAKE_INSTALL_PREFIX}/${shaders_dir}/spirv)
 	install(FILES ${hlsl_output}
 		DESTINATION ${CMAKE_INSTALL_PREFIX}/${shaders_dir}/directx)

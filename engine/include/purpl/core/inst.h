@@ -58,6 +58,7 @@ struct purpl_instance {
 
 	char *engine_dir; // The directory where the engine executable is
 			  // located
+	char *engine_data_dir; // AppData/XDG_DATA_HOME, plus the app name
 
 	struct purpl_logger *logger; // The logger for this instance
 	time_t start_time; // When the engine started

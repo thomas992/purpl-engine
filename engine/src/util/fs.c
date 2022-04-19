@@ -18,6 +18,7 @@
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#include <shlobj.h>
 #else // _WIN32
 #define _GNU_SOURCE
 #include <sys/stat.h>
@@ -99,7 +100,8 @@ PURPL_API u32 purpl_translate_file_attrs(u32 attrs, bool to_native)
 }
 
 PURPL_API char *purpl_pathfmt(size_t *size, const char *path,
-			      enum purpl_fs_flags flags, bool relative)
+			      enum purpl_fs_flags flags, bool relative,
+			      bool data_relative)
 {
 	char *path2;
 	char *path3;
@@ -107,16 +109,26 @@ PURPL_API char *purpl_pathfmt(size_t *size, const char *path,
 	PURPL_IGNORE(flags);
 
 	path2 = purpl_strrplc(path, "\\", "/", size);
-	if (relative) {
-		path3 = purpl_strfmt(NULL, "%s/%s", purpl_inst->engine_dir, path2);
-		free(path2);
-		path2 = path3;
+	if (path2[0] != '/') {
+		if (relative) {
+			path3 = purpl_strfmt(NULL, "%s/%s",
+					     purpl_inst->engine_dir, path2);
+			free(path2);
+			path2 = path3;
+		} else if (data_relative) {
+			path3 = purpl_strfmt(NULL, "%s/%s",
+					     purpl_inst->engine_data_dir,
+					     path2);
+			free(path2);
+			path2 = path3;
+		}
 	}
 
 	return path2;
 }
 
-PURPL_API bool purpl_path_exists(const char *path, bool relative)
+PURPL_API bool purpl_path_exists(const char *path, bool relative,
+				 bool data_relative)
 {
 	char *path2;
 	bool ret;
@@ -124,7 +136,7 @@ PURPL_API bool purpl_path_exists(const char *path, bool relative)
 	if (!path)
 		return false;
 
-	path2 = purpl_pathfmt(NULL, path, 0, relative);
+	path2 = purpl_pathfmt(NULL, path, 0, relative, data_relative);
 	ret = !(!fopen(path2, "rb") && errno == ENOENT);
 	free(path2);
 
@@ -132,7 +144,8 @@ PURPL_API bool purpl_path_exists(const char *path, bool relative)
 }
 
 PURPL_API bool purpl_mkdir(const char *path, enum purpl_fs_flags flags,
-			   enum purpl_file_mode mode, bool relative)
+			   enum purpl_file_mode mode, bool relative,
+			   bool data_relative)
 {
 	char *path2;
 	char **dir_names = NULL;
@@ -144,7 +157,7 @@ PURPL_API bool purpl_mkdir(const char *path, enum purpl_fs_flags flags,
 	if (mode == 0)
 		mode = PURPL_FS_MODE_ALL;
 
-	path2 = purpl_pathfmt(NULL, path, flags, relative);
+	path2 = purpl_pathfmt(NULL, path, flags, relative, data_relative);
 	if (flags & PURPL_FS_MKDIR_RECURSE) {
 		for (i = 0; i < (purpl_strcount(path, "/") -
 				 purpl_strcount(path, "//")) +
@@ -162,6 +175,7 @@ PURPL_API bool purpl_mkdir(const char *path, enum purpl_fs_flags flags,
 	} else {
 		stbds_arrput(dir_names, path2);
 	}
+	free(path2);
 
 	for (i = 0; i < stbds_arrlenu(dir_names); i++) {
 #ifdef _WIN32
@@ -183,12 +197,12 @@ PURPL_API bool purpl_mkdir(const char *path, enum purpl_fs_flags flags,
 #endif // _WIN32
 	}
 
-	free(path2);
 	stbds_arrfree(dir_names);
 	return true;
 }
 
-PURPL_API char *purpl_path_directory(const char *path, size_t *size, bool relative)
+PURPL_API char *purpl_path_directory(const char *path, size_t *size,
+				     bool relative, bool data_relative)
 {
 	char *buf;
 	char *buf2;
@@ -197,7 +211,7 @@ PURPL_API char *purpl_path_directory(const char *path, size_t *size, bool relati
 	if (!path)
 		return NULL;
 
-	buf = purpl_pathfmt(size, path, 0, relative);
+	buf = purpl_pathfmt(size, path, 0, relative, data_relative);
 	if (!buf) {
 		if (size)
 			*size = 0;
@@ -214,7 +228,8 @@ PURPL_API char *purpl_path_directory(const char *path, size_t *size, bool relati
 	return buf2;
 }
 
-PURPL_API char *purpl_path_file(const char *path, size_t *size, bool relative)
+PURPL_API char *purpl_path_file(const char *path, size_t *size, bool relative,
+				bool data_relative)
 {
 	char *buf;
 	char *buf2;
@@ -223,7 +238,7 @@ PURPL_API char *purpl_path_file(const char *path, size_t *size, bool relative)
 	if (!path)
 		return NULL;
 
-	buf = purpl_pathfmt(size, path, 0, relative);
+	buf = purpl_pathfmt(size, path, 0, relative, data_relative);
 	if (!buf) {
 		if (size)
 			*size = 0;
@@ -246,7 +261,8 @@ PURPL_API char *purpl_path_file(const char *path, size_t *size, bool relative)
 	return buf2;
 }
 
-PURPL_API void purpl_stat(const char *path, struct purpl_file_info *info, bool relative)
+PURPL_API void purpl_stat(const char *path, struct purpl_file_info *info,
+			  bool relative, bool data_relative)
 {
 	char *path2;
 	char *file = NULL;
@@ -254,7 +270,7 @@ PURPL_API void purpl_stat(const char *path, struct purpl_file_info *info, bool r
 	if (!path || !info)
 		return;
 
-	path2 = purpl_pathfmt(NULL, path, 0, relative);
+	path2 = purpl_pathfmt(NULL, path, 0, relative, data_relative);
 
 #ifdef _WIN32
 #else // _WIN32
@@ -288,7 +304,8 @@ PURPL_API void purpl_stat(const char *path, struct purpl_file_info *info, bool r
 	free(path2);
 }
 
-PURPL_API size_t purpl_get_size(const char *path, bool relative)
+PURPL_API size_t purpl_get_size(const char *path, bool relative,
+				bool data_relative)
 {
 	char *path2;
 	struct purpl_file_info info;
@@ -296,12 +313,40 @@ PURPL_API size_t purpl_get_size(const char *path, bool relative)
 	if (!path)
 		return 0;
 
-	path2 = purpl_pathfmt(NULL, path, 0, relative);
+	path2 = purpl_pathfmt(NULL, path, 0, relative, data_relative);
 	if (!path2)
 		return 0;
 
-	purpl_stat(path2, &info, false);
+	purpl_stat(path2, &info, false, false);
 	free(path2);
 
 	return info.size;
+}
+
+PURPL_API char *purpl_get_system_data_dir(void)
+{
+	char *path;
+	char *path2;
+
+	path = getenv("PURPL_DATA_DIR");
+	if (!path)
+		path = getenv("XDG_DATA_HOME");
+
+	if (!path) {
+#ifdef _WIN32
+		char appdata[MAX_PATH];
+
+		if (SHGetFolderPathA(NULL, CSIDL_APPDATA, NULL, 0, appdata) !=
+		    HRESULT_CODE(ERROR_SUCCESS))
+			strncpy(appdata, "C:/", PURPL_SIZEOF_ARRAY(appdata));
+		path = appdata;
+#else // _WIN32
+		path = "/tmp";
+#endif // _WIN32
+	}
+	
+	path = purpl_strdup(path);
+	path2 = purpl_pathfmt(NULL, path, 0, false, false);
+	free(path);
+	return path2;
 }

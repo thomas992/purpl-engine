@@ -28,7 +28,8 @@ u64 preinit_called;
 char *engine_dir;
 
 // Sets preinit_called to PREINIT_MAGIC
-PURPL_API void purpl_complete_preinit(purpl_main_t main_func, int argc, char *argv[])
+PURPL_API void purpl_complete_preinit(purpl_main_t main_func, int argc,
+				      char *argv[])
 {
 	preinit_called = PREINIT_MAGIC;
 
@@ -38,7 +39,7 @@ PURPL_API void purpl_complete_preinit(purpl_main_t main_func, int argc, char *ar
 	engine_dir = purpl_pathfmt(NULL, argv[0], 0, false);
 	SDL_WinRTRunApp(main_func, NULL);
 #else // PURPL_WINRT
-	engine_dir = purpl_path_directory(argv[0], NULL, false);
+	engine_dir = purpl_path_directory(argv[0], NULL, false, false);
 	SDL_SetMainReady();
 	main_func(argc, argv);
 #endif // PURPL_WINRT
@@ -48,6 +49,8 @@ PURPL_API void purpl_internal_shutdown(void);
 
 PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 {
+	char *data_dir;
+
 	purpl_inst = calloc(1, sizeof(struct purpl_instance));
 	if (!purpl_inst) {
 		fprintf(stderr,
@@ -62,8 +65,14 @@ PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 	purpl_inst->engine_dir = purpl_strdup(engine_dir);
 	free(engine_dir);
 
-	if (!purpl_path_exists("logs", true))
-		purpl_mkdir("logs", true, 0, PURPL_FS_MODE_ALL);
+	purpl_inst->app_name =
+		purpl_strdup(app_name ? app_name : "purpl-unknown-app");
+	purpl_inst->app_version = app_version;
+
+	data_dir = purpl_get_system_data_dir();
+	purpl_inst->engine_data_dir = purpl_strfmt(NULL, "%s/%s", data_dir, purpl_inst->app_name);
+
+	purpl_mkdir("logs", PURPL_FS_MKDIR_RECURSE, PURPL_FS_MODE_ALL, false, true);
 
 	purpl_inst->logger = purpl_log_create(NULL, PURPL_LOG_LEVEL_INFO,
 					      PURPL_LOG_LEVEL_MAX, NULL);
@@ -81,9 +90,9 @@ PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 
 	// Check that preinit was called so a warning can be issued otherwise
 	PURPL_LOG_DEBUG(purpl_inst->logger,
-		       "preinit_called = 0x%" PRIX64
-		       " (PREINIT_MAGIC = 0x%" PRIX64 ")",
-		       preinit_called, PREINIT_MAGIC);
+			"preinit_called = 0x%" PRIX64
+			" (PREINIT_MAGIC = 0x%" PRIX64 ")",
+			preinit_called, PREINIT_MAGIC);
 	if (preinit_called != PREINIT_MAGIC)
 		PURPL_LOG_DEBUG(
 			purpl_inst->logger,
@@ -91,10 +100,6 @@ PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 			") != PREINIT_MAGIC (0x%" PRIX64 "))",
 			preinit_called, PREINIT_MAGIC);
 	purpl_inst->start_time = time(NULL);
-
-	purpl_inst->app_name = purpl_strfmt(
-		NULL, "%s", app_name ? app_name : "purpl-unknown-app");
-	purpl_inst->app_version = app_version;
 
 	PURPL_LOG_INFO(purpl_inst->logger, "Initializing SDL");
 
@@ -214,7 +219,10 @@ PURPL_API void purpl_internal_shutdown(void)
 
 	purpl_log_close(purpl_inst->logger, true);
 
-	free(purpl_inst->engine_dir);
+	if (purpl_inst->engine_dir)
+		free(purpl_inst->engine_dir);
+	if (purpl_inst->engine_data_dir)
+		free(purpl_inst->engine_data_dir);
 
 	if (purpl_inst->app_name)
 		free(purpl_inst->app_name);

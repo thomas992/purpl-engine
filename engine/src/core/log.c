@@ -55,7 +55,7 @@ PURPL_API struct purpl_logger *purpl_log_create(const char *file,
 	filename2 = purpl_strrplc(file ? file : PURPL_LOG_DEFAULT_NAME,
 				 "<date>", date, NULL);
 	free(date);
-	filename = purpl_pathfmt(NULL, filename2, 0, true);
+	filename = purpl_pathfmt(NULL, filename2, 0, false, true);
 	free(filename2);
 
 	logger->file = fopen(filename, "ab+");
@@ -229,7 +229,7 @@ static char *purpl_log_format(struct purpl_logger *logger,
 	p2 = purpl_strrplc(p1, "#W", "#F:#sl@#f", NULL);
 	free(p1);
 
-	p3 = purpl_pathfmt(NULL, file, 0, false);
+	p3 = purpl_pathfmt(NULL, file, 0, false, false);
 	len = strlen(PURPL_SOURCE_DIR);
 	if (strncmp(p3, PURPL_SOURCE_DIR, len) == 0) {
 		p5 = file + len + 1;
