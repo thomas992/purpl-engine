@@ -61,69 +61,66 @@ void *engine_lib = NULL;
 #endif // _WIN32
 
 #ifdef _WIN32
-#define purpl_complete_preinit ((void (*)(purpl_main_t main_func, int argc, char *argv[]))__imp_purpl_complete_preinit)
+#define purpl_complete_preinit                       \
+	((void (*)(purpl_main_t main_func, int argc, \
+		   char *argv[]))__imp_purpl_complete_preinit)
 #define purpl_internal_shutdown __imp_purpl_internal_shutdown
 #else // _WIN32
-#define purpl_complete_preinit ((void (*)(purpl_main_t main_func, int argc, char *argv[]))purpl_complete_preinit)
+#define purpl_complete_preinit                       \
+	((void (*)(purpl_main_t main_func, int argc, \
+		   char *argv[]))purpl_complete_preinit)
 #endif // _WIN32
 
 // EXTERN_C is provided by exports.h
 EXTERN_C void purpl_preinit(purpl_main_t main_func, int argc, char *argv[])
 {
 	PURPL_IGNORE(argc);
-
-	// On Windows, the pre-initialization requires loading the engine DLL,
-	// which in turn causes NTDLL to automatically load the others
 #ifdef _WIN32
-	char *path;
-	char *abs_path;
-	size_t abs_path_len;
-	size_t size = strlen(argv[0]) + 16;
+	wchar_t *argv0;
+	size_t argv0_len;
+	wchar_t *here;
+	size_t here_len;
+	wchar_t *bin;
+	size_t bin_len;
+	uint32_t error;
+
+	argv0_len = strlen(argv[0]) + 1;
+	argv0 = (wchar_t *)calloc(argv0_len, sizeof(wchar_t));
+	MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, argv[0], argv0_len, argv0,
+			    argv0_len);
+	here_len = GetFullPathNameW(argv0, 0, NULL, NULL);
+	here = (wchar_t *)calloc(here_len, sizeof(wchar_t));
+	GetFullPathNameW(argv0, here_len, here, NULL);
+	*wcsrchr(here, L'\\') = 0;
+
+	bin_len = here_len + 5;
+	bin = (wchar_t *)calloc(bin_len, sizeof(wchar_t));
+	wcsncpy(bin, here, bin_len);
+	wcsncat(bin, L"\\bin", bin_len);
+	
+	fprintf(stderr, "Adding %ls to DLL search paths\n", here);
+	if (!AddDllDirectory(here))
+		fprintf(stderr,
+			"Failed to add %ls to DLL search paths: 0x%" PRIX32 "\n",
+			here, GetLastError());
+	fprintf(stderr, "Adding %ls to DLL search paths\n", bin);
+	if (!AddDllDirectory(bin))
+		fprintf(stderr,
+			"Failed to add %ls to DLL search paths: 0x%" PRIX32 "\n",
+			bin, GetLastError());
+
+	free(bin);
+	free(here);
 
 	engine_lib = LoadLibraryExA("engine.dll", NULL,
-				    LOAD_LIBRARY_SEARCH_DEFAULT_DIRS);
-	if (!engine_lib) {
-		// 16 is for the length of "bin\\engine.dll\0", because that's
-		// the longest the path can be
-		path = (char *)calloc(size, sizeof(char));
-		if (!path) {
-			fprintf(stderr,
-				"Failed to allocate memory for preinit, exiting to avoid crash\n");
-			exit(1);
-		}
-		
-		strncpy(path, argv[0], strlen(argv[0]));
-		strncpy(strrchr(path, '\\') + 1, "bin\\engine.dll", 16);
-		
-		abs_path_len = GetFullPathNameA(path, 0, NULL, NULL);
-		abs_path = (char *)calloc(abs_path_len, sizeof(char));
-		if (!abs_path) {
-			fprintf(stderr,
-				"Failed to allocate memory for preinit, exiting to avoid crash\n");
-			exit(1);
-		}
-		GetFullPathNameA(path, abs_path_len, abs_path, NULL);
-
-		engine_lib = LoadLibraryExA(
-			abs_path, NULL,
-			LOAD_LIBRARY_SEARCH_DEFAULT_DIRS |
-				LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR);
-
-		free(abs_path);
-		free(path);
-	}
+				    LOAD_LIBRARY_SEARCH_USER_DIRS);
+	error = GetLastError();
 
 	if (!engine_lib) {
-#ifdef PURPL_WINRT
-		winrt::Windows::UI::Popups::MessageDialog box(
-			winrt::hstring(L"Purpl Engine"),
-			winrt::hstring(L"Failed to load engine.dll"));
-		box.ShowAsync();
-#else // PURPL_WINRT
+		fprintf(stderr, "Failed to load engine.dll: 0x%" PRIX32 "\n",
+			error);
 		MessageBoxA(NULL, "Failed to load engine.dll", "Purpl Engine",
 			    MB_OK | MB_ICONERROR);
-#endif // PURPL_WINRT
-		fprintf(stderr, "Failed to load engine.dll, exiting\n");
 		exit(STATUS_DLL_NOT_FOUND);
 	}
 
@@ -136,21 +133,19 @@ EXTERN_C void purpl_preinit(purpl_main_t main_func, int argc, char *argv[])
       // be loaded in a similar way
 
 	char *path;
+	size_t path_len = strlen(argv[0]) + strlen("bin/engine" LIB_EXT);
 
 	engine_lib = dlopen("./engine" LIB_EXT, RTLD_NOW);
 	if (!engine_lib) {
 		// 16 is for the length of "bin/engine.<extension>\0", because
 		// that's the longest the path can be
-		path = (char *)calloc(strlen(argv[0]) + strlen("bin/engine" LIB_EXT) + 1, sizeof(char));
-		if (!path) {
-			fprintf(stderr,
-				"Failed to allocate memory for preinit, exiting to avoid crash\n");
-			exit(1);
-		}
+		path = (char *)calloc(path_len + 1, sizeof(char));
 
-		strncpy(path, argv[0], strlen(argv[0]));
+		snprintf(path, path_len, "%s", argv[0]);
 		strncpy(strrchr(path, '/') + 1, "bin/engine" LIB_EXT,
-			strlen("bin/engine" LIB_EXT) + 1);
+			path_len + 1);
+
+		fprintf(stderr, "Attempting to load %s\n", path);
 
 		engine_lib = dlopen(path, RTLD_NOW);
 
@@ -159,14 +154,13 @@ EXTERN_C void purpl_preinit(purpl_main_t main_func, int argc, char *argv[])
 
 	if (!engine_lib) {
 		fprintf(stderr, "Failed to load engine" LIB_EXT ", exiting\n");
-		exit(1);
+		exit(ENOENT);
 	}
 #endif // _WIN32
 
 	init_engine_ptrs(engine_lib);
-#ifdef PURPL_DEBUG
-	printf("Successfully loaded engine" LIB_EXT "\n");
-#endif // PURPL_DEBUG
+
+	fprintf(stderr, "Successfully loaded engine" LIB_EXT "\n");
 
 	// Tell the engine that preinit was called so it doesn't print a
 	// warning

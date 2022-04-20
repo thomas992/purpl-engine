@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.15)
 
 include(cmake/GetGitRevisionDescription.cmake)
+include(cmake/SDKs.cmake)
 include(cmake/WinRT.cmake)
 
 if (APPLE AND NOT ${CMAKE_GENERATOR} MATCHES "Xcode")
@@ -60,6 +61,8 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 option(PURPL_ENABLE_DEMO "Build the demo" ON)
 option(PURPL_ENABLE_MEMING "Easter Eggs" OFF)
 option(PURPL_USE_SYSTEM_SDL "Use the system installation of SDL" OFF)
+option(PURPL_ENABLE_DISCORD "Enable Discord integration" ON)
+option(PURPL_ENABLE_STEAM "Enable Steam integration" ON)
 
 if (${CMAKE_SYSTEM_NAME} STREQUAL "WindowsStore" AND ${CMAKE_BUILD_TYPE} MATCHES "Deb")
 	set(_MSIX_VCLIBS_EXTRA .Debug)
@@ -98,6 +101,16 @@ set(SPIRV_CROSS_SKIP_INSTALL ON CACHE BOOL "" FORCE)
 set(SPIRV_CROSS_SHARED OFF CACHE BOOL "" FORCE)
 add_subdirectory(deps/spirv-cross)
 set(SPIRV_CROSS_EXECUTABLE $<TARGET_FILE:spirv-cross>)
+
+if (${PURPL_ENABLE_DISCORD})
+	if (NOT DEFINED PURPL_DISCORD_APP_ID)
+		message(FATAL_ERROR "PURPL_DISCORD_APP_ID must be set if PURPL_ENABLE_DISCORD is true")
+	endif()
+	get_discord_sdk(2.5.6)
+endif()
+if (${PURPL_ENABLE_STEAM})
+	get_steamworks_sdk()
+endif()
 
 # Compiler and linker flags
 if (MSVC)
@@ -192,6 +205,12 @@ else()
 endif()
 message(STATUS "\tEnable demo: ${PURPL_ENABLE_DEMO}")
 message(STATUS "\tEnable Easter Eggs: ${PURPL_ENABLE_MEMING}")
+if (${PURPL_ENABLE_DISCORD})
+	message(STATUS "\tDiscord integration: enabled (app ID: ${PURPL_DISCORD_APP_ID})")
+else()
+	message(STATUS "\tDiscord integration: disabled")
+endif()
+message(STATUS "\tSteam integration: ${PURPL_ENABLE_STEAM}")
 message(STATUS "")
 if ("$ENV{VULKAN_SDK}" STREQUAL "")
 	message(STATUS "\tVulkan SDK: not defined, libraries likely in standard location")
@@ -213,6 +232,13 @@ if (${PURPL_ENABLE_DEMO})
 	add_subdirectory(demo)
 	set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT demo)
 endif()
+
+# Install DLLs
+foreach (file ${ENGINE_RUNTIME_FILES})
+	message(STATUS ${file})
+	install(PROGRAMS ${file}
+		DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+endforeach()
 
 # Install licenses
 install(FILES deps/glad/LICENSE

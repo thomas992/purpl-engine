@@ -26,9 +26,11 @@ set(ENGINE_VULKAN_HEADERS
     include/purpl/graphics/vulkan/swapchain.h)
 
 set(ENGINE_UTIL_HEADERS
+    include/purpl/util/discord.h
     include/purpl/util/error.h
     include/purpl/util/fs.h
     include/purpl/util/misc.h
+    include/purpl/util/steam.h
     include/purpl/util/string.h
     include/purpl/util/util.h)
 
@@ -58,10 +60,12 @@ set(ENGINE_METAL_SOURCES
     src/graphics/metal/init.swift)
 
 set(ENGINE_UTIL_SOURCES
+    src/util/discord.c
     src/util/error.c
     src/util/fs.c
     src/util/misc.c
     src/util/stb.c
+    src/util/steam.c
     src/util/string.c)
 
 set(ENGINE_WINDOWS_AMD64_SOURCES
@@ -129,6 +133,16 @@ if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
 endif()
 
 target_link_libraries(engine PRIVATE ${SDL2_LIBRARIES})
+if (${PURPL_ENABLE_DISCORD})
+	target_compile_definitions(engine PRIVATE PURPL_ENABLE_DISCORD=1)
+	target_include_directories(engine PRIVATE ${DISCORD_SDK_INCLUDE_DIRS})
+	target_link_libraries(engine PRIVATE ${DISCORD_SDK_LIBRARIES})
+endif()
+if (${PURPL_ENABLE_STEAM})
+	target_compile_definitions(engine PRIVATE PURPL_ENABLE_STEAM=1)
+	target_include_directories(engine PRIVATE ${STEAM_SDK_INCLUDE_DIRS})
+	target_link_libraries(engine PRIVATE ${STEAM_SDK_LIBRARIES})
+endif()
 
 if (MSVC)
 	target_compile_options(engine_preinit PRIVATE /wd4152)
@@ -208,11 +222,25 @@ foreach(shader ${ENGINE_SHADERS})
 endforeach()
 
 if (WIN32)
-	set(ENGINE_RUNTIME_FILES_ $<TARGET_FILE:engine> $<TARGET_FILE:SDL2::SDL2>)
-	if (MSVC AND ${CMAKE_BUILD_TYPE} MATCHES "Deb") # Debug and RelWithDebInfo both give PDB files
-		list(APPEND ENGINE_RUNTIME_FILES_ $<TARGET_PDB_FILE:engine> $<TARGET_PDB_FILE:SDL2::SDL2>)
+	set(ENGINE_RUNTIME_FILES_ $<TARGET_FILE:engine>)
+	if (NOT ${SDL_FOUND})
+		list(APPEND ENGINE_RUNTIME_FILES_ $<TARGET_FILE:SDL2::SDL2>)
 	endif()
-    set(ENGINE_RUNTIME_FILES ${ENGINE_RUNTIME_FILES_} PARENT_SCOPE)
+	if (${PURPL_ENABLE_DISCORD})
+		list(APPEND ENGINE_RUNTIME_FILES_ ${DISCORD_SDK_BINARIES})
+	endif()
+	if (${PURPL_ENABLE_STEAM})
+		list(APPEND ENGINE_RUNTIME_FILES_ ${STEAM_SDK_BINARIES})
+	endif()
+	if (MSVC AND ${CMAKE_BUILD_TYPE} MATCHES "Deb") # Debug and RelWithDebInfo both give PDB files
+		list(APPEND ENGINE_RUNTIME_FILES_ $<TARGET_PDB_FILE:engine>)
+		if (NOT ${SDL_FOUND})
+			list(APPEND ENGINE_RUNTIME_FILES_ $<TARGET_PDB_FILE:SDL2::SDL2>)
+		endif()
+	endif()
+
+	message(STATUS ${ENGINE_RUNTIME_FILES_})
+	set(ENGINE_RUNTIME_FILES ${ENGINE_RUNTIME_FILES_} PARENT_SCOPE)
 endif()
 
 install(TARGETS engine_preinit

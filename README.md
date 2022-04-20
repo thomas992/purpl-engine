@@ -25,6 +25,14 @@ cmake --install build # Installs to `build/install`
 - `PURPL_ENABLE_MEMING` - Whether to enable small Easter Eggs in the engine
 - `PURPL_USE_SYSTEM_SDL` - Whether to build the engine with the system installation of SDL
 
+## Files included
+The following programs are included:
+- dos2unix
+- ninja
+- glslc
+- peview (from [Process Hacker](https://github.com/processhacker/processhacker))
+They all print licenses or have information about where to find those licenses.
+
 ## System-specific notes
 
 On Windows, if you use `clang-cl`, at the time of this writing it doesn't support `/MP`, making it slower and also causing warnings about it. Building with the regular `clang` frontend instead has no such issue, and is faster, so use it unless you have good reason. On macOS, due to limitations in CMake, it is necessary to use XCode for the engine, but it doesn't seem to be working with SDL currently. This makes it necessary to use the system installation of SDL, but at least that shouldn't be too big an issue.

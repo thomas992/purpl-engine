@@ -31,3 +31,7 @@
 
 /// The path the engine's source code was in relative to the build directory
 #define PURPL_RELATIVE_SOURCE_DIR "@ENGINE_RELATIVE_SOURCE_DIR@"
+
+/// The Discord app ID to use
+#define PURPL_DISCORD_APP_ID "@DISCORD_APP_ID@"
+
