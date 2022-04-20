@@ -76,7 +76,6 @@ struct purpl_instance {
 #else // __APPLE__
 		struct purpl_instance_vulkan vulkan; // Vulkan data
 #endif // __APPLE__
-		char padding[sizeof(struct purpl_instance_vulkan)];
 	} graphics;
 	enum purpl_graphics_api graphics_api; // The API that was initialized
 					      // on startup
