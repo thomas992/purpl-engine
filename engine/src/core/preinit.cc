@@ -33,6 +33,7 @@
 #endif // PURPL_WINRT
 #else // _WIN32
 #include <dlfcn.h>
+#include <errno.h>
 #endif // _WIN32
 
 #include "purpl/core/warnings.h"
