@@ -38,7 +38,8 @@ bool vulkan_pick_physical_device(void)
 		return false;
 	}
 
-	PURPL_LOG_INFO(purpl_inst->logger, "Found %u device%s", device_count, device_count == 1 ? "" : "s");
+	PURPL_LOG_INFO(purpl_inst->logger, "Found %u device%s", device_count,
+		       device_count == 1 ? "" : "s");
 
 	stbds_arrsetlen(devices, device_count);
 	vkEnumeratePhysicalDevices(vulkan->inst, &device_count, devices);
@@ -61,13 +62,15 @@ bool vulkan_pick_physical_device(void)
 	}
 
 	vkGetPhysicalDeviceProperties(vulkan->phys_device, &properties);
-	PURPL_LOG_INFO(
-		purpl_inst->logger,
-		"Device %zu (%s, handle 0x%" PRIX64 ") has the best score (its score is %llu)",
-		best_idx + 1, properties.deviceName, vulkan->phys_device, best_score);
+	PURPL_LOG_INFO(purpl_inst->logger,
+		       "Device %zu (%s, handle 0x%" PRIX64
+		       ") has the best score (its score is %llu)",
+		       best_idx + 1, properties.deviceName,
+		       vulkan->phys_device, best_score);
 	vulkan_get_device_queue_families(vulkan->phys_device,
 					 &vulkan->queue_families);
-	vulkan_get_swapchain_info(vulkan->phys_device, &vulkan->swapchain_info);
+	vulkan_get_swapchain_info(vulkan->phys_device,
+				  &vulkan->swapchain_info);
 
 	stbds_arrfree(devices);
 	return true;
@@ -110,7 +113,7 @@ bool vulkan_create_logical_device(void)
 		queue_create_infos[1].sType =
 			VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
 		queue_create_infos[1].queueFamilyIndex =
-			vulkan->queue_families.presentation_family;
+			(u32)vulkan->queue_families.presentation_family;
 		queue_create_infos[1].queueCount = 1;
 		queue_create_infos[1].pQueuePriorities = &queue_priority;
 	}
@@ -118,9 +121,10 @@ bool vulkan_create_logical_device(void)
 	device_create_info.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
 	device_create_info.pEnabledFeatures = &phys_device_features;
 	device_create_info.enabledExtensionCount =
-		stbds_arrlenu(required_extensions);
-	device_create_info.ppEnabledExtensionNames = required_extensions;
-	device_create_info.queueCreateInfoCount = queue_create_info_count;
+		(u32)stbds_arrlenu(required_extensions);
+	device_create_info.ppEnabledExtensionNames =
+		(const char *const *)required_extensions;
+	device_create_info.queueCreateInfoCount = (u32)queue_create_info_count;
 	device_create_info.pQueueCreateInfos = queue_create_infos;
 
 	result = vkCreateDevice(vulkan->phys_device, &device_create_info, NULL,
@@ -141,7 +145,7 @@ bool vulkan_create_logical_device(void)
 		vulkan->device);
 
 	vkGetDeviceQueue(vulkan->device,
-			 vulkan->queue_families.presentation_family, 0,
+			 (u32)vulkan->queue_families.presentation_family, 0,
 			 &vulkan->presentation_queue);
 	PURPL_LOG_INFO(purpl_inst->logger,
 		       "Retrieved handle 0x%" PRIX64 " for presentation queue",
@@ -239,10 +243,11 @@ char **vulkan_get_device_extensions(void)
 	return extensions;
 }
 
-bool vulkan_check_device_extensions(VkPhysicalDevice device, size_t *extension_count)
+bool vulkan_check_device_extensions(VkPhysicalDevice device,
+				    size_t *extension_count)
 {
-	// GitHub Copilot autocompleted this entire function (but I had to change it a
-	// bit to get more information for the device score)
+	// GitHub Copilot autocompleted this entire function (but I had to
+	// change it a bit to get more information for the device score)
 	u32 extension_count_tmp = 0;
 	VkExtensionProperties *extensions = NULL;
 	char **extension_names;
@@ -251,19 +256,19 @@ bool vulkan_check_device_extensions(VkPhysicalDevice device, size_t *extension_c
 	size_t i;
 	size_t j;
 
-	vkEnumerateDeviceExtensionProperties(device, NULL, &extension_count_tmp, NULL);
+	vkEnumerateDeviceExtensionProperties(device, NULL,
+					     &extension_count_tmp, NULL);
 	if (!extension_count) {
-		PURPL_LOG_ERROR(
-			purpl_inst->logger,
-			"Failed to locate any device extensions");
+		PURPL_LOG_ERROR(purpl_inst->logger,
+				"Failed to locate any device extensions");
 		return false;
 	}
 
 	extension_names = vulkan_get_device_extensions();
 
 	stbds_arrsetlen(extensions, extension_count_tmp);
-	vkEnumerateDeviceExtensionProperties(device, NULL, &extension_count_tmp,
-					     extensions);
+	vkEnumerateDeviceExtensionProperties(device, NULL,
+					     &extension_count_tmp, extensions);
 
 	for (i = 0; i < stbds_arrlenu(extensions); i++) {
 		for (j = 0; j < stbds_arrlenu(extension_names); j++) {
@@ -271,8 +276,10 @@ bool vulkan_check_device_extensions(VkPhysicalDevice device, size_t *extension_c
 				   extension_names[j]) == 0) {
 				PURPL_LOG_INFO(
 					purpl_inst->logger,
-					"Found extension %s for device with handle 0x%" PRIX64 " (total found so far: %zu)",
-					extensions[i].extensionName, device, found + 1);
+					"Found extension %s for device with handle 0x%" PRIX64
+					" (total found so far: %zu)",
+					extensions[i].extensionName, device,
+					found + 1);
 				found++;
 				break;
 			}
@@ -283,7 +290,8 @@ bool vulkan_check_device_extensions(VkPhysicalDevice device, size_t *extension_c
 	if (all_found)
 		PURPL_LOG_INFO(
 			purpl_inst->logger,
-			"All device extensions (%zu in total) found for device with handle 0x%" PRIX64, found, device);
+			"All device extensions (%zu in total) found for device with handle 0x%" PRIX64,
+			found, device);
 
 	stbds_arrfree(extensions);
 	stbds_arrfree(extension_names);
@@ -329,7 +337,8 @@ bool vulkan_get_device_queue_families(
 			queue_families->presentation_family = i;
 		}
 
-		all_found = (queue_families->graphics_family_present && queue_families->presentation_family_present);
+		all_found = (queue_families->graphics_family_present &&
+			     queue_families->presentation_family_present);
 		if (all_found)
 			break;
 	}

@@ -31,32 +31,33 @@
 /// File modes (that matter in the slightest to the engine and exist on POSIX
 /// and NT)
 enum purpl_file_mode {
-	PURPL_FS_MODE_NONE = 0b0, // No permissions (default)
-	PURPL_FS_MODE_READ = 0b1, // Read
-	PURPL_FS_MODE_WRITE = 0b10, // Write
-	PURPL_FS_MODE_EXECUTE = 0b100, // Execute
-	PURPL_FS_MODE_RDWR = 0b11, // Read-write
-	PURPL_FS_MODE_RDXC = 0b101, // Read and execute
-	PURPL_FS_MODE_ALL = 0b111, // Read, write, and execute
-	PURPL_FS_MODE_EVERYONE = 0b1000, // Allows group and others to write
+	PURPL_FS_MODE_NONE = 0, // No permissions (default)
+	PURPL_FS_MODE_READ = 1, // Read
+	PURPL_FS_MODE_WRITE = 2, // Write
+	PURPL_FS_MODE_EXECUTE = 4, // Execute
+	PURPL_FS_MODE_RDWR = 3, // Read-write
+	PURPL_FS_MODE_RDXC = 5, // Read and execute
+	PURPL_FS_MODE_ALL = 7, // Read, write, and execute
+	PURPL_FS_MODE_EVERYONE = 8, // Allows group and others to write
 };
 
 /// File attributes
 enum purpl_file_attrs {
-	PURPL_FILE_ATTR_NORMAL = 0b0, // A normal file
-	PURPL_FILE_ATTR_DEVICE = 0b1, // A device file
-	PURPL_FILE_ATTR_DIRECTORY = 0b10, // A directory
-	PURPL_FILE_ATTR_SYMLINK = 0b100, // A symbolic link
-	PURPL_FILE_ATTR_PIPE = 0b1000, // A pipe
-	PURPL_FILE_ATTR_HIDDEN = 0b10000, // A hidden file (on POSIX systems,
+	PURPL_FILE_ATTR_NORMAL = 0, // A normal file
+	PURPL_FILE_ATTR_DEVICE = 1, // A device file
+	PURPL_FILE_ATTR_DIRECTORY = 2, // A directory
+	PURPL_FILE_ATTR_SYMLINK = 4, // A symbolic link
+	PURPL_FILE_ATTR_PIPE = 8, // A pipe
+	PURPL_FILE_ATTR_HIDDEN = 16, // A hidden file (on POSIX systems,
 					  // determined by the file name)
-	PURPL_FILE_ATTR_READONLY = 0b100000, // Read-only (on POSIX systems,
+	PURPL_FILE_ATTR_READONLY = 32, // Read-only (on POSIX systems,
 					     // determined by file mode)
 };
 
 /// Flags for filesystem functions
 enum purpl_fs_flags {
-	PURPL_FS_MKDIR_RECURSE = 0b1, // Create directories recursively
+	PURPL_FS_FLAG_NONE = 0, // No flags
+	PURPL_FS_MKDIR_RECURSE = 1, // Create directories recursively
 };
 
 /// File information

@@ -55,8 +55,6 @@ extern bool vulkan_get_swapchain_info(VkPhysicalDevice device,
 
 /// Chooses the best surface format for the swapchain
 ///
-/// \param formats The list of available surface formats
-///
 /// \return Returns the best surface format
 extern VkSurfaceFormatKHR *vulkan_choose_swap_surface_format(void);
 

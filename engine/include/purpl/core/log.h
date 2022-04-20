@@ -176,7 +176,7 @@ purpl_log_get_max_level(struct purpl_logger *logger);
 /// Set the given logger's max level
 ///
 /// \param logger The logger to set the max level of
-/// \param max_level The new max level for the logger
+/// \param level The new max level for the logger
 ///
 /// \return Returns the previous level of the logger
 extern PURPL_API enum purpl_log_level

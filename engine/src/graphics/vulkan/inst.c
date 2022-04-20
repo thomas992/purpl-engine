@@ -49,7 +49,7 @@ bool vulkan_create_instance(void)
 	ext_props = exts[1];
 
 	create_info.enabledExtensionCount = stbds_arrlenu(required_exts);
-	create_info.ppEnabledExtensionNames = required_exts;
+	create_info.ppEnabledExtensionNames = (const char *const *)required_exts;
 	ext_count = stbds_arrlenu(required_exts);
 
 #ifdef PURPL_DEBUG
@@ -103,7 +103,7 @@ bool vulkan_create_instance(void)
 void **vulkan_get_extensions(void)
 {
 	void **exts = NULL;
-	char **required_exts = NULL;
+	const char **required_exts = NULL;
 	u32 ext_count = 0;
 	VkExtensionProperties *ext_props = NULL;
 	u32 i;

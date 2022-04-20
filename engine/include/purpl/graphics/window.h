@@ -32,7 +32,7 @@
 /// Gets the default window title so that it doesn't need to be in every
 /// graphics initialization function
 ///
-/// \reutrn Returns the default window title
+/// \return Returns the default window title
 extern char *purpl_get_initial_window_title(void);
 #endif // PURPL_BUILD
 

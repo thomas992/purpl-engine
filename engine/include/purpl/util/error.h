@@ -38,10 +38,10 @@ PURPL_API u32 purpl_win32_error_to_errno(u32 error);
 
 /// Translates an errno value to a Win32 error code
 ///
-/// \param errno The errno value
+/// \param error The errno value
 ///
 /// \return The Win32 error code
-PURPL_API u32 purpl_errno_to_win32_error(u32 errno);
+PURPL_API u32 purpl_errno_to_win32_error(u32 error);
 #endif // _WIN32
 
 /// Gets an error string from the current errno value

@@ -23,7 +23,7 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
-u32 win32_errno_map[] = {
+static u32 win32_errno_map[] = {
 	// Directly stolen from
 	// https://cygwin.com/git/gitweb.cgi?p=newlib-cygwin.git;a=blob;f=winsup/cygwin/errno.cc
 	ERROR_ACCESS_DENIED,
@@ -288,12 +288,12 @@ PURPL_API u32 purpl_win32_error_to_errno(u32 error)
 	return 0;
 }
 
-PURPL_API u32 purpl_errno_to_win32_error(u32 errno)
+PURPL_API u32 purpl_errno_to_win32_error(u32 error)
 {
 	size_t i;
 
 	for (i = 1; i < PURPL_SIZEOF_ARRAY(win32_errno_map) / 2; i += 2) {
-		if (win32_errno_map[i] == errno)
+		if (win32_errno_map[i] == error)
 			return win32_errno_map[i];
 	}
 

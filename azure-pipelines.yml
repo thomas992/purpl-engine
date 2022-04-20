@@ -21,18 +21,18 @@ strategy:
     windows-clang-dist:
       imageName: 'windows-2022'
       config: 'MinSizeRel'
-      cc: 'clang'
-      cxx: 'clang++'
+      cc: 'clang-cl'
+      cxx: 'clang-cl'
     windows-clang-release:
       imageName: 'windows-2022'
       config: 'RelWithDebInfo'
-      cc: 'clang'
-      cxx: 'clang++'
+      cc: 'clang-cl'
+      cxx: 'clang-cl'
     windows-clang-debug:
       imageName: 'windows-2022'
       config: 'Debug'
-      cc: 'clang'
-      cxx: 'clang++'
+      cc: 'clang-cl'
+      cxx: 'clang-cl'
     macos-dist:
       imageName: 'macos-latest'
       config: 'MinSizeRel'
