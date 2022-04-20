@@ -101,7 +101,6 @@ static void log_get_time(struct tm **t1, struct tm **t2)
 	}
 }
 
-#pragma warning(disable : 4100)
 static char *log_format(struct purpl_logger *logger,
 			enum purpl_log_level level, const char *file, int line,
 			const char *function, const char *msg, va_list a)
