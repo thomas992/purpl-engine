@@ -19,6 +19,8 @@
 
 #include "purpl/graphics/vulkan/debug.h"
 
+#include "purpl/core/warnings.h"
+
 /// Callback for the debug messenger
 ///
 /// \param severity The severity of the message

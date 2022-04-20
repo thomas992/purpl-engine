@@ -17,14 +17,14 @@
 
 #pragma once
 
+#ifdef PURPL_BUILD
 #include <time.h>
+
+#include "SDL.h"
 
 #include "coredefs.h"
 #include "log.h"
 #include "types.h"
-
-#ifdef PURPL_BUILD
-#include "SDL.h"
 
 #include "purpl/graphics/inst_data.h"
 
@@ -72,10 +72,11 @@ struct purpl_instance {
 
 	union {
 #ifdef __APPLE__
-        purpl_instance_metal_t metal; // Metal data
+		purpl_instance_metal_t metal; // Metal data
 #else // __APPLE__
 		struct purpl_instance_vulkan vulkan; // Vulkan data
 #endif // __APPLE__
+		char padding[sizeof(struct purpl_instance_vulkan)];
 	} graphics;
 	enum purpl_graphics_api graphics_api; // The API that was initialized
 					      // on startup

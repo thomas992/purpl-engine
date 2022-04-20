@@ -30,6 +30,8 @@
 
 #include "purpl/util/misc.h"
 
+#include "purpl/core/warnings.h"
+
 extern PURPL_ASM_CALL u64 purpl_arch_random(void);
 
 PURPL_API u64 purpl_random(u64 limit)

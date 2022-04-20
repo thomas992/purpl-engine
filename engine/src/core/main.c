@@ -17,9 +17,9 @@
 
 #include <inttypes.h>
 
-#include "SDL.h"
-
 #include "purpl/core/init.h"
+
+#include "purpl/core/warnings.h"
 
 #undef main
 

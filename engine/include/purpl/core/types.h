@@ -29,8 +29,10 @@
 #include "features.h"
 
 // Boolean
+#ifndef __cplusplus
 #undef bool
 typedef _Bool bool;
+#endif // __cplusplus
 
 // Integers
 typedef int8_t s8; // Signed 8-bit integer

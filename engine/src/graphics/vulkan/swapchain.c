@@ -15,9 +15,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "purpl/graphics/vulkan/swapchain.h"
 #include "SDL_vulkan.h"
-#include <vulkan/vulkan_core.h>
+
+#include "purpl/graphics/vulkan/swapchain.h"
+
+#include "purpl/core/warnings.h"
 
 bool vulkan_create_swapchain(void)
 {

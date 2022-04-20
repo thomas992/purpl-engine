@@ -22,6 +22,8 @@
 
 #include "purpl/core/log.h"
 
+#include "purpl/core/warnings.h"
+
 PURPL_API struct purpl_logger *purpl_log_create(const char *file,
 						enum purpl_log_level level,
 						enum purpl_log_level max_level,

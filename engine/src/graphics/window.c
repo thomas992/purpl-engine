@@ -20,6 +20,8 @@
 
 #include "purpl/graphics/window.h"
 
+#include "purpl/core/warnings.h"
+
 char *purpl_get_initial_window_title(void)
 {
 	return purpl_strfmt(NULL,

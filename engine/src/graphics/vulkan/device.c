@@ -17,6 +17,8 @@
 
 #include "purpl/graphics/vulkan/device.h"
 
+#include "purpl/core/warnings.h"
+
 bool vulkan_pick_physical_device(void)
 {
 	PURPL_ALIAS_GRAPHICS_DATA(vulkan);

@@ -35,6 +35,8 @@
 #include <dlfcn.h>
 #endif // _WIN32
 
+#include "purpl/core/warnings.h"
+
 #define PURPL_IGNORE(x) (void)(x)
 
 typedef int32_t (*purpl_main_t)(int32_t argc, char *argv[]);

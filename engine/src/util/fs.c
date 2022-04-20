@@ -30,6 +30,8 @@
 
 #include "purpl/util/fs.h"
 
+#include "purpl/core/warnings.h"
+
 PURPL_API u32 purpl_translate_file_mode(u32 mode, bool to_native)
 {
 	u32 out = 0;

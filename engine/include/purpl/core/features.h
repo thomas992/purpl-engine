@@ -20,8 +20,26 @@
 // Clang and GCC support these and have for like a decade, while MSVC is still
 // too lazy to implement them
 #if defined __clang__ || defined __GNUC__
+// Do a pragma
+#define DO_PRAGMA(X) _Pragma(#X)
+
+// Push warnings
+#define PURPL_PUSH_WARNINGS() DO_PRAGMA(GCC diagnostic push)
+
+// Pop warnings
+#define PURPL_POP_WARNINGS() DO_PRAGMA(GCC diagnostic pop)
+
 // Defined if 128-bit integers are available
 #define PURPL_INT128_AVAILABLE 1
+#elif defined _MSC_VER
+// Do a pragma
+#define DO_PRAGMA(X) __pragma(#X)
+
+// Push warnings
+#define PURPL_PUSH_WARNINGS() DO_PRAGMA(warning(push))
+
+// Pop warnings
+#define PURPL_POP_WARNINGS() DO_PRAGMA(warning(pop))
 #endif // __clang__ || __GNUC__
 
 #ifdef PURPL_X86_64

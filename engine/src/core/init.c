@@ -22,6 +22,8 @@
 
 #include "purpl/graphics/init.h"
 
+#include "purpl/core/warnings.h"
+
 #define PREINIT_MAGIC (PURPL_VERSION << 8 | 0x01)
 
 u64 preinit_called;

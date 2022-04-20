@@ -1,12 +1,16 @@
 cmake_minimum_required(VERSION 3.10)
 
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${_WARNINGS}")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${_WARNINGS}")
+
 set(ENGINE_CORE_HEADERS
     include/purpl/core/coredefs.h
     include/purpl/core/features.h
     include/purpl/core/init.h
     include/purpl/core/inst.h
     include/purpl/core/log.h
-    include/purpl/core/types.h)
+    include/purpl/core/types.h
+    include/purpl/core/warnings.h)
 
 set(ENGINE_GRAPHICS_HEADERS
     include/purpl/graphics/init.h
@@ -113,12 +117,8 @@ set(EXPORTS_HEADER ${CMAKE_CURRENT_BINARY_DIR}/exports.h)
 
 add_library(engine_preinit STATIC src/core/main.c src/core/preinit.cc ${CMAKE_SOURCE_DIR}/tools/dumppe.py ${CMAKE_SOURCE_DIR}/tools/dumpelf.py ${CMAKE_SOURCE_DIR}/tools/dumpmacho.py ${EXPORTS_HEADER})
 add_library(engine SHARED ${ENGINE_ALL_HEADERS} ${ENGINE_ALL_SOURCES} ${CMAKE_CURRENT_BINARY_DIR}/config.h)
-foreach (warning ${_WARNINGS})
-	target_compile_options(engine_preinit PRIVATE ${warning})
-	target_compile_options(engine PRIVATE ${warning})
-endforeach()
-target_compile_definitions(engine_preinit PRIVATE PURPL_BUILD=1)
-target_compile_definitions(engine PRIVATE PURPL_BUILD=1)
+target_compile_definitions(engine_preinit PRIVATE _CLANG_DISABLE_CRT_DEPRECATION_WARNINGS=1 _CRT_SECURE_NO_WARNINGS=1 PURPL_BUILD=1)
+target_compile_definitions(engine PRIVATE _CLANG_DISABLE_CRT_DEPRECATION_WARNINGS=1 _CRT_SECURE_NO_WARNINGS=1 PURPL_BUILD=1)
 if (${CMAKE_SYSTEM_NAME} STREQUAL "WindowsStore")
 	target_compile_definitions(engine_preinit PRIVATE PURPL_WINRT=1)
 	target_compile_definitions(engine PRIVATE PURPL_WINRT=1)
