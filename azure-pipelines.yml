@@ -108,17 +108,17 @@ steps:
 
   - script: |
       call tools\buildenv.bat x64
-      cmake -S. -Bbuild -GNinja -DVULKAN_SDK=$(vulkanSdk) -DVulkan_LIBRARY=$(vulkanSdk)/Lib/vulkan-1.lib -DVulkan_INCLUDE_DIR=$(vulkanSdk)/Include -DCMAKE_C_COMPILER=$(cc) -DCMAKE_CXX_COMPILER=$(cxx) -DCMAKE_BUILD_TYPE=$(config)
+      cmake -S. -Bbuild -GNinja -DVULKAN_SDK=$(vulkanSdk) -DVulkan_LIBRARY=$(vulkanSdk)/Lib/vulkan-1.lib -DVulkan_INCLUDE_DIR=$(vulkanSdk)/Include -DCMAKE_C_COMPILER=$(cc) -DCMAKE_CXX_COMPILER=$(cxx) -DCMAKE_BUILD_TYPE=$(config) -DPURPL_ENABLE_DISCORD=0 -DPURPL_ENABLE_STEAM=0
     condition: eq(variables['Agent.OS'], 'Windows_NT')
     displayName: Generate build files (Windows)
 
   - script: |
-      cmake -S. -Bbuild -GNinja -DVulkan_LIBRARY=/usr/lib/x86_64-linux-gnu/libvulkan.so -DCMAKE_C_COMPILER=$(cc) -DCMAKE_CXX_COMPILER=$(cxx) -DCMAKE_BUILD_TYPE=$(config) -DPURPL_USE_SYSTEM_SDL=1
+      cmake -S. -Bbuild -GNinja -DVulkan_LIBRARY=/usr/lib/x86_64-linux-gnu/libvulkan.so -DCMAKE_C_COMPILER=$(cc) -DCMAKE_CXX_COMPILER=$(cxx) -DCMAKE_BUILD_TYPE=$(config) -DPURPL_USE_SYSTEM_SDL=1 -DPURPL_ENABLE_DISCORD=0 -DPURPL_ENABLE_STEAM=0
     condition: eq(variables['Agent.OS'], 'Linux')
     displayName: Generate build files (Linux)
 
   - script: |
-      cmake -S. -Bbuild -GXcode -DCMAKE_C_COMPILER=$(cc) -DCMAKE_CXX_COMPILER=$(cxx) -DCMAKE_BUILD_TYPE=$(config) -DPURPL_USE_SYSTEM_SDL=1
+      cmake -S. -Bbuild -GXcode -DCMAKE_C_COMPILER=$(cc) -DCMAKE_CXX_COMPILER=$(cxx) -DCMAKE_BUILD_TYPE=$(config) -DPURPL_USE_SYSTEM_SDL=1 -DPURPL_ENABLE_DISCORD=0 -DPURPL_ENABLE_STEAM=0
     condition: eq(variables['Agent.OS'], 'Darwin')
     displayName: Generate build files (macOS)
 
