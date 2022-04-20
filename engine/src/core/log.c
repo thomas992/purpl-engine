@@ -116,6 +116,9 @@ static char *log_format(struct purpl_logger *logger,
 	size_t amt;
 	size_t i;
 
+	char *base;
+	size_t passes;
+
 	char *msg_fmt;
 	size_t msg_size;
 	struct tm *t1;
@@ -147,143 +150,157 @@ static char *log_format(struct purpl_logger *logger,
 
 	log_get_time(&t1, &t2);
 
-	p = logger->format;
-	i = 0;
-	while (*p) {
-		if (p[0] != '#' || p[1] == '#') {
-			if (p[0] == '#')
+	base = logger->format;
+	passes = 1;
+	while (passes) {
+		p = base;
+		i = 0;
+		while (*p) {
+			if (p[0] != '#' || p[1] == '#') {
+				if (p[0] == '#')
+					p++;
+				amt = 1;
+				while (p[amt] && p[amt] != '#')
+					amt++;
+				strncpy(buf + i, p, amt);
+				i += amt;
+				p += amt;
+				continue;
+			}
+
+			begin = p++;
+			str = NULL;
+			if (*p == 'm' && *++p == 's' && *++p == 'g') {
 				p++;
-			amt = 1;
-			while (p[amt] && p[amt] != '#')
-				amt++;
-			strncpy(buf + i, p, amt);
-			i += amt;
-			p += amt;
-			continue;
-		}
+				str = msg_fmt;
+				passes++;
+			} else if (*p == 't') {
+				u64 h = t1->tm_hour;
 
-		begin = p++;
-		str = NULL;
-		if (*p == 'm' && *++p == 's' && *++p == 'g') {
-			p++;
-			str = msg_fmt;
-		} else if (*p == 't') {
-			u64 h = t1->tm_hour;
-
-			p++;
-			if (strcmp(p, "12") == 0) {
-				h %= 12;
-				p += 2;
-			}
-			str = purpl_strfmt(NULL, "%02d:%02d:%02d", h,
-					   t1->tm_min, t1->tm_sec);
-		} else if (*p == 'h') {
-			u64 h = t1->tm_hour;
-
-			p++;
-			if (strcmp(p, "12") == 0) {
-				h %= 12;
-				p += 2;
-			}
-			str = purpl_strfmt(NULL, "%02d", h);
-		} else if (*p == 'm') {
-			p++;
-			str = purpl_strfmt(NULL, "%02d", t1->tm_min);
-		} else if (*p == 's') {
-			p++;
-			str = purpl_strfmt(NULL, "%02d", t1->tm_sec);
-		} else if (*p == 'j' || *p == 'd') {
-			bool joke = (*p == 'j');
-			struct tm *t = joke ? t1 : t2;
-			int year;
-			
-			if (joke)
-				year = t->tm_year - 70;
-			else
-				year = t->tm_year + 1900;
-
-			str = purpl_strfmt(NULL, "%s, %02d/%02d/%04d",
-					   days[t->tm_wday], t->tm_mday,
-					   t->tm_mon + 1, year);
-
-			p++;
-		} else if (*p == 'J' || *p == 'D' || *p == 'M' || *p == 'Y') {
-			struct tm *t = t1;
-			int year = t->tm_year + 1900;
-
-			if (*p == 'J') {
-				t = t2;
 				p++;
-				year = t->tm_year - 70;
+				if (strcmp(p, "12") == 0) {
+					h %= 12;
+					p += 2;
+				}
+				str = purpl_strfmt(NULL, "%02d:%02d:%02d", h,
+						   t1->tm_min, t1->tm_sec);
+			} else if (*p == 'h') {
+				u64 h = t1->tm_hour;
+
+				p++;
+				if (strcmp(p, "12") == 0) {
+					h %= 12;
+					p += 2;
+				}
+				str = purpl_strfmt(NULL, "%02d", h);
+			} else if (*p == 'm') {
+				p++;
+				str = purpl_strfmt(NULL, "%02d", t1->tm_min);
+			} else if (*p == 's') {
+				p++;
+				str = purpl_strfmt(NULL, "%02d", t1->tm_sec);
+			} else if (*p == 'j' || *p == 'd') {
+				bool joke = (*p == 'j');
+				struct tm *t = joke ? t1 : t2;
+				int year;
+
+				if (joke)
+					year = t->tm_year - 70;
+				else
+					year = t->tm_year + 1900;
+
+				str = purpl_strfmt(NULL, "%s, %02d/%02d/%04d",
+						   days[t->tm_wday],
+						   t->tm_mday, t->tm_mon + 1,
+						   year);
+
+				p++;
+			} else if (*p == 'J' || *p == 'D' || *p == 'M' ||
+				   *p == 'Y') {
+				struct tm *t = t1;
+				int year = t->tm_year + 1900;
+
+				if (*p == 'J') {
+					t = t2;
+					p++;
+					year = t->tm_year - 70;
+				}
+
+				if (*p == 'D')
+					str = purpl_strfmt(NULL, "%02d",
+							   t->tm_mday);
+				else if (*p == 'M' && *++p == 'N')
+					str = purpl_strdup(months[t->tm_mon]);
+				else if (*p == 'M')
+					str = purpl_strfmt(NULL, "%02d",
+							   t->tm_mon + 1);
+				else if (*p == 'Y')
+					str = purpl_strfmt(NULL, "%04d", year);
+
+				p++;
+			} else if (*p == 'P') {
+				p++;
+				str = purpl_strfmt(NULL, "%lld",
+						   purpl_get_pid());
+			} else if (*p == 'T') {
+				p++;
+				str = purpl_strfmt(NULL, "%lld",
+						   purpl_get_tid());
+			} else if (*p == 'W') {
+				p++;
+				str = purpl_strfmt(NULL, "%s:%d@%s", file,
+						   line, function);
+			} else if (*p == 'F') {
+				p++;
+				str = purpl_strdup(file);
+			} else if (*p == 'f') {
+				p++;
+				str = purpl_strdup(function);
+			} else if (*p == 's' && *++p == 'l') {
+				p++;
+				str = purpl_strfmt(NULL, "%d", line);
+			} else if (*p == 'L') {
+				p++;
+				str = purpl_strdup(levels_upper[level]);
+			} else if (*p == 'l') {
+				p++;
+				str = purpl_strdup(levels_lower[level]);
+			} else if (*p == 'V') {
+				p++;
+				str = purpl_strdup(
+					purpl_format_version(PURPL_VERSION));
+			} else if (*p == 'n') {
+				p++;
+				str = purpl_strdup(purpl_inst->app_name);
+			} else if (*p == 'v') {
+				p++;
+				str = purpl_strdup(purpl_format_version(
+					purpl_inst->app_version));
+			} else {
+				p = begin + 1;
+				str = purpl_strdup(p);
 			}
 
-			if (*p == 'D')
-				str = purpl_strfmt(NULL, "%02d", t->tm_mday);
-			else if (*p == 'M' && *++p == 'N')
-				str = purpl_strfmt(NULL, "%s",
-						   months[t->tm_mon]);
-			else if (*p == 'M')
-				str = purpl_strfmt(NULL, "%02d",
-						   t->tm_mon + 1);
-			else if (*p == 'Y')
-				str = purpl_strfmt(NULL, "%04d", year);
-
-			p++;
-		} else if (*p == 'P') {
-			p++;
-			str = purpl_strfmt(NULL, "%lld", purpl_get_pid());
-		} else if (*p == 'T') {
-			p++;
-			str = purpl_strfmt(NULL, "%lld", purpl_get_tid());
-		} else if (*p == 'W') {
-			p++;
-			str = purpl_strfmt(NULL, "%s:%d@%s", file, line,
-					   function);
-		} else if (*p == 'F') {
-			p++;
-			str = purpl_strfmt(NULL, "%s", file);
-		} else if (*p == 'f') {
-			p++;
-			str = purpl_strfmt(NULL, "%s", function);
-		} else if (*p == 's' && *++p == 'l') {
-			p++;
-			str = purpl_strfmt(NULL, "%d", line);
-		} else if (*p == 'L') {
-			p++;
-			str = purpl_strfmt(NULL, "%s", levels_upper[level]);
-		} else if (*p == 'l') {
-			p++;
-			str = purpl_strfmt(NULL, "%s", levels_lower[level]);
-		} else if (*p == 'V') {
-			p++;
-			str = purpl_strfmt(
-				NULL, "%s",
-				purpl_format_version(PURPL_VERSION));
-		} else if (*p == 'n') {
-			p++;
-			str = purpl_strfmt(NULL, "%s", purpl_inst->app_name);
-		} else if (*p == 'v') {
-			p++;
-			str = purpl_strfmt(NULL, "%s", levels_upper[level]);
-		} else {
-			p = begin + 1;
-			str = purpl_strdup(p);
+			len = strlen(str);
+			tmp = purpl_strdup(buf);
+			free(buf);
+			buf_size += len;
+			buf = calloc(buf_size, sizeof(char));
+			if (!buf) {
+				free(tmp);
+				return NULL;
+			}
+			strncpy(buf, tmp, i);
+			strncat(buf + i, str, len);
+			strncat(buf + i + len, p, strlen(p));
+			free(str);
+			i += len;
 		}
-
-		len = strlen(str);
-		tmp = purpl_strdup(buf);
-		free(buf);
-		buf_size += len;
-		buf = calloc(buf_size, sizeof(char));
-		if (!buf) {
-			free(tmp);
-			return NULL;
-		}
-		strncpy(buf, tmp, buf_size);
-		strncat(buf + i, str, len);
-		free(str);
-		i += len;
+		base = purpl_strdup(buf);
+		passes--;
 	}
+	
+	free(base);
 
 	return buf;
 }
