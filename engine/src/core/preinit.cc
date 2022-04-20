@@ -85,6 +85,11 @@ EXTERN_C void purpl_preinit(purpl_main_t main_func, int argc, char *argv[])
 	size_t bin_len;
 	uint32_t error;
 
+	wchar_t *paths[2] = { 0 };
+	wchar_t *path;
+	size_t path_len;
+	size_t i;
+
 	argv0_len = strlen(argv[0]) + 1;
 	argv0 = (wchar_t *)calloc(argv0_len, sizeof(wchar_t));
 	MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, argv[0], argv0_len, argv0,
@@ -98,24 +103,21 @@ EXTERN_C void purpl_preinit(purpl_main_t main_func, int argc, char *argv[])
 	bin = (wchar_t *)calloc(bin_len, sizeof(wchar_t));
 	wcsncpy(bin, here, bin_len);
 	wcsncat(bin, L"\\bin", bin_len);
-	
-	fprintf(stderr, "Adding %ls to DLL search paths\n", here);
-	if (!AddDllDirectory(here))
-		fprintf(stderr,
-			"Failed to add %ls to DLL search paths: 0x%" PRIX32 "\n",
-			here, GetLastError());
-	fprintf(stderr, "Adding %ls to DLL search paths\n", bin);
-	if (!AddDllDirectory(bin))
-		fprintf(stderr,
-			"Failed to add %ls to DLL search paths: 0x%" PRIX32 "\n",
-			bin, GetLastError());
 
-	free(bin);
-	free(here);
+	paths[0] = here;
+	paths[1] = bin;
 
-	engine_lib = LoadLibraryExA("engine.dll", NULL,
-				    LOAD_LIBRARY_SEARCH_USER_DIRS);
-	error = GetLastError();
+	for (i = 0; i < PURPL_SIZEOF_ARRAY(paths); i++) {
+		path_len = wcslen(paths[i]) + 12; // 12 is for "\\engine.dll\0"
+		path = (wchar_t *)calloc(path_len, sizeof(wchar_t));
+		wcsncpy(path, paths[i], path_len);
+		wcsncat(path, L"\\engine.dll", path_len);
+
+		fprintf(stderr, "Trying to load %ls\n", path);
+		engine_lib = LoadLibraryW(path);
+		if (engine_lib)
+			break;
+	}
 
 	if (!engine_lib) {
 		fprintf(stderr, "Failed to load engine.dll: 0x%" PRIX32 "\n",
@@ -134,7 +136,8 @@ EXTERN_C void purpl_preinit(purpl_main_t main_func, int argc, char *argv[])
       // be loaded in a similar way
 
 	char *path;
-	size_t path_len = strlen(argv[0]) + strlen("bin/engine" LIB_EXT);
+	size_t path_len = strlen(argv[0]) + strlen("bin/engine" LIB_EXT) + 2; // 2 is for "./"
+	size_t slash_idx;
 
 	engine_lib = dlopen("./engine" LIB_EXT, RTLD_NOW);
 	if (!engine_lib) {
@@ -142,9 +145,10 @@ EXTERN_C void purpl_preinit(purpl_main_t main_func, int argc, char *argv[])
 		// that's the longest the path can be
 		path = (char *)calloc(path_len + 1, sizeof(char));
 
-		snprintf(path, path_len, "%s", argv[0]);
-		strncpy(strrchr(path, '/') + 1, "bin/engine" LIB_EXT,
-			path_len + 1);
+		snprintf(path, path_len, "%s%s", argv[0][0] == '/' ? "" : "./", argv[0]);
+		slash_idx = (strrchr(path, '/') - path) + 1;
+		strncpy(path + slash_idx, "bin/engine" LIB_EXT,
+			path_len - slash_idx);
 
 		fprintf(stderr, "Attempting to load %s\n", path);
 
