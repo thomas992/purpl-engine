@@ -11,14 +11,14 @@ if "%PURPL_BUILDENV%" == "" (
 		set msvc_defaultver=%%F
 	)
 	echo Default MSVC version is %msvc_defaultver%
-	set msvc_path=%vs2019_install%\VC\Tools\MSVC\%msvc_defaultver%
+	set "msvc_path=%vs2019_install%\VC\Tools\MSVC\%msvc_defaultver%"
 	c:
 	pushd "%vs2019_install%\VC\Auxiliary\Build"
 	call vcvarsall.bat %PURPL_BUILDENV_ARCH% %*
 	popd
 	%~d0
 
-	set PATH=%~dp0;%~dp0..\build\install;%PATH%
+	set "PATH=%~dp0;%~dp0..\build\install;%PATH%"
 	set PURPL_BUILDENV=1
 	set PURPL_DATA_DIR=%~dp0..
 )

@@ -290,7 +290,7 @@ PURPL_API void purpl_stat(const char *path, struct purpl_file_info *info,
 	info->mtime = sb.st_mtim.tv_sec;
 #endif // __APPLE__
 
-	file = purpl_path_file(path2, NULL, false);
+	file = purpl_path_file(path2, NULL, relative, data_relative);
 	if (!file) {
 		free(path2);
 		return;
@@ -337,14 +337,14 @@ PURPL_API char *purpl_get_system_data_dir(void)
 		char appdata[MAX_PATH];
 
 		if (SHGetFolderPathA(NULL, CSIDL_APPDATA, NULL, 0, appdata) !=
-		    HRESULT_CODE(ERROR_SUCCESS))
+		    ERROR_SUCCESS)
 			strncpy(appdata, "C:/", PURPL_SIZEOF_ARRAY(appdata));
 		path = appdata;
 #else // _WIN32
 		path = "/tmp";
 #endif // _WIN32
 	}
-	
+
 	path = purpl_strdup(path);
 	path2 = purpl_pathfmt(NULL, path, 0, false, false);
 	free(path);
