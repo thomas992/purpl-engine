@@ -53,7 +53,7 @@ PURPL_API struct purpl_logger *purpl_log_create(const char *file,
 							   // expansion
 
 	filename2 = purpl_strrplc(file ? file : PURPL_LOG_DEFAULT_NAME,
-				 "<date>", date, NULL);
+				  "<date>", date, NULL);
 	free(date);
 	filename = purpl_pathfmt(NULL, filename2, 0, false, true);
 	free(filename2);
@@ -85,7 +85,7 @@ PURPL_API struct purpl_logger *purpl_log_create(const char *file,
 	return logger;
 }
 
-static void purpl_log_get_time(struct tm **t1, struct tm **t2)
+static void log_get_time(struct tm **t1, struct tm **t2)
 {
 	time_t t;
 
@@ -94,7 +94,6 @@ static void purpl_log_get_time(struct tm **t1, struct tm **t2)
 		*t1 = localtime(&t);
 	if (t2) {
 		*t2 = localtime(&t);
-		(*t2)->tm_year -= 70; // tm_year is already year - 1900
 		if ((*t2)->tm_mon == 3 && (*t2)->tm_mday == 1) {
 			(*t2)->tm_mon = 2;
 			(*t2)->tm_mday = 32;
@@ -102,189 +101,191 @@ static void purpl_log_get_time(struct tm **t1, struct tm **t2)
 	}
 }
 
-static char *purpl_log_format(struct purpl_logger *logger,
-			      enum purpl_log_level level, const char *file,
-			      int line, const char *function, const char *msg,
-			      va_list a)
+#pragma warning(disable : 4100)
+static char *log_format(struct purpl_logger *logger,
+			enum purpl_log_level level, const char *file, int line,
+			const char *function, const char *msg, va_list a)
 {
-	char *p1;
-	char *p2;
-	char *p3;
-	const char *p4;
-	const char *p5;
+	char *buf;
+	size_t buf_size;
+	char *tmp;
+	char *p;
+	char *begin;
+	char *str;
+	size_t len;
+	size_t amt;
+	size_t i;
+
+	char *msg_fmt;
+	size_t msg_size;
 	struct tm *t1;
 	struct tm *t2;
-	size_t len;
+
 	va_list args;
 
-	const char *days[] = { "Sunday",   "Monday", "Tuesday", "Wednesday",
-			       "Thursday", "Friday", "Saturday" };
+	const char *days[] = { "Monday", "Tuesday",  "Wednesday", "Thursday",
+			       "Friday", "Saturday", "Sunday" };
 
-	const char *levels_upper[] = { "CRITICAL", "ERROR", "WARNING", "INFO",
-				       "DEBUG" };
+	const char *months[] = { "January", "February", "March",
+				 "April",   "May",	"June",
+				 "July",    "August",	"September",
+				 "October", "November", "December" };
+
 	const char *levels_lower[] = { "critical", "error", "warning", "info",
 				       "debug" };
-
-	// This function is only ever called by purpl_log_write (which checks
-	// its parameters), so no parameter validation is necessary
+	const char *levels_upper[] = { "CRITICAL", "ERROR", "WARNING", "INFO",
+				       "DEBUG" };
 
 	va_copy(args, a);
-
-	// Unfortunately, doing several replacements in sequence is a pain in
-	// the ass, but I think the tradeoff for singular ones being convenient
-	// is worth it, and this is the only case where this should be
-	// necessary, at least within the engine
-
-	p1 = purpl_vstrfmt(NULL, msg, args);
-	p2 = purpl_strrplc(logger->format, "#msg", p1, NULL);
-	free(p1);
-
-	purpl_log_get_time(&t1, &t2);
-
-	p1 = purpl_strrplc(p2, "#t12", "#h12:#m:#s", NULL);
-	free(p2);
-
-	p2 = purpl_strrplc(p1, "#t", "#h:#m:#s", NULL);
-	free(p1);
-
-	p3 = purpl_strfmt(NULL, "%d", t1->tm_hour % 12);
-	p1 = purpl_strrplc(p2, "#h12", p3, NULL);
-	free(p2);
-	free(p3);
-
-	p3 = purpl_strfmt(NULL, "%d", t1->tm_hour);
-	p2 = purpl_strrplc(p1, "#h", p3, NULL);
-	free(p1);
-	free(p3);
-
-	p3 = purpl_strfmt(NULL, "%02d", t1->tm_min);
-	p1 = purpl_strrplc(p2, "#m", p3, NULL);
-	free(p2);
-	free(p3);
-
-	p3 = purpl_strfmt(NULL, "%02d", t1->tm_sec);
-	p2 = purpl_strrplc(p1, "#s", p3, NULL);
-	free(p1);
-	free(p3);
-
-#ifdef PURPL_ENABLE_MEMING
-	if ((t1->tm_mon == 3 && t1->tm_mday == 1) ||
-	    (t2->tm_mon == 2 && t2->tm_mday == 32)) {
-		p3 = purpl_strrplc(p2, "#d", "#jd", NULL);
-		free(p2);
-		p2 = p3;
-	}
-#endif
-
-	p1 = purpl_strrplc(p2, "#d", "#WD, #D/#M/#Y", NULL);
-	free(p2);
-
-	p2 = purpl_strrplc(p1, "#jd", "#WD, #JD/#JM/#JY", NULL);
-	free(p1);
-
-	p3 = purpl_strfmt(NULL, "%02d", t1->tm_mday);
-	p1 = purpl_strrplc(p2, "#D", p3, NULL);
-	free(p2);
-	free(p3);
-
-	p3 = purpl_strfmt(NULL, "%02d", t2->tm_mday);
-	p2 = purpl_strrplc(p1, "#JD", p3, NULL);
-	free(p1);
-	free(p3);
-
-	p4 = days[t1->tm_wday];
-	p1 = purpl_strrplc(p2, "#WD", p4, NULL);
-	free(p2);
-
-	p3 = purpl_strfmt(NULL, "%02d", t1->tm_mon + 1);
-	p2 = purpl_strrplc(p1, "#M", p3, NULL);
-	free(p1);
-	free(p3);
-
-	p3 = purpl_strfmt(NULL, "%02d", t2->tm_mon + 1);
-	p1 = purpl_strrplc(p2, "#JM", p3, NULL);
-	free(p2);
-	free(p3);
-
-	p3 = purpl_strfmt(NULL, "%04d", t1->tm_year + 1970);
-	p2 = purpl_strrplc(p1, "#Y", p3, NULL);
-	free(p1);
-	free(p3);
-
-	p3 = purpl_strfmt(NULL, "%04d", t2->tm_year);
-	p1 = purpl_strrplc(p2, "#JY", p3, NULL);
-	free(p2);
-	free(p3);
-
-	p3 = purpl_strfmt(NULL, "%" PRId64, purpl_get_pid());
-	p2 = purpl_strrplc(p1, "#P", p3, NULL);
-	free(p1);
-	free(p3);
-
-	p3 = purpl_strfmt(NULL, "%" PRId64, purpl_get_tid());
-	p1 = purpl_strrplc(p2, "#T", p3, NULL);
-	free(p2);
-	free(p3);
-
-	p2 = purpl_strrplc(p1, "#W", "#F:#sl@#f", NULL);
-	free(p1);
-
-	p3 = purpl_pathfmt(NULL, file, 0, false, false);
-	len = strlen(PURPL_SOURCE_DIR);
-	if (strncmp(p3, PURPL_SOURCE_DIR, len) == 0) {
-		p5 = file + len + 1;
-	} else {
-		p5 = p3;
-		len = strlen(PURPL_RELATIVE_SOURCE_DIR);
-		if (strncmp(p3, PURPL_RELATIVE_SOURCE_DIR, len) == 0)
-			p5 = file + len;
-	}
-	p1 = purpl_strrplc(p2, "#F", p5, NULL);
-	free(p2);
-	free(p3);
-
-	p2 = purpl_strrplc(p1, "#f", function, NULL);
-	free(p1);
-
-	p3 = purpl_strfmt(NULL, "%d", line);
-	p1 = purpl_strrplc(p2, "#sl", p3, NULL);
-	free(p2);
-	free(p3);
-
-	p4 = levels_upper[level];
-	p2 = purpl_strrplc(p1, "#L", p4, NULL);
-	free(p1);
-
-	p4 = levels_lower[level];
-	p1 = purpl_strrplc(p2, "#l", p4, NULL);
-	free(p2);
-
-	p4 = purpl_format_version(PURPL_VERSION);
-	p3 = purpl_strfmt(NULL,
-			  "%s+" PURPL_SOURCE_BRANCH "-" PURPL_SOURCE_COMMIT
-			  "-" PURPL_BUILD_TYPE,
-			  p4);
-	p2 = purpl_strrplc(p1, "#V", p3, NULL);
-	free(p1);
-	free(p3);
-
-	p1 = purpl_strrplc(
-		p2, "#n",
-		purpl_inst->app_name ? purpl_inst->app_name : "unknown", NULL);
-	free(p2);
-
-	p3 = purpl_strfmt(NULL, "v%s",
-			  purpl_format_version(purpl_inst->app_version));
-	p2 = purpl_strrplc(p1, "#v", p3, NULL);
-	free(p1);
-	free(p3);
-
-	p1 = purpl_strfmt(NULL, "%s\n", p2);
-	free(p2);
-
+	msg_fmt = purpl_vstrfmt(&msg_size, msg, args);
 	va_end(args);
 
-	return p1;
+	buf_size = strlen(logger->format) + msg_size;
+	buf = calloc(buf_size, sizeof(char));
+	if (!buf)
+		return NULL;
+
+	log_get_time(&t1, &t2);
+
+	p = logger->format;
+	i = 0;
+	while (*p) {
+		if (p[0] != '#' || p[1] == '#') {
+			if (p[0] == '#')
+				p++;
+			amt = 1;
+			while (p[amt] && p[amt] != '#')
+				amt++;
+			strncpy(buf + i, p, amt);
+			i += amt;
+			p += amt;
+			continue;
+		}
+
+		begin = p++;
+		str = NULL;
+		if (*p == 'm' && *++p == 's' && *++p == 'g') {
+			p++;
+			str = msg_fmt;
+		} else if (*p == 't') {
+			u64 h = t1->tm_hour;
+
+			p++;
+			if (strcmp(p, "12") == 0) {
+				h %= 12;
+				p += 2;
+			}
+			str = purpl_strfmt(NULL, "%02d:%02d:%02d", h,
+					   t1->tm_min, t1->tm_sec);
+		} else if (*p == 'h') {
+			u64 h = t1->tm_hour;
+
+			p++;
+			if (strcmp(p, "12") == 0) {
+				h %= 12;
+				p += 2;
+			}
+			str = purpl_strfmt(NULL, "%02d", h);
+		} else if (*p == 'm') {
+			p++;
+			str = purpl_strfmt(NULL, "%02d", t1->tm_min);
+		} else if (*p == 's') {
+			p++;
+			str = purpl_strfmt(NULL, "%02d", t1->tm_sec);
+		} else if (*p == 'j' || *p == 'd') {
+			bool joke = (*p == 'j');
+			struct tm *t = joke ? t1 : t2;
+			int year;
+			
+			if (joke)
+				year = t->tm_year - 70;
+			else
+				year = t->tm_year + 1900;
+
+			str = purpl_strfmt(NULL, "%s, %02d/%02d/%04d",
+					   days[t->tm_wday], t->tm_mday,
+					   t->tm_mon + 1, year);
+
+			p++;
+		} else if (*p == 'J' || *p == 'D' || *p == 'M' || *p == 'Y') {
+			struct tm *t = t1;
+			int year = t->tm_year + 1900;
+
+			if (*p == 'J') {
+				t = t2;
+				p++;
+				year = t->tm_year - 70;
+			}
+
+			if (*p == 'D')
+				str = purpl_strfmt(NULL, "%02d", t->tm_mday);
+			else if (*p == 'M' && *++p == 'N')
+				str = purpl_strfmt(NULL, "%s",
+						   months[t->tm_mon]);
+			else if (*p == 'M')
+				str = purpl_strfmt(NULL, "%02d",
+						   t->tm_mon + 1);
+			else if (*p == 'Y')
+				str = purpl_strfmt(NULL, "%04d", year);
+
+			p++;
+		} else if (*p == 'P') {
+			p++;
+			str = purpl_strfmt(NULL, "%lld", purpl_get_pid());
+		} else if (*p == 'T') {
+			p++;
+			str = purpl_strfmt(NULL, "%lld", purpl_get_tid());
+		} else if (*p == 'W') {
+			p++;
+			str = purpl_strfmt(NULL, "%s:%d@%s", file, line,
+					   function);
+		} else if (*p == 'F') {
+			p++;
+			str = purpl_strfmt(NULL, "%s", file);
+		} else if (*p == 'f') {
+			p++;
+			str = purpl_strfmt(NULL, "%s", function);
+		} else if (*p == 's' && *++p == 'l') {
+			p++;
+			str = purpl_strfmt(NULL, "%d", line);
+		} else if (*p == 'L') {
+			p++;
+			str = purpl_strfmt(NULL, "%s", levels_upper[level]);
+		} else if (*p == 'l') {
+			p++;
+			str = purpl_strfmt(NULL, "%s", levels_lower[level]);
+		} else if (*p == 'V') {
+			p++;
+			str = purpl_strfmt(
+				NULL, "%s",
+				purpl_format_version(PURPL_VERSION));
+		} else if (*p == 'n') {
+			p++;
+			str = purpl_strfmt(NULL, "%s", purpl_inst->app_name);
+		} else if (*p == 'v') {
+			p++;
+			str = purpl_strfmt(NULL, "%s", levels_upper[level]);
+		} else {
+			p = begin + 1;
+			str = purpl_strdup(p);
+		}
+
+		len = strlen(str);
+		tmp = purpl_strdup(buf);
+		free(buf);
+		buf_size += len;
+		buf = calloc(buf_size, sizeof(char));
+		if (!buf) {
+			free(tmp);
+			return NULL;
+		}
+		strncpy(buf, tmp, buf_size);
+		strncat(buf + i, str, len);
+		free(str);
+		i += len;
+	}
+
+	return buf;
 }
 
 PURPL_API void purpl_log_write(struct purpl_logger *logger,
@@ -314,14 +315,14 @@ PURPL_API void purpl_log_write(struct purpl_logger *logger,
 		return;
 
 	va_start(args, msg);
-	buf = purpl_log_format(logger, effective_level, file, line, function,
-			       msg, args);
+	buf = log_format(logger, effective_level, file, line, function, msg,
+			 args);
 	va_end(args);
 
-	fprintf(logger->file, "%s", buf);
+	fprintf(logger->file, "%s\n", buf);
 	fflush(logger->file);
 #ifdef PURPL_DEBUG
-	printf("\r%s", buf);
+	printf("\r%s\n", buf);
 	fflush(stdout);
 #else // PURPL_DEBUG
 #ifdef _WIN32
@@ -390,7 +391,7 @@ PURPL_API void purpl_log_close(struct purpl_logger *logger, bool last_message)
 	if (!logger)
 		return;
 
-	purpl_log_get_time(&t, NULL);
+	log_get_time(&t, NULL);
 
 	if (last_message) {
 		if (t->tm_hour < 12)

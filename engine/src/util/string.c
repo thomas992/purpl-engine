@@ -15,6 +15,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include "stb_ds.h"
 #include "stb_sprintf.h"
 
 #include "purpl/util/string.h"
@@ -172,6 +173,43 @@ PURPL_API char *purpl_strndup(const char *str, size_t n)
 		return NULL;
 
 	strncpy(buf, str, n);
+	return buf;
+}
+
+PURPL_API char *purpl_strins(const char *str, const char *ins, size_t index,
+			     size_t size)
+{
+	char *buf;
+
+	if (!str || !ins || index >= size)
+		return NULL;
+
+	buf = calloc(size + strlen(ins), sizeof(char));
+	if (!buf)
+		return NULL;
+	
+	strncpy(buf, str, index);
+	strncat(buf, ins, strlen(str));
+	strncat(buf, str + index, strlen(str + index));
+
+	return buf;
+}
+
+PURPL_API char *purpl_strrm(const char *str, size_t index, size_t n,
+			    size_t size)
+{
+	char *buf;
+
+	if (!str || index - n >= size)
+		return NULL;
+
+	buf = calloc(size - n, sizeof(char));
+	if (!buf)
+		return NULL;
+
+	strncpy(buf, str, index);
+	strncat(buf, str + index + n, size - n);
+
 	return buf;
 }
 

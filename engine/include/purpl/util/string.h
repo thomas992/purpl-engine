@@ -95,6 +95,30 @@ extern PURPL_API char *purpl_strdup(const char *str);
 /// \return Returns a buffer containing n characters of str, or NULL
 extern PURPL_API char *purpl_strndup(const char *str, size_t n);
 
+/// Insert ins into str at index
+///
+/// \param str The string to insert into
+/// \param ins The string to insert
+/// \param index The index at which to insert ins
+/// \param size The size of the buffer
+/// 
+/// \return Returns a buffer containing str with ins inserted at index and its
+///	    size increased by strlen(ins) from size, or NULL
+extern PURPL_API char *purpl_strins(const char *str, const char *ins,
+				    size_t index, size_t size);
+
+/// Remove n characters from string at index
+///
+/// \param str The string to remove from
+/// \param index The index to start at
+/// \param n The number of characters to remove
+/// \param size The size of the buffer
+/// 
+/// \return Returns a buffer containing str with n characters removed from
+///	    index and its size decreased by n from size, or NULL
+extern PURPL_API char *purpl_strrm(const char *str, size_t index, size_t n,
+				   size_t size);
+
 /// Perform a case insensitive string comparison on two wide strings like
 /// wcscasecmp(3)
 ///

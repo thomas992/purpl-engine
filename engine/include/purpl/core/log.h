@@ -85,14 +85,15 @@ struct purpl_logger {
 ///	#s	- The current second of the current minute
 ///
 ///	#d	- The current date in the format #WD, #D/#M/#Y, or #jd if it's
-///		  April 1st and PURPL_ENABLE_MEMING is defined (enable_meming
-///		  in GN args)
+///		  April 1st and PURPL_ENABLE_MEMING is defined
 ///	#jd	- The current date in the format #WD, #JD/#JM/#JY
 ///	#D	- The current day of the month
 ///	#JD	- The current day of the month, but 32 if it's April 1st
 ///	#WD	- The name of the current day of the week
-///	#M	- The current month (by name)
-///	#JM	- The current month, but will be March if it's April 1st
+///	#MN	- The current month (by name)
+///	#JMN	- The current month, but will be March if it's April 1st
+///	#M	- The current month (by number)
+///	#JM	- The current month, but will be 3 if it's April 1st
 ///	#Y	- The current year
 ///	#JY	- The current year, minus 1970
 ///
@@ -110,8 +111,9 @@ struct purpl_logger {
 ///	#n	- The name of the application
 ///	#v	- The version of the application
 ///
-///	#msg	- The message logged (can be used multiple times, but don't do
-///		  that)
+///	#msg	- The message logged (pretty sure this will cause an infinite
+///		  loop if you put it in a message, but can be used more than
+///		  once in the format)
 ///	#def	- The default pattern (passing NULL for format also gives
 ///		  this), which is equivalent to
 ///		  or "[#d #t] [#n #v] [#L] #msg",in release builds, or
@@ -119,8 +121,9 @@ struct purpl_logger {
 ///
 ///	The sequences can also be used in messages passed to
 ///	purpl_log_write (and the macros wrapping it), as they
-///	are processed by that function and #msg is expanded
-///	before the other sequences.
+///	are processed by that function and the parsing only
+///	stops when there are no more hashtags (#), which have
+///	to be escaped with another #.
 ///
 /// clang-format on
 ///
@@ -137,7 +140,8 @@ purpl_log_create(const char *file, enum purpl_log_level level,
 /// \param line Pass __LINE__
 /// \param function Pass PURPL_CURRENT_FUNCTION (because some compilers support
 ///		    nicer formats than __func__)
-/// \param msg The message to write. Supports printf format specifiers.
+/// \param msg The message to write. Supports printf format specifiers and the
+///	       directives specified for purpl_log_create's format parameter.
 extern PURPL_API void purpl_log_write(struct purpl_logger *logger,
 				      enum purpl_log_level level,
 				      const char *file, int line,
