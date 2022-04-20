@@ -74,6 +74,8 @@ EXTERN_C void purpl_preinit(purpl_main_t main_func, int argc, char *argv[])
 	// which in turn causes NTDLL to automatically load the others
 #ifdef _WIN32
 	char *path;
+	char *abs_path;
+	size_t abs_path_len;
 	size_t size = strlen(argv[0]) + 16;
 
 	engine_lib = LoadLibraryExA("engine.dll", NULL,
@@ -87,22 +89,32 @@ EXTERN_C void purpl_preinit(purpl_main_t main_func, int argc, char *argv[])
 				"Failed to allocate memory for preinit, exiting to avoid crash\n");
 			exit(1);
 		}
-
-		snprintf(path, size, "%s", argv[0]);
+		
+		strncpy(path, argv[0], strlen(argv[0]));
 		strncpy(strrchr(path, '\\') + 1, "bin\\engine.dll", 16);
+		
+		abs_path_len = GetFullPathNameA(path, 0, NULL, NULL);
+		abs_path = (char *)calloc(abs_path_len, sizeof(char));
+		if (!abs_path) {
+			fprintf(stderr,
+				"Failed to allocate memory for preinit, exiting to avoid crash\n");
+			exit(1);
+		}
+		GetFullPathNameA(path, abs_path_len, abs_path, NULL);
 
 		engine_lib = LoadLibraryExA(
-			path, NULL,
+			abs_path, NULL,
 			LOAD_LIBRARY_SEARCH_DEFAULT_DIRS |
 				LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR);
 
+		free(abs_path);
 		free(path);
 	}
 
 	if (!engine_lib) {
 #ifdef PURPL_WINRT
 		winrt::Windows::UI::Popups::MessageDialog box(
-			winrt::hstring(L"Purpl Engine error"),
+			winrt::hstring(L"Purpl Engine"),
 			winrt::hstring(L"Failed to load engine.dll"));
 		box.ShowAsync();
 #else // PURPL_WINRT
@@ -168,4 +180,3 @@ EXTERN_C void purpl_shutdown(void)
 	dlclose(engine_lib);
 #endif // _WIN32
 }
-
