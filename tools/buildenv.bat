@@ -20,5 +20,12 @@ call vcvarsall.bat %PURPL_BUILDENV_ARCH% %*
 popd
 %~d0
 
+:: Set the architecture
+for %%G in (%1 %PURPL_BUILDENV_ARCH%) do (
+	set PURPL_BUILDENV_ARCH=%%G
+)
+
 set "PATH=%~dp0;%~dp0..\build\install;%PATH%"
 set PURPL_DATA_DIR=%~dp0..
+
+echo Build environment for architecture '%PURPL_BUILDENV_ARCH%' initialized

@@ -199,9 +199,12 @@ PURPL_API void purpl_run(purpl_frame_func frame, void *user_data)
 		if (!running)
 			break;
 
-		free(purpl_inst->wnd_title);
-		purpl_inst->wnd_title =
-			purpl_strdup(SDL_GetWindowTitle(purpl_inst->wnd));
+		if (strcmp(purpl_inst->wnd_title,
+			   SDL_GetWindowTitle(purpl_inst->wnd)) != 0) {
+			free(purpl_inst->wnd_title);
+			purpl_inst->wnd_title = purpl_strdup(
+				SDL_GetWindowTitle(purpl_inst->wnd));
+		}
 
 		if (frame)
 			running = frame(now - last, user_data);

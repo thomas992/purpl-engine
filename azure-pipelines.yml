@@ -7,50 +7,62 @@ strategy:
       imageName: 'windows-2022'
       config: 'MinSizeRel'
       cc: 'cl'
+      cxx: 'cl'
     windows-msvc-release:
       imageName: 'windows-2022'
       config: 'RelWithDebInfo'
       cc: 'cl'
+      cxx: 'cl'
     windows-msvc-debug:
       imageName: 'windows-2022'
       config: 'Debug'
       cc: 'cl'
+      cxx: 'cl'
     windows-clang-dist:
       imageName: 'windows-2022'
       config: 'MinSizeRel'
       cc: 'clang'
+      cxx: 'clang++'
     windows-clang-release:
       imageName: 'windows-2022'
       config: 'RelWithDebInfo'
       cc: 'clang'
+      cxx: 'clang++'
     windows-clang-debug:
       imageName: 'windows-2022'
       config: 'Debug'
       cc: 'clang'
+      cxx: 'clang++'
     macos-dist:
       imageName: 'macos-latest'
       config: 'MinSizeRel'
       cc: 'clang'
+      cxx: 'clang++'
     macos-release:
       imageName: 'macos-latest'
       config: 'RelWithDebInfo'
       cc: 'clang'
+      cxx: 'clang++'
     macos-debug:
       imageName: 'macos-latest'
       config: 'Debug'
       cc: 'clang'
+      cxx: 'clang++'
     linux-dist:
       imageName: 'ubuntu-latest'
       config: 'MinSizeRel'
       cc: 'clang'
+      cxx: 'clang++'
     linux-release:
       imageName: 'ubuntu-latest'
       config: 'RelWithDebInfo'
       cc: 'clang'
+      cxx: 'clang++'
     linux-debug:
       imageName: 'ubuntu-latest'
       config: 'Debug'
       cc: 'clang'
+      cxx: 'clang++'
 
 variables:
   artifactArchive: $(Build.ArtifactStagingDirectory)/purpl-$(imageName)-$(config)-$(cc).7z
@@ -96,17 +108,17 @@ steps:
 
   - script: |
       call tools\buildenv.bat x64
-      cmake -S. -Bbuild -GNinja -DVULKAN_SDK=$(vulkanSdk) -DVulkan_LIBRARY=$(vulkanSdk)/Lib/vulkan-1.lib -DVulkan_INCLUDE_DIR=$(vulkanSdk)/Include -DCMAKE_C_COMPILER=$(cc) -DCMAKE_BUILD_TYPE=$(config)
+      cmake -S. -Bbuild -GNinja -DVULKAN_SDK=$(vulkanSdk) -DVulkan_LIBRARY=$(vulkanSdk)/Lib/vulkan-1.lib -DVulkan_INCLUDE_DIR=$(vulkanSdk)/Include -DCMAKE_C_COMPILER=$(cc) -DCMAKE_CXX_COMPILER=$(cxx) -DCMAKE_BUILD_TYPE=$(config)
     condition: eq(variables['Agent.OS'], 'Windows_NT')
     displayName: Generate build files (Windows)
 
   - script: |
-      cmake -S. -Bbuild -GNinja -DVulkan_LIBRARY=/usr/lib/x86_64-linux-gnu/libvulkan.so -DCMAKE_C_COMPILER=$(cc) -DCMAKE_BUILD_TYPE=$(config) -DPURPL_USE_SYSTEM_SDL=1
+      cmake -S. -Bbuild -GNinja -DVulkan_LIBRARY=/usr/lib/x86_64-linux-gnu/libvulkan.so -DCMAKE_C_COMPILER=$(cc) -DCMAKE_CXX_COMPILER=$(cxx) -DCMAKE_BUILD_TYPE=$(config) -DPURPL_USE_SYSTEM_SDL=1
     condition: eq(variables['Agent.OS'], 'Linux')
     displayName: Generate build files (Linux)
 
   - script: |
-      cmake -S. -Bbuild -GXcode -DCMAKE_C_COMPILER=$(cc) -DCMAKE_BUILD_TYPE=$(config) -DPURPL_USE_SYSTEM_SDL=1
+      cmake -S. -Bbuild -GXcode -DCMAKE_C_COMPILER=$(cc) -DCMAKE_CXX_COMPILER=$(cxx) -DCMAKE_BUILD_TYPE=$(config) -DPURPL_USE_SYSTEM_SDL=1
     condition: eq(variables['Agent.OS'], 'Darwin')
     displayName: Generate build files (macOS)
 
