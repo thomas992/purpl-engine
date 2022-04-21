@@ -328,7 +328,6 @@ PURPL_API char *purpl_get_system_data_dir(void)
 
 	path = getenv("PURPL_DATA_DIR");
 	if (!path)
-		path = purpl_strfmt(NULL, "%s/.local/share", getenv("HOME"));
 
 	if (!path) {
 #ifdef _WIN32
@@ -339,7 +338,10 @@ PURPL_API char *purpl_get_system_data_dir(void)
 			strncpy(appdata, "C:/", PURPL_SIZEOF_ARRAY(appdata));
 		path = appdata;
 #else // _WIN32
-		path = "/tmp";
+		if (getenv("HOME"))
+			path = purpl_strfmt(NULL, "%s/.local/share");
+		else
+			path = "/tmp";
 #endif // _WIN32
 	}
 
