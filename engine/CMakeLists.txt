@@ -197,7 +197,6 @@ target_include_directories(engine
 				${CMAKE_SOURCE_DIR}/deps/glad2/include
 				${CMAKE_SOURCE_DIR}/deps/sdl2/include
 				${CMAKE_SOURCE_DIR}/deps/stb)
-target_link_libraries(engine PRIVATE SDL2::SDL2)
 if (APPLE)
 	set_target_properties(engine
 			      PROPERTIES
