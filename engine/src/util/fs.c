@@ -132,6 +132,7 @@ PURPL_API char *purpl_pathfmt(size_t *size, const char *path,
 PURPL_API bool purpl_path_exists(const char *path, bool relative,
 				 bool data_relative)
 {
+	FILE *fp;
 	char *path2;
 	bool ret;
 
@@ -139,8 +140,12 @@ PURPL_API bool purpl_path_exists(const char *path, bool relative,
 		return false;
 
 	path2 = purpl_pathfmt(NULL, path, 0, relative, data_relative);
-	ret = !(!fopen(path2, "rb") && errno == ENOENT);
+	fp = fopen(path2, "r");
 	free(path2);
+	if (fp)
+		fclose(fp);
+
+	ret = !(!fp && errno == ENOENT);
 
 	return ret;
 }
@@ -161,19 +166,7 @@ PURPL_API bool purpl_mkdir(const char *path, enum purpl_fs_flags flags,
 
 	path2 = purpl_pathfmt(NULL, path, flags, relative, data_relative);
 	if (flags & PURPL_FS_MKDIR_RECURSE) {
-		for (i = 0; i < (purpl_strcount(path, "/") -
-				 purpl_strcount(path, "//")) +
-					1;
-		     i++) {
-			char *p;
-
-			p = strstr(path2, "/");
-			while (p)
-				p = strstr(++p, "/");
-			stbds_arrput(dir_names,
-				     purpl_strfmt(NULL, "%.*s",
-						  (s32)(p - path2), path2));
-		}
+		
 	} else {
 		stbds_arrput(dir_names, path2);
 	}
@@ -189,6 +182,7 @@ PURPL_API bool purpl_mkdir(const char *path, enum purpl_fs_flags flags,
 			return false;
 		}
 #else // _WIN32
+		printf("%s\n", dir_names[i]);
 		int fd = mkdir(dir_names[i],
 			       purpl_translate_file_mode(mode, true));
 		if (fd < 0) {

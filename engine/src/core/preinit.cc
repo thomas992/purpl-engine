@@ -56,7 +56,7 @@ void *engine_lib = NULL;
 #elif __APPLE__
 #define LIB_EXT ".dylib"
 #define init_engine_ptrs init_engine_dylib_ptrs
-#elif __linux__ // _WIN32
+#else // _WIN32
 #define LIB_EXT ".so"
 #define init_engine_ptrs init_engine_so_ptrs
 #endif // _WIN32
@@ -158,7 +158,7 @@ EXTERN_C void purpl_preinit(purpl_main_t main_func, int argc, char *argv[])
 	}
 
 	if (!engine_lib) {
-		fprintf(stderr, "Failed to load engine" LIB_EXT ", exiting\n");
+		fprintf(stderr, "Failed to load engine" LIB_EXT ": %s\n", dlerror());
 		exit(ENOENT);
 	}
 #endif // _WIN32

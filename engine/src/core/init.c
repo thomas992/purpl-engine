@@ -74,8 +74,10 @@ PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 	data_dir = purpl_get_system_data_dir();
 	purpl_inst->engine_data_dir = purpl_strfmt(NULL, "%s/%s", data_dir, purpl_inst->app_name);
 	free(data_dir);
+	fprintf(stderr, "Data directory is %s\n", purpl_inst->engine_data_dir);
 
-	purpl_mkdir("logs", PURPL_FS_MKDIR_RECURSE, PURPL_FS_MODE_ALL, false, true);
+	if (!purpl_path_exists("logs", false, true))
+		purpl_mkdir("logs", PURPL_FS_MKDIR_RECURSE, PURPL_FS_MODE_ALL, false, true);
 
 	purpl_inst->logger = purpl_log_create(NULL, PURPL_LOG_LEVEL_INFO,
 					      PURPL_LOG_LEVEL_MAX, NULL);

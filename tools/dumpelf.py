@@ -28,12 +28,12 @@ out = nm.stdout
 
 names = []
 for x in out.split("\n"):
-    # The columns are padded so, this always works if nm ran correctly
+    # The columns are padded, so this always works if nm ran correctly
     name = x[19:]
     end = name.find(" ")
     end = len(name) if end == -1 else end
     name = name[:end]
-    if len(x.split()) and x.split()[1] == "T":
+    if len(x.split()) and x.split()[1] == "T" and name != "_init" and name != "_fini":
         print(name)
         names.append(name)
 

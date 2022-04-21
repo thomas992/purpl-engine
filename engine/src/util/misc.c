@@ -19,12 +19,12 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <processthreadsapi.h>
-#elif defined __APPLE__
+#elif defined __APPLE__ // _WIN32
 #define _GNU_SOURCE
 #include <pthread.h>
 #include <unistd.h>
-#elif defined __linux__
-#define _GNU_SOURCE
+#else // _WIN32
+#define _ALL_SOURCE
 #include <unistd.h>
 #endif
 
@@ -59,6 +59,8 @@ PURPL_API u64 purpl_get_tid(void)
 	return id;
 #elif defined __linux__
 	return gettid();
+#elif defined __FreeBSD__
+	return 0;
 #endif // _WIN32
 }
 
