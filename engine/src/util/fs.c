@@ -155,6 +155,7 @@ PURPL_API bool purpl_mkdir(const char *path, enum purpl_fs_flags flags,
 			   bool data_relative)
 {
 	char *path2;
+	char *path3;
 	char **dir_names = NULL;
 	size_t i;
 
@@ -166,32 +167,33 @@ PURPL_API bool purpl_mkdir(const char *path, enum purpl_fs_flags flags,
 
 	path2 = purpl_pathfmt(NULL, path, flags, relative, data_relative);
 	if (flags & PURPL_FS_MKDIR_RECURSE) {
-		
-	} else {
-		stbds_arrput(dir_names, path2);
+		stbds_arrsetlen(dir_names, 0);
+		for (i = 0; i < strlen(path2); i++) {
+			if (path2[i] == '/') {
+				path3 = purpl_strndup(path2, i + 1);
+				path3[i + 1] = '\0';
+				stbds_arrput(dir_names, path3);
+			}
+		}
 	}
-	free(path2);
+	stbds_arrput(dir_names, path2);
 
 	for (i = 0; i < stbds_arrlenu(dir_names); i++) {
 #ifdef _WIN32
 		// Maybe I'll add code for dealing with security attributes
 		// later
-		if (!CreateDirectoryA(dir_names[i], NULL)) {
+		if (!CreateDirectoryA(dir_names[i], NULL))
 			errno = purpl_win32_error_to_errno(GetLastError());
-			stbds_arrfree(dir_names);
-			return false;
-		}
 #else // _WIN32
-		printf("%s\n", dir_names[i]);
 		int fd = mkdir(dir_names[i],
 			       purpl_translate_file_mode(mode, true));
-		if (fd < 0) {
-			stbds_arrfree(dir_names);
-			return false;
-		}
 		close(fd);
 #endif // _WIN32
+		free(dir_names[i]);
 	}
+
+	if (errno)
+		return false;
 
 	stbds_arrfree(dir_names);
 	return true;

@@ -116,9 +116,16 @@ EXTERN_C void purpl_preinit(purpl_main_t main_func, int argc, char *argv[])
 
 		fprintf(stderr, "Trying to load %ls\n", path);
 		engine_lib = LoadLibraryW(path);
-		if (engine_lib)
+		if (engine_lib) {
+			free(path);
 			break;
+		}
+		error = GetLastError();
+		free(path);
 	}
+
+	free(paths[0]);
+	free(paths[1]);
 
 	if (!engine_lib) {
 		fprintf(stderr, "Failed to load engine.dll: 0x%" PRIX32 "\n",
