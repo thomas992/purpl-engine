@@ -1,6 +1,7 @@
 #!/usr/bin/env sh
 
 HERE=$(dirname "$0")
+ROOT=$(dirname "$HERE")
 
 for i in $HERE/*.py $HERE/*.sh $HERE/dos2unix $HERE/glslc $HERE/ninja;
 do
@@ -10,7 +11,7 @@ done
 
 for i in demo cmake engine;
 do
-	for j in $(find "$HERE/../$i" -type f);
+	for j in $(find "$ROOT/$i" -type f);
 	do
 		echo Unsetting executable bit on $j
 		chmod a-x $j
