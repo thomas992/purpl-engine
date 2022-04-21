@@ -20,10 +20,13 @@
 #include <windows.h>
 #include <processthreadsapi.h>
 #elif defined __APPLE__ // _WIN32
-#define _GNU_SOURCE
+#define _ALL_SOURCE
 #include <pthread.h>
 #include <unistd.h>
 #else // _WIN32
+#ifdef __linux__
+#define _GNU_SOURCE
+#endif // __linux__
 #define _ALL_SOURCE
 #include <unistd.h>
 #endif
