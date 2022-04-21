@@ -114,6 +114,9 @@ EXTERN_C void purpl_preinit(purpl_main_t main_func, int argc, char *argv[])
 		wcsncpy(path, paths[i], path_len);
 		wcsncat(path, L"\\engine.dll", path_len);
 
+		fprintf(stderr, "Setting DLL search path to %ls\n", paths[i]);
+		SetDllDirectoryW(paths[i]);
+
 		fprintf(stderr, "Trying to load %ls\n", path);
 		engine_lib = LoadLibraryW(path);
 		if (engine_lib) {
