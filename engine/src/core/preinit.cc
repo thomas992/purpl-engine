@@ -118,7 +118,8 @@ EXTERN_C void purpl_preinit(purpl_main_t main_func, int argc, char *argv[])
 		SetDllDirectoryW(paths[i]);
 
 		fprintf(stderr, "Trying to load %ls\n", path);
-		engine_lib = LoadLibraryW(path);
+		engine_lib = LoadLibraryExW(path, NULL,
+				LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR);
 		if (engine_lib) {
 			free(path);
 			break;

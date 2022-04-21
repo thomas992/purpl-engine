@@ -313,5 +313,7 @@ VkExtent2D vulkan_choose_swap_extent(void)
 		vulkan->swapchain_info.capabilities.minImageExtent.height,
 		vulkan->swapchain_info.capabilities.maxImageExtent.height);
 
+	PURPL_LOG_INFO(purpl_inst->logger, "Chose swap extent %ux%u",
+		       extent.width, extent.height);
 	return extent;
 }
