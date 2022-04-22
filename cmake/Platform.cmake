@@ -1,4 +1,4 @@
-#  UWP support functions
+#  Platform setup functions for applications
 #
 #  Copyright 2022 MobSlicer152
 #  This file is part of Purpl Engine
@@ -16,6 +16,14 @@
 #  limitations under the License.
 
 cmake_minimum_required(VERSION 3.15)
+
+function(purpl_win32_setup target app_id version)
+	if (WIN32)
+		string(REPLACE "." "," version_string "${version}")
+		configure_file(${app_id}.rc.in ${app_id}.rc @ONLY)
+		set_property(SOURCE ${app_id}.rc PROPERTY GENERATED TRUE)
+	endif()
+endfunction()
 
 function(purpl_winrt_setup content_files)
 	if (${CMAKE_SYSTEM_NAME} STREQUAL "WindowsStore")

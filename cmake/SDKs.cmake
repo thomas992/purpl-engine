@@ -67,12 +67,12 @@ endfunction()
 
 function(get_steamworks_sdk)
 	if (EXISTS ${CMAKE_SOURCE_DIR}/steamworks_sdk.zip)
-		message(STATUS "Found Steamworks SDK")
 		file(COPY ${CMAKE_SOURCE_DIR}/steamworks_sdk.zip DESTINATION ${CMAKE_BINARY_DIR})
 	elseif (NOT EXISTS ${CMAKE_BINARY_DIR}/steamworks_sdk.zip)
 		message(STATUS "Steamworks SDK not found, go to https://partner.steamgames.com/downloads/steamworks_sdk.zip, sign in, download the file, and copy it to ${CMAKE_SOURCE_DIR} or ${CMAKE_BINARY_DIR} and make sure it's named steamworks_sdk.zip, then run CMake again.")
 		message(FATAL_ERROR "")
 	endif()
+	message(STATUS "Found Steamworks SDK")
 	file(REMOVE_RECURSE ${CMAKE_BINARY_DIR}/steamworks_sdk)
 	file(ARCHIVE_EXTRACT INPUT ${CMAKE_BINARY_DIR}/steamworks_sdk.zip
 			     DESTINATION ${CMAKE_BINARY_DIR}/steamworks_sdk)

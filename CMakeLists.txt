@@ -18,8 +18,8 @@
 cmake_minimum_required(VERSION 3.15)
 
 include(cmake/GetGitRevisionDescription.cmake)
+include(cmake/Platform.cmake)
 include(cmake/SDKs.cmake)
-include(cmake/WinRT.cmake)
 
 if (APPLE AND NOT ${CMAKE_GENERATOR} MATCHES "Xcode")
 	message(FATAL_ERROR "Only Xcode is supported on Apple platforms due to otherwise incomplete compatibility with mixing C and Swift code in CMake")
