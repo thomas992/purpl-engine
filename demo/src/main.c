@@ -28,8 +28,8 @@ struct demo_info {
 // This will be called each frame by the engine
 bool frame_func(u32 delta, void *data);
 
-// This will be called by the engine
-int32_t purpl_main(int32_t argc, char *argv[])
+// This will be called by the engine when the program starts
+s32 purpl_main(s32 argc, char *argv[])
 {
 	struct demo_info info = { 0 };
 
@@ -43,24 +43,25 @@ int32_t purpl_main(int32_t argc, char *argv[])
 		exit(errno);
 	}
 
-	// Run the main loop, it takes a void pointer passed to the frame function
+	// Run the main loop, it takes a void pointer passed to the frame
+	// function
 	purpl_run(frame_func, &info);
 
-	printf("Rendered a total of %*.Lf frames, with an average delta of %Lf milliseconds\n", 0, info.frames, info.deltas / info.frames);
-	
+	printf("Rendered a total of %*.Lf frames, with an average delta of %Lf milliseconds\n",
+	       0, info.frames, info.deltas / info.frames);
+
 	return 0;
 }
 
 bool frame_func(u32 delta, void *data)
 {
 	struct demo_info *info = data;
-	
+
 	// Tabs are to prevent characters from staying behind
 	printf("\rFrame delta: %ums   ", delta);
-	
+
 	info->deltas += delta;
 	info->frames++;
-	
+
 	return true;
 }
-
