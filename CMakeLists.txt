@@ -120,21 +120,14 @@ if (${PURPL_ENABLE_STEAM})
 	get_steamworks_sdk()
 endif()
 
-# Compiler and linker flags
-if (MSVC)
-	string(REGEX REPLACE "/W[1-4]" "" CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
-	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /std:c17")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++20")
+if (MSVC OR ${CMAKE_C_COMPILER_ID} MATCHES "GNU")
+	set(CMAKE_C_STANDARD 17)
 else()
-	if (${CMAKE_C_COMPILER_ID} MATCHES "GNU")
-		# GCC 9's C2x support doesn't have [[fallthrough]], but SDL assumes it does
-		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu17")
-	else()
-		# Clang has no issues
-		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu2x")
-	endif()
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++2a")
+	set(CMAKE_C_STANDARD 20)
 endif()
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_C_STANDARD_REQUIRED TRUE)
+set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 
 # Graphics APIs
 if (APPLE)

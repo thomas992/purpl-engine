@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 
+project(purpl-demo VERSION 1.0.0 LANGUAGES C)
+
 # Sources
 set(DEMO_SOURCES src/main.c)
 
