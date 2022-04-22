@@ -19,3 +19,5 @@ vulkan-sdk.exe
 
 compile_commands.json
 
+*.zip
+

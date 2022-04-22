@@ -101,6 +101,15 @@ if (${PURPL_USE_SYSTEM_SDL})
 	find_package(SDL2)
 endif()
 
+if (${PURPL_ENABLE_DISCORD} AND NOT ${PURPL_PROCESSOR} MATCHES "x86")
+	message(WARNING "Discord only supports x86, disabling Discord integration")
+	set(PURPL_ENABLE_DISCORD OFF)
+endif()
+if (${PURPL_ENABLE_DISCORD} AND NOT ${PURPL_PROCESSOR} STREQUAL "x86_64")
+	message(WARNING "Steam only supports x86, disabling Steam integration")
+	set(PURPL_ENABLE_STEAM OFF)
+endif()
+
 if (NOT ${PURPL_USE_SYSTEM_SDL} OR NOT ${SDL2_FOUND})
 	message(STATUS "Using bundled SDL")
 	set(SDL_STATIC OFF CACHE BOOL "" FORCE)
@@ -223,10 +232,9 @@ else()
 endif()
 message(STATUS "\tEnable demo: ${PURPL_ENABLE_DEMO}")
 message(STATUS "\tEnable Easter Eggs: ${PURPL_ENABLE_MEMING}")
+message(STATUS "\tDiscord integration: ${PURPL_ENABLE_DISCORD}")
 if (${PURPL_ENABLE_DISCORD})
-	message(STATUS "\tDiscord integration: enabled (app ID: ${PURPL_DISCORD_APP_ID})")
-else()
-	message(STATUS "\tDiscord integration: disabled")
+	message(STATUS "\t\tDiscord app ID: ${PURPL_DISCORD_APP_ID}")
 endif()
 message(STATUS "\tSteam integration: ${PURPL_ENABLE_STEAM}")
 message(STATUS "")
@@ -251,11 +259,20 @@ if (${PURPL_ENABLE_DEMO})
 	set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT demo)
 endif()
 
-# Install DLLs
-foreach (file ${ENGINE_RUNTIME_FILES})
-	message(STATUS ${file})
-	install(PROGRAMS ${file}
-		DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+# Install targets for dependencies
+foreach (target ${ENGINE_RUNTIME_TARGETS})
+	get_target_property(target_imported ${target} IMPORTED)
+	if (${target_imported})
+		install(IMPORTED_RUNTIME_ARTIFACTS ${target}
+			LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+	else()
+		install(TARGETS ${target}
+			LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+		if (WIN32 AND MSVC AND ${CMAKE_BUILD_TYPE} MATCHES "Deb")
+			install(PROGRAMS $<TARGET_PDB_FILE:${target}}
+				DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+		endif()
+	endif()
 endforeach()
 
 # Install licenses

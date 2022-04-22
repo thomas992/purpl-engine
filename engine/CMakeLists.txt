@@ -153,17 +153,15 @@ target_link_libraries(engine PRIVATE ${SDL2_LIBRARIES})
 if (${PURPL_ENABLE_DISCORD})
 	target_compile_definitions(engine PRIVATE PURPL_ENABLE_DISCORD=1)
 	target_include_directories(engine PRIVATE ${DISCORD_SDK_INCLUDE_DIRS})
-	target_link_libraries(engine PRIVATE ${DISCORD_SDK_LIBRARIES})
+	target_link_libraries(engine PRIVATE discord_game_sdk)
 endif()
 if (${PURPL_ENABLE_STEAM})
 	target_compile_definitions(engine PRIVATE PURPL_ENABLE_STEAM=1)
 	target_include_directories(engine PRIVATE ${STEAMWORKS_SDK_INCLUDE_DIRS})
-	target_link_libraries(engine PRIVATE ${STEAMWORKS_SDK_LIBRARIES})
+	target_link_libraries(engine PRIVATE steamworks_sdk)
 endif()
 
-if (MSVC)
-	target_compile_options(engine_preinit PRIVATE /wd4152)
-elseif(NOT WIN32)
+if(NOT WIN32)
 	set_target_properties(engine PROPERTIES C_VISIBILITY_PRESET hidden)
 endif()
 
@@ -237,35 +235,24 @@ foreach(shader ${ENGINE_SHADERS})
 	add_dependencies(engine ${shader_basename})
 endforeach()
 
+# This is a list of targets that the engine needs, but because of how dlopen
+# works, this list is only needed on Windows, because everywhere else the
+# system's libraries can be used
 if (WIN32)
-	set(ENGINE_RUNTIME_FILES_ $<TARGET_FILE:engine>)
 	if (NOT ${SDL_FOUND})
-		list(APPEND ENGINE_RUNTIME_FILES_ $<TARGET_FILE:SDL2::SDL2>)
-	endif()
-	if (${PURPL_ENABLE_DISCORD})
-		list(APPEND ENGINE_RUNTIME_FILES_ ${DISCORD_SDK_BINARIES})
+		list(APPEND ENGINE_RUNTIME_TARGETS_ SDL2::SDL2)
 	endif()
 	if (${PURPL_ENABLE_STEAM})
-		list(APPEND ENGINE_RUNTIME_FILES_ ${STEAMWORKS_SDK_BINARIES})
+		list(APPEND ENGINE_RUNTIME_TARGETS_ steamworks_sdk)
 	endif()
-	if (MSVC AND ${CMAKE_BUILD_TYPE} MATCHES "Deb") # Debug and RelWithDebInfo both give PDB files
-		list(APPEND ENGINE_RUNTIME_FILES_ $<TARGET_PDB_FILE:engine>)
-		if (NOT ${SDL_FOUND})
-			list(APPEND ENGINE_RUNTIME_FILES_ $<TARGET_PDB_FILE:SDL2::SDL2>)
-		endif()
-	endif()
-
-	message(STATUS ${ENGINE_RUNTIME_FILES_})
-	set(ENGINE_RUNTIME_FILES ${ENGINE_RUNTIME_FILES_} PARENT_SCOPE)
+	set(ENGINE_RUNTIME_TARGETS ${ENGINE_RUNTIME_TARGETS_} PARENT_SCOPE)
 endif()
 
 install(TARGETS engine_preinit
-	LIBRARY
-	DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
+	LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
 
 install(TARGETS engine
-	LIBRARY
-	DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+	LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 
 if (MSVC AND ${CMAKE_BUILD_TYPE} MATCHES "Deb")
 	install(PROGRAMS $<TARGET_PDB_FILE:engine>

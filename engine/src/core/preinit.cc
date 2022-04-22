@@ -36,6 +36,7 @@
 #include <errno.h>
 #endif // _WIN32
 
+#include "config.h"
 #include "purpl/core/warnings.h"
 
 #define PURPL_IGNORE(x) (void)(x)

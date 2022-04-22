@@ -25,9 +25,20 @@ target_link_libraries(demo PRIVATE engine_preinit)
 # Copy the other DLLs to the output directory
 if (WIN32)
 	add_custom_command(TARGET demo PRE_BUILD
-			   COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:demo>
-			   COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ENGINE_RUNTIME_FILES} $<TARGET_FILE_DIR:demo>
-			   DEPENDS ${ENGINE_RUNTIME_FILES})
+			   COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:demo>)
+	foreach (target ${ENGINE_RUNTIME_TARGETS})
+		add_custom_command(TARGET demo PRE_BUILD
+				   COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:${target}> $<TARGET_FILE_DIR:demo>
+				   DEPENDS ${target})
+		if (MSVC AND ${CMAKE_BUILD_TYPE} MATCHES "Deb")
+			get_target_property(target_imported ${target} IMPORTED)
+			if (NOT ${target_imported})
+				add_custom_command(TARGET demo PRE_BUILD
+						   COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_PDB_FILE:${target}> $<TARGET_FILE_DIR:demo>
+						   DEPENDS ${target})
+			endif()
+		endif()
+	endforeach()
 endif()
 
 # Manifest information for the UWP MSIX
