@@ -285,7 +285,7 @@ foreach (target ${ENGINE_RUNTIME_TARGETS})
 		install(TARGETS ${target}
 			LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 		if (WIN32 AND MSVC AND ${CMAKE_BUILD_TYPE} MATCHES "Deb")
-			install(PROGRAMS $<TARGET_PDB_FILE:${target}}
+			install(PROGRAMS $<TARGET_PDB_FILE:${target}>
 				DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 		endif()
 	endif()
