@@ -86,7 +86,10 @@ struct purpl_instance {
 
 #ifdef PURPL_ENABLE_DISCORD
 	struct purpl_instance_discord {
-		s32 request_cooldown; // Keeps track of the 16 millisecond API cooldown
+		s32 request_cooldown; // Keeps track of the 16 millisecond API
+				      // cooldown
+		s32 activity_cooldown; // Keeps track of the 5 second cooldown for
+				       // updating the activity
 
 		struct IDiscordCore *core;
 		struct IDiscordUserManager *users;
@@ -95,7 +98,8 @@ struct purpl_instance {
 		DiscordUserId user_id;
 
 		struct IDiscordUserEvents user_events; // User events
-		struct IDiscordActivityEvents activity_events; // Activity events
+		struct IDiscordActivityEvents activity_events; // Activity
+							       // events
 	} discord;
 #endif // PURPL_ENABLE_DISCORD
 };

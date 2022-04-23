@@ -19,6 +19,15 @@
 
 #include "purpl/core/warnings.h"
 
+#define DISCORD_CHECK_COOL_PEOPLE(discord)            \
+	((discord)->user_id == 532320702611587112 ?   \
+		 " (my game engine)" :                \
+	 ((discord)->user_id == 515919551444025407 || \
+	  (discord)->user_id == 448944515294691337 || \
+	  (discord)->user_id == 698998936316149780) ? \
+		 " (my friend's game engine)" :       \
+		       "")
+
 static void activity_callback(void *data, enum EDiscordResult result);
 static void user_callback(void *data);
 
@@ -74,8 +83,9 @@ bool discord_run_callbacks(u32 delta)
 	discord->request_cooldown -= delta;
 	if (discord->request_cooldown <= 0) {
 		result = discord->core->run_callbacks(discord->core);
-		discord->request_cooldown = 16; // Discord requires this
-						// cooldown
+		discord->request_cooldown =
+			PURPL_DISCORD_API_COOLDOWN; // Discord requires this
+						    // cooldown
 	}
 
 	if (result != DiscordResult_Ok) {
@@ -88,7 +98,10 @@ bool discord_run_callbacks(u32 delta)
 	return true;
 }
 
-void discord_update_activity(void)
+/// Result for discord_update_activity
+enum EDiscordEnum activity_result;
+
+void discord_update_activity(u32 delta)
 {
 	PURPL_ALIAS_DISCORD();
 
@@ -99,19 +112,23 @@ void discord_update_activity(void)
 	if (!discord->activities)
 		return;
 
+	discord->activity_cooldown -= delta;
+	if (discord->activity_cooldown > 0)
+		return;
+
 	snprintf(activity.name, PURPL_SIZEOF_ARRAY(activity.name), "%s v%s",
 		 purpl_inst->app_name,
 		 purpl_format_version(purpl_inst->app_version));
 	snprintf(activity.details, PURPL_SIZEOF_ARRAY(activity.details),
-		 "Purpl Engine v%s%s using %s renderer",
-		 purpl_format_version(PURPL_VERSION),
-		 // Don't add me
-		 discord->user_id == 532320702611587112 ? " (my game engine)" :
-								"",
-		 graphics_apis[purpl_inst->graphics_api]);
+		 "Purpl Engine%s v%s+%.6s-%.7s-%s",
+		 DISCORD_CHECK_COOL_PEOPLE(discord),
+		 purpl_format_version(PURPL_VERSION), PURPL_SOURCE_BRANCH,
+		 PURPL_SOURCE_COMMIT, PURPL_BUILD_TYPE);
 	snprintf(activity.state, PURPL_SIZEOF_ARRAY(activity.state),
-		 "%dx%d window at (%d, %d)", purpl_inst->wnd_width,
-		 purpl_inst->wnd_height, purpl_inst->wnd_x, purpl_inst->wnd_y);
+		 "%dx%d %s window at (%d, %d)", purpl_inst->wnd_width,
+		 purpl_inst->wnd_height,
+		 graphics_apis[purpl_inst->graphics_api], purpl_inst->wnd_x,
+		 purpl_inst->wnd_y);
 
 	PURPL_LOG_INFO(purpl_inst->logger, "Updating Discord activity");
 	PURPL_LOG_INFO(purpl_inst->logger, "\tName: %s", activity.name);
@@ -120,14 +137,16 @@ void discord_update_activity(void)
 
 	discord->activities->update_activity(discord->activities, &activity,
 					     NULL, activity_callback);
+	discord->activity_cooldown = PURPL_DISCORD_ACTIVITY_COOLDOWN;
+	if (activity_result != DiscordResult_Ok)
+		PURPL_LOG_INFO(purpl_inst->logger,
+			       "Failed to update activity: DiscordResult %d",
+			       activity_result);
 }
 
 static void activity_callback(void *data, enum EDiscordResult result)
 {
-	if (result != DiscordResult_Ok)
-		PURPL_LOG_INFO(purpl_inst->logger,
-			       "Failed to update activity: DiscordResult %d",
-			       result);
+	activity_result = result;
 }
 
 static void user_callback(void *data)

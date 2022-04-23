@@ -25,6 +25,12 @@
 
 #include "util.h"
 
+/// Cooldown for Discord callbacks
+#define PURPL_DISCORD_API_COOLDOWN 16
+
+/// Cooldown for updating the activity
+#define PURPL_DISCORD_ACTIVITY_COOLDOWN 5000
+
 /// Aliases the Discord data in the engine instance
 #define PURPL_ALIAS_DISCORD() struct purpl_instance_discord *discord = &purpl_inst->discord
 
@@ -42,4 +48,6 @@ extern bool purpl_discord_init(void);
 extern bool discord_run_callbacks(u32 delta);
 
 /// Update the activity
-extern void discord_update_activity(void);
+///
+/// \param delta The number of milliseconds since the last call
+extern void discord_update_activity(u32 delta);

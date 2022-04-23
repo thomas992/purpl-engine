@@ -147,9 +147,6 @@ PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 
 	PURPL_LOG_INFO(purpl_inst->logger,
 		       "Purpl Engine #V initialized for application #n #v");
-#ifdef PURPL_ENABLE_DISCORD
-	discord_update_activity();
-#endif // PURPL_ENABLE_DISCORD
 
 	return true;
 }
@@ -173,9 +170,6 @@ static bool purpl_handle_events(void)
 					purpl_inst->wnd_y = e.window.data2;
 					PURPL_LOG_DEBUG(purpl_inst->logger, "Window moved to (%d, %d)", purpl_inst->wnd_x,
 							purpl_inst->wnd_y);
-#ifdef PURPL_ENABLE_DISCORD
-					discord_update_activity();
-#endif // PURPL_ENABLE_DISCORD
 					break;
 				case SDL_WINDOWEVENT_RESIZED:
 					purpl_inst->wnd_width = e.window.data1;
@@ -183,9 +177,6 @@ static bool purpl_handle_events(void)
 						e.window.data2;
 					PURPL_LOG_DEBUG(purpl_inst->logger, "Window resized to %dx%d", purpl_inst->wnd_width,
 						purpl_inst->wnd_height);
-#ifdef PURPL_ENABLE_DISCORD
-					discord_update_activity();
-#endif // PURPL_ENABLE_DISCORD
 					break;
 				case SDL_WINDOWEVENT_CLOSE:
 					PURPL_LOG_DEBUG(purpl_inst->logger, "Window closed");
@@ -209,6 +200,7 @@ PURPL_API void purpl_run(purpl_frame_func frame, void *user_data)
 	bool running;
 	u32 now;
 	u32 last;
+	u32 delta;
 
 	if (!purpl_inst || !frame) {
 		if (purpl_inst)
@@ -221,6 +213,8 @@ PURPL_API void purpl_run(purpl_frame_func frame, void *user_data)
 	running = true;
 	while (running) {
 		now = SDL_GetTicks();
+		delta = now - last;
+
 		running = purpl_handle_events();
 		if (!running)
 			break;
@@ -232,10 +226,13 @@ PURPL_API void purpl_run(purpl_frame_func frame, void *user_data)
 				SDL_GetWindowTitle(purpl_inst->wnd));
 		}
 
-		running = discord_run_callbacks(now - last);
+#ifdef PURPL_ENABLE_DISCORD
+		running = discord_run_callbacks(delta);
+		discord_update_activity(delta);
+#endif // PURPL_ENABLE_DISCORD
 
 		if (frame)
-			running = frame(now - last, user_data);
+			running = frame(delta, user_data);
 		last = now;
 	}
 }

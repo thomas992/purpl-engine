@@ -11,6 +11,8 @@
 **/build**
 **/out
 
+**/*.aps
+
 **/*.log
 **/logs
 null.d
