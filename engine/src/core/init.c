@@ -34,7 +34,7 @@ u64 preinit_called;
 char *engine_dir;
 
 // Sets preinit_called to PREINIT_MAGIC
-PURPL_API void purpl_complete_preinit(purpl_main_t main_func, int argc,
+PURPL_API s32 purpl_complete_preinit(purpl_main_t main_func, int argc,
 				      char *argv[])
 {
 	preinit_called = PREINIT_MAGIC;
@@ -44,10 +44,11 @@ PURPL_API void purpl_complete_preinit(purpl_main_t main_func, int argc,
 
 	engine_dir = purpl_pathfmt(NULL, argv[0], 0, false);
 	SDL_WinRTRunApp(main_func, NULL);
+	return 0;
 #else // PURPL_WINRT
 	engine_dir = purpl_path_directory(argv[0], NULL, false, false);
 	SDL_SetMainReady();
-	main_func(argc, argv);
+	return main_func(argc, argv);
 #endif // PURPL_WINRT
 }
 

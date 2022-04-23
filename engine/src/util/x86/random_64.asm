@@ -19,6 +19,8 @@
 OPTION PROLOGUE:NONE
 
 EXTERN rand:PROC
+EXTERN srand:PROC
+EXTERN time:PROC
 
 .code
 
@@ -38,6 +40,14 @@ purpl_arch_random PROC
 		jc done
 		jmp retry
 	fail:
+		; RFLAGS XOR'd with the time
+		pushf
+		pop r11
+		xor ecx, ecx
+		call time
+		xor rax, r11
+		mov rcx, rax
+		call srand
 		call rand
 		ret
 	done:

@@ -16,6 +16,8 @@
 //  limitations under the License.
 
 .extern _rand
+.extern _srand
+.extern _time
 
 .text
 
@@ -35,7 +37,14 @@ _purpl_arch_random:
 		jc .done // Carry flag set on success
 		jmp .retry
 	.fail:
-		// Call rand
+		// RFLAGS XOR'd with the time
+		pushf
+		popq %r11
+		xorl %ecx, %ecx
+		call _time
+		xorq %r11, %rax
+		movq %rax, %rcx
+		call _srand
 		call _rand
 	.done:
 		ret

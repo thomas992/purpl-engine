@@ -39,7 +39,9 @@ extern PURPL_ASM_CALL u64 purpl_arch_random(void);
 
 PURPL_API u64 purpl_random(u64 limit)
 {
-	return purpl_arch_random() % limit;
+	// Entropy
+	srand(purpl_arch_random() * time(NULL) | purpl_get_tid());
+	return (purpl_arch_random() ^ rand() + purpl_get_pid()) % (limit + 1);
 }
 
 PURPL_API u64 purpl_get_pid(void)

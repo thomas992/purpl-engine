@@ -120,7 +120,7 @@ void discord_update_activity(u32 delta)
 		 purpl_inst->app_name,
 		 purpl_format_version(purpl_inst->app_version));
 	snprintf(activity.details, PURPL_SIZEOF_ARRAY(activity.details),
-		 "Purpl Engine%s v%s+%.6s-%.7s-%s",
+		 "Purpl Engine%s v%s+%.7s-%.7s-%s",
 		 DISCORD_CHECK_COOL_PEOPLE(discord),
 		 purpl_format_version(PURPL_VERSION), PURPL_SOURCE_BRANCH,
 		 PURPL_SOURCE_COMMIT, PURPL_BUILD_TYPE);

@@ -65,7 +65,7 @@ void *engine_lib = NULL;
 
 #ifdef _WIN32
 #define purpl_complete_preinit                       \
-	((void (*)(purpl_main_t main_func, int argc, \
+	((int32_t (*)(purpl_main_t main_func, int argc, \
 		   char *argv[]))__imp_purpl_complete_preinit)
 #define purpl_internal_shutdown __imp_purpl_internal_shutdown
 #else // _WIN32
@@ -75,7 +75,7 @@ void *engine_lib = NULL;
 #endif // _WIN32
 
 // EXTERN_C is provided by exports.h
-EXTERN_C void purpl_preinit(purpl_main_t main_func, int argc, char *argv[])
+EXTERN_C int32_t purpl_preinit(purpl_main_t main_func, int argc, char *argv[])
 {
 	PURPL_IGNORE(argc);
 #ifdef _WIN32
@@ -184,7 +184,7 @@ EXTERN_C void purpl_preinit(purpl_main_t main_func, int argc, char *argv[])
 
 	// Tell the engine that preinit was called so it doesn't print a
 	// warning
-	purpl_complete_preinit(main_func, argc, argv);
+	return purpl_complete_preinit(main_func, argc, argv);
 }
 
 EXTERN_C void purpl_shutdown(void)
