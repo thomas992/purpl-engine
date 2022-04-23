@@ -18,6 +18,7 @@
 #pragma once
 
 #include <stdlib.h>
+#include <time.h>
 
 #include "purpl/core/coredefs.h"
 #include "purpl/core/types.h"
