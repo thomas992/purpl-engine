@@ -292,6 +292,7 @@ static char *log_format(struct purpl_logger *logger,
 				return NULL;
 			}
 			strncpy(buf, tmp, i);
+			free(tmp);
 			strncat(buf + i, str, len);
 			strncat(buf + i + len, p, strlen(p));
 			free(str);
@@ -303,6 +304,7 @@ static char *log_format(struct purpl_logger *logger,
 	
 	free(base);
 
+	buf[i] = 0;
 	return buf;
 }
 

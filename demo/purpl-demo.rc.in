@@ -1,3 +1,7 @@
+// Resources for @target@
+//
+// Copyright 2022 @PURPL_APP_ORGANIZATION@
+// This file is part of @PURPL_APP_DISPLAY_NAME@
 
 #include "winresrc.h"
 

@@ -27,6 +27,9 @@ target_link_libraries(purpl-demo PRIVATE engine_preinit)
 if (WIN32)
 	add_custom_command(TARGET purpl-demo PRE_BUILD
 			   COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:purpl-demo>)
+	add_custom_command(TARGET purpl-demo PRE_BUILD
+			   COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:engine> $<TARGET_FILE_DIR:purpl-demo>
+			   DEPENDS engine)
 	foreach (target ${ENGINE_RUNTIME_TARGETS})
 		add_custom_command(TARGET purpl-demo PRE_BUILD
 				   COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:${target}> $<TARGET_FILE_DIR:purpl-demo>

@@ -33,6 +33,7 @@
 #pragma clang diagnostic ignored "-Wmicrosoft-cast"
 #elif defined _MSC_VER // __clang__
 #pragma warning(4 :)
+#pragma warning(disable : 4090)
 #pragma warning(error:)
 #endif // __clang__
 #endif // PURPL_RESET_WARNINGS

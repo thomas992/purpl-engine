@@ -22,6 +22,10 @@
 
 #include "purpl/graphics/init.h"
 
+#ifdef PURPL_ENABLE_DISCORD
+#include "purpl/util/discord.h"
+#endif // PURPL_ENABLE_DISCORD
+
 #include "purpl/core/warnings.h"
 
 #define PREINIT_MAGIC (PURPL_VERSION << 8 | 0x01)
@@ -72,12 +76,14 @@ PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 	purpl_inst->app_version = app_version;
 
 	data_dir = purpl_get_system_data_dir();
-	purpl_inst->engine_data_dir = purpl_strfmt(NULL, "%s/%s", data_dir, purpl_inst->app_name);
+	purpl_inst->engine_data_dir =
+		purpl_strfmt(NULL, "%s/%s", data_dir, purpl_inst->app_name);
 	free(data_dir);
 	fprintf(stderr, "Data directory is %s\n", purpl_inst->engine_data_dir);
 
 	if (!purpl_path_exists("logs", false, true))
-		purpl_mkdir("logs", PURPL_FS_MKDIR_RECURSE, PURPL_FS_MODE_ALL, false, true);
+		purpl_mkdir("logs", PURPL_FS_MKDIR_RECURSE, PURPL_FS_MODE_ALL,
+			    false, true);
 
 	purpl_inst->logger = purpl_log_create(NULL, PURPL_LOG_LEVEL_INFO,
 					      PURPL_LOG_LEVEL_MAX, NULL);
@@ -105,6 +111,12 @@ PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 			") != PREINIT_MAGIC (0x%" PRIX64 "))",
 			preinit_called, PREINIT_MAGIC);
 	purpl_inst->start_time = time(NULL);
+
+#ifdef PURPL_ENABLE_DISCORD
+	if (!purpl_discord_init())
+		PURPL_LOG_ERROR(purpl_inst->logger,
+				"Discord initialization failed");
+#endif // PURPL_ENABLE_DISCORD
 
 	PURPL_LOG_INFO(purpl_inst->logger, "Initializing SDL");
 
@@ -135,6 +147,9 @@ PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 
 	PURPL_LOG_INFO(purpl_inst->logger,
 		       "Purpl Engine #V initialized for application #n #v");
+#ifdef PURPL_ENABLE_DISCORD
+	discord_update_activity();
+#endif // PURPL_ENABLE_DISCORD
 
 	return true;
 }
@@ -158,6 +173,9 @@ static bool purpl_handle_events(void)
 					purpl_inst->wnd_y = e.window.data2;
 					PURPL_LOG_DEBUG(purpl_inst->logger, "Window moved to (%d, %d)", purpl_inst->wnd_x,
 							purpl_inst->wnd_y);
+#ifdef PURPL_ENABLE_DISCORD
+					discord_update_activity();
+#endif // PURPL_ENABLE_DISCORD
 					break;
 				case SDL_WINDOWEVENT_RESIZED:
 					purpl_inst->wnd_width = e.window.data1;
@@ -165,6 +183,9 @@ static bool purpl_handle_events(void)
 						e.window.data2;
 					PURPL_LOG_DEBUG(purpl_inst->logger, "Window resized to %dx%d", purpl_inst->wnd_width,
 						purpl_inst->wnd_height);
+#ifdef PURPL_ENABLE_DISCORD
+					discord_update_activity();
+#endif // PURPL_ENABLE_DISCORD
 					break;
 				case SDL_WINDOWEVENT_CLOSE:
 					PURPL_LOG_DEBUG(purpl_inst->logger, "Window closed");
@@ -210,6 +231,8 @@ PURPL_API void purpl_run(purpl_frame_func frame, void *user_data)
 			purpl_inst->wnd_title = purpl_strdup(
 				SDL_GetWindowTitle(purpl_inst->wnd));
 		}
+
+		running = discord_run_callbacks(now - last);
 
 		if (frame)
 			running = frame(now - last, user_data);

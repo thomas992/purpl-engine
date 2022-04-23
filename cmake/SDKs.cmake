@@ -30,38 +30,44 @@ function(get_discord_sdk version)
 	if (${PURPL_PROCESSOR} MATCHES "x86")
 		set(DISCORD_SDK_DIR ${CMAKE_BINARY_DIR}/discord_game_sdk)
 		set(DISCORD_SDK_INCLUDE_DIRS ${DISCORD_SDK_DIR}/c;${DISCORD_SDK_DIR}/discord_game_sdk/cpp PARENT_SCOPE)
-		set(DISCORD_HEADERS ${DISCORD_SDK_DIR}/cpp/achievement_manager.h
-				    ${DISCORD_SDK_DIR}/cpp/activity_manager.h
-				    ${DISCORD_SDK_DIR}/cpp/application_manager.h
-				    ${DISCORD_SDK_DIR}/cpp/core.h
-				    ${DISCORD_SDK_DIR}/cpp/discord.h
-				    ${DISCORD_SDK_DIR}/cpp/event.h
-				    ${DISCORD_SDK_DIR}/cpp/ffi.h
-				    ${DISCORD_SDK_DIR}/cpp/image_manager.h
-				    ${DISCORD_SDK_DIR}/cpp/lobby_manager.h
-				    ${DISCORD_SDK_DIR}/cpp/network_manager.h
-				    ${DISCORD_SDK_DIR}/cpp/overlay_manager.h
-				    ${DISCORD_SDK_DIR}/cpp/relationship_manager.h
-				    ${DISCORD_SDK_DIR}/cpp/storage_manager.h
-				    ${DISCORD_SDK_DIR}/cpp/store_manager.h
-				    ${DISCORD_SDK_DIR}/cpp/user_manager.h
-				    ${DISCORD_SDK_DIR}/cpp/voice_manager.h)
-		set(DISCORD_SOURCES ${DISCORD_SDK_DIR}/cpp/achievement_manager.cpp
-				    ${DISCORD_SDK_DIR}/cpp/activity_manager.cpp
-				    ${DISCORD_SDK_DIR}/cpp/application_manager.cpp
-				    ${DISCORD_SDK_DIR}/cpp/core.cpp
-				    ${DISCORD_SDK_DIR}/cpp/image_manager.cpp
-				    ${DISCORD_SDK_DIR}/cpp/lobby_manager.cpp
-				    ${DISCORD_SDK_DIR}/cpp/network_manager.cpp
-				    ${DISCORD_SDK_DIR}/cpp/overlay_manager.cpp
-				    ${DISCORD_SDK_DIR}/cpp/relationship_manager.cpp
-				    ${DISCORD_SDK_DIR}/cpp/storage_manager.cpp
-				    ${DISCORD_SDK_DIR}/cpp/store_manager.cpp
-				    ${DISCORD_SDK_DIR}/cpp/types.cpp
-				    ${DISCORD_SDK_DIR}/cpp/user_manager.cpp
-				    ${DISCORD_SDK_DIR}/cpp/voice_manager.cpp)
-		add_library(discord_game_sdk STATIC ${DISCORD_HEADERS} ${DISCORD_SOURCES})
-		set_target_properties(discord_game_sdk PROPERTIES CXX_STANDARD 17)
+		if (WIN32)
+			add_library(discord_game_sdk SHARED IMPORTED)
+			set_target_properties(discord_game_sdk PROPERTIES
+								IMPORTED_IMPLIB ${DISCORD_SDK_DIR}/lib/${PURPL_PROCESSOR}/discord_game_sdk.dll.lib
+								IMPORTED_LOCATION ${DISCORD_SDK_DIR}/lib/${PURPL_PROCESSOR}/discord_game_sdk.dll)
+		else()
+			set(DISCORD_HEADERS ${DISCORD_SDK_DIR}/cpp/achievement_manager.h
+					    ${DISCORD_SDK_DIR}/cpp/activity_manager.h
+					    ${DISCORD_SDK_DIR}/cpp/application_manager.h
+					    ${DISCORD_SDK_DIR}/cpp/core.h
+					    ${DISCORD_SDK_DIR}/cpp/discord.h
+					    ${DISCORD_SDK_DIR}/cpp/event.h
+					    ${DISCORD_SDK_DIR}/cpp/ffi.h
+					    ${DISCORD_SDK_DIR}/cpp/image_manager.h
+					    ${DISCORD_SDK_DIR}/cpp/lobby_manager.h
+					    ${DISCORD_SDK_DIR}/cpp/network_manager.h
+					    ${DISCORD_SDK_DIR}/cpp/overlay_manager.h
+					    ${DISCORD_SDK_DIR}/cpp/relationship_manager.h
+					    ${DISCORD_SDK_DIR}/cpp/storage_manager.h
+					    ${DISCORD_SDK_DIR}/cpp/store_manager.h
+					    ${DISCORD_SDK_DIR}/cpp/user_manager.h
+					    ${DISCORD_SDK_DIR}/cpp/voice_manager.h)
+			set(DISCORD_SOURCES ${DISCORD_SDK_DIR}/cpp/achievement_manager.cpp
+					    ${DISCORD_SDK_DIR}/cpp/activity_manager.cpp
+					    ${DISCORD_SDK_DIR}/cpp/application_manager.cpp
+					    ${DISCORD_SDK_DIR}/cpp/core.cpp
+					    ${DISCORD_SDK_DIR}/cpp/image_manager.cpp
+					    ${DISCORD_SDK_DIR}/cpp/lobby_manager.cpp
+					    ${DISCORD_SDK_DIR}/cpp/network_manager.cpp
+					    ${DISCORD_SDK_DIR}/cpp/overlay_manager.cpp
+					    ${DISCORD_SDK_DIR}/cpp/relationship_manager.cpp
+					    ${DISCORD_SDK_DIR}/cpp/storage_manager.cpp
+					    ${DISCORD_SDK_DIR}/cpp/store_manager.cpp
+					    ${DISCORD_SDK_DIR}/cpp/types.cpp
+					    ${DISCORD_SDK_DIR}/cpp/user_manager.cpp
+					    ${DISCORD_SDK_DIR}/cpp/voice_manager.cpp)
+			add_library(discord_game_sdk STATIC ${DISCORD_HEADERS} ${DISCORD_SOURCES})
+		endif()
 	endif()
 endfunction()
 

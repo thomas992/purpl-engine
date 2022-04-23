@@ -22,6 +22,10 @@
 
 #include "SDL.h"
 
+#ifdef PURPL_ENABLE_DISCORD
+#include "discord_game_sdk.h"
+#endif // PURPL_ENABLE_DISCORD
+
 #include "coredefs.h"
 #include "log.h"
 #include "types.h"
@@ -34,7 +38,7 @@
 /// Initial window height
 #define PURPL_INITIAL_WINDOW_HEIGHT 768
 
-/// Possible graphics APIs (only for shutdown)
+/// Possible graphics APIs
 enum purpl_graphics_api {
 	PURPL_GRAPHICS_API_SOFTWARE = 0, // Software rendering (unimplemented)
 	PURPL_GRAPHICS_API_OPENGL = 1, // OpenGL (unimplemented)
@@ -79,6 +83,21 @@ struct purpl_instance {
 	} graphics;
 	enum purpl_graphics_api graphics_api; // The API that was initialized
 					      // on startup
+
+#ifdef PURPL_ENABLE_DISCORD
+	struct purpl_instance_discord {
+		s32 request_cooldown; // Keeps track of the 16 millisecond API cooldown
+
+		struct IDiscordCore *core;
+		struct IDiscordUserManager *users;
+		struct IDiscordActivityManager *activities;
+		struct IDiscordApplicationManager *application;
+		DiscordUserId user_id;
+
+		struct IDiscordUserEvents user_events; // User events
+		struct IDiscordActivityEvents activity_events; // Activity events
+	} discord;
+#endif // PURPL_ENABLE_DISCORD
 };
 
 /// Global engine instance

@@ -21,6 +21,7 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${_WARNINGS}")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${_WARNINGS}")
 
 set(ENGINE_CORE_HEADERS
+    include/purpl/core/config.h.in
     include/purpl/core/coredefs.h
     include/purpl/core/features.h
     include/purpl/core/init.h
@@ -77,12 +78,10 @@ set(ENGINE_METAL_SOURCES
     src/graphics/metal/init.swift)
 
 set(ENGINE_UTIL_SOURCES
-    src/util/discord.c
     src/util/error.c
     src/util/fs.c
     src/util/misc.c
     src/util/stb.c
-    src/util/steam.c
     src/util/string.c)
 
 set(ENGINE_WINDOWS_x86_64_SOURCES
@@ -114,6 +113,16 @@ elseif (APPLE)
 else()
 	set(ENGINE_PLATFORM_HEADERS ${ENGINE_UNIX_HEADERS})
 	set(ENGINE_PLATFORM_SOURCES ${ENGINE_UNIX_SOURCES} ${ENGINE_UNIX_${PURPL_PROCESSOR}_SOURCES})
+endif()
+
+if (${PURPL_ENABLE_DISCORD})
+	set(ENGINE_UTIL_HEADERS ${ENGINE_UTIL_HEADERS} include/purpl/util/discord.h)
+	set(ENGINE_UTIL_SOURCES ${ENGINE_UTIL_SOURCES} src/util/discord.c)
+endif()
+
+if (${PURPL_ENABLE_STEAM})
+	set(ENGINE_UTIL_HEADERS ${ENGINE_UTIL_HEADERS} include/purpl/util/steam.h)
+	set(ENGINE_UTIL_SOURCES ${ENGINE_UTIL_SOURCES} src/util/steam.c)
 endif()
 
 set(ENGINE_ALL_HEADERS
@@ -239,8 +248,9 @@ endforeach()
 # works, this list is only needed on Windows, because everywhere else the
 # system's libraries can be used
 if (WIN32)
-	if (NOT ${SDL_FOUND})
-		list(APPEND ENGINE_RUNTIME_TARGETS_ SDL2::SDL2)
+	set(ENGINE_RUNTIME_TARGETS_ SDL2)
+	if (${PURPL_ENABLE_DISCORD})
+		list(APPEND ENGINE_RUNTIME_TARGETS_ discord_game_sdk)
 	endif()
 	if (${PURPL_ENABLE_STEAM})
 		list(APPEND ENGINE_RUNTIME_TARGETS_ steamworks_sdk)

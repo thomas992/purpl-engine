@@ -152,7 +152,10 @@ else()
 	set(CMAKE_C_STANDARD 17)
 endif()
 set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_C_STANDARD_REQUIRED TRUE)
+if (NOT MSVC)
+	# C17 support in Visual Studio is relatively recent
+	set(CMAKE_C_STANDARD_REQUIRED TRUE)
+endif()
 set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 
 # Graphics APIs
@@ -256,8 +259,18 @@ message(STATUS "")
 add_subdirectory(engine)
 if (${PURPL_ENABLE_DEMO})
 	add_subdirectory(demo)
-	set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT demo)
+	set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT purpl-demo)
 endif()
+
+# Group together files
+add_custom_target(files ALL SOURCES
+				cmake/GetGitRevisionDescription.cmake
+				cmake/Platform.cmake
+				cmake/SDKs.cmake
+				cmake/Shader.cmake
+				README.md
+				LICENSE
+				LICENSE_TEMPLATE.txt)
 
 # Install targets for dependencies
 foreach (target ${ENGINE_RUNTIME_TARGETS})
