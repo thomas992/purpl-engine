@@ -17,6 +17,13 @@
 
 cmake_minimum_required(VERSION 3.15)
 
+function(purpl_posix_setup target)
+	if (NOT WIN32 AND NOT ${CMAKE_SYSTEM_NAME} MATCHES "WindowsStore")
+		configure_file(${target}.sh.in ${target}.sh @ONLY)
+		set_property(SOURCE ${CMAKE_CURRENT_BINARY_DIR}/${target}.sh PROPERTY GENERATED TRUE)
+	endif()
+endfunction()
+
 function(purpl_win32_setup target app_id version)
 	if (WIN32)
 		string(REPLACE "." "," version_string "${version}")

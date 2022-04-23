@@ -147,30 +147,7 @@ EXTERN_C int32_t purpl_preinit(purpl_main_t main_func, int argc, char *argv[])
       // On POSIX platforms, due to RPATHs being absolute, the engine has to
       // be loaded in a similar way
 
-	char *path;
-	size_t path_len = strlen(argv[0]) + strlen("bin/engine" LIB_EXT) +
-			  2; // 2 is for "./"
-	size_t slash_idx;
-
-	engine_lib = dlopen("./engine" LIB_EXT, RTLD_NOW);
-	if (!engine_lib) {
-		// 16 is for the length of "bin/engine.<extension>\0", because
-		// that's the longest the path can be
-		path = (char *)calloc(path_len + 1, sizeof(char));
-
-		snprintf(path, path_len, "%s%s", argv[0][0] == '/' ? "" : "./",
-			 argv[0]);
-		slash_idx = (strrchr(path, '/') - path) + 1;
-		strncpy(path + slash_idx, "bin/engine" LIB_EXT,
-			path_len - slash_idx);
-
-		fprintf(stderr, "Attempting to load %s\n", path);
-
-		engine_lib = dlopen(path, RTLD_NOW);
-
-		free(path);
-	}
-
+	engine_lib = dlopen("engine" LIB_EXT, RTLD_NOW);
 	if (!engine_lib) {
 		fprintf(stderr, "Failed to load engine" LIB_EXT ": %s\n",
 			dlerror());

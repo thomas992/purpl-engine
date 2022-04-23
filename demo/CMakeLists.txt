@@ -10,7 +10,7 @@ if (WIN32)
 elseif (${CMAKE_SYSTEM_NAME} MATCHES "WindowsStore")
 	set(DEMO_SOURCES ${DEMO_SOURCES} ${CMAKE_CURRENT_BINARY_DIR}/Package.appxmanifest Package.appxmanifest.in)
 else()
-	set(DEMO_SOURCES ${DEMO_SOURCES} run.sh)
+	set(DEMO_SOURCES ${DEMO_SOURCES} purpl-demo.sh.in ${CMAKE_CURRENT_BINARY_DIR}/purpl-demo.sh)
 endif()
 
 # List of assets, icons and splash are mandatory for UWP. Semicolons needed.
@@ -61,6 +61,7 @@ set(PURPL_APP_CITY Toronto)
 set(PURPL_APP_TERRITORY Ontario)
 set(PURPL_APP_COUNTRY Canada)
 
+purpl_posix_setup(purpl-demo)
 purpl_win32_setup(purpl-demo ${PURPL_APP_ID} ${PURPL_APP_VERSION})
 purpl_winrt_setup("${DEMO_CONTENTS}")
 
@@ -76,7 +77,7 @@ endif()
 
 # Install run script
 if (NOT WIN32)
-	install(FILES run.sh
+	install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/purpl-demo.sh
 		DESTINATION ${CMAKE_INSTALL_PREFIX})
 endif()
 
