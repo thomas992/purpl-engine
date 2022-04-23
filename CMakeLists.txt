@@ -279,8 +279,8 @@ add_custom_target(files ALL SOURCES
 foreach (target ${ENGINE_RUNTIME_TARGETS})
 	get_target_property(target_imported ${target} IMPORTED)
 	if (${target_imported})
-		install(IMPORTED_RUNTIME_ARTIFACTS ${target}
-			LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+		install(PROGRAMS $<TARGET_FILE:${target}>
+			DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 	else()
 		install(TARGETS ${target}
 			LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
