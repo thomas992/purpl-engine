@@ -9,8 +9,6 @@ if (WIN32)
 	set(DEMO_SOURCES ${DEMO_SOURCES} ${CMAKE_CURRENT_BINARY_DIR}/purpl-demo.rc purpl-demo.rc.in)
 elseif (${CMAKE_SYSTEM_NAME} MATCHES "WindowsStore")
 	set(DEMO_SOURCES ${DEMO_SOURCES} ${CMAKE_CURRENT_BINARY_DIR}/Package.appxmanifest Package.appxmanifest.in)
-else()
-	set(DEMO_SOURCES ${DEMO_SOURCES} ${CMAKE_CURRENT_BINARY_DIR}/purpl-demo.sh purpl-demo.sh.in)
 endif()
 
 # List of assets, icons and splash are mandatory for UWP. Semicolons needed.
