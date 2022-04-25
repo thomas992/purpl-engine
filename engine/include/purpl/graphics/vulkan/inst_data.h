@@ -24,41 +24,41 @@
 
 /// Vulkan queue family information
 struct vulkan_queue_families {
-	size_t graphics_family; // The index of the graphics queue family
-	bool graphics_family_present; // Whether graphics_family is present
-	size_t presentation_family; // The index of the presentation queue
-				    // family
-	bool presentation_family_present; // Whether presentation_family is
-					  // present
+	size_t graphics_family; /// The index of the graphics queue family
+	bool graphics_family_present; /// Whether graphics_family is present
+	size_t presentation_family; /// The index of the presentation queue
+				    /// family
+	bool presentation_family_present; /// Whether presentation_family is
+					  /// present
 };
 
 /// Vulkan swapchain information
 struct vulkan_swapchain_info {
-	VkSurfaceCapabilitiesKHR capabilities; // The capabilities of the swapchain
-					       // surface
-	VkSurfaceFormatKHR *formats; // The formats of the surface
-	VkPresentModeKHR *present_modes; // The presentation modes of the surface
+	VkSurfaceCapabilitiesKHR capabilities; /// The capabilities of the swapchain
+					       /// surface
+	VkSurfaceFormatKHR *formats; /// The formats of the surface
+	VkPresentModeKHR *present_modes; /// The presentation modes of the surface
 };
 
 struct purpl_instance_vulkan {
-	VkInstance inst; // Vulkan instance
-	VkDebugUtilsMessengerEXT debug_messenger; // Debug messenger
+	VkInstance inst; /// Vulkan instance
+	VkDebugUtilsMessengerEXT debug_messenger; /// Debug messenger
 
-	VkPhysicalDevice phys_device; // Physical device
-	struct vulkan_queue_families queue_families; // The queue
-						     // families to
-						     // use with
-						     // phys_device
-	VkDevice device; // Logical device
+	VkPhysicalDevice phys_device; /// Physical device
+	struct vulkan_queue_families queue_families; /// The queue
+						     /// families to
+						     /// use with
+						     /// phys_device
+	VkDevice device; /// Logical device
 
-	VkSurfaceKHR surface; // Surface
+	VkSurfaceKHR surface; /// Surface
 
-	VkQueue presentation_queue; // Presentation queue
+	VkQueue presentation_queue; /// Presentation queue
 
-	struct vulkan_swapchain_info swapchain_info; // Swapchain information
-	VkSwapchainKHR swapchain; // Swapchain
-	VkImage *swapchain_images; // Swapchain images
-	VkFormat swapchain_format; // Swapchain format
-	VkExtent2D swapchain_extent; // Swapchain extent
-	VkImageView *swapchain_image_views; // Swapchain image views
+	struct vulkan_swapchain_info swapchain_info; /// Swapchain information
+	VkSwapchainKHR swapchain; /// Swapchain
+	VkImage *swapchain_images; /// Swapchain images
+	VkFormat swapchain_format; /// Swapchain format
+	VkExtent2D swapchain_extent; /// Swapchain extent
+	VkImageView *swapchain_image_views; /// Swapchain image views
 };

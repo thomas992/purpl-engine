@@ -40,56 +40,56 @@
 
 /// Possible graphics APIs
 enum purpl_graphics_api {
-	PURPL_GRAPHICS_API_SOFTWARE = 0, // Software rendering (unimplemented)
-	PURPL_GRAPHICS_API_OPENGL = 1, // OpenGL (unimplemented)
+	PURPL_GRAPHICS_API_SOFTWARE = 0, /// Software rendering (unimplemented)
+	PURPL_GRAPHICS_API_OPENGL = 1, /// OpenGL (unimplemented)
 #ifndef __APPLE__
-	PURPL_GRAPHICS_API_VULKAN = 2, // Vulkan
+	PURPL_GRAPHICS_API_VULKAN = 2, /// Vulkan
 #endif // !__APPLE__
 #ifdef _WIN32
-	PURPL_GRAPHICS_API_DIRECT3D = 3, // Direct3D (unimplemented)
+	PURPL_GRAPHICS_API_DIRECT3D = 3, /// Direct3D (unimplemented)
 #endif // _WIN32
 #ifdef __APPLE__
-	PURPL_GRAPHICS_API_METAL = 4, // Metal (unimplemented)
+	PURPL_GRAPHICS_API_METAL = 4, /// Metal (unimplemented)
 #endif // __APPLE__
 };
 
 /// Structure to hold information about the current instance of the engine
 struct purpl_instance {
-	char *app_name; // The name of the application that initialized the
-			// engine
-	u32 app_version; // The version of the application that initialized the
-			 // engine
+	char *app_name; /// The name of the application that initialized the
+			/// engine
+	u32 app_version; /// The version of the application that initialized the
+			 /// engine
 
-	char *engine_dir; // The directory where the engine executable is
-			  // located
-	char *engine_data_dir; // AppData/XDG_DATA_HOME, plus the app name
+	char *engine_dir; /// The directory where the engine executable is
+			  /// located
+	char *engine_data_dir; /// AppData/XDG_DATA_HOME, plus the app name
 
-	struct purpl_logger *logger; // The logger for this instance
-	time_t start_time; // When the engine started
+	struct purpl_logger *logger; /// The logger for this instance
+	time_t start_time; /// When the engine started
 
-	SDL_Window *wnd; // The main window for the engine
-	char *wnd_title; // The title of the window
-	s32 wnd_width; // The width of the window
-	s32 wnd_height; // The height of the window
-	s32 wnd_x; // The X position of the window
-	s32 wnd_y; // The Y position of the window
+	SDL_Window *wnd; /// The main window for the engine
+	char *wnd_title; /// The title of the window
+	s32 wnd_width; /// The width of the window
+	s32 wnd_height; /// The height of the window
+	s32 wnd_x; /// The X position of the window
+	s32 wnd_y; /// The Y position of the window
 
 	union {
 #ifdef __APPLE__
-		purpl_instance_metal_t metal; // Metal data
+		purpl_instance_metal_t metal; /// Metal data
 #else // __APPLE__
-		struct purpl_instance_vulkan vulkan; // Vulkan data
+		struct purpl_instance_vulkan vulkan; /// Vulkan data
 #endif // __APPLE__
 	} graphics;
-	enum purpl_graphics_api graphics_api; // The API that was initialized
-					      // on startup
+	enum purpl_graphics_api graphics_api; /// The API that was initialized
+					      /// on startup
 
 #ifdef PURPL_ENABLE_DISCORD
 	struct purpl_instance_discord {
-		s32 request_cooldown; // Keeps track of the 16 millisecond API
-				      // cooldown
-		s32 activity_cooldown; // Keeps track of the 5 second cooldown for
-				       // updating the activity
+		s32 request_cooldown; /// Keeps track of the 16 millisecond API
+				      /// cooldown
+		s32 activity_cooldown; /// Keeps track of the 5 second cooldown for
+				       /// updating the activity
 
 		struct IDiscordCore *core;
 		struct IDiscordUserManager *users;
@@ -97,9 +97,9 @@ struct purpl_instance {
 		struct IDiscordApplicationManager *application;
 		DiscordUserId user_id;
 
-		struct IDiscordUserEvents user_events; // User events
-		struct IDiscordActivityEvents activity_events; // Activity
-							       // events
+		struct IDiscordUserEvents user_events; /// User events
+		struct IDiscordActivityEvents activity_events; /// Activity
+							       /// events
 	} discord;
 #endif // PURPL_ENABLE_DISCORD
 };

@@ -30,7 +30,7 @@
 ///
 /// \param argc The number of arguments passed to the application
 /// \param argv The arguments passed to the application
-/// 
+///
 /// \return Returns the exit code of the application
 extern s32 purpl_main(s32 argc, char *argv[]);
 typedef s32 (*purpl_main_t)(s32 argc, char *argv[]);

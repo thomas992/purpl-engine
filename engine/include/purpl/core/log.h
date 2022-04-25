@@ -30,13 +30,13 @@
 
 /// Levels for the logging functions
 enum purpl_log_level {
-	PURPL_LOG_LEVEL_CURRENT = -1, // Use this to use the logger's current log
-				      // level
-	PURPL_LOG_LEVEL_CRITICAL, // Very bad errors
-	PURPL_LOG_LEVEL_ERROR, // Minor errors (most of them)
-	PURPL_LOG_LEVEL_WARNING, // Minor errors unlikely to impact anything
-	PURPL_LOG_LEVEL_INFO, // Information
-	PURPL_LOG_LEVEL_DEBUG, // Debugging messages such as invalid paramaters
+	PURPL_LOG_LEVEL_CURRENT = -1, /// Use this to use the logger's current log
+				      /// level
+	PURPL_LOG_LEVEL_CRITICAL, /// Very bad errors
+	PURPL_LOG_LEVEL_ERROR, /// Minor errors (most of them)
+	PURPL_LOG_LEVEL_WARNING, /// Minor errors unlikely to impact anything
+	PURPL_LOG_LEVEL_INFO, /// Information
+	PURPL_LOG_LEVEL_DEBUG, /// Debugging messages such as invalid paramaters
 
 // Use the maximum message level the logger won't filter out
 #ifdef PURPL_DEBUG
@@ -55,12 +55,12 @@ enum purpl_log_level {
 
 /// A logger
 struct purpl_logger {
-	FILE *file; // Log file this logger logs to
-	enum purpl_log_level level; // Current default log level
-	enum purpl_log_level max_level; // Maximum log level (i.e. messages
-					// with a higher level will be
-					// discarded)
-	char *format; // The format used for the messages
+	FILE *file; /// Log file this logger logs to
+	enum purpl_log_level level; /// Current default log level
+	enum purpl_log_level max_level; /// Maximum log level (i.e. messages
+					/// with a higher level will be
+					/// discarded)
+	char *format; /// The format used for the messages
 };
 
 /// Initialize a logger
