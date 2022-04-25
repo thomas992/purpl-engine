@@ -244,19 +244,17 @@ foreach(shader ${ENGINE_SHADERS})
 	add_dependencies(engine ${shader_basename})
 endforeach()
 
-# This is a list of targets that the engine needs, but because of how dlopen
-# works, this list is only needed on Windows, because everywhere else the
-# system's libraries can be used
-if (WIN32)
-	set(ENGINE_RUNTIME_TARGETS_ SDL2)
-	if (${PURPL_ENABLE_DISCORD})
-		list(APPEND ENGINE_RUNTIME_TARGETS_ discord_game_sdk)
-	endif()
-	if (${PURPL_ENABLE_STEAM})
-		list(APPEND ENGINE_RUNTIME_TARGETS_ steamworks_sdk)
-	endif()
-	set(ENGINE_RUNTIME_TARGETS ${ENGINE_RUNTIME_TARGETS_} PARENT_SCOPE)
+# This is a list of targets that the engine needs
+if (NOT ${SDL2_FOUND})
+	list(APPEND ENGINE_RUNTIME_TARGETS_ SDL2)
 endif()
+if (${PURPL_ENABLE_DISCORD})
+	list(APPEND ENGINE_RUNTIME_TARGETS_ discord_game_sdk)
+endif()
+if (${PURPL_ENABLE_STEAM})
+	list(APPEND ENGINE_RUNTIME_TARGETS_ steamworks_sdk)
+endif()
+set(ENGINE_RUNTIME_TARGETS ${ENGINE_RUNTIME_TARGETS_} PARENT_SCOPE)
 
 install(TARGETS engine_preinit
 	LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)

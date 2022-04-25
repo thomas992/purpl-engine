@@ -33,16 +33,16 @@ function(get_discord_sdk version)
 		
 		add_library(discord_game_sdk SHARED IMPORTED)
 		if (WIN32)
+			set(DISCORD_SDK_LIBRARY ${DISCORD_SDK_DIR}/lib/${PURPL_PROCESSOR}/discord_game_sdk.dll)
 			set_target_properties(discord_game_sdk PROPERTIES
-								IMPORTED_IMPLIB ${DISCORD_SDK_DIR}/lib/${PURPL_PROCESSOR}/discord_game_sdk.dll.lib
-								IMPORTED_LOCATION ${DISCORD_SDK_DIR}/lib/${PURPL_PROCESSOR}/discord_game_sdk.dll)
+								IMPORTED_IMPLIB ${DISCORD_SDK_DIR}/lib/${PURPL_PROCESSOR}/discord_game_sdk.dll.lib)
 		elseif (APPLE)
-			set_target_properties(discord_game_sdk PROPERTIES
-								IMPORTED_LOCATION ${DISCORD_SDK_DIR}/lib/${PURPL_PROCESSOR}/discord_game_sdk.dylib)
+			set(DISCORD_SDK_LIBRARY ${DISCORD_SDK_DIR}/lib/${PURPL_PROCESSOR}/discord_game_sdk.dylib)
 		elseif (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-			set_target_properties(discord_game_sdk PROPERTIES
-								IMPORTED_LOCATION ${DISCORD_SDK_DIR}/lib/${PURPL_PROCESSOR}/discord_game_sdk.so)
+			set(DISCORD_SDK_LIBRARY ${DISCORD_SDK_DIR}/lib/${PURPL_PROCESSOR}/discord_game_sdk.so)
+			execute_process(COMMAND patchelf --set-soname discord_game_sdk.so ${DISCORD_SDK_LIBRARY})
 		endif()
+		set_target_properties(discord_game_sdk PROPERTIES IMPORTED_LOCATION ${DISCORD_SDK_LIBRARY})
 	endif()
 endfunction()
 

@@ -33,7 +33,7 @@ for x in out.split("\n"):
     end = name.find(" ")
     end = len(name) if end == -1 else end
     name = name[:end]
-    if len(x.split()) and x.split()[1] == "T" and name != "_init" and name != "_fini":
+    if len(x.split()) and x.split()[1] == "T" and name != "_init" and name != "_fini" and name != "_etext" and name != "etext":
         print(name)
         names.append(name)
 

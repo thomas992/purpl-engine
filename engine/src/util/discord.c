@@ -15,6 +15,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include "discord_game_sdk.h"
+
 #include "purpl/util/discord.h"
 
 #include "purpl/core/warnings.h"
@@ -99,7 +101,7 @@ bool discord_run_callbacks(u32 delta)
 }
 
 /// Result for discord_update_activity
-enum EDiscordEnum activity_result;
+enum EDiscordResult activity_result;
 
 void discord_update_activity(u32 delta)
 {
@@ -138,19 +140,23 @@ void discord_update_activity(u32 delta)
 	discord->activities->update_activity(discord->activities, &activity,
 					     NULL, activity_callback);
 	discord->activity_cooldown = PURPL_DISCORD_ACTIVITY_COOLDOWN;
+}
+
+static void activity_callback(void *data, enum EDiscordResult result)
+{
+	PURPL_IGNORE(data);
+
+	activity_result = result;
 	if (activity_result != DiscordResult_Ok)
 		PURPL_LOG_INFO(purpl_inst->logger,
 			       "Failed to update activity: DiscordResult %d",
 			       activity_result);
 }
 
-static void activity_callback(void *data, enum EDiscordResult result)
-{
-	activity_result = result;
-}
-
 static void user_callback(void *data)
 {
+	PURPL_IGNORE(data);
+
 	PURPL_ALIAS_DISCORD();
 
 	struct DiscordUser user;
