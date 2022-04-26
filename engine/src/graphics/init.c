@@ -56,7 +56,8 @@ PURPL_API bool purpl_graphics_init(void)
 			  &purpl_inst->wnd_height);
 
 	PURPL_LOG_INFO(purpl_inst->logger,
-		       "Successfully initialized graphics");
+		       "Successfully initialized %s graphics",
+		       purpl_get_graphics_api_name(purpl_inst->graphics_api));
 
 	return true;
 }
