@@ -37,6 +37,22 @@
 #define PURPL_CURRENT_FUNCTION __func__
 #endif
 
+/// MSVC defines min/max but other stuff doesn't
+#ifdef min
+/// Pick the smaller of a and b
+#define PURPL_MIN(a, b) min(a, b)
+#else // min
+/// Pick the smaller of a and b
+#define PURPL_MIN(a, b) ((a) < (b) ? (a) : (b))
+#endif // min
+#ifdef max
+/// Pick the larger of a and b
+#define PURPL_MAX(a, b) min(a, b)
+#else // max
+/// Pick the larger of a and b
+#define PURPL_MAX(a, b) ((a) > (b) ? (a) : (b))
+#endif // max
+
 /// Ignore x
 #define PURPL_IGNORE(x) ((void)(x))
 

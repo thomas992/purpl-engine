@@ -114,9 +114,7 @@ PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 	purpl_inst->start_time = time(NULL);
 
 #ifdef PURPL_ENABLE_DISCORD
-	if (!purpl_discord_init())
-		PURPL_LOG_ERROR(purpl_inst->logger,
-				"Discord initialization failed");
+	purpl_discord_init();
 #endif // PURPL_ENABLE_DISCORD
 
 	PURPL_LOG_INFO(purpl_inst->logger, "Initializing SDL");
@@ -243,6 +241,8 @@ PURPL_API void purpl_internal_shutdown(void)
 	PURPL_LOG_WARNING(purpl_inst->logger, "Engine shutting down");
 
 	purpl_graphics_shutdown();
+
+	purpl_discord_shutdown();
 
 	SDL_Quit();
 

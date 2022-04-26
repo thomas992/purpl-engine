@@ -122,6 +122,7 @@ static char *log_format(struct purpl_logger *logger,
 
 	char *msg_fmt;
 	size_t msg_size;
+	char *file2;
 	struct tm *t1;
 	struct tm *t2;
 
@@ -151,6 +152,11 @@ static char *log_format(struct purpl_logger *logger,
 
 	log_get_time(&t1, &t2);
 
+	if (strncmp(file, PURPL_SOURCE_DIR, PURPL_SIZEOF_ARRAY(PURPL_SOURCE_DIR) - 1) == 0)
+		file2 = purpl_pathfmt(NULL, file + PURPL_SIZEOF_ARRAY(PURPL_SOURCE_DIR), 0, false, false);
+	else
+		file2 = purpl_pathfmt(NULL, file, 0, false, false);
+
 	base = logger->format;
 	passes = 1;
 	while (passes) {
@@ -173,7 +179,7 @@ static char *log_format(struct purpl_logger *logger,
 			str = NULL;
 			if (*p == 'm' && *++p == 's' && *++p == 'g') {
 				p++;
-				str = msg_fmt;
+				str = purpl_strdup(msg_fmt);
 				passes++;
 			} else if (*p == 't') {
 				u64 h = t1->tm_hour;
@@ -249,11 +255,11 @@ static char *log_format(struct purpl_logger *logger,
 						   purpl_get_tid());
 			} else if (*p == 'W') {
 				p++;
-				str = purpl_strfmt(NULL, "%s:%d@%s", file,
+				str = purpl_strfmt(NULL, "%s:%d@%s", file2,
 						   line, function);
 			} else if (*p == 'F') {
 				p++;
-				str = purpl_strdup(file);
+				str = purpl_strdup(file2);
 			} else if (*p == 'f') {
 				p++;
 				str = purpl_strdup(function);
@@ -303,6 +309,8 @@ static char *log_format(struct purpl_logger *logger,
 	}
 	
 	free(base);
+	free(file2);
+	free(msg_fmt);
 
 	buf[i] = 0;
 	return buf;

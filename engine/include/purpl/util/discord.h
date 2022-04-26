@@ -40,6 +40,9 @@
 ///	    otherwise
 extern bool purpl_discord_init(void);
 
+/// Shuts down the Discord SDK
+extern void purpl_discord_shutdown(void);
+
 /// Runs callbacks
 ///
 /// \param delta The number of milliseconds since the last call

@@ -30,8 +30,9 @@
 		 " (my friend's game engine)" :       \
 		       "")
 
-static void activity_callback(void *data, enum EDiscordResult result);
-static void user_callback(void *data);
+static void discord_activity_callback(void *data, enum EDiscordResult result);
+static void discord_log_callback(void *data, enum EDiscordLogLevel level, const char *msg);
+static void discord_user_callback(void *data);
 
 bool purpl_discord_init(void)
 {
@@ -45,11 +46,11 @@ bool purpl_discord_init(void)
 
 	PURPL_LOG_INFO(purpl_inst->logger, "Initializing Discord");
 
-	discord->user_events.on_current_user_update = user_callback;
+	discord->user_events.on_current_user_update = discord_user_callback;
 
 	DiscordCreateParamsSetDefault(&params);
 	params.client_id = PURPL_DISCORD_APP_ID;
-	params.flags = DiscordCreateFlags_Default;
+	params.flags = DiscordCreateFlags_NoRequireDiscord;
 	params.event_data = NULL;
 	params.activity_events = &discord->activity_events;
 	params.user_events = &discord->user_events;
@@ -62,6 +63,13 @@ bool purpl_discord_init(void)
 		return false;
 	}
 
+	PURPL_LOG_INFO(purpl_inst->logger, "Setting Discord log callback");
+#ifdef PURPL_DEBUG
+	discord->core->set_log_hook(discord->core, DiscordLogLevel_Debug, NULL, discord_log_callback);
+#else // PURPL_DEBUG
+	discord->core->set_log_hook(discord->core, DiscordLogLevel_Warning, NULL, discord_log_callback);
+#endif // PURPL_DEBUG
+
 	discord->users = discord->core->get_user_manager(discord->core);
 	discord->activities =
 		discord->core->get_activity_manager(discord->core);
@@ -71,6 +79,16 @@ bool purpl_discord_init(void)
 	PURPL_LOG_INFO(purpl_inst->logger, "Successfully initialized Discord");
 
 	return true;
+}
+
+void purpl_discord_shutdown(void)
+{
+	PURPL_ALIAS_DISCORD();
+
+	if (discord->core) {
+		PURPL_LOG_WARNING(purpl_inst->logger, "Shutting down Discord");
+		discord->core->destroy(discord->core);
+	}
 }
 
 bool discord_run_callbacks(u32 delta)
@@ -136,11 +154,11 @@ void discord_update_activity(u32 delta)
 	PURPL_LOG_INFO(purpl_inst->logger, "\tState: %s", activity.state);
 
 	discord->activities->update_activity(discord->activities, &activity,
-					     NULL, activity_callback);
+					     NULL, discord_activity_callback);
 	discord->activity_cooldown = PURPL_DISCORD_ACTIVITY_COOLDOWN;
 }
 
-static void activity_callback(void *data, enum EDiscordResult result)
+static void discord_activity_callback(void *data, enum EDiscordResult result)
 {
 	PURPL_IGNORE(data);
 
@@ -151,7 +169,32 @@ static void activity_callback(void *data, enum EDiscordResult result)
 			       activity_result);
 }
 
-static void user_callback(void *data)
+static void discord_log_callback(void *data, enum EDiscordLogLevel level, const char *msg)
+{
+	enum purpl_log_level level2;
+
+	PURPL_IGNORE(data);
+
+	switch (level) {
+	case DiscordLogLevel_Error:
+		level2 = PURPL_LOG_LEVEL_ERROR;
+		break;
+	case DiscordLogLevel_Warn:
+		level2 = PURPL_LOG_LEVEL_WARNING;
+		break;
+	case DiscordLogLevel_Info:
+		level2 = PURPL_LOG_LEVEL_INFO;
+		break;
+	default:
+	case DiscordLogLevel_Debug:
+		level2 = PURPL_LOG_LEVEL_DEBUG;
+		break;
+	}
+
+	purpl_log_write(purpl_inst->logger, level2, __FILE__, __LINE__, PURPL_CURRENT_FUNCTION, "Discord message: %s", msg);
+}
+
+static void discord_user_callback(void *data)
 {
 	PURPL_IGNORE(data);
 

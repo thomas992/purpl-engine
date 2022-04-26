@@ -87,6 +87,8 @@ PURPL_API void purpl_graphics_shutdown(void)
 		purpl_metal_shutdown();
 		break;
 #endif // __APPLE__;
+	case PURPL_GRAPHICS_API_MAX:
+		break;
 	}
 
 	if (purpl_inst->wnd_title)

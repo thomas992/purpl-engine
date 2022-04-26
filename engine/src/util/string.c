@@ -252,5 +252,5 @@ const char *purpl_get_graphics_api_name(u32 api)
 					"DirectX",  "Metal",  "Unknown" };
 
 	// Make sure the API is within the array
-	return graphics_apis[api, min(api, PURPL_GRAPHICS_API_MAX)];
+	return graphics_apis[PURPL_MIN(api, PURPL_GRAPHICS_API_MAX)];
 }
