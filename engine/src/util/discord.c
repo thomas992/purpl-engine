@@ -108,8 +108,6 @@ void discord_update_activity(u32 delta)
 	PURPL_ALIAS_DISCORD();
 
 	struct DiscordActivity activity = { 0 };
-	const char *graphics_apis[] = { "Software", "OpenGL", "Vulkan",
-					"DirectX", "Metal" };
 
 	if (!discord->activities)
 		return;
@@ -129,8 +127,8 @@ void discord_update_activity(u32 delta)
 	snprintf(activity.state, PURPL_SIZEOF_ARRAY(activity.state),
 		 "%dx%d %s window at (%d, %d)", purpl_inst->wnd_width,
 		 purpl_inst->wnd_height,
-		 graphics_apis[purpl_inst->graphics_api], purpl_inst->wnd_x,
-		 purpl_inst->wnd_y);
+		 purpl_get_graphics_api_name(purpl_inst->graphics_api),
+		 purpl_inst->wnd_x, purpl_inst->wnd_y);
 
 	PURPL_LOG_INFO(purpl_inst->logger, "Updating Discord activity");
 	PURPL_LOG_INFO(purpl_inst->logger, "\tName: %s", activity.name);

@@ -50,10 +50,6 @@ set(CMAKE_USER_MAKE_RULES_OVERRIDE "${CMAKE_BINARY_DIR}/MakeRulesOverwrite.cmake
 # Declare the project
 project(purpl-engine VERSION 1.0.0 LANGUAGES C CXX)
 
-if (NOT DEFINED CMAKE_SYSTEM_PROCESSOR OR "${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "")
-	set(CMAKE_SYSTEM_PROCESSOR ${CMAKE_HOST_SYSTEM_PROCESSOR})
-endif()
-
 if (${CMAKE_SYSTEM_PROCESSOR} MATCHES "AMD64" OR ${CMAKE_SYSTEM_PROCESSOR} MATCHES "amd64" OR ${CMAKE_SYSTEM_PROCESSOR} MATCHES "x86_64")
 	set(PURPL_PROCESSOR "x86_64")
 elseif (${CMAKE_SYSTEM_PROCESSOR} MATCHES "86")
@@ -189,9 +185,7 @@ message(STATUS "")
 message(STATUS "Purpl Engine configuration: ")
 message(STATUS "")
 message(STATUS "\tPlatform: ${CMAKE_SYSTEM} (pointer size: ${CMAKE_SIZEOF_VOID_P})")
-message(STATUS "\tProcessor:")
-message(STATUS "\t\tHost: ${CMAKE_HOST_SYSTEM_PROCESSOR}")
-message(STATUS "\t\tTarget: ${CMAKE_SYSTEM_PROCESSOR}")
+message(STATUS "\tProcessor: ${PURPL_PROCESSOR}")
 message(STATUS "\tGenerator: ${CMAKE_GENERATOR}")
 message(STATUS "\tBuild type: ${CMAKE_BUILD_TYPE}")
 message(STATUS "\tRevision: ${ENGINE_BRANCH} commit ${ENGINE_COMMIT}")

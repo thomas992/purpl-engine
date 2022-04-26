@@ -25,10 +25,11 @@
 char *purpl_get_initial_window_title(void)
 {
 	return purpl_strfmt(NULL,
-			    "%s v%s - Vulkan - Purpl Engine v%s+%s-%s-%s",
+			    "%s v%s - %s - Purpl Engine v%s+%s-%s-%s",
 			    purpl_inst->app_name,
 			    purpl_format_version(purpl_inst->app_version),
-			    purpl_format_version(purpl_inst->app_version),
+			    purpl_get_graphics_api_name(purpl_inst->graphics_api),
+			    purpl_format_version(PURPL_VERSION),
 			    PURPL_SOURCE_BRANCH, PURPL_SOURCE_COMMIT,
 			    PURPL_BUILD_TYPE);
 }

@@ -51,6 +51,7 @@ enum purpl_graphics_api {
 #ifdef __APPLE__
 	PURPL_GRAPHICS_API_METAL = 4, /// Metal (unimplemented)
 #endif // __APPLE__
+	PURPL_GRAPHICS_API_MAX = 5 /// Maximum graphics API number
 };
 
 /// Structure to hold information about the current instance of the engine

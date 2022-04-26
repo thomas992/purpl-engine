@@ -32,6 +32,8 @@ bool purpl_vulkan_init(void)
 	if (!purpl_inst)
 		return false;
 
+	purpl_inst->graphics_api = PURPL_GRAPHICS_API_VULKAN;
+
 	// The window is created here because SDL doesn't support OpenGL and
 	// Vulkan in the same window
 	purpl_inst->wnd_title = purpl_get_initial_window_title();
@@ -94,7 +96,6 @@ bool purpl_vulkan_init(void)
 	gladLoaderLoadVulkan(vulkan->inst, vulkan->phys_device,
 			     vulkan->device);
 
-	purpl_inst->graphics_api = PURPL_GRAPHICS_API_VULKAN;
 	return true;
 }
 
@@ -125,4 +126,6 @@ void purpl_vulkan_shutdown(void)
 			       "Destroyed Vulkan instance with handle 0x%" PRIX64,
 			       vulkan->device);
 	}
+
+	purpl_inst->graphics_api = PURPL_GRAPHICS_API_MAX;
 }

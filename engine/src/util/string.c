@@ -18,6 +18,8 @@
 #include "stb_ds.h"
 #include "stb_sprintf.h"
 
+#include "purpl/core/inst.h"
+
 #include "purpl/util/string.h"
 
 #include "purpl/core/warnings.h"
@@ -242,4 +244,13 @@ PURPL_API const char *purpl_format_version(u32 version)
 		       version & 0xFF);
 
 	return buf;
+}
+
+const char *purpl_get_graphics_api_name(u32 api)
+{
+	const char *graphics_apis[] = { "Software", "OpenGL", "Vulkan",
+					"DirectX",  "Metal",  "Unknown" };
+
+	// Make sure the API is within the array
+	return graphics_apis[api, min(api, PURPL_GRAPHICS_API_MAX)];
 }

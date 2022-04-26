@@ -135,3 +135,12 @@ extern PURPL_API s8 purpl_wcscasecmp(const wchar_t *s1, const wchar_t *s2);
 ///
 /// \return Returns a static buffer with PURPL_STATIC_BUF_MAX bytes of space
 extern PURPL_API const char *purpl_format_version(u32 version);
+
+#ifdef PURPL_BUILD
+/// Gets the name of the specified graphics API
+///
+/// \param api The graphics API to get the name of
+///
+/// \return Returns a string literal, don't write to it or free it
+extern const char *purpl_get_graphics_api_name(u32 api);
+#endif // PURPL_BUILD

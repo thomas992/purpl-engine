@@ -26,6 +26,8 @@ PURPL_API bool purpl_graphics_init(void)
 	if (!purpl_inst)
 		return false;
 
+	purpl_inst->graphics_api = PURPL_GRAPHICS_API_MAX;
+
 #ifdef __APPLE__
 	init = purpl_metal_init();
 	if (!init) {
