@@ -242,7 +242,9 @@ PURPL_API void purpl_internal_shutdown(void)
 
 	purpl_graphics_shutdown();
 
+#ifdef PURPL_ENABLE_DISCORD
 	purpl_discord_shutdown();
+#endif // PURPL_ENABLE_DISCORD
 
 	SDL_Quit();
 
