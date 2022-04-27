@@ -72,17 +72,16 @@ void *engine_lib = NULL;
 #ifdef _WIN32
 #define PATH_SEP '\\'
 #define PATH_SEP_STR "\\"
-#define LIB_EXT ".dll"
 #define init_engine_ptrs init_engine_dll_ptrs
 #elif __APPLE__
+#define LIB_EXT ".dylib"
 #define PATH_SEP '/'
 #define PATH_SEP_STR "/"
-#define LIB_EXT ".dylib"
 #define init_engine_ptrs init_engine_dylib_ptrs
 #else // _WIN32
+#define LIB_EXT ".so"
 #define PATH_SEP '/'
 #define PATH_SEP_STR "/"
-#define LIB_EXT ".so"
 #define init_engine_ptrs init_engine_so_ptrs
 #endif // _WIN32
 
@@ -134,11 +133,12 @@ EXTERN_C int32_t purpl_preinit(purpl_main_t main_func, int argc, char *argv[])
 	fprintf(stderr, "Searching for engine library list at %s\n", path);
 	engine_libs_fp = fopen(path, "rb");
 	if (!engine_libs_fp) {
-		fprintf(stderr, "Searching for engine library list at %s\n",
-			path);
 		strncpy(path + idx,
 			PATH_SEP_STR "bin" PATH_SEP_STR "engine_libs.txt\0",
 			MAX_PATH - idx);
+		idx += strlen(PATH_SEP_STR "bin");
+		fprintf(stderr, "Searching for engine library list at %s\n",
+			path);
 		engine_libs_fp = fopen(path, "rb");
 	}
 
@@ -184,6 +184,7 @@ EXTERN_C int32_t purpl_preinit(purpl_main_t main_func, int argc, char *argv[])
 			i++;
 		}
 	}
+	engine_libs[i - 1][strlen(engine_libs[i - 1]) - 1] = '\0';
 
 	for (i = 0; i < engine_lib_count; i++) {
 		strncpy(path + idx, PATH_SEP_STR, MAX_PATH - idx);
