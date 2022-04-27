@@ -86,12 +86,12 @@ void *engine_lib = NULL;
 #endif // _WIN32
 
 #ifdef _WIN32
-#define purpl_complete_preinit                         \
-	((int32_t(*)(purpl_main_t main_func, int argc, \
-		     char *argv[]))__imp_purpl_complete_preinit)
+#define purpl_complete_preinit                                           \
+	((int32_t(*)(volatile purpl_main_t main_func, volatile int argc, \
+		     volatile char *argv[]))__imp_purpl_complete_preinit)
 #define purpl_internal_shutdown __imp_purpl_internal_shutdown
 #else // _WIN32
-#define purpl_complete_preinit                         \
+#define purpl_complete_preinit                                           \
 	((int32_t(*)(volatile purpl_main_t main_func, volatile int argc, \
 		     volatile char *argv[]))purpl_complete_preinit)
 #endif // _WIN32
@@ -155,10 +155,10 @@ EXTERN_C int32_t purpl_preinit(purpl_main_t main_func, int argc, char *argv[])
 		PREINIT_ERROR(
 			"Failed to allocate memory for engine library list",
 			ENOMEM);
-	
+
 	fread(engine_libs_buf, sizeof(char), engine_libs_size, engine_libs_fp);
 	fclose(engine_libs_fp);
-	
+
 	p = strchr(engine_libs_buf, '\n');
 	while (p) {
 		engine_lib_count++;
@@ -190,7 +190,7 @@ EXTERN_C int32_t purpl_preinit(purpl_main_t main_func, int argc, char *argv[])
 	for (i = 0; i < engine_lib_count; i++) {
 		strncpy(path + idx, PATH_SEP_STR, MAX_PATH - idx);
 		len = strlen(engine_libs[i]);
-		strncpy(path + idx + 1, engine_libs[i],	len);
+		strncpy(path + idx + 1, engine_libs[i], len);
 		fprintf(stderr, "Loading library %s\n", path);
 #ifdef _WIN32
 		if (!LoadLibraryA(path))
@@ -198,7 +198,9 @@ EXTERN_C int32_t purpl_preinit(purpl_main_t main_func, int argc, char *argv[])
 				      STATUS_DLL_NOT_FOUND);
 #else // _WIN32
 		if (!dlopen(path, RTLD_NOW))
-			PREINIT_ERROR_EX("Failed to load library", ENOENT, "Failed to load library: %s", dlerror());
+			PREINIT_ERROR_EX("Failed to load library", ENOENT,
+					 "Failed to load library: %s",
+					 dlerror());
 #endif // _WIN32
 		fprintf(stderr, "Successfully loaded %s\n", path);
 	}
