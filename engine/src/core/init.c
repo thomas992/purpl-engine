@@ -194,7 +194,7 @@ static bool purpl_handle_events(void)
 	return true;
 }
 
-PURPL_API void purpl_run(purpl_frame_func frame, void *user_data)
+PURPL_API void purpl_run(purpl_frame_t frame, void *user_data)
 {
 	bool running;
 	u32 now;

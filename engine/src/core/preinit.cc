@@ -19,18 +19,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <wchar.h>
-
-#include <functional>
 
 #ifdef _WIN32
 #include <windows.h>
-#ifdef PURPL_WINRT
-#include <winrt/windows.foundation.h>
-#include <winrt/windows.storage.h>
-#include <winrt/windows.ui.core.h>
-#include <winrt/windows.ui.popups.h>
-#endif // PURPL_WINRT
 #else // _WIN32
 #include <dlfcn.h>
 #include <errno.h>
@@ -41,6 +32,32 @@
 
 #define PURPL_IGNORE(x) (void)(x)
 #define PURPL_SIZEOF_ARRAY(x) (sizeof(x) / sizeof(x[0]))
+
+#ifndef MAX_PATH
+#ifdef PATH_MAX
+#define MAX_PATH PATH_MAX
+#else // PATH_MAX
+#define MAX_PATH 260
+#endif // PATH_MAX
+#endif // MAX_PATH
+
+#ifdef _WIN32
+#define PREINIT_ERROR_EX(msg, code, ...)                                      \
+	{                                                                     \
+		MessageBoxA(NULL, msg, "Purpl Engine", MB_OK | MB_ICONERROR); \
+		fprintf(stderr, __VA_ARGS__);                                 \
+		fprintf(stderr, "Error: %s (errno %d)\n", strerror(errno),    \
+			errno);                                               \
+		exit(code);                                                   \
+	}
+#else // _WIN32
+#define PREINIT_ERROR_EX(msg, code, ...)      \
+	{                                     \
+		fprintf(stderr, __VA_ARGS__); \
+		exit(code);                   \
+	}
+#endif // _WIN32
+#define PREINIT_ERROR(msg, code) PREINIT_ERROR_EX(msg, code, msg "\n")
 
 typedef int32_t (*purpl_main_t)(int32_t argc, char *argv[]);
 
@@ -53,114 +70,151 @@ void *engine_lib = NULL;
 #endif // PURPL_WINRT
 
 #ifdef _WIN32
+#define PATH_SEP '\\'
+#define PATH_SEP_STR "\\"
 #define LIB_EXT ".dll"
 #define init_engine_ptrs init_engine_dll_ptrs
 #elif __APPLE__
+#define PATH_SEP '/'
+#define PATH_SEP_STR "/"
 #define LIB_EXT ".dylib"
 #define init_engine_ptrs init_engine_dylib_ptrs
 #else // _WIN32
+#define PATH_SEP '/'
+#define PATH_SEP_STR "/"
 #define LIB_EXT ".so"
 #define init_engine_ptrs init_engine_so_ptrs
 #endif // _WIN32
 
 #ifdef _WIN32
-#define purpl_complete_preinit                       \
-	((int32_t (*)(purpl_main_t main_func, int argc, \
-		   char *argv[]))__imp_purpl_complete_preinit)
+#define purpl_complete_preinit                         \
+	((int32_t(*)(purpl_main_t main_func, int argc, \
+		     char *argv[]))__imp_purpl_complete_preinit)
 #define purpl_internal_shutdown __imp_purpl_internal_shutdown
 #else // _WIN32
-#define purpl_complete_preinit                       \
-	((int32_t (*)(purpl_main_t main_func, int argc, \
-		   char *argv[]))purpl_complete_preinit)
+#define purpl_complete_preinit                         \
+	((int32_t(*)(purpl_main_t main_func, int argc, \
+		     char *argv[]))purpl_complete_preinit)
 #endif // _WIN32
 
 // EXTERN_C is provided by exports.h
 EXTERN_C int32_t purpl_preinit(purpl_main_t main_func, int argc, char *argv[])
 {
 	PURPL_IGNORE(argc);
-#ifdef _WIN32
-	wchar_t *argv0;
-	size_t argv0_len;
-	wchar_t *here;
-	size_t here_len;
-	wchar_t *bin;
-	size_t bin_len;
-	uint32_t error;
 
-	wchar_t *paths[2] = { 0 };
-	wchar_t *path;
-	size_t path_len;
+	char *here;
+	char *path;
+	size_t idx;
+	FILE *engine_libs_fp;
+	char *engine_libs_buf;
+	size_t engine_libs_size;
+	char **engine_libs;
+	size_t engine_lib_count = 0;
+	char *p;
+	size_t len;
 	size_t i;
 
-	argv0_len = strlen(argv[0]) + 1;
-	argv0 = (wchar_t *)calloc(argv0_len, sizeof(wchar_t));
-	MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, argv[0], argv0_len, argv0,
-			    argv0_len);
-	here_len = GetFullPathNameW(argv0, 0, NULL, NULL);
-	here = (wchar_t *)calloc(here_len, sizeof(wchar_t));
-	GetFullPathNameW(argv0, here_len, here, NULL);
-	*wcsrchr(here, L'\\') = 0;
+	here = (char *)calloc(MAX_PATH, sizeof(char));
+	if (!here)
+		PREINIT_ERROR("Failed to allocate memory for engine path",
+			      ENOMEM);
 
-	bin_len = here_len + 5;
-	bin = (wchar_t *)calloc(bin_len, sizeof(wchar_t));
-	wcsncpy(bin, here, bin_len);
-	wcsncat(bin, L"\\bin", bin_len);
+	strncpy(here, argv[0], MAX_PATH);
+	*strrchr(here, PATH_SEP) = '\0';
 
-	paths[0] = here;
-	paths[1] = bin;
+	path = (char *)calloc(MAX_PATH, sizeof(char));
+	if (!path)
+		PREINIT_ERROR("Failed to allocate memory for engine path",
+			      ENOMEM);
 
-	for (i = 0; i < PURPL_SIZEOF_ARRAY(paths); i++) {
-		path_len = wcslen(paths[i]) + 12; // 12 is for "\\engine.dll\0"
-		path = (wchar_t *)calloc(path_len, sizeof(wchar_t));
-		wcsncpy(path, paths[i], path_len);
-		wcsncat(path, L"\\engine.dll", path_len);
+	strncpy(path, here, MAX_PATH);
+	idx = strlen(here);
+	strncpy(path + idx, PATH_SEP_STR "engine_libs.txt\0", MAX_PATH - idx);
 
-		fprintf(stderr, "Trying to load %ls\n", path);
-		engine_lib = LoadLibraryExW(
-			path, NULL,
-			LOAD_LIBRARY_SEARCH_DEFAULT_DIRS |
-				LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR);
-		if (engine_lib) {
-			free(path);
-			break;
+	fprintf(stderr, "Searching for engine library list at %s\n", path);
+	engine_libs_fp = fopen(path, "rb");
+	if (!engine_libs_fp) {
+		fprintf(stderr, "Searching for engine library list at %s\n",
+			path);
+		strncpy(path + idx,
+			PATH_SEP_STR "bin" PATH_SEP_STR "engine_libs.txt\0",
+			MAX_PATH - idx);
+		engine_libs_fp = fopen(path, "rb");
+	}
+
+	if (!engine_libs_fp)
+		PREINIT_ERROR("Failed to open engine library list", ENOENT);
+
+	fprintf(stderr, "Found engine library list at %s\n", path);
+
+	fseek(engine_libs_fp, 0, SEEK_END);
+	engine_libs_size = ftell(engine_libs_fp);
+	fseek(engine_libs_fp, 0, SEEK_SET);
+	engine_libs_buf = (char *)calloc(engine_libs_size, sizeof(char));
+	if (!engine_libs_buf)
+		PREINIT_ERROR(
+			"Failed to allocate memory for engine library list",
+			ENOMEM);
+	
+	fread(engine_libs_buf, sizeof(char), engine_libs_size, engine_libs_fp);
+	fclose(engine_libs_fp);
+	
+	p = strchr(engine_libs_buf, '\n');
+	while (p) {
+		engine_lib_count++;
+		p = strchr(++p, '\n');
+	}
+
+	engine_libs = (char **)calloc(engine_lib_count, sizeof(char *));
+	if (!engine_libs)
+		PREINIT_ERROR(
+			"Failed to allocate memory for engine library list",
+			ENOMEM);
+
+	i = 1;
+	p = engine_libs_buf;
+	engine_libs[0] = engine_libs_buf;
+	while (p && i < engine_lib_count) {
+		p = strchr(++p, '\n');
+		if (p) {
+			*p = '\0';
+			if (*(p - 1) == '\r')
+				*(p - 1) = '\0';
+			engine_libs[i] = p + 1;
+			i++;
 		}
-		error = GetLastError();
-		free(path);
 	}
 
-	free(paths[0]);
-	free(paths[1]);
-
-	if (!engine_lib) {
-		fprintf(stderr, "Failed to load engine.dll: 0x%" PRIX32 "\n",
-			error);
-		MessageBoxA(NULL, "Failed to load engine.dll", "Purpl Engine",
-			    MB_OK | MB_ICONERROR);
-		exit(STATUS_DLL_NOT_FOUND);
-	}
-
-#ifndef PURPL_DEBUG
-	// Get rid of the console window in non-debug mode
-	FreeConsole();
-#endif // !PURPL_DEBUG
+	for (i = 0; i < engine_lib_count; i++) {
+		strncpy(path + idx, PATH_SEP_STR, MAX_PATH - idx);
+		len = strlen(engine_libs[i]);
+		strncpy(path + idx + 1, engine_libs[i],	len);
+		fprintf(stderr, "Loading library %s\n", path);
+#ifdef _WIN32
+		if (!LoadLibraryA(path))
+			PREINIT_ERROR("Failed to load library",
+				      STATUS_DLL_NOT_FOUND);
 #else // _WIN32
-      // On POSIX platforms, due to RPATHs being absolute, the engine has to
-      // be loaded in a similar way
-
-	engine_lib = dlopen("engine" LIB_EXT, RTLD_NOW);
-	if (!engine_lib) {
-		fprintf(stderr, "Failed to load engine" LIB_EXT ": %s\n",
-			dlerror());
-		exit(ENOENT);
+		if (!dlopen(path, RTLD_NOW))
+			PREINIT_ERROR_EX("Failed to load library", ENOENT, "Failed to load library: %s", dlerror());
+#endif // _WIN32
+		fprintf(stderr, "Successfully loaded %s\n", path);
 	}
+
+#ifdef _WIN32
+	engine_lib = GetModuleHandleA("engine.dll");
+#else // _WIN32
+	engine_lib = dlopen("engine" LIB_EXT, RTLD_NOW);
 #endif // _WIN32
 
 	init_engine_ptrs(engine_lib);
 
-	fprintf(stderr, "Successfully loaded engine" LIB_EXT "\n");
+	free(path);
+	free(here);
+	free(engine_libs_buf);
+	free(engine_libs);
 
-	// Tell the engine that preinit was called so it doesn't print a
-	// warning
+	// Calls main
 	return purpl_complete_preinit(main_func, argc, argv);
 }
 
