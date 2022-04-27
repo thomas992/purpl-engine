@@ -79,7 +79,7 @@ PURPL_API struct purpl_logger *purpl_log_create(const char *file,
 			      "[PID #P TID #T] [#d #t] [#W] [#L] #msg", NULL);
 #else // PURPL_DEBUG
 	logger->format = purpl_strrplc(message_format, "#def",
-				       "[#d #t] [#n #v] [#L] #msg", NULL);
+				       "[#d #t] [#n #v] [#L]\t#msg", NULL);
 #endif // PURPL_DEBUG
 
 	free(message_format);
