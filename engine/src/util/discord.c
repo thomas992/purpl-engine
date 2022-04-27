@@ -67,7 +67,7 @@ bool purpl_discord_init(void)
 #ifdef PURPL_DEBUG
 	discord->core->set_log_hook(discord->core, DiscordLogLevel_Debug, NULL, discord_log_callback);
 #else // PURPL_DEBUG
-	discord->core->set_log_hook(discord->core, DiscordLogLevel_Warning, NULL, discord_log_callback);
+	discord->core->set_log_hook(discord->core, DiscordLogLevel_Warn, NULL, discord_log_callback);
 #endif // PURPL_DEBUG
 
 	discord->users = discord->core->get_user_manager(discord->core);

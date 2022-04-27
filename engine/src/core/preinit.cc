@@ -92,8 +92,8 @@ void *engine_lib = NULL;
 #define purpl_internal_shutdown __imp_purpl_internal_shutdown
 #else // _WIN32
 #define purpl_complete_preinit                         \
-	((int32_t(*)(purpl_main_t main_func, int argc, \
-		     char *argv[]))purpl_complete_preinit)
+	((int32_t(*)(volatile purpl_main_t main_func, volatile int argc, \
+		     volatile char *argv[]))purpl_complete_preinit)
 #endif // _WIN32
 
 // EXTERN_C is provided by exports.h
@@ -184,7 +184,8 @@ EXTERN_C int32_t purpl_preinit(purpl_main_t main_func, int argc, char *argv[])
 			i++;
 		}
 	}
-	engine_libs[i - 1][strlen(engine_libs[i - 1]) - 1] = '\0';
+	len = strlen(engine_libs[i - 1]);
+	engine_libs[i - 1][len - 1] = '\0';
 
 	for (i = 0; i < engine_lib_count; i++) {
 		strncpy(path + idx, PATH_SEP_STR, MAX_PATH - idx);
@@ -206,17 +207,17 @@ EXTERN_C int32_t purpl_preinit(purpl_main_t main_func, int argc, char *argv[])
 	engine_lib = GetModuleHandleA("engine.dll");
 #else // _WIN32
 	engine_lib = dlopen("engine" LIB_EXT, RTLD_NOW);
+	dlclose(engine_lib); // Decrease the refcount
 #endif // _WIN32
 
 	init_engine_ptrs(engine_lib);
 
 	free(path);
-	free(here);
 	free(engine_libs_buf);
 	free(engine_libs);
 
 	// Calls main
-	return purpl_complete_preinit(main_func, argc, argv);
+	return purpl_complete_preinit(main_func, argc, (volatile char **)argv);
 }
 
 EXTERN_C void purpl_shutdown(void)
@@ -224,7 +225,5 @@ EXTERN_C void purpl_shutdown(void)
 	purpl_internal_shutdown();
 #ifdef _WIN32
 	FreeLibrary(engine_lib);
-#else // _WIN32
-	dlclose(engine_lib);
 #endif // _WIN32
 }

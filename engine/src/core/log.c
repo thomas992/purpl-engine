@@ -152,8 +152,11 @@ static char *log_format(struct purpl_logger *logger,
 
 	log_get_time(&t1, &t2);
 
-	if (strncmp(file, PURPL_SOURCE_DIR, PURPL_SIZEOF_ARRAY(PURPL_SOURCE_DIR) - 1) == 0)
-		file2 = purpl_pathfmt(NULL, file + PURPL_SIZEOF_ARRAY(PURPL_SOURCE_DIR), 0, false, false);
+	if (strncmp(file, PURPL_SOURCE_DIR,
+		    PURPL_SIZEOF_ARRAY(PURPL_SOURCE_DIR) - 1) == 0)
+		file2 = purpl_pathfmt(
+			NULL, file + PURPL_SIZEOF_ARRAY(PURPL_SOURCE_DIR), 0,
+			false, false);
 	else
 		file2 = purpl_pathfmt(NULL, file, 0, false, false);
 
@@ -274,15 +277,18 @@ static char *log_format(struct purpl_logger *logger,
 				str = purpl_strdup(levels_lower[level]);
 			} else if (*p == 'V') {
 				p++;
-				str = purpl_strdup(
+				str = purpl_strfmt(
+					NULL, "v%s",
 					purpl_format_version(PURPL_VERSION));
 			} else if (*p == 'n') {
 				p++;
 				str = purpl_strdup(purpl_inst->app_name);
 			} else if (*p == 'v') {
 				p++;
-				str = purpl_strdup(purpl_format_version(
-					purpl_inst->app_version));
+				str = purpl_strfmt(
+					NULL, "v%s",
+					purpl_format_version(
+						purpl_inst->app_version));
 			} else {
 				p = begin + 1;
 				str = purpl_strdup(p);
@@ -307,7 +313,7 @@ static char *log_format(struct purpl_logger *logger,
 		base = purpl_strdup(buf);
 		passes--;
 	}
-	
+
 	free(base);
 	free(file2);
 	free(msg_fmt);
