@@ -172,7 +172,7 @@ PURPL_API char *purpl_strndup(const char *str, size_t n)
 	if (!str || !n)
 		return NULL;
 
-	buf = calloc(n, sizeof(char));
+	buf = calloc(n + 1, sizeof(char));
 	if (!buf)
 		return NULL;
 
@@ -193,8 +193,8 @@ PURPL_API char *purpl_strins(const char *str, const char *ins, size_t index,
 		return NULL;
 	
 	strncpy(buf, str, index);
-	strncat(buf, ins, strlen(str));
-	strncat(buf, str + index, strlen(str + index));
+	strncpy(buf + index, ins, strlen(str));
+	strncpy(buf + index + strlen(str), str + index, strlen(str + index));
 
 	return buf;
 }

@@ -92,7 +92,8 @@ extern PURPL_API char *purpl_strdup(const char *str);
 /// \param str The string to duplicate
 /// \param n The maximum number of characters to copy from str
 ///
-/// \return Returns a buffer containing n characters of str, or NULL
+/// \return Returns a buffer containing n characters of str and a NUL
+///	    terminator, or NULL
 extern PURPL_API char *purpl_strndup(const char *str, size_t n);
 
 /// Insert ins into str at index

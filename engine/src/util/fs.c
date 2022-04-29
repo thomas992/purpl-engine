@@ -115,18 +115,20 @@ PURPL_API char *purpl_pathfmt(size_t *size, const char *path,
 		return NULL;
 
 	path2 = purpl_strdup(path);
+	if (size)
+		size = strlen(path2) + 1;
 	for (i = 0; i < strlen(path); i++) {
 		if (path2[i] == '\\')
 			path2[i] = '/';
 	}
 	if (path2[0] != '/') {
 		if (relative) {
-			path3 = purpl_strfmt(NULL, "%s/%s",
+			path3 = purpl_strfmt(size, "%s/%s",
 					     purpl_inst->engine_dir, path2);
 			free(path2);
 			path2 = path3;
 		} else if (data_relative) {
-			path3 = purpl_strfmt(NULL, "%s/%s",
+			path3 = purpl_strfmt(size, "%s/%s",
 					     purpl_inst->engine_data_dir,
 					     path2);
 			free(path2);
@@ -179,7 +181,6 @@ PURPL_API bool purpl_mkdir(const char *path, enum purpl_fs_flags flags,
 		for (i = 0; i < strlen(path2); i++) {
 			if (path2[i] == '/') {
 				path3 = purpl_strndup(path2, i + 1);
-				path3[i + 1] = '\0';
 				stbds_arrput(dir_names, path3);
 			}
 		}

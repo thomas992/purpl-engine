@@ -303,7 +303,7 @@ static char *log_format(struct purpl_logger *logger,
 	free(base);
 	free(msg_fmt);
 
-	buf[i] = '\0';
+	buf[i] = '\n';
 	return buf;
 }
 
@@ -341,17 +341,17 @@ PURPL_API void purpl_log_write(struct purpl_logger *logger,
 	va_end(args);
 	free(file2);
 
-	fprintf(logger->file, "%s\n", buf);
+	fwrite(buf, sizeof(char), strlen(buf), logger->file);
 	fflush(logger->file);
 #ifdef _WIN32
 	OutputDebugStringA(buf);
 #endif // _WIN32
 #ifdef PURPL_DEBUG
-	fprintf(stderr, "\r%s\n", buf);
+	fprintf(stderr, "\r%s", buf);
 	fflush(stderr);
 #else // PURPL_DEBUG
 	if (level < PURPL_LOG_LEVEL_INFO) {
-		fprintf(stderr, "\r%s\n", buf);
+		fprintf(stderr, "\r%s", buf);
 		fflush(stderr);
 	}
 #endif // PURPL_DEBUG
