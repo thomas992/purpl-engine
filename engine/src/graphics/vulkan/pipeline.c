@@ -19,6 +19,6 @@
 
 bool vulkan_create_pipeline(void)
 {
-	
+	return true;
 }
 

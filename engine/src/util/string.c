@@ -140,7 +140,7 @@ PURPL_API char *purpl_vstrfmt(size_t *size, const char *fmt, va_list args)
 	va_copy(_args, args);
 
 	// Returns the number of characters that would be written
-	buf_size = stbsp_vsnprintf(NULL, 0, fmt, _args) + 2;
+	buf_size = stbsp_vsnprintf(NULL, 0, fmt, _args) + 1;
 
 	buf = calloc(buf_size, sizeof(char));
 	if (!buf) {

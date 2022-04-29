@@ -107,13 +107,18 @@ PURPL_API char *purpl_pathfmt(size_t *size, const char *path,
 {
 	char *path2;
 	char *path3;
+	size_t i;
 
 	PURPL_IGNORE(flags);
 
 	if (!path)
 		return NULL;
 
-	path2 = purpl_strrplc(path, "\\", "/", size);
+	path2 = purpl_strdup(path);
+	for (i = 0; i < strlen(path); i++) {
+		if (path2[i] == '\\')
+			path2[i] = '/';
+	}
 	if (path2[0] != '/') {
 		if (relative) {
 			path3 = purpl_strfmt(NULL, "%s/%s",

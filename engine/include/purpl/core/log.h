@@ -30,13 +30,14 @@
 
 /// Levels for the logging functions
 enum purpl_log_level {
-	PURPL_LOG_LEVEL_CURRENT = -1, /// Use this to use the logger's current log
-				      /// level
+	PURPL_LOG_LEVEL_CURRENT = -1, /// Use this to use the logger's current
+				      /// log level
 	PURPL_LOG_LEVEL_CRITICAL, /// Very bad errors
 	PURPL_LOG_LEVEL_ERROR, /// Minor errors (most of them)
 	PURPL_LOG_LEVEL_WARNING, /// Minor errors unlikely to impact anything
 	PURPL_LOG_LEVEL_INFO, /// Information
-	PURPL_LOG_LEVEL_DEBUG, /// Debugging messages such as invalid paramaters
+	PURPL_LOG_LEVEL_DEBUG, /// Debugging messages such as invalid
+			       /// paramaters
 
 // Use the maximum message level the logger won't filter out
 #ifdef PURPL_DEBUG
@@ -46,10 +47,17 @@ enum purpl_log_level {
 #endif // PURPL_DEBUG
 };
 
-/// The default log file name, relative to the data directory
 #ifdef PURPL_DEBUG
+/// The default log message format
+#define PURPL_LOG_DEFAULT_FORMAT "[PID #P TID #T] [#d #t] [#W] [#L] #msg"
+
+/// The default log file name, relative to the data directory
 #define PURPL_LOG_DEFAULT_NAME "logs/purpl-<date>-debug.log"
 #else // PURPL_DEBUG
+/// The default log message format
+#define PURPL_LOG_DEFAULT_FORMAT "[#d #t] [#n #v] [#L]\t#msg"
+
+/// The default log file name, relative to the data directory
 #define PURPL_LOG_DEFAULT_NAME "logs/purpl-<date>.log"
 #endif // PURPL_DEBUG
 
@@ -182,6 +190,13 @@ purpl_log_get_max_level(struct purpl_logger *logger);
 extern PURPL_API enum purpl_log_level
 purpl_log_set_max_level(struct purpl_logger *logger,
 			enum purpl_log_level level);
+
+/// Set the given logger's format
+///
+/// \param logger The logger to set the format of
+/// \param format The new format for the logger (NULL or #def for the default)
+extern PURPL_API void purpl_log_set_format(struct purpl_logger *logger,
+					   const char *format);
 
 /// Close the given logger
 ///

@@ -24,6 +24,10 @@
 
 /// Vulkan queue family information
 struct vulkan_queue_families {
+	size_t compute_family; /// The index of the compute queue
+				    /// family
+	bool compute_family_present; /// Whether compute_family is
+					  /// present
 	size_t graphics_family; /// The index of the graphics queue family
 	bool graphics_family_present; /// Whether graphics_family is present
 	size_t presentation_family; /// The index of the presentation queue
@@ -45,6 +49,11 @@ struct purpl_instance_vulkan {
 	VkDebugUtilsMessengerEXT debug_messenger; /// Debug messenger
 
 	VkPhysicalDevice phys_device; /// Physical device
+	VkPhysicalDeviceFeatures phys_device_features; /// Physical device
+							   /// features
+	VkPhysicalDeviceProperties phys_device_properties; /// Physical device
+							   /// properties
+
 	struct vulkan_queue_families queue_families; /// The queue
 						     /// families to
 						     /// use with
@@ -53,6 +62,8 @@ struct purpl_instance_vulkan {
 
 	VkSurfaceKHR surface; /// Surface
 
+	VkQueue compute_queue; /// Compute queue
+	VkQueue graphics_queue; /// Graphics queue
 	VkQueue presentation_queue; /// Presentation queue
 
 	struct vulkan_swapchain_info swapchain_info; /// Swapchain information

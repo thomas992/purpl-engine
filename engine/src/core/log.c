@@ -35,7 +35,6 @@ PURPL_API struct purpl_logger *purpl_log_create(const char *file,
 	char *date;
 	char *filename;
 	char *filename2;
-	char *message_format;
 
 	if (!purpl_inst)
 		return NULL;
@@ -72,17 +71,7 @@ PURPL_API struct purpl_logger *purpl_log_create(const char *file,
 					  max_level;
 	logger->level = level > logger->max_level ? logger->max_level : level;
 
-	message_format = purpl_strdup(format ? format : "#def");
-#ifdef PURPL_DEBUG
-	logger->format =
-		purpl_strrplc(message_format, "#def",
-			      "[PID #P TID #T] [#d #t] [#W] [#L] #msg", NULL);
-#else // PURPL_DEBUG
-	logger->format = purpl_strrplc(message_format, "#def",
-				       "[#d #t] [#n #v] [#L]\t#msg", NULL);
-#endif // PURPL_DEBUG
-
-	free(message_format);
+	purpl_log_set_format(logger, format);
 
 	return logger;
 }
@@ -128,8 +117,8 @@ static char *log_format(struct purpl_logger *logger,
 
 	va_list args;
 
-	const char *days[] = { "Monday", "Tuesday",  "Wednesday", "Thursday",
-			       "Friday", "Saturday", "Sunday" };
+	const char *days[] = { "Sunday", "Monday", "Tuesday",  "Wednesday", "Thursday",
+			       "Friday", "Saturday" };
 
 	const char *months[] = { "January", "February", "March",
 				 "April",   "May",	"June",
@@ -152,13 +141,10 @@ static char *log_format(struct purpl_logger *logger,
 
 	log_get_time(&t1, &t2);
 
+	file2 = file;
 	if (strncmp(file, PURPL_SOURCE_DIR,
 		    PURPL_SIZEOF_ARRAY(PURPL_SOURCE_DIR) - 1) == 0)
-		file2 = purpl_pathfmt(
-			NULL, file + PURPL_SIZEOF_ARRAY(PURPL_SOURCE_DIR), 0,
-			false, false);
-	else
-		file2 = purpl_pathfmt(NULL, file, 0, false, false);
+		file2 += PURPL_SIZEOF_ARRAY(PURPL_SOURCE_DIR);
 
 	base = logger->format;
 	passes = 1;
@@ -180,8 +166,8 @@ static char *log_format(struct purpl_logger *logger,
 
 			begin = p++;
 			str = NULL;
-			if (*p == 'm' && *++p == 's' && *++p == 'g') {
-				p++;
+			if (strncmp(p, "msg", 3) == 0) {
+				p += 3;
 				str = purpl_strdup(msg_fmt);
 				passes++;
 			} else if (*p == 't') {
@@ -305,8 +291,8 @@ static char *log_format(struct purpl_logger *logger,
 			}
 			strncpy(buf, tmp, i);
 			free(tmp);
-			strncat(buf + i, str, len);
-			strncat(buf + i + len, p, strlen(p));
+			strncpy(buf + i, str, len);
+			strncpy(buf + i + len, p, strlen(p));
 			free(str);
 			i += len;
 		}
@@ -315,10 +301,9 @@ static char *log_format(struct purpl_logger *logger,
 	}
 
 	free(base);
-	free(file2);
 	free(msg_fmt);
 
-	buf[i] = 0;
+	buf[i] = '\0';
 	return buf;
 }
 
@@ -328,6 +313,7 @@ PURPL_API void purpl_log_write(struct purpl_logger *logger,
 			       ...)
 {
 	char *buf;
+	char *file2;
 	enum purpl_log_level effective_level;
 	va_list args;
 
@@ -348,23 +334,25 @@ PURPL_API void purpl_log_write(struct purpl_logger *logger,
 	if (effective_level > logger->max_level)
 		return;
 
+	file2 = purpl_pathfmt(NULL, file, 0, false, false);
 	va_start(args, msg);
-	buf = log_format(logger, effective_level, file, line, function, msg,
+	buf = log_format(logger, effective_level, file2, line, function, msg,
 			 args);
 	va_end(args);
+	free(file2);
 
 	fprintf(logger->file, "%s\n", buf);
 	fflush(logger->file);
-#ifdef PURPL_DEBUG
-	printf("\r%s\n", buf);
-	fflush(stdout);
-#else // PURPL_DEBUG
 #ifdef _WIN32
 	OutputDebugStringA(buf);
 #endif // _WIN32
+#ifdef PURPL_DEBUG
+	fprintf(stderr, "\r%s\n", buf);
+	fflush(stderr);
+#else // PURPL_DEBUG
 	if (level < PURPL_LOG_LEVEL_INFO) {
-		printf("\r%s", buf);
-		fflush(stdout);
+		fprintf(stderr, "\r%s\n", buf);
+		fflush(stderr);
 	}
 #endif // PURPL_DEBUG
 
@@ -414,13 +402,29 @@ purpl_log_set_max_level(struct purpl_logger *logger,
 	return old;
 }
 
+PURPL_API void purpl_log_set_format(struct purpl_logger *logger,
+				    const char *format)
+{
+	char *message_format;
+
+	if (!logger)
+		return;
+
+	message_format = purpl_strdup(format ? format : "#def");
+	logger->format =
+		purpl_strrplc(message_format, "#def",
+			      PURPL_LOG_DEFAULT_FORMAT, NULL);
+
+	free(message_format);
+}
+
 PURPL_API void purpl_log_close(struct purpl_logger *logger, bool last_message)
 {
 	char *msg;
 	const char *adjectives[] = { "nice", "good", "pleasant", "amazing" };
 	const char *time_of_day = "day";
 	struct tm *t;
-	size_t random = purpl_random(PURPL_SIZEOF_ARRAY(adjectives)) - 1;
+	size_t random = purpl_random(PURPL_SIZEOF_ARRAY(adjectives) - 1);
 
 	if (!logger)
 		return;

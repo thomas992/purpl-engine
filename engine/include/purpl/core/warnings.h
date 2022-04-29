@@ -30,6 +30,7 @@
 #pragma clang diagnostic error "-Wall"
 #pragma clang diagnostic error "-Wextra"
 #pragma clang diagnostic error "-Wpedantic"
+#pragma clang diagnostic ignored "-Wdeprecated-volatile"
 #pragma clang diagnostic ignored "-Wmicrosoft-cast"
 #elif defined _MSC_VER // __clang__
 #pragma warning(4 :)

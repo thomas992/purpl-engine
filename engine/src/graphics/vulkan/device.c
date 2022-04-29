@@ -23,7 +23,6 @@ bool vulkan_pick_physical_device(void)
 {
 	PURPL_ALIAS_GRAPHICS_DATA(vulkan);
 
-	VkPhysicalDeviceProperties properties;
 	VkPhysicalDevice *devices = NULL;
 	u32 device_count = 0;
 	u64 best_score = 0;
@@ -63,11 +62,14 @@ bool vulkan_pick_physical_device(void)
 		return false;
 	}
 
-	vkGetPhysicalDeviceProperties(vulkan->phys_device, &properties);
+	vkGetPhysicalDeviceFeatures(vulkan->phys_device,
+				    &vulkan->phys_device_features);
+	vkGetPhysicalDeviceProperties(vulkan->phys_device,
+				      &vulkan->phys_device_properties);
 	PURPL_LOG_INFO(purpl_inst->logger,
 		       "Device %zu (%s, handle 0x%" PRIX64
 		       ") has the best score (its score is %llu)",
-		       best_idx + 1, properties.deviceName,
+		       best_idx + 1, vulkan->phys_device_properties.deviceName,
 		       vulkan->phys_device, best_score);
 	vulkan_get_device_queue_families(vulkan->phys_device,
 					 &vulkan->queue_families);
@@ -147,6 +149,18 @@ bool vulkan_create_logical_device(void)
 		vulkan->device);
 
 	vkGetDeviceQueue(vulkan->device,
+			 (u32)vulkan->queue_families.compute_family, 0,
+			 &vulkan->compute_queue);
+	PURPL_LOG_INFO(purpl_inst->logger,
+		       "Retrieved handle 0x%" PRIX64 " for compute queue",
+		       vulkan->presentation_queue);
+	vkGetDeviceQueue(vulkan->device,
+			 (u32)vulkan->queue_families.graphics_family, 0,
+			 &vulkan->graphics_queue);
+	PURPL_LOG_INFO(purpl_inst->logger,
+		       "Retrieved handle 0x%" PRIX64 " for graphics queue",
+		       vulkan->graphics_queue);
+	vkGetDeviceQueue(vulkan->device,
 			 (u32)vulkan->queue_families.presentation_family, 0,
 			 &vulkan->presentation_queue);
 	PURPL_LOG_INFO(purpl_inst->logger,
@@ -198,6 +212,17 @@ u64 vulkan_score_device(VkPhysicalDevice device, size_t idx)
 		return 0;
 	}
 
+	if (properties.apiVersion < VK_API_VERSION_1_1) {
+		PURPL_LOG_INFO(
+			purpl_inst->logger,
+			"Device %zu (%s) does not support Vulkan 1.1, ignoring",
+			idx + 1, properties.deviceName);
+		return 0;
+	}
+	
+	// Give more points for devices that support newer standards
+	score += VK_API_VERSION_MINOR(properties.apiVersion) * 100;
+
 	// iGPUs are usually shit, and on a system that doesn't follow that
 	// rule (i.e. the Steam Deck or a mobile device) there probably
 	// won't be a dGPU
@@ -220,6 +245,8 @@ u64 vulkan_score_device(VkPhysicalDevice device, size_t idx)
 	PURPL_LOG_INFO(purpl_inst->logger, "\tSupported extension count: %zu",
 		       extension_count);
 	PURPL_LOG_INFO(purpl_inst->logger, "\tQueue family indices:");
+	PURPL_LOG_INFO(purpl_inst->logger, "\t\tCompute: %zu",
+		       queue_families.compute_family);
 	PURPL_LOG_INFO(purpl_inst->logger, "\t\tGraphics: %zu",
 		       queue_families.graphics_family);
 	PURPL_LOG_INFO(purpl_inst->logger, "\t\tPresentation: %zu",
@@ -326,6 +353,11 @@ bool vulkan_get_device_queue_families(
 						 queue_family_list);
 
 	for (i = 0; i < stbds_arrlenu(queue_family_list); i++) {
+		if (queue_family_list[i].queueFlags & VK_QUEUE_COMPUTE_BIT) {
+			queue_families->compute_family_present = true;
+			queue_families->compute_family = i;
+		}
+
 		if (queue_family_list[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) {
 			queue_families->graphics_family_present = true;
 			queue_families->graphics_family = i;
@@ -339,7 +371,8 @@ bool vulkan_get_device_queue_families(
 			queue_families->presentation_family = i;
 		}
 
-		all_found = (queue_families->graphics_family_present &&
+		all_found = (queue_families->compute_family_present &&
+			     queue_families->graphics_family_present &&
 			     queue_families->presentation_family_present);
 		if (all_found)
 			break;

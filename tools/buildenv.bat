@@ -21,7 +21,7 @@ popd
 %~d0
 
 :: Set the architecture
-for %%G in (%1 %PURPL_BUILDENV_ARCH%) do (
+for %%G in (%PURPL_BUILDENV_ARCH% %1) do (
 	set PURPL_BUILDENV_ARCH=%%G
 )
 

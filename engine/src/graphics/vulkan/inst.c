@@ -51,7 +51,8 @@ bool vulkan_create_instance(void)
 	ext_props = exts[1];
 
 	create_info.enabledExtensionCount = stbds_arrlenu(required_exts);
-	create_info.ppEnabledExtensionNames = (const char *const *)required_exts;
+	create_info.ppEnabledExtensionNames =
+		(const char *const *)required_exts;
 	ext_count = stbds_arrlenu(required_exts);
 
 #ifdef PURPL_DEBUG
@@ -82,6 +83,15 @@ bool vulkan_create_instance(void)
 		PURPL_LOG_ERROR(
 			purpl_inst->logger,
 			"Failed to create Vulkan instance: VkResult %d", res);
+#ifdef PURPL_DEBUG
+		PURPL_LOG_INFO(
+			purpl_inst->logger,
+			"Trying again without validation layers enabled");
+		create_info.enabledLayerCount = 0;
+		res = vkCreateInstance(&create_info, NULL, &vulkan->inst);
+#endif // PURPL_DEBUG
+	}
+	if (res != VK_SUCCESS) {
 		stbds_arrfree(required_exts);
 		stbds_arrfree(ext_props);
 		stbds_arrfree(exts);

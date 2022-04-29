@@ -41,6 +41,7 @@ set(ENGINE_VULKAN_HEADERS
     include/purpl/graphics/vulkan/init.h
     include/purpl/graphics/vulkan/inst_data.h
     include/purpl/graphics/vulkan/inst.h
+    include/purpl/graphics/vulkan/pipeline.h
     include/purpl/graphics/vulkan/swapchain.h)
 
 set(ENGINE_UTIL_HEADERS
@@ -72,6 +73,7 @@ set(ENGINE_VULKAN_SOURCES
     src/graphics/vulkan/device.c
     src/graphics/vulkan/init.c
     src/graphics/vulkan/inst.c
+    src/graphics/vulkan/pipeline.c
     src/graphics/vulkan/swapchain.c)
 
 set(ENGINE_METAL_SOURCES
