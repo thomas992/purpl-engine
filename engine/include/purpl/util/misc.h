@@ -23,7 +23,7 @@
 #include "purpl/core/coredefs.h"
 #include "purpl/core/types.h"
 
-/// Determines the size of a stack array (for heap arrays, this will be between
+/// Determine the size of a stack array (for heap arrays, this will be between
 /// 1 and the pointer size, which is of no use)
 #define PURPL_SIZEOF_ARRAY(a) (sizeof((a)) / sizeof((a)[0]))
 
@@ -62,7 +62,7 @@
 /// Clamp x to the range [min, max]
 #define PURPL_CLAMP(x, min, max) ((x) < (min) ? (min) : ((x) > (max) ? (max) : (x)))
 
-/// Generates a random number by using RDSEED (x86) or RNDR (ARM), but if that
+/// Generate a random number by using RDSEED (x86) or RNDR (ARM), but if that
 /// fails then it uses rand() twice. This isn't supposed to be secure at all,
 /// but if there's enough reason I'll just make something using OpenSSL.
 ///
@@ -71,12 +71,12 @@
 /// \return A random number between 0 and limit
 extern PURPL_API u64 purpl_random(u64 limit);
 
-/// The current process ID
+/// Get the current process ID
 ///
 /// \return Returns the current process ID
 extern PURPL_API u64 purpl_get_pid(void);
 
-/// The current thread ID
+/// Get the current thread ID
 ///
 /// \return Returns the current thread ID
 extern PURPL_API u64 purpl_get_tid(void);

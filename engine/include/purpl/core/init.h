@@ -45,9 +45,9 @@ typedef s32 (*purpl_main_t)(s32 argc, char *argv[]);
 /// \return Should return true if nothing went wrong, false otherwise
 typedef bool (*purpl_frame_t)(u32 delta, void *user_data);
 
-/// Make sure the engine is ready to be used. You MUST call this function
-/// before calling ANY functions from the engine other than this one, or
-/// there is a solid chance your program will crash.
+/// This function is called by the main implemented by the engine,
+/// where it loads the libraries needed by the engine (listed by
+/// engine_libs.txt)
 ///
 /// \param main The entry point of the application
 /// \param argc The number of arguments passed to the program, the first

@@ -31,10 +31,10 @@
 /// Cooldown for updating the activity
 #define PURPL_DISCORD_ACTIVITY_COOLDOWN 5000
 
-/// Aliases the Discord data in the engine instance
+/// Alias the Discord data in the engine instance
 #define PURPL_ALIAS_DISCORD() struct purpl_instance_discord *discord = &purpl_inst->discord
 
-/// Initializes the Discord SDK
+/// Initialize the Discord SDK
 ///
 /// \return Returns true if Discord initialization was successful, false
 ///	    otherwise
@@ -43,7 +43,7 @@ extern bool purpl_discord_init(void);
 /// Shuts down the Discord SDK
 extern void purpl_discord_shutdown(void);
 
-/// Runs callbacks
+/// Run callbacks
 ///
 /// \param delta The number of milliseconds since the last call
 /// 

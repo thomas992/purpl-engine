@@ -282,7 +282,7 @@ PURPL_API u32 purpl_win32_error_to_errno(u32 error)
 {
 	size_t i;
 
-	for (i = 0; i < PURPL_SIZEOF_ARRAY(win32_errno_map) / 2; i += 2) {
+	for (i = 0; i < PURPL_SIZEOF_ARRAY(win32_errno_map); i += 2) {
 		if (win32_errno_map[i] == error)
 			return win32_errno_map[i];
 	}
@@ -294,7 +294,7 @@ PURPL_API u32 purpl_errno_to_win32_error(u32 error)
 {
 	size_t i;
 
-	for (i = 1; i < PURPL_SIZEOF_ARRAY(win32_errno_map) / 2; i += 2) {
+	for (i = 1; i < PURPL_SIZEOF_ARRAY(win32_errno_map); i += 2) {
 		if (win32_errno_map[i] == error)
 			return win32_errno_map[i];
 	}

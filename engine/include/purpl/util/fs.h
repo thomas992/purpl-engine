@@ -70,7 +70,7 @@ struct purpl_file_info {
 	time_t mtime; /// Modification time
 };
 
-/// Translates between a platform-specific file mode and one used by the engine
+/// Translate between a platform-specific file mode and one used by the engine
 ///
 /// \param mode The mode to translate
 /// \param to_native Whether to convert to or from a native mode
@@ -78,7 +78,7 @@ struct purpl_file_info {
 /// \return Returns the translated mode
 extern PURPL_API u32 purpl_translate_file_mode(u32 mode, bool to_native);
 
-/// Translates between platform-specific file attributes and ones used by the
+/// Translate between platform-specific file attributes and ones used by the
 /// engine
 ///
 /// \param attrs The attributes to translate
@@ -87,7 +87,7 @@ extern PURPL_API u32 purpl_translate_file_mode(u32 mode, bool to_native);
 /// \return Returns the translated attributes
 extern PURPL_API u32 purpl_translate_file_attrs(u32 attrs, bool to_native);
 
-/// Formats a path (you don't need to call this)
+/// Format a path (you don't need to call this)
 ///
 /// \param size The size of the formatted path
 /// \param path The path to format
@@ -100,7 +100,7 @@ extern PURPL_API char *purpl_pathfmt(size_t *size, const char *path,
 				     enum purpl_fs_flags flags, bool relative,
 				     bool data_relative);
 
-/// Checks if a file exists
+/// Check if a file exists
 ///
 /// \param path The path to check
 /// \param relative Whether the path is relative to the engine executable
@@ -172,7 +172,7 @@ extern PURPL_API void purpl_stat(const char *path,
 extern PURPL_API size_t purpl_get_size(const char *path, bool relative,
 				       bool data_relative);
 
-/// Get the per-user data folder such as AppData/Local on Windows, and
+/// Get the per-user data folder such as AppData/Roaming on Windows, and
 /// XDG_DATA_HOME on everything else (and Windows if it's set)
 ///
 /// \return Returns the path to use

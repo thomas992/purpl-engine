@@ -116,7 +116,7 @@ PURPL_API char *purpl_pathfmt(size_t *size, const char *path,
 
 	path2 = purpl_strdup(path);
 	if (size)
-		size = strlen(path2) + 1;
+		*size = strlen(path2) + 1;
 	for (i = 0; i < strlen(path); i++) {
 		if (path2[i] == '\\')
 			path2[i] = '/';

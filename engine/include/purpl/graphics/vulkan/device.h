@@ -39,7 +39,7 @@
 /// \return Returns the device chosen
 extern bool vulkan_pick_physical_device(void);
 
-/// Creates a logical device
+/// Create a logical device
 ///
 /// \return Returns true if the creation succeeded
 extern bool vulkan_create_logical_device(void);

@@ -1,4 +1,4 @@
-// Structures containing data for the engine instance related to graphics APIs
+// Vulkan command stuff
 //
 // Copyright 2022 MobSlicer152
 // This file is part of Purpl Engine
@@ -15,21 +15,4 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#pragma once
-
-#ifndef PURPL_BUILD
-#error This header should only be included in engine files
-#endif // !PURPL_BUILD
-
-#include "purpl/core/coredefs.h"
-#include "purpl/core/types.h"
-
-#define PURPL_ALIAS_GRAPHICS_DATA(api) struct purpl_instance_ ## api  *api = \
-						&purpl_inst->graphics.api
-
-#ifdef __APPLE__
-/// This is going to be a pointer to a Swift structure
-typedef void *purpl_instance_metal_t;
-#else // __APPLE__
-#include "vulkan/inst_data.h"
-#endif // __APPLE__
+/// Set up

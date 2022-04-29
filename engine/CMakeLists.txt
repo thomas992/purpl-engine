@@ -36,6 +36,7 @@ set(ENGINE_GRAPHICS_HEADERS
     include/purpl/graphics/window.h)
 
 set(ENGINE_VULKAN_HEADERS
+    include/purpl/graphics/vulkan/command.h
     include/purpl/graphics/vulkan/debug.h
     include/purpl/graphics/vulkan/device.h
     include/purpl/graphics/vulkan/init.h
@@ -69,6 +70,7 @@ set(ENGINE_SHADERS
     src/graphics/shaders/triangle.frag)
 
 set(ENGINE_VULKAN_SOURCES
+    src/graphics/vulkan/command.c
     src/graphics/vulkan/debug.c
     src/graphics/vulkan/device.c
     src/graphics/vulkan/init.c

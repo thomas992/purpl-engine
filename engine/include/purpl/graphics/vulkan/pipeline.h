@@ -26,7 +26,7 @@
 
 #include "purpl/util/util.h"
 
-/// Creates a graphics pipeline
+/// Create a graphics pipeline
 ///
 /// \return Returns true if the pipeline was created successfully, false otherwise
 extern bool vulkan_create_pipeline(void);

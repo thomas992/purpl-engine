@@ -29,14 +29,14 @@
 #include "purpl/util/string.h"
 
 #ifdef _WIN32
-/// Translates a Win32 error code to an errno value
+/// Translate a Win32 error code to an errno value
 ///
 /// \param error The Win32 error code
 ///
 /// \return The errno value
 PURPL_API u32 purpl_win32_error_to_errno(u32 error);
 
-/// Translates an errno value to a Win32 error code
+/// Translate an errno value to a Win32 error code
 ///
 /// \param error The errno value
 ///
@@ -44,7 +44,7 @@ PURPL_API u32 purpl_win32_error_to_errno(u32 error);
 PURPL_API u32 purpl_errno_to_win32_error(u32 error);
 #endif // _WIN32
 
-/// Gets an error string from the current errno value
+/// Get an error string from the current errno value
 ///
 /// \return Returns an error string in a static buffer with
 ///	    PURPL_STATIC_BUF_MAX bytes of space

@@ -29,19 +29,19 @@
 #ifdef PURPL_BUILD
 #define PURPL_DEFAULT_WINDOW_FLAGS (SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI)
 
-/// Gets the default window title so that it doesn't need to be in every
+/// Get the default window title so that it doesn't need to be in every
 /// graphics initialization function
 ///
 /// \return Returns the default window title
 extern char *purpl_get_initial_window_title(void);
 #endif // PURPL_BUILD
 
-/// Gets the window title
+/// Get the window title
 ///
 /// \return Returns the current title of the engine's window. Must be freed.
 extern PURPL_API char *purpl_graphics_window_get_title(void);
 
-/// Sets the window title. DO NOT CALL THIS TOO OFTEN, WINDOWS WILL LAG.
+/// Set the window title. DO NOT CALL THIS TOO OFTEN, WINDOWS WILL LAG.
 ///
 /// \param title The new title for the window. Supports printf format
 /// specifiers.
