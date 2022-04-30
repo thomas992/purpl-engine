@@ -19,8 +19,6 @@
 
 #include "purpl/graphics/vulkan/swapchain.h"
 
-#include "purpl/core/warnings.h"
-
 bool vulkan_create_swapchain(void)
 {
 	PURPL_ALIAS_GRAPHICS_DATA(vulkan);

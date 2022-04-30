@@ -1,4 +1,4 @@
-// Physical device functions
+// Device selection and creation functions
 //
 // Copyright 2022 MobSlicer152
 // This file is part of Purpl Engine
@@ -16,8 +16,6 @@
 // limitations under the License.
 
 #include "purpl/graphics/vulkan/device.h"
-
-#include "purpl/core/warnings.h"
 
 bool vulkan_pick_physical_device(void)
 {

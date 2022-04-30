@@ -19,8 +19,6 @@
 
 #include "purpl/util/discord.h"
 
-#include "purpl/core/warnings.h"
-
 #define DISCORD_CHECK_COOL_PEOPLE(discord)            \
 	((discord)->user_id == 532320702611587112 ?   \
 		 " (my game engine)" :                \

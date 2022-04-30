@@ -17,8 +17,6 @@
 
 #include "purpl/graphics/vulkan/inst.h"
 
-#include "purpl/core/warnings.h"
-
 bool vulkan_create_instance(void)
 {
 	PURPL_ALIAS_GRAPHICS_DATA(vulkan);

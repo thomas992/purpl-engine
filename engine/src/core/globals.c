@@ -19,7 +19,5 @@
 
 #include "purpl/core/inst.h"
 
-#include "purpl/core/warnings.h"
-
 struct purpl_instance *purpl_inst;
 

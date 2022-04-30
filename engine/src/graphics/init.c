@@ -17,8 +17,6 @@
 
 #include "purpl/graphics/init.h"
 
-#include "purpl/core/warnings.h"
-
 PURPL_API bool purpl_graphics_init(void)
 {
 	bool init = false;

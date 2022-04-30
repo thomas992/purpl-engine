@@ -15,4 +15,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/// Set up
+#pragma once
+
+#include <vulkan/vulkan.h>
+
+#include "purpl/core/coredefs.h"
+#include "purpl/core/inst.h"
+#include "purpl/core/types.h"
+
+#include "purpl/util/util.h"
+
+/// Set up the command pool and command buffers
+///
+/// \return Returns true if successful, false otherwise
+extern bool vulkan_init_commands(void);

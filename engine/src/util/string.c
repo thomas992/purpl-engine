@@ -22,8 +22,6 @@
 
 #include "purpl/util/string.h"
 
-#include "purpl/core/warnings.h"
-
 PURPL_API size_t purpl_strcount(const char *str, const char *sub)
 {
 	const char *p;

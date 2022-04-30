@@ -19,8 +19,6 @@
 
 #include "purpl/graphics/vulkan/init.h"
 
-#include "purpl/core/warnings.h"
-
 bool purpl_vulkan_init(void)
 {
 	PURPL_ALIAS_GRAPHICS_DATA(vulkan);

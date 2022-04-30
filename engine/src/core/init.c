@@ -26,8 +26,6 @@
 #include "purpl/util/discord.h"
 #endif // PURPL_ENABLE_DISCORD
 
-#include "purpl/core/warnings.h"
-
 #define PREINIT_MAGIC (PURPL_VERSION << 8 | 0x01)
 
 u64 preinit_called;

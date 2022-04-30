@@ -17,8 +17,8 @@
 
 cmake_minimum_required(VERSION 3.10)
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${_WARNINGS}")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${_WARNINGS}")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${PURPL_WARNINGS}")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${PURPL_WARNINGS}")
 
 set(ENGINE_CORE_HEADERS
     include/purpl/core/config.h.in
@@ -27,8 +27,7 @@ set(ENGINE_CORE_HEADERS
     include/purpl/core/init.h
     include/purpl/core/inst.h
     include/purpl/core/log.h
-    include/purpl/core/types.h
-    include/purpl/core/warnings.h)
+    include/purpl/core/types.h)
 
 set(ENGINE_GRAPHICS_HEADERS
     include/purpl/graphics/init.h

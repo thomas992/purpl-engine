@@ -17,9 +17,7 @@
 
 #include "purpl/util/error.h"
 
-#include <stb_sprintf.h>
-
-#include "purpl/core/warnings.h"
+#include "stb_sprintf.h"
 
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
