@@ -19,8 +19,6 @@
 
 #include "purpl/core/init.h"
 
-#include "purpl/core/warnings.h"
-
 #undef main
 
 int32_t main(int32_t argc, char* argv[])

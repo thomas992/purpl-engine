@@ -28,7 +28,6 @@
 #endif // _WIN32
 
 #include "config.h"
-#include "purpl/core/warnings.h"
 
 #define PURPL_IGNORE(x) (void)(x)
 #define PURPL_SIZEOF_ARRAY(x) (sizeof(x) / sizeof(x[0]))
