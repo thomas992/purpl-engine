@@ -26,6 +26,8 @@
 #else // _WIN32
 #ifdef __linux__
 #define _GNU_SOURCE
+#elif __FreeBSD__
+#include <pthread_np.h>
 #endif // __linux__
 #define _ALL_SOURCE
 #include <unistd.h>
@@ -63,7 +65,7 @@ PURPL_API u64 purpl_get_tid(void)
 #elif defined __linux__
 	return gettid();
 #elif defined __FreeBSD__
-	return 0;
+	return pthread_getthreadid_np();
 #endif // _WIN32
 }
 
