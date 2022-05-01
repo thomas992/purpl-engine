@@ -17,7 +17,30 @@
 
 #include "purpl/graphics/vulkan/command.h"
 
-bool vulkan_init_commands(void)
+bool vulkan_create_command_pool(void)
 {
+	PURPL_ALIAS_GRAPHICS_DATA(vulkan);
 	
+	VkCommandPoolCreateInfo cmd_pool_create_info = { 0 };
+	VkResult res;
+
+	PURPL_LOG_INFO(purpl_inst->logger, "Creating command pool");
+
+	cmd_pool_create_info.sType =
+		VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+	cmd_pool_create_info.queueFamilyIndex =
+		vulkan->queue_families.graphics_family;
+	cmd_pool_create_info.flags =
+		VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+	
+	res = vkCreateCommandPool(vulkan->device, &cmd_pool_create_info, NULL,
+				  &vulkan->cmd_pool);
+	if (res != VK_SUCCESS) {;
+		PURPL_LOG_ERROR(purpl_inst->logger, "Failed to create command pool: VkResult %d", res);
+		return false;
+	}
+
+	PURPL_LOG_INFO(purpl_inst->logger, "Successfully created command pool");
+
+	return true;
 }
