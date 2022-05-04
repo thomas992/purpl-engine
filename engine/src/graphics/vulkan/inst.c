@@ -109,7 +109,7 @@ void **vulkan_get_extensions(void)
 
 	SDL_Vulkan_GetInstanceExtensions(purpl_inst->wnd, &ext_count, NULL);
 	stbds_arrsetlen(required_exts, ext_count);
-	SDL_Vulkan_GetInstanceExtensions(purpl_inst->wnd, &ext_count, required_exts);
+	SDL_Vulkan_GetInstanceExtensions(purpl_inst->wnd, &ext_count, (const char **)required_exts);
 
 	ext_count = 0;
 	vkEnumerateInstanceExtensionProperties(NULL, &ext_count, NULL);

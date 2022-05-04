@@ -177,7 +177,6 @@ EXTERN_C int32_t purpl_preinit(purpl_main_t main_func, int argc, char *argv[])
 			engine_lib_count++;
 		p = strtok(NULL, "\n");
 	}
-	engine_lib_count--;
 
 	engine_libs = (char **)calloc(engine_lib_count, sizeof(char *));
 	if (!engine_libs)
@@ -193,9 +192,7 @@ EXTERN_C int32_t purpl_preinit(purpl_main_t main_func, int argc, char *argv[])
 				len--;
 			engine_libs[i] = (char *)calloc(len + 1, sizeof(char));
 			if (!engine_libs[i])
-				PREINIT_ERROR("Failed to allocate memory for engine library "
-					      "list",
-					      ENOMEM);
+				PREINIT_ERROR("Failed to allocate memory for engine library list", ENOMEM);
 
 			strncpy(engine_libs[i], p, len);
 			i++;
@@ -213,7 +210,7 @@ EXTERN_C int32_t purpl_preinit(purpl_main_t main_func, int argc, char *argv[])
 			PREINIT_ERROR("Failed to load library", STATUS_DLL_NOT_FOUND);
 #else // _WIN32
 		if (!dlopen(path, RTLD_NOW))
-			PREINIT_ERROR_EX("Failed to load library", ENOENT, "Failed to load library: %s", dlerror());
+			PREINIT_ERROR_EX("Failed to load library", ENOENT, "Failed to load %s: %s\n", path, dlerror());
 #endif // _WIN32
 		fprintf(stderr, "Loaded library %s\n", path);
 	}
@@ -222,7 +219,6 @@ EXTERN_C int32_t purpl_preinit(purpl_main_t main_func, int argc, char *argv[])
 	engine_lib = GetModuleHandleA("engine.dll");
 #else // _WIN32
 	engine_lib = dlopen("engine" LIB_EXT, RTLD_NOW);
-	dlclose(engine_lib); // Decrease the refcount
 #endif // _WIN32
 
 	init_engine_ptrs(engine_lib);
