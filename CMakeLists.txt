@@ -96,7 +96,7 @@ if (${CMAKE_C_COMPILER_ID} MATCHES "Clang")
 	set(CMAKE_CXX_STANDARD 20)
 	
 	set(PURPL_WARNINGS "-Wall -Wextra -Wpedantic -Wno-deprecated-volatile -Wno-newline-eof -Wno-unused-function")
-elseif (MSVC)
+elseif (MSVC AND NOT ${CMAKE_C_COMPILER_ID} MATCHES "Clang")
 	set(CMAKE_C_STANDARD 17)
 	set(CMAKE_CXX_STANDARD 20)
 	
