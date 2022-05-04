@@ -117,12 +117,9 @@ EXTERN_C int32_t purpl_preinit(purpl_main_t main_func, int argc, char *argv[])
 	char *path;
 	size_t idx;
 	FILE *engine_libs_fp;
-	char *engine_libs_buf;
-	size_t engine_libs_size;
 	char **engine_libs;
 	size_t engine_lib_count = 0;
 	char *tmp;
-	char *p;
 	size_t len;
 	size_t i;
 
@@ -142,7 +139,7 @@ EXTERN_C int32_t purpl_preinit(purpl_main_t main_func, int argc, char *argv[])
 	strncpy(path + idx, PATH_SEP_STR "engine_libs.txt\0", MAX_PATH - idx);
 
 	fprintf(stderr, "Searching for engine library list at %s\n", path);
-	engine_libs_fp = fopen(path, "rb");
+	engine_libs_fp = fopen(path, "r");
 	if (!engine_libs_fp) {
 		strncpy(path + idx, PATH_SEP_STR "bin" PATH_SEP_STR "engine_libs.txt\0", MAX_PATH - idx);
 		idx += strlen(PATH_SEP_STR "bin");
@@ -155,50 +152,29 @@ EXTERN_C int32_t purpl_preinit(purpl_main_t main_func, int argc, char *argv[])
 
 	fprintf(stderr, "Found engine library list at %s\n", path);
 
-	fseek(engine_libs_fp, 0, SEEK_END);
-	engine_libs_size = ftell(engine_libs_fp);
-	fseek(engine_libs_fp, 0, SEEK_SET);
-	engine_libs_buf = (char *)calloc(engine_libs_size + 1, sizeof(char));
-	if (!engine_libs_buf)
-		PREINIT_ERROR("Failed to allocate memory for engine library list", ENOMEM);
-
-	fread(engine_libs_buf, sizeof(char), engine_libs_size, engine_libs_fp);
-	fclose(engine_libs_fp);
-
-	tmp = (char *)calloc(engine_libs_size, sizeof(char));
+	tmp = (char *)calloc(MAX_PATH, sizeof(char));
 	if (!tmp)
-		PREINIT_ERROR("Failed to allocate memory for engine library "
-			      "list",
-			      ENOMEM);
-	strncpy(tmp, engine_libs_buf, engine_libs_size);
-	p = strtok(tmp, "\n");
-	while (p) {
-		if (strncmp(p, "//", 2) != 0)
+		PREINIT_ERROR("Failed to allocate memory for engine library list", ENOMEM);
+	while (fgets(tmp, MAX_PATH, engine_libs_fp)) {
+		if (strncmp(tmp, "//", 2) != 0)
 			engine_lib_count++;
-		p = strtok(NULL, "\n");
 	}
 
+	fseek(engine_libs_fp, 0, SEEK_SET);
+	i = 0;
 	engine_libs = (char **)calloc(engine_lib_count, sizeof(char *));
 	if (!engine_libs)
 		PREINIT_ERROR("Failed to allocate memory for engine library list", ENOMEM);
-
-	strncpy(tmp, engine_libs_buf, engine_libs_size);
-	i = 0;
-	p = strtok(tmp, "\n");
-	while (p && i < engine_lib_count) {
-		if (strncmp(p, "//", 2) != 0) {
-			len = strlen(p);
-			if (p[len - 1] == '\r')
-				len--;
-			engine_libs[i] = (char *)calloc(len + 1, sizeof(char));
+	while (fgets(tmp, MAX_PATH, engine_libs_fp)) {
+		if (strncmp(tmp, "//", 2) != 0) {
+			engine_libs[i] = (char *)calloc(strlen(tmp), sizeof(char));
 			if (!engine_libs[i])
 				PREINIT_ERROR("Failed to allocate memory for engine library list", ENOMEM);
-
-			strncpy(engine_libs[i], p, len);
+			strncpy(engine_libs[i], tmp, strchr(tmp, '\n') - tmp);
 			i++;
 		}
-		p = strtok(NULL, "\n");
 	}
+	free(tmp);
 
 	for (i = 0; i < engine_lib_count; i++) {
 		strncpy(path + idx, PATH_SEP_STR, MAX_PATH - idx);
@@ -224,8 +200,6 @@ EXTERN_C int32_t purpl_preinit(purpl_main_t main_func, int argc, char *argv[])
 	init_engine_ptrs(engine_lib);
 
 	free(path);
-	free(tmp);
-	free(engine_libs_buf);
 	for (i = 0; i < engine_lib_count; i++)
 		free(engine_libs[i]);
 	free(engine_libs);
