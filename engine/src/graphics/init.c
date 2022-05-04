@@ -29,32 +29,25 @@ PURPL_API bool purpl_graphics_init(void)
 #ifdef __APPLE__
 	init = purpl_metal_init();
 	if (!init) {
-		PURPL_LOG_ERROR(purpl_inst->logger,
-				"Failed to initialize Metal");
+		PURPL_LOG_ERROR(purpl_inst->logger, "Failed to initialize Metal");
 	}
 #else // __APPLE__
 	init = purpl_vulkan_init();
 	if (!init) {
-		PURPL_LOG_ERROR(
-			purpl_inst->logger,
-			"Failed to initialize Vulkan, unloading Vulkan library");
+		PURPL_LOG_ERROR(purpl_inst->logger, "Failed to initialize Vulkan, unloading Vulkan library");
 		SDL_Vulkan_UnloadLibrary();
 	}
 #endif // __APPLE__
 
 	if (!init) {
-		PURPL_LOG_CRITICAL(purpl_inst->logger,
-				   "Unable to initialize any graphics API");
+		PURPL_LOG_CRITICAL(purpl_inst->logger, "Unable to initialize any graphics API");
 		return false;
 	}
 
-	SDL_GetWindowPosition(purpl_inst->wnd, &purpl_inst->wnd_x,
-			      &purpl_inst->wnd_y);
-	SDL_GetWindowSize(purpl_inst->wnd, &purpl_inst->wnd_width,
-			  &purpl_inst->wnd_height);
+	SDL_GetWindowPosition(purpl_inst->wnd, &purpl_inst->wnd_x, &purpl_inst->wnd_y);
+	SDL_GetWindowSize(purpl_inst->wnd, &purpl_inst->wnd_width, &purpl_inst->wnd_height);
 
-	PURPL_LOG_INFO(purpl_inst->logger,
-		       "Successfully initialized %s graphics",
+	PURPL_LOG_INFO(purpl_inst->logger, "Successfully initialized %s graphics",
 		       purpl_get_graphics_api_name(purpl_inst->graphics_api));
 
 	return true;

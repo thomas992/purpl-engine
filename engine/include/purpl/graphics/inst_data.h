@@ -24,8 +24,7 @@
 #include "purpl/core/coredefs.h"
 #include "purpl/core/types.h"
 
-#define PURPL_ALIAS_GRAPHICS_DATA(api) struct purpl_instance_ ## api  *api = \
-						&purpl_inst->graphics.api
+#define PURPL_ALIAS_GRAPHICS_DATA(api) struct purpl_instance_##api *api = &purpl_inst->graphics.api
 
 #ifdef __APPLE__
 /// This is going to be a pointer to a Swift structure

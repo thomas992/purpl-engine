@@ -37,8 +37,7 @@
 #endif // PURPL_BUILD
 
 /// Make a version number from major, minor, and patch numbers
-#define PURPL_MAKE_VERSION(major, minor, patch) \
-	((((major)&0xFF) << 16) | (((minor)&0xFF) << 8) | ((patch)&0xFF))
+#define PURPL_MAKE_VERSION(major, minor, patch) ((((major)&0xFF) << 16) | (((minor)&0xFF) << 8) | ((patch)&0xFF))
 
 /// Get the major version of a version
 #define PURPL_GET_MAJOR_VERSION(version) (((version) >> 16) & 0xFF)
@@ -59,9 +58,7 @@
 #define PURPL_PATCH_VERSION 0
 
 /// The full version of the engine
-#define PURPL_VERSION                                                \
-	PURPL_MAKE_VERSION(PURPL_MAJOR_VERSION, PURPL_MINOR_VERSION, \
-			   PURPL_PATCH_VERSION)
+#define PURPL_VERSION PURPL_MAKE_VERSION(PURPL_MAJOR_VERSION, PURPL_MINOR_VERSION, PURPL_PATCH_VERSION)
 
 /// The size of the static buffers returned by some string functions
 #define PURPL_STATIC_BUF_MAX 128

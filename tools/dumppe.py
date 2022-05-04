@@ -11,6 +11,12 @@ elif len(sys.argv) < 3:
     print("Missing output file")
     exit(1)
 
+if len(sys.argv) > 3:
+    prefix = sys.argv[3]
+    print(f"Only dumping exports beginning with \"{prefix}\"")
+else:
+    prefix = ""
+
 if not os.path.exists(sys.argv[1]):
     print(f"File \"{sys.argv[1]}\" doesn't exist, exiting")
     exit(1)
@@ -39,7 +45,7 @@ for x in out.split("\n"):
     end = name.find(" ")
     end = len(name) if end == -1 else end
     name = name[:end]
-    if len(x.split()):
+    if len(x.split()) and name[0:len(prefix)] == prefix:
         print(name)
         names.append(name)
 

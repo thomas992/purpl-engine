@@ -49,4 +49,3 @@
 #define PURPL_ASM_CALL __attribute__((__ms_abi__))
 #endif // _MSC_VER
 #endif // PURPL_X86_64
-

@@ -30,4 +30,3 @@
 ///
 /// \return Returns true if the pipeline was created successfully, false otherwise
 extern bool vulkan_create_pipeline(void);
-

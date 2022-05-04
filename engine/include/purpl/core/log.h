@@ -49,7 +49,7 @@ enum purpl_log_level {
 
 #ifdef PURPL_DEBUG
 /// The default log message format
-#define PURPL_LOG_DEFAULT_FORMAT "[PID #P TID #T] [#d #t] [#W] [#L] #msg"
+#define PURPL_LOG_DEFAULT_FORMAT "[PID #P TID #T] [#ds #t] [#W] [#L] #msg"
 
 /// The default log file name, relative to the data directory
 #define PURPL_LOG_DEFAULT_NAME "logs/purpl-<date>-debug.log"
@@ -94,9 +94,11 @@ struct purpl_logger {
 ///
 ///	#d	- The current date in the format #WD, #D/#M/#Y, or #jd if it's
 ///		  April 1st and PURPL_ENABLE_MEMING is defined
+///	#ds	- #d using #wD instead of #WD
 ///	#jd	- The current date in the format #WD, #JD/#JM/#JY
 ///	#D	- The current day of the month
 ///	#JD	- The current day of the month, but 32 if it's April 1st
+///	#wD	- The short form of #WD
 ///	#WD	- The name of the current day of the week
 ///	#MN	- The current month (by name)
 ///	#JMN	- The current month, but will be March if it's April 1st
@@ -123,9 +125,8 @@ struct purpl_logger {
 ///		  loop if you put it in a message, but can be used more than
 ///		  once in the format)
 ///	#def	- The default pattern (passing NULL for format also gives
-///		  this), which is equivalent to
-///		  or "[#d #t] [#n #v] [#L]\t#msg",in release builds, or
-///		  "[PID #P TID #T] [#d #t] [#W] [#L] #msg" in debug builds
+///		  this), which is equivalent to "[#d #t] [#n #v] [#L]\t#msg" in release builds, or
+///		  "[PID #P TID #T] [#ds #t] [#W] [#L] #msg" in debug builds
 ///
 ///	The sequences can also be used in messages passed to
 ///	purpl_log_write (and the macros wrapping it), as they
@@ -136,9 +137,8 @@ struct purpl_logger {
 /// clang-format on
 ///
 /// \return Returns a pointer to the new logger
-extern PURPL_API struct purpl_logger *
-purpl_log_create(const char *file, enum purpl_log_level level,
-		 enum purpl_log_level max_level, const char *format);
+extern PURPL_API struct purpl_logger *purpl_log_create(const char *file, enum purpl_log_level level,
+						       enum purpl_log_level max_level, const char *format);
 
 /// Log a message to the given logger
 ///
@@ -150,19 +150,15 @@ purpl_log_create(const char *file, enum purpl_log_level level,
 ///		    nicer formats than __func__)
 /// \param msg The message to write. Supports printf format specifiers and the
 ///	       directives specified for purpl_log_create's format parameter.
-extern PURPL_API void purpl_log_write(struct purpl_logger *logger,
-				      enum purpl_log_level level,
-				      const char *file, int line,
-				      const char *function, const char *msg,
-				      ...);
+extern PURPL_API void purpl_log_write(struct purpl_logger *logger, enum purpl_log_level level, const char *file,
+				      int line, const char *function, const char *msg, ...);
 
 /// Get the given logger's default level
 ///
 /// \param logger The logger to get the level of
 ///
 /// \return Returns the logger's current default level
-extern PURPL_API enum purpl_log_level
-purpl_log_get_level(struct purpl_logger *logger);
+extern PURPL_API enum purpl_log_level purpl_log_get_level(struct purpl_logger *logger);
 
 /// Set the given logger's default level
 ///
@@ -170,16 +166,14 @@ purpl_log_get_level(struct purpl_logger *logger);
 /// \param level The new default level for the logger
 ///
 /// \return Returns the previous level of the logger
-extern PURPL_API enum purpl_log_level
-purpl_log_set_level(struct purpl_logger *logger, enum purpl_log_level level);
+extern PURPL_API enum purpl_log_level purpl_log_set_level(struct purpl_logger *logger, enum purpl_log_level level);
 
 /// Get the given logger's max level
 ///
 /// \param logger The logger to get the max level of
 ///
 /// \return Returns the logger's current max level
-extern PURPL_API enum purpl_log_level
-purpl_log_get_max_level(struct purpl_logger *logger);
+extern PURPL_API enum purpl_log_level purpl_log_get_max_level(struct purpl_logger *logger);
 
 /// Set the given logger's max level
 ///
@@ -187,48 +181,38 @@ purpl_log_get_max_level(struct purpl_logger *logger);
 /// \param level The new max level for the logger
 ///
 /// \return Returns the previous level of the logger
-extern PURPL_API enum purpl_log_level
-purpl_log_set_max_level(struct purpl_logger *logger,
-			enum purpl_log_level level);
+extern PURPL_API enum purpl_log_level purpl_log_set_max_level(struct purpl_logger *logger, enum purpl_log_level level);
 
 /// Set the given logger's format
 ///
 /// \param logger The logger to set the format of
 /// \param format The new format for the logger (NULL or #def for the default)
-extern PURPL_API void purpl_log_set_format(struct purpl_logger *logger,
-					   const char *format);
+extern PURPL_API void purpl_log_set_format(struct purpl_logger *logger, const char *format);
 
 /// Close the given logger
 ///
 /// \param logger The logger to close
 /// \param last_message Whether to write a final message to the log
-extern PURPL_API void purpl_log_close(struct purpl_logger *logger,
-				      bool last_message);
+extern PURPL_API void purpl_log_close(struct purpl_logger *logger, bool last_message);
 
 /// Log a message at level (without the PURPL_LOG_LEVEL_ prefix)
-#define PURPL_LOG_WRITE(logger, level, ...)                                  \
-	purpl_log_write(logger, PURPL_LOG_LEVEL_##level, __FILE__, __LINE__, \
-			PURPL_CURRENT_FUNCTION, __VA_ARGS__)
+#define PURPL_LOG_WRITE(logger, level, ...) \
+	purpl_log_write(logger, PURPL_LOG_LEVEL_##level, __FILE__, __LINE__, PURPL_CURRENT_FUNCTION, __VA_ARGS__)
 
 /// Log a message at the current log level
-#define PURPL_LOG_CURRENT(logger, ...) \
-	PURPL_LOG_WRITE(logger, CURRENT, __VA_ARGS__)
+#define PURPL_LOG_CURRENT(logger, ...) PURPL_LOG_WRITE(logger, CURRENT, __VA_ARGS__)
 
 /// Log a message at PURPL_LOG_LEVEL_CRITICAL
-#define PURPL_LOG_CRITICAL(logger, ...) \
-	PURPL_LOG_WRITE(logger, CRITICAL, __VA_ARGS__)
+#define PURPL_LOG_CRITICAL(logger, ...) PURPL_LOG_WRITE(logger, CRITICAL, __VA_ARGS__)
 
 /// Log a message at PURPL_LOG_LEVEL_ERROR
-#define PURPL_LOG_ERROR(logger, ...) \
-	PURPL_LOG_WRITE(logger, ERROR, __VA_ARGS__)
+#define PURPL_LOG_ERROR(logger, ...) PURPL_LOG_WRITE(logger, ERROR, __VA_ARGS__)
 
 /// Log a message at PURPL_LOG_LEVEL_WARNING
-#define PURPL_LOG_WARNING(logger, ...) \
-	PURPL_LOG_WRITE(logger, WARNING, __VA_ARGS__)
+#define PURPL_LOG_WARNING(logger, ...) PURPL_LOG_WRITE(logger, WARNING, __VA_ARGS__)
 
 /// Log a message at PURPL_LOG_LEVEL_INFO
 #define PURPL_LOG_INFO(logger, ...) PURPL_LOG_WRITE(logger, INFO, __VA_ARGS__)
 
 /// Log a message at PURPL_LOG_LEVEL_DEBUG
-#define PURPL_LOG_DEBUG(logger, ...) \
-	PURPL_LOG_WRITE(logger, DEBUG, __VA_ARGS__)
+#define PURPL_LOG_DEBUG(logger, ...) PURPL_LOG_WRITE(logger, DEBUG, __VA_ARGS__)

@@ -39,8 +39,7 @@ PURPL_API size_t purpl_strcount(const char *str, const char *sub)
 	return count;
 }
 
-PURPL_API char *purpl_strrplc(const char *str, const char *old,
-			      const char *new, size_t *size)
+PURPL_API char *purpl_strrplc(const char *str, const char *old, const char *new, size_t *size)
 {
 	char *buf;
 	char *tmp;
@@ -53,8 +52,7 @@ PURPL_API char *purpl_strrplc(const char *str, const char *old,
 
 	occurences = purpl_strcount(str, old);
 	buf_size = strlen(str) + 2;
-	buf_size = buf_size - (occurences * strlen(old) + 1) +
-		   (occurences * strlen(new) + 1);
+	buf_size = buf_size - (occurences * strlen(old) + 1) + (occurences * strlen(new) + 1);
 
 	buf = calloc(buf_size, sizeof(char));
 	if (!buf)
@@ -70,8 +68,7 @@ PURPL_API char *purpl_strrplc(const char *str, const char *old,
 	p = strstr(buf, old);
 
 	while (p) {
-		stbsp_snprintf(tmp, buf_size, "%.*s%s%s", (s32)(p - buf), buf,
-			       new, p + strlen(old));
+		stbsp_snprintf(tmp, buf_size, "%.*s%s%s", (s32)(p - buf), buf, new, p + strlen(old));
 		strncpy(buf, tmp, buf_size);
 		p = strstr(++p, old);
 	}
@@ -84,8 +81,7 @@ PURPL_API char *purpl_strrplc(const char *str, const char *old,
 	return buf;
 }
 
-PURPL_API char *purpl_strrplcn(const char *str, const char *old,
-			       const char *new, size_t *size)
+PURPL_API char *purpl_strrplcn(const char *str, const char *old, const char *new, size_t *size)
 {
 	char *buf;
 	char *p;
@@ -178,8 +174,7 @@ PURPL_API char *purpl_strndup(const char *str, size_t n)
 	return buf;
 }
 
-PURPL_API char *purpl_strins(const char *str, const char *ins, size_t index,
-			     size_t size)
+PURPL_API char *purpl_strins(const char *str, const char *ins, size_t index, size_t size)
 {
 	char *buf;
 
@@ -189,7 +184,7 @@ PURPL_API char *purpl_strins(const char *str, const char *ins, size_t index,
 	buf = calloc(size + strlen(ins), sizeof(char));
 	if (!buf)
 		return NULL;
-	
+
 	strncpy(buf, str, index);
 	strncpy(buf + index, ins, strlen(str));
 	strncpy(buf + index + strlen(str), str + index, strlen(str + index));
@@ -197,8 +192,7 @@ PURPL_API char *purpl_strins(const char *str, const char *ins, size_t index,
 	return buf;
 }
 
-PURPL_API char *purpl_strrm(const char *str, size_t index, size_t n,
-			    size_t size)
+PURPL_API char *purpl_strrm(const char *str, size_t index, size_t n, size_t size)
 {
 	char *buf;
 
@@ -237,8 +231,7 @@ PURPL_API const char *purpl_format_version(u32 version)
 {
 	static char buf[PURPL_STATIC_BUF_MAX];
 
-	stbsp_snprintf(buf, PURPL_STATIC_BUF_MAX, "%d.%d.%d",
-		       (version >> 16) & 0xFF, (version >> 8) & 0xFF,
+	stbsp_snprintf(buf, PURPL_STATIC_BUF_MAX, "%d.%d.%d", (version >> 16) & 0xFF, (version >> 8) & 0xFF,
 		       version & 0xFF);
 
 	return buf;
@@ -246,8 +239,7 @@ PURPL_API const char *purpl_format_version(u32 version)
 
 const char *purpl_get_graphics_api_name(u32 api)
 {
-	const char *graphics_apis[] = { "Software", "OpenGL", "Vulkan",
-					"DirectX",  "Metal",  "Unknown" };
+	const char *graphics_apis[] = { "Software", "OpenGL", "Vulkan", "DirectX", "Metal", "Unknown" };
 
 	// Make sure the API is within the array
 	return graphics_apis[PURPL_MIN(api, PURPL_GRAPHICS_API_MAX)];

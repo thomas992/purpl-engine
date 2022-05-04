@@ -46,9 +46,7 @@ PURPL_API u32 purpl_translate_file_mode(u32 mode, bool to_native)
 		if (mode & PURPL_FS_MODE_READ)
 			out |= S_IRUSR | S_IRGRP | S_IROTH;
 		if (mode & PURPL_FS_MODE_WRITE)
-			out |= S_IWUSR | (mode & PURPL_FS_MODE_EVERYONE ?
-						  S_IWGRP | S_IWOTH :
-							0);
+			out |= S_IWUSR | (mode & PURPL_FS_MODE_EVERYONE ? S_IWGRP | S_IWOTH : 0);
 		if (mode & PURPL_FS_MODE_EXECUTE)
 			out |= S_IXUSR | S_IXGRP | S_IXOTH;
 #endif // _WIN32
@@ -99,8 +97,7 @@ PURPL_API u32 purpl_translate_file_attrs(u32 attrs, bool to_native)
 	return out;
 }
 
-PURPL_API char *purpl_pathfmt(size_t *size, const char *path,
-			      enum purpl_fs_flags flags, bool relative,
+PURPL_API char *purpl_pathfmt(size_t *size, const char *path, enum purpl_fs_flags flags, bool relative,
 			      bool data_relative)
 {
 	char *path2;
@@ -121,14 +118,11 @@ PURPL_API char *purpl_pathfmt(size_t *size, const char *path,
 	}
 	if (path2[0] != '/') {
 		if (relative) {
-			path3 = purpl_strfmt(size, "%s/%s",
-					     purpl_inst->engine_dir, path2);
+			path3 = purpl_strfmt(size, "%s/%s", purpl_inst->engine_dir, path2);
 			free(path2);
 			path2 = path3;
 		} else if (data_relative) {
-			path3 = purpl_strfmt(size, "%s/%s",
-					     purpl_inst->engine_data_dir,
-					     path2);
+			path3 = purpl_strfmt(size, "%s/%s", purpl_inst->engine_data_dir, path2);
 			free(path2);
 			path2 = path3;
 		}
@@ -137,8 +131,7 @@ PURPL_API char *purpl_pathfmt(size_t *size, const char *path,
 	return path2;
 }
 
-PURPL_API bool purpl_path_exists(const char *path, bool relative,
-				 bool data_relative)
+PURPL_API bool purpl_path_exists(const char *path, bool relative, bool data_relative)
 {
 	FILE *fp;
 	char *path2;
@@ -158,8 +151,7 @@ PURPL_API bool purpl_path_exists(const char *path, bool relative,
 	return ret;
 }
 
-PURPL_API bool purpl_mkdir(const char *path, enum purpl_fs_flags flags,
-			   enum purpl_file_mode mode, bool relative,
+PURPL_API bool purpl_mkdir(const char *path, enum purpl_fs_flags flags, enum purpl_file_mode mode, bool relative,
 			   bool data_relative)
 {
 	char *path2;
@@ -192,8 +184,7 @@ PURPL_API bool purpl_mkdir(const char *path, enum purpl_fs_flags flags,
 		if (!CreateDirectoryA(dir_names[i], NULL))
 			errno = purpl_win32_error_to_errno(GetLastError());
 #else // _WIN32
-		int fd = mkdir(dir_names[i],
-			       purpl_translate_file_mode(mode, true));
+		int fd = mkdir(dir_names[i], purpl_translate_file_mode(mode, true));
 		close(fd);
 #endif // _WIN32
 		free(dir_names[i]);
@@ -206,8 +197,7 @@ PURPL_API bool purpl_mkdir(const char *path, enum purpl_fs_flags flags,
 	return true;
 }
 
-PURPL_API char *purpl_path_directory(const char *path, size_t *size,
-				     bool relative, bool data_relative)
+PURPL_API char *purpl_path_directory(const char *path, size_t *size, bool relative, bool data_relative)
 {
 	char *buf;
 	char *buf2;
@@ -233,8 +223,7 @@ PURPL_API char *purpl_path_directory(const char *path, size_t *size,
 	return buf2;
 }
 
-PURPL_API char *purpl_path_file(const char *path, size_t *size, bool relative,
-				bool data_relative)
+PURPL_API char *purpl_path_file(const char *path, size_t *size, bool relative, bool data_relative)
 {
 	char *buf;
 	char *buf2;
@@ -266,8 +255,7 @@ PURPL_API char *purpl_path_file(const char *path, size_t *size, bool relative,
 	return buf2;
 }
 
-PURPL_API void purpl_stat(const char *path, struct purpl_file_info *info,
-			  bool relative, bool data_relative)
+PURPL_API void purpl_stat(const char *path, struct purpl_file_info *info, bool relative, bool data_relative)
 {
 	char *path2;
 	char *file = NULL;
@@ -309,8 +297,7 @@ PURPL_API void purpl_stat(const char *path, struct purpl_file_info *info,
 	free(path2);
 }
 
-PURPL_API size_t purpl_get_size(const char *path, bool relative,
-				bool data_relative)
+PURPL_API size_t purpl_get_size(const char *path, bool relative, bool data_relative)
 {
 	char *path2;
 	struct purpl_file_info info;
@@ -338,8 +325,7 @@ PURPL_API char *purpl_get_system_data_dir(void)
 #ifdef _WIN32
 		char appdata[MAX_PATH];
 
-		if (SHGetFolderPathA(NULL, CSIDL_APPDATA, NULL, 0, appdata) !=
-		    ERROR_SUCCESS)
+		if (SHGetFolderPathA(NULL, CSIDL_APPDATA, NULL, 0, appdata) != ERROR_SUCCESS)
 			strncpy(appdata, "C:/", PURPL_SIZEOF_ARRAY(appdata));
 		path = appdata;
 #else // _WIN32

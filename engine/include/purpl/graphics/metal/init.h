@@ -30,4 +30,3 @@ extern bool purpl_metal_init(void);
 
 /// Shut down Metal (if it's initialized)
 extern void purpl_metal_shutdown(void);
-

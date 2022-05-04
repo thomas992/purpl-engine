@@ -1,4 +1,4 @@
-#  Engine  CMakeLists
+#  Engine CMakeLists
 #
 #  Copyright 2022 MobSlicer152
 #  This file is part of Purpl Engine
@@ -17,9 +17,11 @@
 
 cmake_minimum_required(VERSION 3.10)
 
+# Enable warnings
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${PURPL_WARNINGS}")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${PURPL_WARNINGS}")
 
+# Sources
 set(ENGINE_CORE_HEADERS
     include/purpl/core/config.h.in
     include/purpl/core/coredefs.h
@@ -141,15 +143,31 @@ set(ENGINE_ALL_SOURCES
     ${ENGINE_UTIL_SOURCES}
     ${ENGINE_PLATFORM_SOURCES})
 
+# IDE source groups
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/include PREFIX "Header Files" FILES ${ENGINE_ALL_HEADERS})
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/src PREFIX "Source Files" FILES ${ENGINE_ALL_SOURCES})
 
+# Configuration header
 configure_file(include/purpl/core/config.h.in config.h @ONLY)
 
+# Header with dumped exports for engine_preinit
 set(EXPORTS_HEADER ${CMAKE_CURRENT_BINARY_DIR}/exports.h)
 
+# Add the two libraries
 add_library(engine_preinit STATIC src/core/main.c src/core/preinit.cc ${CMAKE_SOURCE_DIR}/tools/dumppe.py ${CMAKE_SOURCE_DIR}/tools/dumpelf.py ${CMAKE_SOURCE_DIR}/tools/dumpmacho.py ${EXPORTS_HEADER})
 add_library(engine SHARED ${ENGINE_ALL_HEADERS} ${ENGINE_ALL_SOURCES} ${CMAKE_CURRENT_BINARY_DIR}/config.h)
+
+# Libraries and preprocessor definitions
+if (${PURPL_ENABLE_MEMING})
+	target_compile_definitions(engine PRIVATE PURPL_ENABLE_MEMING=1)
+endif()
+if (${PURPL_PROCESSOR} MATCHES "x86_64")
+	target_compile_definitions(engine PRIVATE PURPL_X86=1 PURPL_X86_64=1)
+elseif(${PURPL_PROCESSOR} MATCHES "x86")
+	target_compile_definitions(engine PRIVATE PURPL_X86=1)
+elseif(${PURPL_PROCESSOR} MATCHES "arm64")
+	target_compile_definitions(engine PRIVATE PURPL_ARM=1)
+endif()
 target_compile_definitions(engine_preinit PRIVATE _CLANG_DISABLE_CRT_DEPRECATION_WARNINGS=1 _CRT_SECURE_NO_WARNINGS=1 PURPL_BUILD=1)
 target_compile_definitions(engine PRIVATE _CLANG_DISABLE_CRT_DEPRECATION_WARNINGS=1 _CRT_SECURE_NO_WARNINGS=1 PURPL_BUILD=1)
 if (${CMAKE_SYSTEM_NAME} STREQUAL "WindowsStore")
@@ -160,7 +178,6 @@ if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
 	target_compile_definitions(engine_preinit PRIVATE PURPL_DEBUG=1)
 	target_compile_definitions(engine PRIVATE PURPL_DEBUG=1)
 endif()
-
 target_link_libraries(engine PRIVATE ${SDL2_LIBRARIES})
 if (${PURPL_ENABLE_DISCORD})
 	target_compile_definitions(engine PRIVATE PURPL_ENABLE_DISCORD=1)
@@ -173,13 +190,16 @@ if (${PURPL_ENABLE_STEAM})
 	target_link_libraries(engine PRIVATE steamworks_sdk)
 endif()
 
+# Disable exporting every symbol
 if(NOT WIN32)
 	set_target_properties(engine PROPERTIES C_VISIBILITY_PRESET hidden)
+	set_target_properties(engine PROPERTIES CXX_VISIBILITY_PRESET hidden)
 endif()
 
+# Dump exports for engine_preinit
 if (WIN32)
 	add_custom_command(OUTPUT ${EXPORTS_HEADER}
-			   COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tools/dumppe.py $<TARGET_FILE:engine> ${EXPORTS_HEADER}
+			   COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tools/dumppe.py $<TARGET_FILE:engine> ${EXPORTS_HEADER} purpl
 			   DEPENDS engine ${CMAKE_SOURCE_DIR}/tools/dumppe.py)
 else()
 	if (APPLE)
@@ -188,22 +208,12 @@ else()
 		set(DUMPEXPORTS_NAME dumpelf.py)
 	endif()
 	add_custom_command(OUTPUT ${EXPORTS_HEADER}
-			   COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tools/${DUMPEXPORTS_NAME} $<TARGET_FILE:engine> ${EXPORTS_HEADER}
+			   COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tools/${DUMPEXPORTS_NAME} $<TARGET_FILE:engine> ${EXPORTS_HEADER} purpl
 			   DEPENDS engine ${CMAKE_SOURCE_DIR}/tools/${DUMPEXPORTS_NAME})
 	target_link_libraries(engine_preinit PUBLIC dl)
 endif()
 
-if (${PURPL_ENABLE_MEMING})
-	target_compile_definitions(engine PRIVATE PURPL_ENABLE_MEMING=1)
-endif()
-if (${PURPL_PROCESSOR} MATCHES "x86_64")
-	target_compile_definitions(engine PRIVATE PURPL_X86=1 PURPL_X86_64=1)
-elseif(${PURPL_PROCESSOR} MATCHES "x86")
-	target_compile_definitions(engine PRIVATE PURPL_X86=1)
-elseif(${PURPL_PROCESSOR} MATCHES "arm64")
-	target_compile_definitions(engine PRIVATE PURPL_ARM=1)
-endif()
-
+# Include directories
 target_include_directories(engine_preinit
 			   PUBLIC
 				${CMAKE_CURRENT_SOURCE_DIR}/include
@@ -224,6 +234,8 @@ target_include_directories(engine
 				${CMAKE_SOURCE_DIR}/deps/glad2/include
 				${CMAKE_SOURCE_DIR}/deps/sdl2/include
 				${CMAKE_SOURCE_DIR}/deps/stb)
+
+# Platform specific stuff
 if (APPLE)
 	set_target_properties(engine
 			      PROPERTIES
@@ -235,9 +247,12 @@ else()
 				glad_vulkan
 				${Vulkan_LIBRARIES})
 endif()
+
+# No library name prefix
 set_target_properties(engine PROPERTIES PREFIX "")
 set_target_properties(engine_preinit PROPERTIES PREFIX "")
 
+# Shaders
 foreach(shader ${ENGINE_SHADERS})
 	string(REPLACE "." "_" shader_name ${shader})
 	string(FIND "${shader}" "/" shader_basename_start REVERSE)
@@ -259,6 +274,7 @@ if (${PURPL_ENABLE_STEAM})
 endif()
 set(ENGINE_RUNTIME_TARGETS ${ENGINE_RUNTIME_TARGETS_} PARENT_SCOPE)
 
+# Generate the list of libraries to load
 set(engine_libs ${CMAKE_CURRENT_BINARY_DIR}/engine_libs.txt)
 file(REMOVE ${engine_libs}.in)
 set(engine_libs_content "")
@@ -277,6 +293,7 @@ file(WRITE ${engine_libs}.in ${engine_libs_content})
 file(GENERATE OUTPUT ${engine_libs} INPUT ${engine_libs}.in)
 install(FILES ${engine_libs} DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 
+# Install targets and symbols
 install(TARGETS engine_preinit
 	LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
 

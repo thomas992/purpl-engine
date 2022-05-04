@@ -46,7 +46,7 @@ extern void purpl_discord_shutdown(void);
 /// Run callbacks
 ///
 /// \param delta The number of milliseconds since the last call
-/// 
+///
 /// \return Returns true if all callbacks ran successfully
 extern bool discord_run_callbacks(u32 delta);
 

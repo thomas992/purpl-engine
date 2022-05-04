@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Garbage fire script to get the exports from the engine so that it can be dynamically loaded on Linux
+# Garbage fire script to get the exports from the engine so that it can be dynamically loaded on most Unix clones/derivatives
 
 import os
 import subprocess
@@ -11,6 +11,12 @@ if len(sys.argv) < 2:
 elif len(sys.argv) < 3:
     print("Missing output file")
     exit(1)
+
+if len(sys.argv) > 3:
+    prefix = sys.argv[3]
+    print(f"Only dumping exports beginning with \"{prefix}\"")
+else:
+    prefix = ""
 
 if not os.path.exists(sys.argv[1]):
     print(f"File \"{sys.argv[1]}\" doesn't exist, exiting")
@@ -33,7 +39,7 @@ for x in out.split("\n"):
     end = name.find(" ")
     end = len(name) if end == -1 else end
     name = name[:end]
-    if len(x.split()) and x.split()[1] == "T" and name != "_init" and name != "_fini" and name != "_etext" and name != "etext":
+    if len(x.split()) and x.split()[1] == "T" and name != "_init" and name != "_fini" and name != "_etext" and name != "etext" and name[0:len(prefix)] == prefix:
         print(name)
         names.append(name)
 

@@ -50,8 +50,7 @@ extern void vulkan_destroy_image_views(void);
 /// \param info Receives the swapchain information
 ///
 /// \returns Returns true if the device is supported, false otherwise
-extern bool vulkan_get_swapchain_info(VkPhysicalDevice device,
-				      struct vulkan_swapchain_info *info);
+extern bool vulkan_get_swapchain_info(VkPhysicalDevice device, struct vulkan_swapchain_info *info);
 
 /// Choose the best surface format for the swapchain
 ///
@@ -67,4 +66,3 @@ extern VkPresentModeKHR vulkan_choose_swap_present_mode(void);
 ///
 /// \return Returns the extent of the images
 extern VkExtent2D vulkan_choose_swap_extent(void);
-

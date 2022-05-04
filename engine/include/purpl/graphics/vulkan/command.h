@@ -25,7 +25,12 @@
 
 #include "purpl/util/util.h"
 
-/// Create the command pool
+/// Create a command pool
 ///
 /// \return Returns true if successful, false otherwise
 extern bool vulkan_create_command_pool(void);
+
+/// Allocate a command buffer
+///
+/// \return Returns true if successful, false otherwise
+extern bool vulkan_alloc_command_buffer(void);

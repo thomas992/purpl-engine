@@ -22,14 +22,10 @@
 
 char *purpl_get_initial_window_title(void)
 {
-	return purpl_strfmt(NULL,
-			    "%s v%s - %s - Purpl Engine v%s+%s-%s-%s",
-			    purpl_inst->app_name,
+	return purpl_strfmt(NULL, "%s v%s - %s - Purpl Engine v%s+%s-%s-%s", purpl_inst->app_name,
 			    purpl_format_version(purpl_inst->app_version),
-			    purpl_get_graphics_api_name(purpl_inst->graphics_api),
-			    purpl_format_version(PURPL_VERSION),
-			    PURPL_SOURCE_BRANCH, PURPL_SOURCE_COMMIT,
-			    PURPL_BUILD_TYPE);
+			    purpl_get_graphics_api_name(purpl_inst->graphics_api), purpl_format_version(PURPL_VERSION),
+			    PURPL_SOURCE_BRANCH, PURPL_SOURCE_COMMIT, PURPL_BUILD_TYPE);
 }
 
 PURPL_API char *purpl_graphics_window_get_title(void)
@@ -43,8 +39,7 @@ PURPL_API void purpl_graphics_window_set_title(const char *title, ...)
 	char *new_title;
 
 	if (!title) {
-		PURPL_LOG_DEBUG(purpl_inst->logger,
-				"title was NULL, not setting window title");
+		PURPL_LOG_DEBUG(purpl_inst->logger, "title was NULL, not setting window title");
 		return;
 	}
 

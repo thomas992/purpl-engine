@@ -96,8 +96,7 @@ extern PURPL_API u32 purpl_translate_file_attrs(u32 attrs, bool to_native);
 ///		    executable
 /// \param data_relative Whether to format the path relative to the
 ///			 engine data directory
-extern PURPL_API char *purpl_pathfmt(size_t *size, const char *path,
-				     enum purpl_fs_flags flags, bool relative,
+extern PURPL_API char *purpl_pathfmt(size_t *size, const char *path, enum purpl_fs_flags flags, bool relative,
 				     bool data_relative);
 
 /// Check if a file exists
@@ -108,8 +107,7 @@ extern PURPL_API char *purpl_pathfmt(size_t *size, const char *path,
 ///			 directory
 ///
 /// \return Returns true if the file exists, false otherwise
-extern PURPL_API bool purpl_path_exists(const char *path, bool relative,
-					bool data_relative);
+extern PURPL_API bool purpl_path_exists(const char *path, bool relative, bool data_relative);
 
 /// Create a directory
 ///
@@ -121,8 +119,7 @@ extern PURPL_API bool purpl_path_exists(const char *path, bool relative,
 ///			 directory
 ///
 /// \return Returns true on success, and sets errno on Windows
-extern PURPL_API bool purpl_mkdir(const char *path, enum purpl_fs_flags flags,
-				  enum purpl_file_mode mode, bool relative,
+extern PURPL_API bool purpl_mkdir(const char *path, enum purpl_fs_flags flags, enum purpl_file_mode mode, bool relative,
 				  bool data_relative);
 
 /// Get the directory component of a path
@@ -134,8 +131,7 @@ extern PURPL_API bool purpl_mkdir(const char *path, enum purpl_fs_flags flags,
 ///			 directory
 ///
 /// \return Returns the directory name in a new buffer, or NULL on failure
-extern PURPL_API char *purpl_path_directory(const char *path, size_t *size,
-					    bool relative, bool data_relative);
+extern PURPL_API char *purpl_path_directory(const char *path, size_t *size, bool relative, bool data_relative);
 
 /// Get the file component of a path
 ///
@@ -146,8 +142,7 @@ extern PURPL_API char *purpl_path_directory(const char *path, size_t *size,
 ///			 directory
 ///
 /// \return Returns the file name in a new buffer, or NULL on failure
-extern PURPL_API char *purpl_path_file(const char *path, size_t *size,
-				       bool relative, bool data_relative);
+extern PURPL_API char *purpl_path_file(const char *path, size_t *size, bool relative, bool data_relative);
 
 /// stat abstraction
 ///
@@ -157,9 +152,7 @@ extern PURPL_API char *purpl_path_file(const char *path, size_t *size,
 /// \param relative Whether the path is relative to the engine executable
 /// \param data_relative Whether the path is relative to the engine data
 ///			 directory
-extern PURPL_API void purpl_stat(const char *path,
-				 struct purpl_file_info *info, bool relative,
-				 bool data_relative);
+extern PURPL_API void purpl_stat(const char *path, struct purpl_file_info *info, bool relative, bool data_relative);
 
 /// Get the size of a file
 ///
@@ -169,8 +162,7 @@ extern PURPL_API void purpl_stat(const char *path,
 ///			 directory
 ///
 /// \return Returns the size of the file
-extern PURPL_API size_t purpl_get_size(const char *path, bool relative,
-				       bool data_relative);
+extern PURPL_API size_t purpl_get_size(const char *path, bool relative, bool data_relative);
 
 /// Get the per-user data folder such as AppData/Roaming on Windows, and
 /// XDG_DATA_HOME on everything else (and Windows if it's set)

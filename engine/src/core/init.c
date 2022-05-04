@@ -32,8 +32,7 @@ u64 preinit_called;
 char *engine_dir;
 
 // Sets preinit_called to PREINIT_MAGIC
-PURPL_API s32 purpl_complete_preinit(purpl_main_t main_func, int argc,
-				      char *argv[])
+PURPL_API s32 purpl_complete_preinit(purpl_main_t main_func, int argc, char *argv[])
 {
 	preinit_called = PREINIT_MAGIC;
 
@@ -57,39 +56,30 @@ PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 
 	purpl_inst = calloc(1, sizeof(struct purpl_instance));
 	if (!purpl_inst) {
-		fprintf(stderr,
-			"Error: failed to allocate memory for the engine instance: %s\n",
-			purpl_strerror());
-		SDL_ShowSimpleMessageBox(
-			SDL_MESSAGEBOX_ERROR, "Purpl Engine",
-			"Failed to allocate the engine instance", NULL);
+		fprintf(stderr, "Error: failed to allocate memory for the engine instance: %s\n", purpl_strerror());
+		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Purpl Engine", "Failed to allocate the engine instance",
+					 NULL);
 		return false;
 	}
 
 	purpl_inst->engine_dir = purpl_strdup(engine_dir);
 	free(engine_dir);
 
-	purpl_inst->app_name =
-		purpl_strdup(app_name ? app_name : "purpl-unknown-app");
+	purpl_inst->app_name = purpl_strdup(app_name ? app_name : "purpl-unknown-app");
 	purpl_inst->app_version = app_version;
 
 	data_dir = purpl_get_system_data_dir();
-	purpl_inst->engine_data_dir =
-		purpl_strfmt(NULL, "%s/%s", data_dir, purpl_inst->app_name);
+	purpl_inst->engine_data_dir = purpl_strfmt(NULL, "%s/%s", data_dir, purpl_inst->app_name);
 	free(data_dir);
 	fprintf(stderr, "Data directory is %s\n", purpl_inst->engine_data_dir);
 
 	if (!purpl_path_exists("logs", false, true))
-		purpl_mkdir("logs", PURPL_FS_MKDIR_RECURSE, PURPL_FS_MODE_ALL,
-			    false, true);
+		purpl_mkdir("logs", PURPL_FS_MKDIR_RECURSE, PURPL_FS_MODE_ALL, false, true);
 
-	purpl_inst->logger = purpl_log_create(NULL, PURPL_LOG_LEVEL_INFO,
-					      PURPL_LOG_LEVEL_MAX, NULL);
+	purpl_inst->logger = purpl_log_create(NULL, PURPL_LOG_LEVEL_INFO, PURPL_LOG_LEVEL_MAX, NULL);
 	if (!purpl_inst->logger) {
-		fprintf(stderr, "Error: failed to create a logger: %s\n",
-			purpl_strerror());
-		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Purpl Engine",
-					 "Failed to create a logger", NULL);
+		fprintf(stderr, "Error: failed to create a logger: %s\n", purpl_strerror());
+		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Purpl Engine", "Failed to create a logger", NULL);
 		purpl_internal_shutdown();
 		return false;
 	}
@@ -98,16 +88,13 @@ PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 					   "initialization started.");
 
 	// Check that preinit was called so a warning can be issued otherwise
-	PURPL_LOG_DEBUG(purpl_inst->logger,
-			"preinit_called = 0x%" PRIX64
-			" (PREINIT_MAGIC = 0x%" PRIX64 ")",
+	PURPL_LOG_DEBUG(purpl_inst->logger, "preinit_called = 0x%" PRIX64 " (PREINIT_MAGIC = 0x%" PRIX64 ")",
 			preinit_called, PREINIT_MAGIC);
 	if (preinit_called != PREINIT_MAGIC)
-		PURPL_LOG_DEBUG(
-			purpl_inst->logger,
-			"This application has not called purpl_preinit (preinit_called (0x%" PRIX64
-			") != PREINIT_MAGIC (0x%" PRIX64 "))",
-			preinit_called, PREINIT_MAGIC);
+		PURPL_LOG_DEBUG(purpl_inst->logger,
+				"This application has not called purpl_preinit (preinit_called (0x%" PRIX64
+				") != PREINIT_MAGIC (0x%" PRIX64 "))",
+				preinit_called, PREINIT_MAGIC);
 	purpl_inst->start_time = time(NULL);
 
 #ifdef PURPL_ENABLE_DISCORD
@@ -118,13 +105,9 @@ PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 
 	// Initialize libraries
 	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-		PURPL_LOG_CRITICAL(purpl_inst->logger,
-				   "Failed to initialize SDL: %s",
-				   SDL_GetError());
-		SDL_ShowSimpleMessageBox(
-			SDL_MESSAGEBOX_ERROR, "Purpl Engine",
-			"Failed to initialize SDL. See the logs for more information.",
-			NULL);
+		PURPL_LOG_CRITICAL(purpl_inst->logger, "Failed to initialize SDL: %s", SDL_GetError());
+		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Purpl Engine",
+					 "Failed to initialize SDL. See the logs for more information.", NULL);
 		purpl_internal_shutdown();
 		return false;
 	}
@@ -133,16 +116,13 @@ PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 
 	PURPL_LOG_INFO(purpl_inst->logger, "Initializing graphics");
 	if (!purpl_graphics_init()) {
-		SDL_ShowSimpleMessageBox(
-			SDL_MESSAGEBOX_ERROR, "Purpl Engine",
-			"Failed to initialize graphics. See the logs for more information.",
-			NULL);
+		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Purpl Engine",
+					 "Failed to initialize graphics. See the logs for more information.", NULL);
 		purpl_internal_shutdown();
 		return false;
 	}
 
-	PURPL_LOG_INFO(purpl_inst->logger,
-		       "Purpl Engine #V initialized for application #n #v");
+	PURPL_LOG_INFO(purpl_inst->logger, "Purpl Engine #V initialized for application #n #v");
 
 	return true;
 }
@@ -200,8 +180,7 @@ PURPL_API void purpl_run(purpl_frame_t frame, void *user_data)
 
 	if (!purpl_inst || !frame) {
 		if (purpl_inst)
-			PURPL_LOG_DEBUG(purpl_inst->logger,
-					"No frame callback given");
+			PURPL_LOG_DEBUG(purpl_inst->logger, "No frame callback given");
 		return;
 	}
 
@@ -215,11 +194,9 @@ PURPL_API void purpl_run(purpl_frame_t frame, void *user_data)
 		if (!running)
 			break;
 
-		if (strcmp(purpl_inst->wnd_title,
-			   SDL_GetWindowTitle(purpl_inst->wnd)) != 0) {
+		if (strcmp(purpl_inst->wnd_title, SDL_GetWindowTitle(purpl_inst->wnd)) != 0) {
 			free(purpl_inst->wnd_title);
-			purpl_inst->wnd_title = purpl_strdup(
-				SDL_GetWindowTitle(purpl_inst->wnd));
+			purpl_inst->wnd_title = purpl_strdup(SDL_GetWindowTitle(purpl_inst->wnd));
 		}
 
 #ifdef PURPL_ENABLE_DISCORD

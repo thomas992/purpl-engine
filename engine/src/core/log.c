@@ -22,10 +22,8 @@
 
 #include "purpl/core/log.h"
 
-PURPL_API struct purpl_logger *purpl_log_create(const char *file,
-						enum purpl_log_level level,
-						enum purpl_log_level max_level,
-						const char *format)
+PURPL_API struct purpl_logger *purpl_log_create(const char *file, enum purpl_log_level level,
+						enum purpl_log_level max_level, const char *format)
 {
 	struct purpl_logger *logger;
 	time_t t;
@@ -44,15 +42,13 @@ PURPL_API struct purpl_logger *purpl_log_create(const char *file,
 	t = time(NULL);
 	t2 = localtime(&t);
 	if (t2)
-		date = purpl_strfmt(NULL, "%d-%d-%d", t2->tm_mday,
-				    t2->tm_mon + 1, t2->tm_year + 1900);
+		date = purpl_strfmt(NULL, "%d-%d-%d", t2->tm_mday, t2->tm_mon + 1, t2->tm_year + 1900);
 	else
 		date = purpl_strfmt(NULL, "?\?-?\?-????"); // Escapes are to
 							   // prevent trigraph
 							   // expansion
 
-	filename2 = purpl_strrplc(file ? file : PURPL_LOG_DEFAULT_NAME,
-				  "<date>", date, NULL);
+	filename2 = purpl_strrplc(file ? file : PURPL_LOG_DEFAULT_NAME, "<date>", date, NULL);
 	free(date);
 	filename = purpl_pathfmt(NULL, filename2, 0, false, true);
 	free(filename2);
@@ -64,9 +60,7 @@ PURPL_API struct purpl_logger *purpl_log_create(const char *file,
 	}
 	free(filename);
 
-	logger->max_level = max_level >= PURPL_LOG_LEVEL_MAX ?
-				    PURPL_LOG_LEVEL_MAX - 1 :
-					  max_level;
+	logger->max_level = max_level >= PURPL_LOG_LEVEL_MAX ? PURPL_LOG_LEVEL_MAX - 1 : max_level;
 	logger->level = level > logger->max_level ? logger->max_level : level;
 
 	purpl_log_set_format(logger, format);
@@ -90,8 +84,7 @@ static void log_get_time(struct tm **t1, struct tm **t2)
 	}
 }
 
-static char *log_format(struct purpl_logger *logger,
-			enum purpl_log_level level, const char *file, int line,
+static char *log_format(struct purpl_logger *logger, enum purpl_log_level level, const char *file, int line,
 			const char *function, const char *msg, va_list a)
 {
 	char *buf;
@@ -109,24 +102,19 @@ static char *log_format(struct purpl_logger *logger,
 
 	char *msg_fmt;
 	size_t msg_size;
-	char *file2;
+	const char *file2;
 	struct tm *t1;
 	struct tm *t2;
 
 	va_list args;
 
-	const char *days[] = { "Sunday", "Monday", "Tuesday",  "Wednesday", "Thursday",
-			       "Friday", "Saturday" };
+	const char *days[] = { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
 
-	const char *months[] = { "January", "February", "March",
-				 "April",   "May",	"June",
-				 "July",    "August",	"September",
-				 "October", "November", "December" };
+	const char *months[] = { "January", "February", "March",     "April",	"May",	    "June",
+				 "July",    "August",	"September", "October", "November", "December" };
 
-	const char *levels_lower[] = { "critical", "error", "warning", "info",
-				       "debug" };
-	const char *levels_upper[] = { "CRITICAL", "ERROR", "WARNING", "INFO",
-				       "DEBUG" };
+	const char *levels_lower[] = { "critical", "error", "warning", "info", "debug" };
+	const char *levels_upper[] = { "CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG" };
 
 	va_copy(args, a);
 	msg_fmt = purpl_vstrfmt(&msg_size, msg, args);
@@ -140,8 +128,7 @@ static char *log_format(struct purpl_logger *logger,
 	log_get_time(&t1, &t2);
 
 	file2 = file;
-	if (strncmp(file, PURPL_SOURCE_DIR,
-		    PURPL_SIZEOF_ARRAY(PURPL_SOURCE_DIR) - 1) == 0)
+	if (strncmp(file, PURPL_SOURCE_DIR, PURPL_SIZEOF_ARRAY(PURPL_SOURCE_DIR) - 1) == 0)
 		file2 += PURPL_SIZEOF_ARRAY(PURPL_SOURCE_DIR);
 
 	base = logger->format;
@@ -169,15 +156,10 @@ static char *log_format(struct purpl_logger *logger,
 				str = purpl_strdup(msg_fmt);
 				passes++;
 			} else if (*p == 't') {
-				u64 h = t1->tm_hour;
-
 				p++;
-				if (strcmp(p, "12") == 0) {
-					h %= 12;
-					p += 2;
-				}
-				str = purpl_strfmt(NULL, "%02d:%02d:%02d", h,
-						   t1->tm_min, t1->tm_sec);
+				bool twelve = (strcmp(p, "12") == 0);
+				str = purpl_strfmt(NULL, "%s:#m:#s", twelve ? "#h12" : "#h");
+				passes++;
 			} else if (*p == 'h') {
 				u64 h = t1->tm_hour;
 
@@ -195,55 +177,64 @@ static char *log_format(struct purpl_logger *logger,
 				str = purpl_strfmt(NULL, "%02d", t1->tm_sec);
 			} else if (*p == 'j' || *p == 'd') {
 				bool joke = (*p == 'j');
-				struct tm *t = joke ? t1 : t2;
-				int year;
-
+				bool short_form = false;
+				
 				if (joke)
-					year = t->tm_year - 70;
-				else
-					year = t->tm_year + 1900;
+					p++;
+				if (*(p + 1) == 's') {
+					p++;
+					short_form = true;
+				}
 
-				str = purpl_strfmt(NULL, "%s, %02d/%02d/%04d",
-						   days[t->tm_wday],
-						   t->tm_mday, t->tm_mon + 1,
-						   year);
+				str = purpl_strfmt(NULL, "%s, %s/%s/%s", short_form ? "#wD" : "#WD",
+						   joke ? "#JD" : "#D", joke ? "#JM" : "#M", joke ? "#JY" : "#Y");
 
 				p++;
-			} else if (*p == 'J' || *p == 'D' || *p == 'M' ||
-				   *p == 'Y') {
+				passes++;
+			} else if (*p == 'J' || strncmp(p, "WD", 2) == 0 || strncmp(p, "wD", 2) == 0 || *p == 'D' ||
+				   *p == 'M' || *p == 'Y') {
 				struct tm *t = t1;
 				int year = t->tm_year + 1900;
+				bool short_form = false;
+				bool wday_name = false;
 
 				if (*p == 'J') {
 					t = t2;
 					p++;
 					year = t->tm_year - 70;
+				} else if (*p == 'w') {
+					p++;
+					short_form = true;
+					wday_name = true;
+				} else if (*p == 'W') {
+					p++;
+					wday_name = true;
 				}
 
-				if (*p == 'D')
-					str = purpl_strfmt(NULL, "%02d",
-							   t->tm_mday);
-				else if (*p == 'M' && *++p == 'N')
+				if (*p == 'D' && wday_name && short_form)
+					str = purpl_strndup(days[t->tm_wday], 3);
+				else if (*p == 'D' && wday_name)
+					str = purpl_strdup(days[t->tm_wday]);
+				else if (*p == 'D')
+					str = purpl_strfmt(NULL, "%02d", t->tm_mday);
+				else if (strncmp(p, "MN", 2) == 0)
 					str = purpl_strdup(months[t->tm_mon]);
 				else if (*p == 'M')
-					str = purpl_strfmt(NULL, "%02d",
-							   t->tm_mon + 1);
+					str = purpl_strfmt(NULL, "%02d", t->tm_mon + 1);
 				else if (*p == 'Y')
 					str = purpl_strfmt(NULL, "%04d", year);
 
 				p++;
 			} else if (*p == 'P') {
 				p++;
-				str = purpl_strfmt(NULL, "%lld",
-						   purpl_get_pid());
+				str = purpl_strfmt(NULL, "%lld", purpl_get_pid());
 			} else if (*p == 'T') {
 				p++;
-				str = purpl_strfmt(NULL, "%lld",
-						   purpl_get_tid());
+				str = purpl_strfmt(NULL, "%lld", purpl_get_tid());
 			} else if (*p == 'W') {
 				p++;
-				str = purpl_strfmt(NULL, "%s:%d@%s", file2,
-						   line, function);
+				str = purpl_strdup("#F:#L@#sl");
+				passes++;
 			} else if (*p == 'F') {
 				p++;
 				str = purpl_strdup(file2);
@@ -261,18 +252,13 @@ static char *log_format(struct purpl_logger *logger,
 				str = purpl_strdup(levels_lower[level]);
 			} else if (*p == 'V') {
 				p++;
-				str = purpl_strfmt(
-					NULL, "v%s",
-					purpl_format_version(PURPL_VERSION));
+				str = purpl_strfmt(NULL, "v%s", purpl_format_version(PURPL_VERSION));
 			} else if (*p == 'n') {
 				p++;
 				str = purpl_strdup(purpl_inst->app_name);
 			} else if (*p == 'v') {
 				p++;
-				str = purpl_strfmt(
-					NULL, "v%s",
-					purpl_format_version(
-						purpl_inst->app_version));
+				str = purpl_strfmt(NULL, "v%s", purpl_format_version(purpl_inst->app_version));
 			} else {
 				p = begin + 1;
 				str = purpl_strdup(p);
@@ -305,10 +291,8 @@ static char *log_format(struct purpl_logger *logger,
 	return buf;
 }
 
-PURPL_API void purpl_log_write(struct purpl_logger *logger,
-			       enum purpl_log_level level, const char *file,
-			       int line, const char *function, const char *msg,
-			       ...)
+PURPL_API void purpl_log_write(struct purpl_logger *logger, enum purpl_log_level level, const char *file, int line,
+			       const char *function, const char *msg, ...)
 {
 	char *buf;
 	char *file2;
@@ -334,8 +318,7 @@ PURPL_API void purpl_log_write(struct purpl_logger *logger,
 
 	file2 = purpl_pathfmt(NULL, file, 0, false, false);
 	va_start(args, msg);
-	buf = log_format(logger, effective_level, file2, line, function, msg,
-			 args);
+	buf = log_format(logger, effective_level, file2, line, function, msg, args);
 	va_end(args);
 	free(file2);
 
@@ -362,8 +345,7 @@ PURPL_API enum purpl_log_level purpl_log_get_level(struct purpl_logger *logger)
 	return logger->level;
 }
 
-PURPL_API enum purpl_log_level purpl_log_set_level(struct purpl_logger *logger,
-						   enum purpl_log_level level)
+PURPL_API enum purpl_log_level purpl_log_set_level(struct purpl_logger *logger, enum purpl_log_level level)
 {
 	enum purpl_log_level old;
 
@@ -377,15 +359,12 @@ PURPL_API enum purpl_log_level purpl_log_set_level(struct purpl_logger *logger,
 	return old;
 }
 
-PURPL_API enum purpl_log_level
-purpl_log_get_max_level(struct purpl_logger *logger)
+PURPL_API enum purpl_log_level purpl_log_get_max_level(struct purpl_logger *logger)
 {
 	return logger->max_level;
 }
 
-PURPL_API enum purpl_log_level
-purpl_log_set_max_level(struct purpl_logger *logger,
-			enum purpl_log_level level)
+PURPL_API enum purpl_log_level purpl_log_set_max_level(struct purpl_logger *logger, enum purpl_log_level level)
 {
 	enum purpl_log_level old;
 
@@ -400,8 +379,7 @@ purpl_log_set_max_level(struct purpl_logger *logger,
 	return old;
 }
 
-PURPL_API void purpl_log_set_format(struct purpl_logger *logger,
-				    const char *format)
+PURPL_API void purpl_log_set_format(struct purpl_logger *logger, const char *format)
 {
 	char *message_format;
 
@@ -409,9 +387,7 @@ PURPL_API void purpl_log_set_format(struct purpl_logger *logger,
 		return;
 
 	message_format = purpl_strdup(format ? format : "#def");
-	logger->format =
-		purpl_strrplc(message_format, "#def",
-			      PURPL_LOG_DEFAULT_FORMAT, NULL);
+	logger->format = purpl_strrplc(message_format, "#def", PURPL_LOG_DEFAULT_FORMAT, NULL);
 
 	free(message_format);
 }
@@ -443,10 +419,8 @@ PURPL_API void purpl_log_close(struct purpl_logger *logger, bool last_message)
 		else if (t->tm_hour >= 22 || t->tm_hour < 4)
 			time_of_day = "night";
 
-		msg = purpl_strfmt(
-			NULL, "This logger is shutting down. Have a%s %s %s.",
-			PURPL_ISVOWEL(adjectives[random][0]) ? "n" : "",
-			adjectives[random], time_of_day);
+		msg = purpl_strfmt(NULL, "This logger is shutting down. Have a%s %s %s.",
+				   PURPL_ISVOWEL(adjectives[random][0]) ? "n" : "", adjectives[random], time_of_day);
 		PURPL_LOG_INFO(purpl_inst->logger, "%s", msg);
 		free(msg);
 	}

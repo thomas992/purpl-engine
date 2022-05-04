@@ -32,13 +32,11 @@ bool vulkan_create_instance(void)
 
 	app_info.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
 	app_info.pApplicationName = purpl_inst->app_name;
-	app_info.applicationVersion = VK_MAKE_VERSION(
-		PURPL_GET_MAJOR_VERSION(purpl_inst->app_version),
-		PURPL_GET_MINOR_VERSION(purpl_inst->app_version),
-		PURPL_GET_PATCH_VERSION(purpl_inst->app_version));
+	app_info.applicationVersion = VK_MAKE_VERSION(PURPL_GET_MAJOR_VERSION(purpl_inst->app_version),
+						      PURPL_GET_MINOR_VERSION(purpl_inst->app_version),
+						      PURPL_GET_PATCH_VERSION(purpl_inst->app_version));
 	app_info.pEngineName = "Purpl Engine";
-	app_info.engineVersion = VK_MAKE_VERSION(
-		PURPL_MAJOR_VERSION, PURPL_MINOR_VERSION, PURPL_PATCH_VERSION);
+	app_info.engineVersion = VK_MAKE_VERSION(PURPL_MAJOR_VERSION, PURPL_MINOR_VERSION, PURPL_PATCH_VERSION);
 	app_info.apiVersion = VK_API_VERSION_1_3;
 
 	create_info.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
@@ -49,8 +47,7 @@ bool vulkan_create_instance(void)
 	ext_props = exts[1];
 
 	create_info.enabledExtensionCount = stbds_arrlenu(required_exts);
-	create_info.ppEnabledExtensionNames =
-		(const char *const *)required_exts;
+	create_info.ppEnabledExtensionNames = (const char *const *)required_exts;
 	ext_count = stbds_arrlenu(required_exts);
 
 #ifdef PURPL_DEBUG
@@ -63,9 +60,7 @@ bool vulkan_create_instance(void)
 	create_info.enabledLayerCount = layer_count;
 	create_info.ppEnabledLayerNames = validation_layers;
 	for (i = 0; i < layer_count; i++)
-		PURPL_LOG_INFO(purpl_inst->logger,
-			       "Requesting Vulkan validation layer \"%s\"",
-			       validation_layers[i]);
+		PURPL_LOG_INFO(purpl_inst->logger, "Requesting Vulkan validation layer \"%s\"", validation_layers[i]);
 
 	vulkan_setup_debug_messenger(&debug_create_info);
 
@@ -78,13 +73,9 @@ bool vulkan_create_instance(void)
 
 	res = vkCreateInstance(&create_info, NULL, &vulkan->inst);
 	if (res != VK_SUCCESS) {
-		PURPL_LOG_ERROR(
-			purpl_inst->logger,
-			"Failed to create Vulkan instance: VkResult %d", res);
+		PURPL_LOG_ERROR(purpl_inst->logger, "Failed to create Vulkan instance: VkResult %d", res);
 #ifdef PURPL_DEBUG
-		PURPL_LOG_INFO(
-			purpl_inst->logger,
-			"Trying again without validation layers enabled");
+		PURPL_LOG_INFO(purpl_inst->logger, "Trying again without validation layers enabled");
 		create_info.enabledLayerCount = 0;
 		res = vkCreateInstance(&create_info, NULL, &vulkan->inst);
 #endif // PURPL_DEBUG
@@ -96,12 +87,10 @@ bool vulkan_create_instance(void)
 		return false;
 	}
 
-	PURPL_LOG_INFO(
-		purpl_inst->logger,
-		"Successfully created a Vulkan instance with handle 0x%" PRIX64
-		" with %zu extension%s and %zu validation layer%s enabled",
-		vulkan->inst, ext_count, ext_count == 1 ? "" : "s",
-		layer_count, layer_count == 1 ? "" : "s");
+	PURPL_LOG_INFO(purpl_inst->logger,
+		       "Successfully created a Vulkan instance with handle 0x%" PRIX64
+		       " with %zu extension%s and %zu validation layer%s enabled",
+		       vulkan->inst, ext_count, ext_count == 1 ? "" : "s", layer_count, layer_count == 1 ? "" : "s");
 
 	stbds_arrfree(required_exts);
 	stbds_arrfree(ext_props);
@@ -120,33 +109,25 @@ void **vulkan_get_extensions(void)
 
 	SDL_Vulkan_GetInstanceExtensions(purpl_inst->wnd, &ext_count, NULL);
 	stbds_arrsetlen(required_exts, ext_count);
-	SDL_Vulkan_GetInstanceExtensions(purpl_inst->wnd, &ext_count,
-					 required_exts);
+	SDL_Vulkan_GetInstanceExtensions(purpl_inst->wnd, &ext_count, required_exts);
 
 	ext_count = 0;
 	vkEnumerateInstanceExtensionProperties(NULL, &ext_count, NULL);
 	stbds_arrsetlen(ext_props, ext_count);
 	vkEnumerateInstanceExtensionProperties(NULL, &ext_count, ext_props);
 	for (i = 0; i < stbds_arrlenu(ext_props); i++) {
-		PURPL_LOG_INFO(
-			purpl_inst->logger,
-			"Found Vulkan instance extension \"%s\" version %d",
-			ext_props[i].extensionName, ext_props[i].specVersion);
+		PURPL_LOG_INFO(purpl_inst->logger, "Found Vulkan instance extension \"%s\" version %d",
+			       ext_props[i].extensionName, ext_props[i].specVersion);
 
 #ifdef PURPL_DEBUG
-		if (strcmp(ext_props[i].extensionName,
-			   VK_EXT_DEBUG_UTILS_EXTENSION_NAME) == 0 &&
-		    ext_props[i].specVersion ==
-			    VK_EXT_DEBUG_UTILS_SPEC_VERSION)
-			stbds_arrput(required_exts,
-				     VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+		if (strcmp(ext_props[i].extensionName, VK_EXT_DEBUG_UTILS_EXTENSION_NAME) == 0 &&
+		    ext_props[i].specVersion == VK_EXT_DEBUG_UTILS_SPEC_VERSION)
+			stbds_arrput(required_exts, VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
 #endif // PURPL_DEBUG
 	}
 
 	for (i = 0; i < stbds_arrlenu(required_exts); i++)
-		PURPL_LOG_INFO(purpl_inst->logger,
-			       "Requesting Vulkan instance extension \"%s\"",
-			       required_exts[i]);
+		PURPL_LOG_INFO(purpl_inst->logger, "Requesting Vulkan instance extension \"%s\"", required_exts[i]);
 
 	stbds_arrput(exts, required_exts);
 	stbds_arrput(exts, ext_props);

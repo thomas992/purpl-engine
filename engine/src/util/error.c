@@ -305,8 +305,7 @@ PURPL_API const char *purpl_strerror(void)
 {
 	static char buf[PURPL_STATIC_BUF_MAX];
 
-	stbsp_snprintf(buf, PURPL_STATIC_BUF_MAX, "%s (errno %d)",
-		       strerror(errno), errno);
+	stbsp_snprintf(buf, PURPL_STATIC_BUF_MAX, "%s (errno %d)", strerror(errno), errno);
 
 	return buf;
 }

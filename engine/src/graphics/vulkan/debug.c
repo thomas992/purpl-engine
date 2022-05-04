@@ -25,39 +25,33 @@
 /// \param type The type of message
 /// \param callback_data Data such as the message and objects related to it
 /// \param data Data from the engine, not likely to be needed
-static VKAPI_ATTR VkBool32 VKAPI_CALL vulkan_debug_log(
-	VkDebugUtilsMessageSeverityFlagBitsEXT severity,
-	VkDebugUtilsMessageTypeFlagsEXT type,
-	const VkDebugUtilsMessengerCallbackDataEXT *callback_data, void *data);
+static VKAPI_ATTR VkBool32 VKAPI_CALL vulkan_debug_log(VkDebugUtilsMessageSeverityFlagBitsEXT severity,
+						       VkDebugUtilsMessageTypeFlagsEXT type,
+						       const VkDebugUtilsMessengerCallbackDataEXT *callback_data,
+						       void *data);
 
-void vulkan_setup_debug_messenger(
-	VkDebugUtilsMessengerCreateInfoEXT *create_info)
+void vulkan_setup_debug_messenger(VkDebugUtilsMessengerCreateInfoEXT *create_info)
 {
 	if (!create_info) {
-		PURPL_LOG_DEBUG(
-			purpl_inst->logger,
-			"Invalid parameter, not filling creation information structure");
+		PURPL_LOG_DEBUG(purpl_inst->logger, "Invalid parameter, not filling creation information structure");
 		return;
 	}
 
-	create_info->sType =
-		VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
-	create_info->messageSeverity =
-		VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT |
-		VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT |
-		VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
-	create_info->messageType =
-		VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
-		VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
-		VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
+	create_info->sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
+	create_info->messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT |
+				       VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT |
+				       VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
+	create_info->messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
+				   VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
+				   VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
 	create_info->pfnUserCallback = vulkan_debug_log;
 	create_info->pUserData = NULL;
 }
 
-static VKAPI_ATTR VkBool32 VKAPI_CALL vulkan_debug_log(
-	VkDebugUtilsMessageSeverityFlagBitsEXT severity,
-	VkDebugUtilsMessageTypeFlagsEXT type,
-	const VkDebugUtilsMessengerCallbackDataEXT *callback_data, void *data)
+static VKAPI_ATTR VkBool32 VKAPI_CALL vulkan_debug_log(VkDebugUtilsMessageSeverityFlagBitsEXT severity,
+						       VkDebugUtilsMessageTypeFlagsEXT type,
+						       const VkDebugUtilsMessengerCallbackDataEXT *callback_data,
+						       void *data)
 {
 	enum purpl_log_level level = PURPL_LOG_LEVEL_INFO;
 
@@ -79,12 +73,9 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL vulkan_debug_log(
 		break;
 	}
 
-	purpl_log_write(purpl_inst->logger, level, __FILE__, __LINE__,
-			PURPL_CURRENT_FUNCTION,
-			"Vulkan debug messenger (%zu object%s involved): %s",
-			callback_data->objectCount,
-			callback_data->objectCount == 1 ? "" : "s",
-			callback_data->pMessage);
+	purpl_log_write(purpl_inst->logger, level, __FILE__, __LINE__, PURPL_CURRENT_FUNCTION,
+			"Vulkan debug messenger (%zu object%s involved): %s", callback_data->objectCount,
+			callback_data->objectCount == 1 ? "" : "s", callback_data->pMessage);
 
 	return false;
 }

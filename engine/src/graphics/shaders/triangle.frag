@@ -25,4 +25,3 @@ void main()
 {
 	out_colour = vert_colour;
 }
-

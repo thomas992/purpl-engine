@@ -44,8 +44,7 @@ extern PURPL_API size_t purpl_strcount(const char *str, const char *sub);
 /// \param new The substring to replace old with
 ///
 /// \return Returns the new string, which can be freed with free
-extern PURPL_API char *purpl_strrplc(const char *str, const char *old,
-				     const char *new, size_t *size);
+extern PURPL_API char *purpl_strrplc(const char *str, const char *old, const char *new, size_t *size);
 
 /// Replace the next instance of old with new
 ///
@@ -54,8 +53,7 @@ extern PURPL_API char *purpl_strrplc(const char *str, const char *old,
 /// \param new The substring to replace the first instance of old with
 ///
 /// \return Returns the new string, which can be freed with free
-extern PURPL_API char *purpl_strrplcn(const char *str, const char *old,
-				      const char *new, size_t *size);
+extern PURPL_API char *purpl_strrplcn(const char *str, const char *old, const char *new, size_t *size);
 
 /// Formats a string into a buffer and takes care of determining the needed
 /// size of the buffer
@@ -76,8 +74,7 @@ extern PURPL_API char *purpl_strfmt(size_t *size, const char *fmt, ...);
 /// \param args The varargs list to use
 ///
 /// \return Returns a string which can be freed using free
-extern PURPL_API char *purpl_vstrfmt(size_t *size, const char *fmt,
-				     va_list args);
+extern PURPL_API char *purpl_vstrfmt(size_t *size, const char *fmt, va_list args);
 
 /// Duplicate a string like strdup(3)
 ///
@@ -102,11 +99,10 @@ extern PURPL_API char *purpl_strndup(const char *str, size_t n);
 /// \param ins The string to insert
 /// \param index The index at which to insert ins
 /// \param size The size of the buffer
-/// 
+///
 /// \return Returns a buffer containing str with ins inserted at index and its
 ///	    size increased by strlen(ins) from size, or NULL
-extern PURPL_API char *purpl_strins(const char *str, const char *ins,
-				    size_t index, size_t size);
+extern PURPL_API char *purpl_strins(const char *str, const char *ins, size_t index, size_t size);
 
 /// Remove n characters from string at index
 ///
@@ -114,11 +110,10 @@ extern PURPL_API char *purpl_strins(const char *str, const char *ins,
 /// \param index The index to start at
 /// \param n The number of characters to remove
 /// \param size The size of the buffer
-/// 
+///
 /// \return Returns a buffer containing str with n characters removed from
 ///	    index and its size decreased by n from size, or NULL
-extern PURPL_API char *purpl_strrm(const char *str, size_t index, size_t n,
-				   size_t size);
+extern PURPL_API char *purpl_strrm(const char *str, size_t index, size_t n, size_t size);
 
 /// Perform a case insensitive string comparison on two wide strings like
 /// wcscasecmp(3)

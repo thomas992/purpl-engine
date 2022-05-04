@@ -25,9 +25,9 @@
 /// Vulkan queue family information
 struct vulkan_queue_families {
 	size_t compute_family; /// The index of the compute queue
-				    /// family
+			       /// family
 	bool compute_family_present; /// Whether compute_family is
-					  /// present
+				     /// present
 	size_t graphics_family; /// The index of the graphics queue family
 	bool graphics_family_present; /// Whether graphics_family is present
 	size_t presentation_family; /// The index of the presentation queue
@@ -50,7 +50,7 @@ struct purpl_instance_vulkan {
 
 	VkPhysicalDevice phys_device; /// Physical device
 	VkPhysicalDeviceFeatures phys_device_features; /// Physical device
-							   /// features
+						       /// features
 	VkPhysicalDeviceProperties phys_device_properties; /// Physical device
 							   /// properties
 

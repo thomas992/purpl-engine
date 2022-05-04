@@ -33,6 +33,7 @@
 
 #include "purpl/util/util.h"
 
+#include "command.h"
 #include "debug.h"
 #include "device.h"
 #include "inst.h"

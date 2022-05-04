@@ -69,6 +69,4 @@ extern bool vulkan_check_device_extensions(VkPhysicalDevice device, size_t *exte
 /// \param device The device to get queue families for
 ///
 /// \return Returns true if the device has all the necessary queue families
-extern bool
-vulkan_get_device_queue_families(VkPhysicalDevice device,
-				 struct vulkan_queue_families *queue_families);
+extern bool vulkan_get_device_queue_families(VkPhysicalDevice device, struct vulkan_queue_families *queue_families);

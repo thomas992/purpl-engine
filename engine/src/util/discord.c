@@ -19,14 +19,12 @@
 
 #include "purpl/util/discord.h"
 
-#define DISCORD_CHECK_COOL_PEOPLE(discord)            \
-	((discord)->user_id == 532320702611587112 ?   \
-		 " (my game engine)" :                \
-	 ((discord)->user_id == 515919551444025407 || \
-	  (discord)->user_id == 448944515294691337 || \
-	  (discord)->user_id == 698998936316149780) ? \
-		 " (my friend's game engine)" :       \
-		       "")
+#define DISCORD_CHECK_COOL_PEOPLE(discord)                                                        \
+	((discord)->user_id == 532320702611587112 ? " (my game engine)" :                         \
+	 ((discord)->user_id == 515919551444025407 || (discord)->user_id == 448944515294691337 || \
+	  (discord)->user_id == 698998936316149780) ?                                             \
+						    " (my friend's game engine)" :                \
+							  "")
 
 static void discord_activity_callback(void *data, enum EDiscordResult result);
 static void discord_log_callback(void *data, enum EDiscordLogLevel level, const char *msg);
@@ -54,10 +52,7 @@ bool purpl_discord_init(void)
 	params.user_events = &discord->user_events;
 	result = DiscordCreate(DISCORD_VERSION, &params, &discord->core);
 	if (result != DiscordResult_Ok) {
-		PURPL_LOG_ERROR(
-			purpl_inst->logger,
-			"Failed to initialize Discord: DiscordResult %d",
-			result);
+		PURPL_LOG_ERROR(purpl_inst->logger, "Failed to initialize Discord: DiscordResult %d", result);
 		return false;
 	}
 
@@ -69,10 +64,8 @@ bool purpl_discord_init(void)
 #endif // PURPL_DEBUG
 
 	discord->users = discord->core->get_user_manager(discord->core);
-	discord->activities =
-		discord->core->get_activity_manager(discord->core);
-	discord->application =
-		discord->core->get_application_manager(discord->core);
+	discord->activities = discord->core->get_activity_manager(discord->core);
+	discord->application = discord->core->get_application_manager(discord->core);
 
 	PURPL_LOG_INFO(purpl_inst->logger, "Successfully initialized Discord");
 
@@ -101,15 +94,12 @@ bool discord_run_callbacks(u32 delta)
 	discord->request_cooldown -= delta;
 	if (discord->request_cooldown <= 0) {
 		result = discord->core->run_callbacks(discord->core);
-		discord->request_cooldown =
-			PURPL_DISCORD_API_COOLDOWN; // Discord requires this
-						    // cooldown
+		discord->request_cooldown = PURPL_DISCORD_API_COOLDOWN; // Discord requires this
+									// cooldown
 	}
 
 	if (result != DiscordResult_Ok) {
-		PURPL_LOG_INFO(purpl_inst->logger,
-			       "Discord callbacks failed: DiscordResult %d",
-			       result);
+		PURPL_LOG_INFO(purpl_inst->logger, "Discord callbacks failed: DiscordResult %d", result);
 		return false;
 	}
 
@@ -132,18 +122,13 @@ void discord_update_activity(u32 delta)
 	if (discord->activity_cooldown > 0)
 		return;
 
-	snprintf(activity.name, PURPL_SIZEOF_ARRAY(activity.name), "%s v%s",
-		 purpl_inst->app_name,
+	snprintf(activity.name, PURPL_SIZEOF_ARRAY(activity.name), "%s v%s", purpl_inst->app_name,
 		 purpl_format_version(purpl_inst->app_version));
-	snprintf(activity.details, PURPL_SIZEOF_ARRAY(activity.details),
-		 "Purpl Engine%s v%s+%.7s-%.7s-%s",
-		 DISCORD_CHECK_COOL_PEOPLE(discord),
-		 purpl_format_version(PURPL_VERSION), PURPL_SOURCE_BRANCH,
+	snprintf(activity.details, PURPL_SIZEOF_ARRAY(activity.details), "Purpl Engine%s v%s+%.7s-%.7s-%s",
+		 DISCORD_CHECK_COOL_PEOPLE(discord), purpl_format_version(PURPL_VERSION), PURPL_SOURCE_BRANCH,
 		 PURPL_SOURCE_COMMIT, PURPL_BUILD_TYPE);
-	snprintf(activity.state, PURPL_SIZEOF_ARRAY(activity.state),
-		 "%dx%d %s window at (%d, %d)", purpl_inst->wnd_width,
-		 purpl_inst->wnd_height,
-		 purpl_get_graphics_api_name(purpl_inst->graphics_api),
+	snprintf(activity.state, PURPL_SIZEOF_ARRAY(activity.state), "%dx%d %s window at (%d, %d)",
+		 purpl_inst->wnd_width, purpl_inst->wnd_height, purpl_get_graphics_api_name(purpl_inst->graphics_api),
 		 purpl_inst->wnd_x, purpl_inst->wnd_y);
 
 	PURPL_LOG_INFO(purpl_inst->logger, "Updating Discord activity");
@@ -151,8 +136,7 @@ void discord_update_activity(u32 delta)
 	PURPL_LOG_INFO(purpl_inst->logger, "\tDetails: %s", activity.details);
 	PURPL_LOG_INFO(purpl_inst->logger, "\tState: %s", activity.state);
 
-	discord->activities->update_activity(discord->activities, &activity,
-					     NULL, discord_activity_callback);
+	discord->activities->update_activity(discord->activities, &activity, NULL, discord_activity_callback);
 	discord->activity_cooldown = PURPL_DISCORD_ACTIVITY_COOLDOWN;
 }
 
@@ -162,9 +146,7 @@ static void discord_activity_callback(void *data, enum EDiscordResult result)
 
 	activity_result = result;
 	if (activity_result != DiscordResult_Ok)
-		PURPL_LOG_INFO(purpl_inst->logger,
-			       "Failed to update activity: DiscordResult %d",
-			       activity_result);
+		PURPL_LOG_INFO(purpl_inst->logger, "Failed to update activity: DiscordResult %d", activity_result);
 }
 
 static void discord_log_callback(void *data, enum EDiscordLogLevel level, const char *msg)
@@ -189,7 +171,8 @@ static void discord_log_callback(void *data, enum EDiscordLogLevel level, const 
 		break;
 	}
 
-	purpl_log_write(purpl_inst->logger, level2, __FILE__, __LINE__, PURPL_CURRENT_FUNCTION, "Discord message: %s", msg);
+	purpl_log_write(purpl_inst->logger, level2, __FILE__, __LINE__, PURPL_CURRENT_FUNCTION, "Discord message: %s",
+			msg);
 }
 
 static void discord_user_callback(void *data)
@@ -204,9 +187,7 @@ static void discord_user_callback(void *data)
 	discord->user_id = user.id;
 
 	PURPL_LOG_INFO(purpl_inst->logger, "Discord user updated:");
-	PURPL_LOG_INFO(purpl_inst->logger, "\tUsername: %s##%.4s",
-		       user.username, user.discriminator);
+	PURPL_LOG_INFO(purpl_inst->logger, "\tUsername: %s##%.4s", user.username, user.discriminator);
 	PURPL_LOG_INFO(purpl_inst->logger, "\tID: %" PRId64, user.id);
-	PURPL_LOG_INFO(purpl_inst->logger, "\tBot: %s",
-		       user.bot ? "yes" : "no");
+	PURPL_LOG_INFO(purpl_inst->logger, "\tBot: %s", user.bot ? "yes" : "no");
 }
