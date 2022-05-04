@@ -19,6 +19,7 @@
 
 #include "purpl/core/coredefs.h"
 #include "purpl/core/inst.h"
+#include "purpl/core/log.h"
 #include "purpl/core/types.h"
 
 #include "purpl/util/util.h"
