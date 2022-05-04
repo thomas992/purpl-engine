@@ -139,7 +139,7 @@ EXTERN_C int32_t purpl_preinit(purpl_main_t main_func, int argc, char *argv[])
 	strncpy(path + idx, PATH_SEP_STR "engine_libs.txt\0", MAX_PATH - idx);
 
 	fprintf(stderr, "Searching for engine library list at %s\n", path);
-	engine_libs_fp = fopen(path, "r");
+	engine_libs_fp = fopen(path, "rb");
 	if (!engine_libs_fp) {
 		strncpy(path + idx, PATH_SEP_STR "bin" PATH_SEP_STR "engine_libs.txt\0", MAX_PATH - idx);
 		idx += strlen(PATH_SEP_STR "bin");
@@ -170,7 +170,7 @@ EXTERN_C int32_t purpl_preinit(purpl_main_t main_func, int argc, char *argv[])
 			engine_libs[i] = (char *)calloc(strlen(tmp), sizeof(char));
 			if (!engine_libs[i])
 				PREINIT_ERROR("Failed to allocate memory for engine library list", ENOMEM);
-			strncpy(engine_libs[i], tmp, strchr(tmp, '\n') - tmp);
+			strncpy(engine_libs[i], tmp, (strchr(tmp, '\r') ? strchr(tmp, '\r') : strchr(tmp, '\n')) - tmp);
 			i++;
 		}
 	}
