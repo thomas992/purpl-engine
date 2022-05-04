@@ -13,7 +13,7 @@ elif len(sys.argv) < 3:
     exit(1)
 
 if len(sys.argv) > 3:
-    prefix = sys.argv[3]
+    prefix = "_" + sys.argv[3]
     print(f"Only dumping exports beginning with \"{prefix}\"")
 else:
     prefix = ""
