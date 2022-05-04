@@ -94,7 +94,7 @@ struct purpl_logger {
 ///
 ///	#d	- The current date in the format #WD, #D/#M/#Y, or #jd if it's
 ///		  April 1st and PURPL_ENABLE_MEMING is defined
-///	#ds	- #d using #wD instead of #WD
+///	#ds	- #d using #wD instead of #WD (and without the comma)
 ///	#jd	- The current date in the format #WD, #JD/#JM/#JY
 ///	#D	- The current day of the month
 ///	#JD	- The current day of the month, but 32 if it's April 1st

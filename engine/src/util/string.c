@@ -68,7 +68,7 @@ PURPL_API char *purpl_strrplc(const char *str, const char *old, const char *new,
 	p = strstr(buf, old);
 
 	while (p) {
-		stbsp_snprintf(tmp, buf_size, "%.*s%s%s", (s32)(p - buf), buf, new, p + strlen(old));
+		stbsp_snprintf(tmp, (s32)buf_size, "%.*s%s%s", (s32)(p - buf), buf, new, p + strlen(old));
 		strncpy(buf, tmp, buf_size);
 		p = strstr(++p, old);
 	}
@@ -145,7 +145,7 @@ PURPL_API char *purpl_vstrfmt(size_t *size, const char *fmt, va_list args)
 
 	va_copy(_args, args);
 
-	stbsp_vsnprintf(buf, buf_size, fmt, _args);
+	stbsp_vsnprintf(buf, (s32)buf_size, fmt, _args);
 
 	va_end(_args);
 
@@ -224,7 +224,7 @@ PURPL_API s8 purpl_wcscasecmp(const wchar_t *s1, const wchar_t *s2)
 		c2 = towlower(*s2++);
 	}
 
-	return c1 - c2;
+	return (s8)(c1 - c2);
 }
 
 PURPL_API const char *purpl_format_version(u32 version)

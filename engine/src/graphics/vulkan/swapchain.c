@@ -31,7 +31,7 @@ bool vulkan_create_swapchain(void)
 	VkResult result;
 	size_t i;
 
-	u32 queue_families[] = { vulkan->queue_families.graphics_family, vulkan->queue_families.presentation_family };
+	u32 queue_families[] = { (u32)vulkan->queue_families.graphics_family, (u32)vulkan->queue_families.presentation_family };
 
 	PURPL_LOG_INFO(purpl_inst->logger, "Creating swapchain");
 

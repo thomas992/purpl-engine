@@ -27,10 +27,12 @@
 #endif // PURPL_ENABLE_DISCORD
 
 #include "coredefs.h"
-#include "log.h"
 #include "types.h"
 
 #include "purpl/graphics/inst_data.h"
+
+// Forward declaration of purpl_logger instead of including log.h to reduce chances of rebuild
+struct purpl_logger;
 
 /// Initial window width
 #define PURPL_INITIAL_WINDOW_WIDTH 1024

@@ -86,7 +86,7 @@ bool vulkan_create_logical_device(void)
 
 	memset(&queue_create_infos[0], 0, sizeof(VkDeviceQueueCreateInfo));
 	queue_create_infos[0].sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-	queue_create_infos[0].queueFamilyIndex = vulkan->queue_families.graphics_family;
+	queue_create_infos[0].queueFamilyIndex = (u32)vulkan->queue_families.graphics_family;
 	queue_create_infos[0].queueCount = 1;
 	queue_create_infos[0].pQueuePriorities = &queue_priority;
 	if (vulkan->queue_families.graphics_family != vulkan->queue_families.presentation_family) {
@@ -301,7 +301,7 @@ bool vulkan_get_device_queue_families(VkPhysicalDevice device, struct vulkan_que
 		}
 
 		VkBool32 presentation_support = 0;
-		vkGetPhysicalDeviceSurfaceSupportKHR(device, i, vulkan->surface, &presentation_support);
+		vkGetPhysicalDeviceSurfaceSupportKHR(device, (u32)i, vulkan->surface, &presentation_support);
 		if (presentation_support) {
 			queue_families->presentation_family_present = true;
 			queue_families->presentation_family = i;

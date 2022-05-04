@@ -46,7 +46,7 @@ bool vulkan_create_instance(void)
 	required_exts = exts[0];
 	ext_props = exts[1];
 
-	create_info.enabledExtensionCount = stbds_arrlenu(required_exts);
+	create_info.enabledExtensionCount = (u32)stbds_arrlenu(required_exts);
 	create_info.ppEnabledExtensionNames = (const char *const *)required_exts;
 	ext_count = stbds_arrlenu(required_exts);
 
@@ -57,7 +57,7 @@ bool vulkan_create_instance(void)
 	const char *validation_layers[] = { "VK_LAYER_KHRONOS_validation" };
 	layer_count = PURPL_SIZEOF_ARRAY(validation_layers);
 
-	create_info.enabledLayerCount = layer_count;
+	create_info.enabledLayerCount = (u32)layer_count;
 	create_info.ppEnabledLayerNames = validation_layers;
 	for (i = 0; i < layer_count; i++)
 		PURPL_LOG_INFO(purpl_inst->logger, "Requesting Vulkan validation layer \"%s\"", validation_layers[i]);
@@ -102,7 +102,7 @@ bool vulkan_create_instance(void)
 void **vulkan_get_extensions(void)
 {
 	void **exts = NULL;
-	const char **required_exts = NULL;
+	char **required_exts = NULL;
 	u32 ext_count = 0;
 	VkExtensionProperties *ext_props = NULL;
 	u32 i;

@@ -186,7 +186,7 @@ static char *log_format(struct purpl_logger *logger, enum purpl_log_level level,
 					short_form = true;
 				}
 
-				str = purpl_strfmt(NULL, "%s, %s/%s/%s", short_form ? "#wD" : "#WD",
+				str = purpl_strfmt(NULL, "%s %s/%s/%s", short_form ? "#wD" : "#WD,",
 						   joke ? "#JD" : "#D", joke ? "#JM" : "#M", joke ? "#JY" : "#Y");
 
 				p++;

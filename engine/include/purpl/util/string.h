@@ -28,6 +28,8 @@
 #include "purpl/core/coredefs.h"
 #include "purpl/core/types.h"
 
+#include "misc.h"
+
 /// Count all instances of sub in str
 ///
 /// \param str The string to search

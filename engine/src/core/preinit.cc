@@ -67,6 +67,18 @@ HMODULE engine_lib = NULL;
 void *engine_lib = NULL;
 #endif // PURPL_WINRT
 
+// Yoinked from the Source engine leak (I've seen it in other places, but I was messing with it at the time and was too
+// lazy to just Google it) and cleaned up
+#ifdef _WIN32
+// hinting the nvidia driver to use the dedicated graphics card in an optimus configuration
+// for more info, see:
+// http://developer.download.nvidia.com/devzone/devcenter/gamegraphics/files/OptimusRenderingPolicies.pdf
+EXTERN_C __declspec(dllexport) DWORD NvOptimusEnablement = 0x00000001;
+
+// same thing for AMD GPUs using v13.35 or newer drivers
+EXTERN_C __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
+#endif // _WIN32
+
 #ifdef _WIN32
 #define PATH_SEP '\\'
 #define PATH_SEP_STR "\\"
