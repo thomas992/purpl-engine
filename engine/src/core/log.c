@@ -233,17 +233,17 @@ static char *log_format(struct purpl_logger *logger, enum purpl_log_level level,
 				str = purpl_strfmt(NULL, "%lld", purpl_get_tid());
 			} else if (*p == 'W') {
 				p++;
-				str = purpl_strdup("#F:#L@#sl");
+				str = purpl_strdup("#F:#FL@#f");
 				passes++;
+			} else if (strncmp(p, "FL", 2) == 0) {
+				p += 2;
+				str = purpl_strfmt(NULL, "%d", line);
 			} else if (*p == 'F') {
 				p++;
 				str = purpl_strdup(file2);
 			} else if (*p == 'f') {
 				p++;
 				str = purpl_strdup(function);
-			} else if (*p == 's' && *++p == 'l') {
-				p++;
-				str = purpl_strfmt(NULL, "%d", line);
 			} else if (*p == 'L') {
 				p++;
 				str = purpl_strdup(levels_upper[level]);

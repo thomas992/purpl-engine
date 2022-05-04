@@ -41,18 +41,21 @@
 #endif // MAX_PATH
 
 #ifdef _WIN32
-#define PREINIT_ERROR_EX(msg, code, ...)                                           \
-	{                                                                          \
-		MessageBoxA(NULL, msg, "Purpl Engine", MB_OK | MB_ICONERROR);      \
-		fprintf(stderr, __VA_ARGS__);                                      \
-		fprintf(stderr, "Error: %s (errno %d)\n", strerror(errno), errno); \
-		exit(code);                                                        \
+#define PREINIT_ERROR_EX(msg, code, ...)                                                   \
+	{                                                                                  \
+		MessageBoxA(NULL, msg, "Purpl Engine", MB_OK | MB_ICONERROR);              \
+		fprintf(stderr, __VA_ARGS__);                                              \
+		if (errno != 0)                                                            \
+			fprintf(stderr, "Error: %s (errno %d)\n", strerror(errno), errno); \
+		exit(code);                                                                \
 	}
 #else // _WIN32
-#define PREINIT_ERROR_EX(msg, code, ...)      \
-	{                                     \
-		fprintf(stderr, __VA_ARGS__); \
-		exit(code);                   \
+#define PREINIT_ERROR_EX(msg, code, ...)                                                   \
+	{                                                                                  \
+		fprintf(stderr, __VA_ARGS__);                                              \
+		if (errno != 0)                                                            \
+			fprintf(stderr, "Error: %s (errno %d)\n", strerror(errno), errno); \
+		exit(code);                                                                \
 	}
 #endif // _WIN32
 #define PREINIT_ERROR(msg, code) PREINIT_ERROR_EX(msg, code, msg "\n")
@@ -68,7 +71,7 @@ void *engine_lib = NULL;
 #endif // PURPL_WINRT
 
 // Yoinked from the Source engine leak (I've seen it in other places, but I was messing with it at the time and was too
-// lazy to just Google it) and cleaned up
+// lazy to just Google this) and cleaned up
 #ifdef _WIN32
 // hinting the nvidia driver to use the dedicated graphics card in an optimus configuration
 // for more info, see:
@@ -118,6 +121,7 @@ EXTERN_C int32_t purpl_preinit(purpl_main_t main_func, int argc, char *argv[])
 	size_t engine_libs_size;
 	char **engine_libs;
 	size_t engine_lib_count = 0;
+	char *tmp;
 	char *p;
 	size_t len;
 	size_t i;
@@ -161,30 +165,41 @@ EXTERN_C int32_t purpl_preinit(purpl_main_t main_func, int argc, char *argv[])
 	fread(engine_libs_buf, sizeof(char), engine_libs_size, engine_libs_fp);
 	fclose(engine_libs_fp);
 
-	p = strchr(engine_libs_buf, '\n');
+	tmp = (char *)calloc(engine_libs_size, sizeof(char));
+	if (!tmp)
+		PREINIT_ERROR("Failed to allocate memory for engine library "
+			      "list",
+			      ENOMEM);
+	strncpy(tmp, engine_libs_buf, engine_libs_size);
+	p = strtok(tmp, "\n");
 	while (p) {
-		engine_lib_count++;
-		p = strchr(++p, '\n');
+		if (strncmp(p, "//", 2) != 0)
+			engine_lib_count++;
+		p = strtok(NULL, "\n");
 	}
+	engine_lib_count--;
 
 	engine_libs = (char **)calloc(engine_lib_count, sizeof(char *));
 	if (!engine_libs)
 		PREINIT_ERROR("Failed to allocate memory for engine library list", ENOMEM);
 
+	strncpy(tmp, engine_libs_buf, engine_libs_size);
 	i = 0;
-	p = strtok(engine_libs_buf, "\n");
+	p = strtok(tmp, "\n");
 	while (p && i < engine_lib_count) {
-		len = strlen(p);
-		if (p[len - 1] == '\r')
-			len--;
-		engine_libs[i] = (char *)calloc(len + 1, sizeof(char));
-		if (!engine_libs[i])
-			PREINIT_ERROR("Failed to allocate memory for engine library "
-				      "list",
-				      ENOMEM);
+		if (strncmp(p, "//", 2) != 0) {
+			len = strlen(p);
+			if (p[len - 1] == '\r')
+				len--;
+			engine_libs[i] = (char *)calloc(len + 1, sizeof(char));
+			if (!engine_libs[i])
+				PREINIT_ERROR("Failed to allocate memory for engine library "
+					      "list",
+					      ENOMEM);
 
-		strncpy(engine_libs[i], p, len);
-		i++;
+			strncpy(engine_libs[i], p, len);
+			i++;
+		}
 		p = strtok(NULL, "\n");
 	}
 
@@ -213,6 +228,7 @@ EXTERN_C int32_t purpl_preinit(purpl_main_t main_func, int argc, char *argv[])
 	init_engine_ptrs(engine_lib);
 
 	free(path);
+	free(tmp);
 	free(engine_libs_buf);
 	for (i = 0; i < engine_lib_count; i++)
 		free(engine_libs[i]);

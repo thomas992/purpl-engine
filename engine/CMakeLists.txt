@@ -277,7 +277,7 @@ set(ENGINE_RUNTIME_TARGETS ${ENGINE_RUNTIME_TARGETS_} PARENT_SCOPE)
 # Generate the list of libraries to load
 set(engine_libs ${CMAKE_CURRENT_BINARY_DIR}/engine_libs.txt)
 file(REMOVE ${engine_libs}.in)
-set(engine_libs_content "")
+set(engine_libs_content "// List of libraries to be loaded for the engine\n")
 foreach (target ${ENGINE_RUNTIME_TARGETS_} engine)
 	get_target_property(target_imported ${target} IMPORTED)
 	if (${target_imported})

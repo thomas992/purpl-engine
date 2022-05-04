@@ -21,5 +21,3 @@
 
 /// The pointer to the global engine instance
 struct purpl_instance *purpl_inst;
-
-/// 
