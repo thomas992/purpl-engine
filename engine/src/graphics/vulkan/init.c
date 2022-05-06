@@ -95,6 +95,11 @@ bool purpl_vulkan_init(void)
 		return false;
 	}
 
+	if (!vulkan_create_default_renderpass()) {
+		purpl_vulkan_shutdown();
+		return false;
+	}
+
 	if (!vulkan_create_pipeline()) {
 		purpl_vulkan_shutdown();
 		return false;
@@ -106,6 +111,11 @@ bool purpl_vulkan_init(void)
 void purpl_vulkan_shutdown(void)
 {
 	PURPL_ALIAS_GRAPHICS_DATA(vulkan);
+
+	if (vulkan->renderpass) {
+		vkDestroyRenderPass(vulkan->device, vulkan->renderpass, NULL);
+		PURPL_LOG_INFO(purpl_inst->logger, "Destroyed default renderpass with handle 0x%" PRIX64, vulkan->renderpass);
+	}
 
 	if (vulkan->cmd_pool) {
 		vkDestroyCommandPool(vulkan->device, vulkan->cmd_pool, NULL);

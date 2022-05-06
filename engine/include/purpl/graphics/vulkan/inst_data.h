@@ -75,4 +75,7 @@ struct purpl_instance_vulkan {
 
 	VkCommandPool cmd_pool; /// Command pool
 	VkCommandBuffer cmd_buf; /// Command buffer
+
+	VkRenderPass renderpass; /// Render pass
+	VkFramebuffer *framebuffers; /// Framebuffers
 };
