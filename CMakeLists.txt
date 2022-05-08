@@ -118,7 +118,7 @@ else()
 	set(CMAKE_C_STANDARD 11)
 	set(CMAKE_CXX_STANDARD 17) # Ubuntu's GCC doesn't work with SDL in C23 mode
 	
-	set(PURPL_WARNINGS "-Wall -Wextra -Wpedantic")
+	set(PURPL_WARNINGS "-Wall -Wextra -Wpedantic -Wno-volatile")
 endif()
 
 # Dependencies
@@ -144,7 +144,7 @@ if (NOT ${PURPL_USE_SYSTEM_SDL} OR NOT ${SDL2_FOUND})
 	set(SDL_CMAKE_DEBUG_POSTFIX "" CACHE STRING "" FORCE)
 	add_subdirectory(deps/sdl2 EXCLUDE_FROM_ALL)
 	if (DEFINED DEFAULT_C_LIBRARIES)
-		target_link_libraries(SDL2 PRIVATE ${EXTRA_LIBS})
+		target_link_libraries(SDL2 PRIVATE ${DEFAULT_C_LIBRARIES})
 	endif()
 	set(SDL2_LIBRARIES SDL2::SDL2)
 	set(SDL2_INCLUDE_DIRS deps/sdl2/include)

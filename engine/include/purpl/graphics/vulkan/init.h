@@ -38,6 +38,7 @@
 #include "device.h"
 #include "inst.h"
 #include "pipeline.h"
+#include "render.h"
 #include "swapchain.h"
 
 /// Initialize Vulkan

@@ -1,4 +1,7 @@
 @echo off
 
-for %%i in (%*) do if not (%%i == %1) type NUL >> %%i
+for %%x in (%*) do (
+	echo %%x
+	type NUL >> %%x
+)
 

@@ -69,12 +69,57 @@ bool vulkan_create_framebuffers(void)
 	PURPL_ALIAS_GRAPHICS_DATA(vulkan);
 
 	VkFramebufferCreateInfo fb_create_info = { 0 };
+	VkResult res;
+	size_t i;
 
-	PURPL_LOG_INFO(purpl_inst->logger, "Creating framebuffer");
+	PURPL_LOG_INFO(purpl_inst->logger, "Creating %zu framebuffers", stbds_arrlenu(vulkan->swapchain_images));
 
 	fb_create_info.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
 	fb_create_info.pNext = NULL;
 
 	fb_create_info.renderPass = vulkan->renderpass;
+	fb_create_info.width = vulkan->swapchain_extent.width;
+	fb_create_info.height = vulkan->swapchain_extent.height;
+	fb_create_info.attachmentCount = 1;
+	fb_create_info.layers = 1;
+
+	stbds_arrsetlen(vulkan->framebuffers, stbds_arrlenu(vulkan->swapchain_images));
+	for (i = 0; i < stbds_arrlenu(vulkan->framebuffers); i++) {
+		PURPL_LOG_INFO(purpl_inst->logger, "Creating framebuffer %zu with %d pixels (%dx%d)", i + 1,
+				vulkan->swapchain_extent.width * vulkan->swapchain_extent.height, vulkan->swapchain_extent.width,
+				vulkan->swapchain_extent.height);
+		fb_create_info.pAttachments = &vulkan->swapchain_image_views[i];
+		res = vkCreateFramebuffer(vulkan->device, &fb_create_info, NULL, &vulkan->framebuffers[i]);
+		if (res != VK_SUCCESS) {
+			PURPL_LOG_ERROR(purpl_inst->logger, "Failed to create framebuffer %zu: VkResult %d", i + 1, res);
+			vulkan_destroy_framebuffers();
+			return false;
+		}
+		PURPL_LOG_INFO(purpl_inst->logger, "Created framebuffer %zu with handle 0x%" PRIX64, i + 1, vulkan->framebuffers[i]);
+	}
+
+	PURPL_LOG_INFO(purpl_inst->logger, "Created %zu framebuffers", stbds_arrlenu(vulkan->framebuffers));
+
+	return true;
+}
+
+void vulkan_destroy_framebuffers(void)
+{
+	PURPL_ALIAS_GRAPHICS_DATA(vulkan);
+
+	size_t i;
+
+	if (vulkan->framebuffers) {
+		for (i = 0; i < stbds_arrlenu(vulkan->framebuffers); i++) {
+			if (vulkan->framebuffers[i]) {
+				vkDestroyFramebuffer(vulkan->device, vulkan->framebuffers[i], NULL);
+				PURPL_LOG_INFO(purpl_inst->logger, "Destroyed framebuffer %zu with handle 0x%" PRIX64, i + 1, vulkan->framebuffers[i]);
+			}
+		}
+		PURPL_LOG_INFO(purpl_inst->logger, "Destroyed %zu framebuffers", stbds_arrlenu(vulkan->framebuffers));
+
+		stbds_arrfree(vulkan->framebuffers);
+		PURPL_LOG_INFO(purpl_inst->logger, "Freed framebuffer array");
+	}
 }
 

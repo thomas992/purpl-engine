@@ -100,6 +100,11 @@ bool purpl_vulkan_init(void)
 		return false;
 	}
 
+	if (!vulkan_create_framebuffers()) {
+		purpl_vulkan_shutdown();
+		return false;
+	}
+
 	if (!vulkan_create_pipeline()) {
 		purpl_vulkan_shutdown();
 		return false;
@@ -112,6 +117,8 @@ void purpl_vulkan_shutdown(void)
 {
 	PURPL_ALIAS_GRAPHICS_DATA(vulkan);
 
+	vulkan_destroy_framebuffers();
+
 	if (vulkan->renderpass) {
 		vkDestroyRenderPass(vulkan->device, vulkan->renderpass, NULL);
 		PURPL_LOG_INFO(purpl_inst->logger, "Destroyed default renderpass with handle 0x%" PRIX64, vulkan->renderpass);
@@ -122,7 +129,6 @@ void purpl_vulkan_shutdown(void)
 		PURPL_LOG_INFO(purpl_inst->logger, "Destroyed command pool with handle 0x%" PRIX64, vulkan->cmd_pool);
 	}
 
-	// These check the pointers for themselves
 	vulkan_destroy_image_views();
 	vulkan_destroy_swapchain();
 

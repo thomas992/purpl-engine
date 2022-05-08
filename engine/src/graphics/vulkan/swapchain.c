@@ -253,6 +253,8 @@ VkPresentModeKHR vulkan_choose_swap_present_mode(void)
 			return present_mode;
 	}
 
+	PURPL_LOG_INFO(purpl_inst->logger, "Using present mode %zu", present_mode);
+
 	return VK_PRESENT_MODE_FIFO_KHR;
 }
 
@@ -270,6 +272,6 @@ VkExtent2D vulkan_choose_swap_extent(void)
 	extent.height = PURPL_CLAMP(height, vulkan->swapchain_info.capabilities.minImageExtent.height,
 				    vulkan->swapchain_info.capabilities.maxImageExtent.height);
 
-	PURPL_LOG_INFO(purpl_inst->logger, "Chose swap extent %ux%u", extent.width, extent.height);
+	PURPL_LOG_INFO(purpl_inst->logger, "Using swap extent %ux%u", extent.width, extent.height);
 	return extent;
 }

@@ -19,6 +19,8 @@
 
 #include <vulkan/vulkan.h>
 
+#include "stb_ds.h"
+
 #include "purpl/core/coredefs.h"
 #include "purpl/core/inst.h"
 #include "purpl/core/log.h"
@@ -35,4 +37,7 @@ extern bool vulkan_create_default_renderpass(void);
 ///
 /// \return Returns true on success, false otherwise
 extern bool vulkan_create_framebuffers(void);
+
+/// Destroy the framebuffers
+extern void vulkan_destroy_framebuffers(void);
 

@@ -193,6 +193,11 @@ EXTERN_C int32_t purpl_preinit(purpl_main_t main_func, int argc, char *argv[])
 
 #ifdef _WIN32
 	engine_lib = GetModuleHandleA("engine.dll");
+	static const char *(*wine_get_version)(void);
+	*(void **)&wine_get_version = (void *)GetModuleHandleA("ntdll.dll", "wine_get_version");
+	if (wine_get_version)
+		fprintf(stderr, "Detected that the engine is running in Wine %s. If you aren't testing this application, see about a"
+				" native build of it for your platform\n", wine_get_version());
 #else // _WIN32
 	engine_lib = dlopen("engine" LIB_EXT, RTLD_NOW);
 #endif // _WIN32
