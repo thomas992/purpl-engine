@@ -34,6 +34,9 @@
 /// The path the engine's source code was in relative to the build directory
 #define PURPL_RELATIVE_SOURCE_DIR "@ENGINE_RELATIVE_SOURCE_DIR@"
 
+/// Whether to show the full paths to source files in log messages
+#cmakedefine PURPL_LOG_FULL_PATHS
+
 #ifdef PURPL_ENABLE_DISCORD
 /// The Discord app ID to use
 #define PURPL_DISCORD_APP_ID @PURPL_DISCORD_APP_ID@

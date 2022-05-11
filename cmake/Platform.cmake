@@ -38,7 +38,7 @@ function(purpl_setup target app_id version content_files)
 		RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
 	
 	# Install debug symbols
-	if (MSVC AND ${CMAKE_BUILD_TYPE} MATCHES "Deb")
+	if (MSVC AND ${PURPL_IS_DEBUG})
 		install(PROGRAMS $<TARGET_PDB_FILE:${target}>
 			DESTINATION ${CMAKE_INSTALL_PREFIX})
 	endif()
@@ -66,7 +66,7 @@ function(purpl_win32_setup target app_id version)
 		add_custom_command(TARGET purpl-demo PRE_BUILD
 				   COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:${runtime_target}> $<TARGET_FILE_DIR:${target}>
 				   DEPENDS ${runtime_target})
-		if (MSVC AND ${CMAKE_BUILD_TYPE} MATCHES "Deb")
+		if (MSVC AND ${PURPL_IS_DEBUG})
 			get_target_property(target_imported ${runtime_target} IMPORTED)
 			if (NOT ${target_imported})
 				add_custom_command(TARGET purpl-demo PRE_BUILD
