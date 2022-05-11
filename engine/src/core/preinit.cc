@@ -101,8 +101,8 @@ EXTERN_C __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 #ifdef _WIN32
 #define purpl_complete_preinit                                           \
 	((int32_t(*)(volatile purpl_main_t main_func, volatile int argc, \
-		     volatile char *argv[]))__imp_purpl_complete_preinit)
-#define purpl_internal_shutdown __imp_purpl_internal_shutdown
+		     volatile char *argv[]))PREFIX(purpl_complete_preinit))
+#define purpl_internal_shutdown PREFIX(purpl_internal_shutdown)
 #else // _WIN32
 #define purpl_complete_preinit \
 	((int32_t(*)(volatile purpl_main_t main_func, volatile int argc, volatile char *argv[]))purpl_complete_preinit)
@@ -129,6 +129,8 @@ EXTERN_C int32_t purpl_preinit(purpl_main_t main_func, int argc, char *argv[])
 
 	strncpy(here, argv[0], MAX_PATH);
 	*strrchr(here, PATH_SEP) = '\0';
+
+	fprintf(stderr, "Loading Purpl engine\n");
 
 	path = (char *)calloc(MAX_PATH, sizeof(char));
 	if (!path)
@@ -196,7 +198,7 @@ EXTERN_C int32_t purpl_preinit(purpl_main_t main_func, int argc, char *argv[])
 	static const char *(*wine_get_version)(void);
 	*(void **)&wine_get_version = (void *)GetProcAddress(GetModuleHandleA("ntdll.dll"), "wine_get_version");
 	if (wine_get_version)
-		fprintf(stderr, "Detected that the engine is running in Wine %s. If you aren't testing this application, see about a"
+		fprintf(stderr, "Detected that the engine is running in Wine/Proton %s. If you aren't testing this application, see about a"
 				" native build of it for your platform\n", wine_get_version());
 #else // _WIN32
 	engine_lib = dlopen("engine" LIB_EXT, RTLD_NOW);

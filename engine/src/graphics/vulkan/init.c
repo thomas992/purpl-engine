@@ -41,6 +41,7 @@ bool purpl_vulkan_init(void)
 					   PURPL_INITIAL_WINDOW_WIDTH, PURPL_INITIAL_WINDOW_HEIGHT,
 					   PURPL_DEFAULT_WINDOW_FLAGS | SDL_WINDOW_VULKAN);
 	if (!purpl_inst->wnd) {
+		PURPL_LOG_ERROR(purpl_inst->logger, "Failed to create window: %s", SDL_GetError());
 		purpl_vulkan_shutdown();
 		return false;
 	}

@@ -27,10 +27,12 @@ endif()
 
 # Use the engine's Ninja
 if (${CMAKE_GENERATOR} MATCHES "Ninja")
-	if (WIN32)
-		set(CMAKE_MAKE_PROGRAM ${CMAKE_SOURCE_DIR}/tools/ninja.exe CACHE STRING "" FORCE)
-	else()
-		set(CMAKE_MAKE_PROGRAM ${CMAKE_SOURCE_DIR}/tools/ninja CACHE STRING "" FORCE)
+	if (NOT DEFINED CMAKE_MAKE_PROGRAM)
+		if (WIN32)
+			set(CMAKE_MAKE_PROGRAM ${CMAKE_SOURCE_DIR}/tools/ninja.exe CACHE STRING "" FORCE)
+		else()
+			set(CMAKE_MAKE_PROGRAM ${CMAKE_SOURCE_DIR}/tools/ninja CACHE STRING "" FORCE)
+		endif()
 	endif()
 endif()
 
@@ -58,7 +60,9 @@ elseif (${CMAKE_SYSTEM_PROCESSOR} MATCHES "a.*64")
 	set(PURPL_PROCESSOR "arm64")
 endif()
 
-if (WIN32)
+if (MINGW)
+	enable_language(ASM)
+elseif (WIN32)
 	enable_language(ASM_MASM)
 else()
 	enable_language(ASM)
@@ -95,14 +99,14 @@ if (${CMAKE_C_COMPILER_ID} MATCHES "Clang")
 	message(STATUS "Detected Clang-like compiler")
 
 	set(CMAKE_C_STANDARD 23)
-	set(CMAKE_CXX_STANDARD 20)
+	set(CMAKE_CXX_STANDARD 23)
 	
-	set(PURPL_WARNINGS "-Wall -Wextra -Wpedantic -Wno-deprecated-volatile -Wno-newline-eof -Wno-unused-function")
+	set(PURPL_WARNINGS "-Wall -Wextra -Wno-deprecated-volatile -Wno-newline-eof -Wno-unused-function")
 elseif (MSVC AND NOT ${CMAKE_C_COMPILER_ID} MATCHES "Clang")
 	message(STATUS "Detected MSVC-like compiler")
 
 	set(CMAKE_C_STANDARD 17)
-	set(CMAKE_CXX_STANDARD 20)
+	set(CMAKE_CXX_STANDARD 23)
 	
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /MP /FS")
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP /FS")
@@ -115,10 +119,10 @@ else()
 		message(STATUS "Detected unknown compiler, assuming GCC-like functionality")
 	endif()
 
-	set(CMAKE_C_STANDARD 11)
-	set(CMAKE_CXX_STANDARD 17) # Ubuntu's GCC doesn't work with SDL in C23 mode
+	set(CMAKE_C_STANDARD 17)
+	set(CMAKE_CXX_STANDARD 23)
 	
-	set(PURPL_WARNINGS "-Wall -Wextra -Wpedantic -Wno-volatile")
+	set(PURPL_WARNINGS "-Wall -Wextra -Wno-volatile")
 endif()
 
 # Dependencies
@@ -159,10 +163,13 @@ if (NOT ${PURPL_USE_SYSTEM_SDL} OR NOT ${SDL2_FOUND})
 	endif()
 endif()
 
-set(SPIRV_CROSS_SKIP_INSTALL ON CACHE BOOL "" FORCE)
-set(SPIRV_CROSS_SHARED OFF CACHE BOOL "" FORCE)
-add_subdirectory(deps/spirv-cross)
-set(SPIRV_CROSS_EXECUTABLE $<TARGET_FILE:spirv-cross>)
+find_program(SPIRV_CROSS_EXECUTABLE "spirv-cross")
+if (${SPIRV_CROSS_EXECUTABLE} STREQUAL "SPIRV_CROSS_EXECUTABLE-NOTFOUND")
+	set(SPIRV_CROSS_SKIP_INSTALL ON CACHE BOOL "" FORCE)
+	set(SPIRV_CROSS_SHARED OFF CACHE BOOL "" FORCE)
+	add_subdirectory(deps/spirv-cross)
+	set(SPIRV_CROSS_EXECUTABLE $<TARGET_FILE:spirv-cross>)
+endif()
 
 if (${PURPL_ENABLE_DISCORD})
 	if (NOT DEFINED PURPL_DISCORD_APP_ID)
