@@ -17,18 +17,45 @@
 
 cmake_minimum_required(VERSION 3.15)
 
-function(purpl_setup target app_id version content_files)
-	# Copy the list of engine libraries
-	foreach (dest ${CMAKE_CURRENT_BINARY_DIR} $<TARGET_FILE_DIR:${target}>)
-		add_custom_command(TARGET purpl-demo PRE_BUILD
-				   COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/engine/engine_libs.txt ${dest})
-	endforeach()
+# Magic string for no content files
+set(NO_CONTENT_STR "NO_CONTENT")
+
+function(purpl_setup target sources)
+	# Create the target
+	if (ANDROID)
+		add_library(${target} SHARED ${sources})
+	else()
+		add_executable(${target} ${sources})
+	endif()
+
+	# Link to the engine
+	target_link_libraries(${target} PRIVATE engine_preinit)
+	if (${PURPL_STATIC_BUILD})
+		target_link_libraries(${target} PRIVATE engine)
+	endif()
+
+	if (NOT ${PURPL_STATIC_BUILD})
+		# Copy the list of engine libraries
+		foreach (dest ${CMAKE_CURRENT_BINARY_DIR} $<TARGET_FILE_DIR:${target}>)
+			add_custom_command(TARGET purpl-demo PRE_BUILD
+					   COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/engine/engine_libs.txt ${dest})
+		endforeach()
+	endif()
 	
+	# Content files are optional
+	if (${ARGC} GREATER 4)
+		set(content_files ${ARG5})
+	else()
+		set(content_files ${NO_CONTENT_STR})
+	endif()
+
 	# Platform-specific setup
 	if (WIN32)
-		purpl_win32_setup(${target} ${app_id} ${version})
+		purpl_win32_setup(${target})
 	elseif (${CMAKE_SYSTEM_NAME} STREQUAL "WindowsStore")
 		purpl_winrt_setup(${content_files})
+	elseif (ANDROID)
+		purpl_android_setup(${target} ${content_files})
 	else()
 		purpl_posix_setup(${target})
 	endif()
@@ -44,20 +71,62 @@ function(purpl_setup target app_id version content_files)
 	endif()
 
 	# Install assets
-	foreach (file ${content_files})
-		get_filename_component(dir ${file} DIRECTORY)
-		install(FILES ${file}
-			DESTINATION ${CMAKE_INSTALL_PREFIX}/${dir})
-	endforeach()
+	if (NOT ${content_files} STREQUAL ${NO_CONTENT_STR})
+		foreach (file ${content_files})
+			get_filename_component(dir ${file} DIRECTORY)
+			install(FILES ${file}
+				DESTINATION ${CMAKE_INSTALL_PREFIX}/${dir})
+		endforeach()
+	endif()
+endfunction()
+
+function(purpl_android_setup target content_files)
+	set(jni_dir ${CMAKE_CURRENT_BINARY_DIR}/android-project/app/jni)
+	set(src_dir ${CMAKE_CURRENT_BINARY_DIR}/android-project/app/src/main)
+	set(content_dir ${src_dir}/res)
+
+	configure_file(android/AndroidManifest.xml.in AndroidManifest.xml @ONLY)
+	configure_file(android/Android.mk.in Android.mk @ONLY)
+	configure_file(android/build.gradle.in build.gradle @ONLY)
+	configure_file(android/strings.xml.in strings.xml @ONLY)
+	configure_file(android/Entry.java.in Entry.java @ONLY)
+
+	string(REPLACE "." "/" java_package "${PURPL_APP_JAVA_ID}")
+
+	add_custom_command(TARGET ${target} PRE_BUILD
+			   COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/deps/sdl2/android-project ${CMAKE_CURRENT_BINARY_DIR}/android-project)
+
+	add_custom_command(TARGET ${target} PRE_BUILD
+			   COMMAND ${CMAKE_COMMAND} -E rm -rf ${jni_dir}
+			   COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_BINARY_DIR}/build.gradle ${CMAKE_CURRENT_BINARY_DIR}/android-project/app/build.gradle
+			   COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_BINARY_DIR}/Android.mk ${jni_dir}/Android.mk
+			   COMMAND ${CMAKE_COMMAND} -E make_directory ${jni_dir}/${ANDROID_ABI}
+			   COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:${target}> ${jni_dir}/${ANDROID_ABI}/$<TARGET_FILE_NAME:${target}>
+			   COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_BINARY_DIR}/AndroidManifest.xml ${src_dir}/AndroidManifest.xml
+			   COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_BINARY_DIR}/strings.xml ${content_dir}/values/strings.xml
+			   COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_BINARY_DIR}/Entry.java ${src_dir}/java/${java_package}/${PURPL_APP_UPPER_ID}.java)
+
+	if (NOT ${content_files} STREQUAL ${NO_CONTENT_STR})
+		foreach(file ${content_files})
+			get_filename_component(dir ${file} DIRECTORY)
+			add_custom_command(TARGET ${target} POST_BUILD
+					   COMMAND ${CMAKE_COMMAND} -E make_directory ${src_dir}/${dir}
+					   COMMAND ${CMAKE_COMMAND} -E copy ${file} ${src_dir}/${dir})
+		endforeach()
+	endif()
+
+	add_custom_command(TARGET ${target} POST_BUILD
+			   COMMAND ${CMAKE_COMMAND} -E make_directory ${src_dir}/assets
+			   COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_BINARY_DIR}/engine/assets ${src_dir}/assets)
 endfunction()
 
 function(purpl_posix_setup target)
 endfunction()
 
-function(purpl_win32_setup target app_id version)
-	string(REPLACE "." "," version_string "${version}")
-	configure_file(${app_id}.rc.in ${app_id}.rc @ONLY)
-	set_property(SOURCE ${app_id}.rc PROPERTY GENERATED TRUE)
+function(purpl_win32_setup target)
+	string(REPLACE "." "," version_string "${PURPL_APP_VERSION}")
+	configure_file(${PURPL_APP_ID}.rc.in ${PURPL_APP_ID}.rc @ONLY)
+	set_property(SOURCE ${PURPL_APP_ID}.rc PROPERTY GENERATED TRUE)
 
 	# Copy DLLs
 	add_custom_command(TARGET purpl-demo PRE_BUILD
@@ -78,15 +147,15 @@ function(purpl_win32_setup target app_id version)
 endfunction()
 
 function(purpl_winrt_setup content_files)
-	configure_file(Package.appxmanifest.in Package.appxmanifest @ONLY)
+	configure_file(uwp/Package.appxmanifest.in Package.appxmanifest @ONLY)
 	set_property(SOURCE ${CMAKE_CURRENT_BINARY_DIR}/Package.appxmanifest PROPERTY VS_DEPLOYMENT_CONTENT TRUE)
 	set_property(SOURCE ${CMAKE_CURRENT_BINARY_DIR}/Package.appxmanifest PROPERTY GENERATED TRUE)
 
-	foreach(file ${content_files})
-		set_property(SOURCE ${file} PROPERTY VS_DEPLOYMENT_CONTENT TRUE)
-		set_property(SOURCE ${file} PROPERTY VS_DEPLOYMENT_LOCATION "Assets")
+	foreach(file icon_44.png icon_50.png icon_150.png splash.png)
+		set_property(SOURCE uwp/${file} PROPERTY VS_DEPLOYMENT_CONTENT TRUE)
+		set_property(SOURCE uwp/${file} PROPERTY VS_DEPLOYMENT_LOCATION "Assets")
 	endforeach()
 
-	configure_file(create_test_cert.ps1.in create_test_cert.ps1 @ONLY)
+	configure_file(uwp/create_test_cert.ps1.in create_test_cert.ps1 @ONLY)
 	message(STATUS "To create a certificate, run the following command: ${CMAKE_CURRENT_BINARY_DIR}/create_test_cert.ps1")
 endfunction()

@@ -51,7 +51,7 @@ enum purpl_graphics_api {
 	PURPL_GRAPHICS_API_DIRECT3D = 3, /// Direct3D (unimplemented)
 #endif // _WIN32
 #ifdef __APPLE__
-	PURPL_GRAPHICS_API_METAL = 4, /// Metal (unimplemented)
+	PURPL_GRAPHICS_API_METAL = 4, /// Metal
 #endif // __APPLE__
 	PURPL_GRAPHICS_API_MAX = 5 /// Maximum graphics API number
 };

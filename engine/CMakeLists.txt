@@ -25,10 +25,10 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${PURPL_WARNINGS}")
 set(ENGINE_CORE_HEADERS
     include/purpl/core/config.h.in
     include/purpl/core/coredefs.h
-    include/purpl/core/features.h
     include/purpl/core/init.h
     include/purpl/core/inst.h
     include/purpl/core/log.h
+    include/purpl/core/platform.h
     include/purpl/core/types.h)
 
 set(ENGINE_GRAPHICS_HEADERS
@@ -106,6 +106,9 @@ set(ENGINE_UNIX_x86_64_SOURCES
 set(ENGINE_MINGW_x86_64_SOURCES
     src/util/x86/random_64_mingw.S)
 
+set(ENGINE_UNIX_arm64_SOURCES
+    src/util/arm/random_64.S)
+
 set(ENGINE_WINDOWS_SOURCES src/engine.rc)
 
 if (APPLE)
@@ -160,12 +163,17 @@ source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/src PREFIX "Source Files" FILES ${
 # Configuration header
 configure_file(include/purpl/core/config.h.in config.h @ONLY)
 
-# Header with dumped exports for engine_preinit
-set(EXPORTS_HEADER ${CMAKE_CURRENT_BINARY_DIR}/exports.h)
+if (${PURPL_STATIC_BUILD})
+	set(engine_lib_type STATIC)
+else()
+	# Header with dumped exports for engine_preinit
+	set(EXPORTS_HEADER ${CMAKE_CURRENT_BINARY_DIR}/exports.h)
+	set(engine_lib_type SHARED)
+endif()
 
 # Add the two libraries
 add_library(engine_preinit STATIC src/core/main.c src/core/preinit.cc ${CMAKE_SOURCE_DIR}/tools/dumppe.py ${CMAKE_SOURCE_DIR}/tools/dumpelf.py ${CMAKE_SOURCE_DIR}/tools/dumpmacho.py ${EXPORTS_HEADER})
-add_library(engine SHARED ${ENGINE_ALL_HEADERS} ${ENGINE_ALL_SOURCES} ${CMAKE_CURRENT_BINARY_DIR}/config.h)
+add_library(engine ${engine_lib_type} ${ENGINE_ALL_HEADERS} ${ENGINE_ALL_SOURCES} ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 
 # Libraries and preprocessor definitions
 if (${PURPL_ENABLE_MEMING})
@@ -207,20 +215,22 @@ if(NOT WIN32)
 endif()
 
 # Dump exports for engine_preinit
-if (WIN32)
-	add_custom_command(OUTPUT ${EXPORTS_HEADER}
-			   COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tools/dumppe.py $<TARGET_FILE:engine> ${EXPORTS_HEADER} purpl
-			   DEPENDS engine ${CMAKE_SOURCE_DIR}/tools/dumppe.py)
-else()
-	if (APPLE)
-		set(DUMPEXPORTS_NAME dumpmacho.py)
+if (NOT ${PURPL_STATIC_BUILD})
+	if (WIN32)
+		add_custom_command(OUTPUT ${EXPORTS_HEADER}
+				   COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tools/dumppe.py $<TARGET_FILE:engine> ${EXPORTS_HEADER} purpl
+				   DEPENDS engine ${CMAKE_SOURCE_DIR}/tools/dumppe.py)
 	else()
-		set(DUMPEXPORTS_NAME dumpelf.py)
+		if (APPLE)
+			set(DUMPEXPORTS_NAME dumpmacho.py)
+		else()
+			set(DUMPEXPORTS_NAME dumpelf.py)
+		endif()
+		add_custom_command(OUTPUT ${EXPORTS_HEADER}
+				   COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tools/${DUMPEXPORTS_NAME} $<TARGET_FILE:engine> ${EXPORTS_HEADER} purpl
+				   DEPENDS engine ${CMAKE_SOURCE_DIR}/tools/${DUMPEXPORTS_NAME})
+		target_link_libraries(engine_preinit PUBLIC dl)
 	endif()
-	add_custom_command(OUTPUT ${EXPORTS_HEADER}
-			   COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tools/${DUMPEXPORTS_NAME} $<TARGET_FILE:engine> ${EXPORTS_HEADER} purpl
-			   DEPENDS engine ${CMAKE_SOURCE_DIR}/tools/${DUMPEXPORTS_NAME})
-	target_link_libraries(engine_preinit PUBLIC dl)
 endif()
 
 # Include directories
@@ -273,47 +283,56 @@ foreach(shader ${ENGINE_SHADERS})
 endforeach()
 
 # This is a list of targets that the engine needs
-if (NOT ${SDL2_FOUND})
-	list(APPEND ENGINE_RUNTIME_TARGETS_ SDL2)
-endif()
-if (${PURPL_ENABLE_DISCORD})
-	list(APPEND ENGINE_RUNTIME_TARGETS_ discord_game_sdk)
-endif()
-if (${PURPL_ENABLE_STEAM})
-	list(APPEND ENGINE_RUNTIME_TARGETS_ steamworks_sdk)
+if (NOT ${PURPL_STATIC_BUILD})
+	if (NOT ${SDL2_FOUND})
+		list(APPEND ENGINE_RUNTIME_TARGETS_ SDL2)
+	endif()
+	if (${PURPL_ENABLE_DISCORD})
+		list(APPEND ENGINE_RUNTIME_TARGETS_ discord_game_sdk)
+	endif()
+	if (${PURPL_ENABLE_STEAM})
+		list(APPEND ENGINE_RUNTIME_TARGETS_ steamworks_sdk)
+	endif()
 endif()
 set(ENGINE_RUNTIME_TARGETS ${ENGINE_RUNTIME_TARGETS_} PARENT_SCOPE)
 
-# Generate the list of libraries to load
-set(engine_libs ${CMAKE_CURRENT_BINARY_DIR}/engine_libs.txt)
-file(REMOVE ${engine_libs}.in)
-set(engine_libs_content "// List of libraries to be loaded for the engine\n")
-if (${SDL_FOUND})
-	foreach (library ${SDL2_LIBRARIES})
-		string(APPEND engine_libs_content "${library}\n")
-	endforeach()
-endif()
-foreach (target ${ENGINE_RUNTIME_TARGETS_} engine)
-	get_target_property(target_imported ${target} IMPORTED)
-	if (${target_imported})
-		get_target_property(tmp ${target} LOCATION)
-		get_filename_component(tmp ${tmp} NAME)
-	else()
-		file(CONFIGURE OUTPUT ${engine_libs}.tmp CONTENT [=[$<TARGET_FILE_NAME:@target@>]=])
-		file(READ ${engine_libs}.tmp tmp)
+if (NOT ${PURPL_STATIC_BUILD})
+	# Generate the list of libraries to load
+	set(engine_libs ${CMAKE_CURRENT_BINARY_DIR}/engine_libs.txt)
+	file(REMOVE ${engine_libs}.in)
+	set(engine_libs_content "// List of libraries to be loaded for the engine\n")
+	if (${SDL_FOUND})
+		foreach (library ${SDL2_LIBRARIES})
+			string(APPEND engine_libs_content "${library}\n")
+		endforeach()
 	endif()
-	string(APPEND engine_libs_content "${tmp}\n")
-endforeach()
-file(WRITE ${engine_libs}.in ${engine_libs_content})
-file(GENERATE OUTPUT ${engine_libs} INPUT ${engine_libs}.in)
-install(FILES ${engine_libs} DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+	foreach (target ${ENGINE_RUNTIME_TARGETS_} engine)
+		get_target_property(target_imported ${target} IMPORTED)
+		if (${target_imported})
+			get_target_property(tmp ${target} LOCATION)
+			get_filename_component(tmp ${tmp} NAME)
+		else()
+			file(CONFIGURE OUTPUT ${engine_libs}.tmp CONTENT [=[$<TARGET_FILE_NAME:@target@>]=])
+			file(READ ${engine_libs}.tmp tmp)
+		endif()
+		string(APPEND engine_libs_content "${tmp}\n")
+	endforeach()
+	file(WRITE ${engine_libs}.in ${engine_libs_content})
+	file(GENERATE OUTPUT ${engine_libs} INPUT ${engine_libs}.in)
+	install(FILES ${engine_libs} DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+endif()
 
 # Install targets and symbols
 install(TARGETS engine_preinit
 	LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
 
+if (${PURPL_STATIC_BUILD})
+	set(engine_install_dir lib)
+else()
+	set(engine_install_dir bin)
+endif()
 install(TARGETS engine
-	LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+	LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/${engine_install_dir})
 
 if (MSVC AND ${PURPL_IS_DEBUG})
 	install(PROGRAMS $<TARGET_PDB_FILE:engine>

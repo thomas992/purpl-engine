@@ -18,7 +18,7 @@
 #pragma once
 
 #include "config.h"
-#include "features.h"
+#include "platform.h"
 #include "types.h"
 
 /// Mark a function as external/imported on Windows

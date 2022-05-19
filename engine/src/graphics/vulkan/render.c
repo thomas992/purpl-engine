@@ -41,7 +41,7 @@ bool vulkan_create_default_renderpass(void)
 
 	colour_attachment_ref.attachment = 0; // Index of the attachment in the pAttachments array in the create info for the
 					      // renderpass
-	colour_attachment_ref.layout = VK_IMAGE_LAYOUT_ATTACHMENT_OPTIMAL;
+	colour_attachment_ref.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
 	subpass_desc.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
 	subpass_desc.colorAttachmentCount = 1;

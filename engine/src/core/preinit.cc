@@ -62,13 +62,17 @@
 
 typedef int32_t (*purpl_main_t)(int32_t argc, char *argv[]);
 
+#ifndef PURPL_STATIC_BUILD
 #include "exports.h"
 
 #if defined _WIN32 || defined PURPL_WINRT
 HMODULE engine_lib = NULL;
-#else // PURPL_WINRT
+#else // _WIN32 || PURPL_WINRT
 void *engine_lib = NULL;
-#endif // PURPL_WINRT
+#endif // _WIN32 || PURPL_WINRT
+#else // !PURPL_STATIC_BUILD
+#define EXTERN_C extern "C"
+#endif // !PURPL_STATIC_BUILD
 
 // Yoinked from the Source engine leak (I've seen it in other places, but I was messing with it at the time and was too
 // lazy to just Google this) and cleaned up
@@ -98,21 +102,26 @@ EXTERN_C __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 #define init_engine_ptrs init_engine_so_ptrs
 #endif // _WIN32
 
+#ifndef PURPL_STATIC_BUILD
 #ifdef _WIN32
-#define purpl_complete_preinit                                           \
-	((int32_t(*)(volatile purpl_main_t main_func, volatile int argc, \
+#define purpl_complete_preinit ((int32_t(*)(volatile purpl_main_t main_func, volatile int argc, \
 		     volatile char *argv[]))PREFIX(purpl_complete_preinit))
 #define purpl_internal_shutdown PREFIX(purpl_internal_shutdown)
 #else // _WIN32
 #define purpl_complete_preinit \
 	((int32_t(*)(volatile purpl_main_t main_func, volatile int argc, volatile char *argv[]))purpl_complete_preinit)
 #endif // _WIN32
+#else // !PURPL_STATIC_BUILD
+EXTERN_C {
+extern int32_t purpl_complete_preinit(volatile purpl_main_t main_func, volatile int argc, volatile char *argv[]);
+extern void purpl_internal_shutdown(void);
+};
+#endif // !PURPL_STATIC_BUILD
 
 // EXTERN_C is provided by exports.h
 EXTERN_C int32_t purpl_preinit(purpl_main_t main_func, int argc, char *argv[])
 {
-	PURPL_IGNORE(argc);
-
+#ifndef PURPL_STATIC_BUILD
 	char *here;
 	char *path;
 	size_t idx;
@@ -210,6 +219,9 @@ EXTERN_C int32_t purpl_preinit(purpl_main_t main_func, int argc, char *argv[])
 	for (i = 0; i < engine_lib_count; i++)
 		free(engine_libs[i]);
 	free(engine_libs);
+#else // !PURPL_STATIC
+	fprintf(stderr, "Static build, not loading any libraries\n");
+#endif // !PURPL_STATIC
 
 	// Calls main
 	return purpl_complete_preinit(main_func, argc, (volatile char **)argv);
@@ -218,7 +230,7 @@ EXTERN_C int32_t purpl_preinit(purpl_main_t main_func, int argc, char *argv[])
 EXTERN_C void purpl_shutdown(void)
 {
 	purpl_internal_shutdown();
-#ifdef _WIN32
+#if defined _WIN32 && !defined PURPL_STATIC_BUILD
 	FreeLibrary(engine_lib);
-#endif // _WIN32
+#endif // _WIN32 && !PURPL_STATIC_BUILD
 }

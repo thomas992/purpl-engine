@@ -18,7 +18,9 @@
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
-#endif
+#else // _WIN32
+#include <syslog.h>
+#endif // _WIN32
 
 #include "purpl/core/log.h"
 
@@ -128,8 +130,10 @@ static char *log_format(struct purpl_logger *logger, enum purpl_log_level level,
 	log_get_time(&t1, &t2);
 
 	file2 = file;
+#ifndef PURPL_LOG_FULL_PATHS
 	if (strncmp(file, PURPL_SOURCE_DIR, PURPL_SIZEOF_ARRAY(PURPL_SOURCE_DIR) - 1) == 0)
 		file2 += PURPL_SIZEOF_ARRAY(PURPL_SOURCE_DIR);
+#endif // !PURPL_LOG_FULL_PATHS
 
 	base = logger->format;
 	passes = 1;
@@ -326,6 +330,8 @@ PURPL_API void purpl_log_write(struct purpl_logger *logger, enum purpl_log_level
 	fflush(logger->file);
 #ifdef _WIN32
 	OutputDebugStringA(buf);
+#else
+	syslog(LOG_INFO, "%s", buf);
 #endif // _WIN32
 #ifdef PURPL_DEBUG
 	fprintf(stderr, "\r%s", buf);

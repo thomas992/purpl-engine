@@ -128,9 +128,6 @@ PURPL_API char *purpl_vstrfmt(size_t *size, const char *fmt, va_list args)
 	size_t buf_size;
 	va_list _args;
 
-	if (!args)
-		return NULL;
-
 	va_copy(_args, args);
 
 	// Returns the number of characters that would be written

@@ -1,4 +1,4 @@
-// <Purpose>
+//  Synchronization things
 //
 // Copyright 2022 MobSlicer152
 // This file is part of Purpl Engine
@@ -17,5 +17,8 @@
 
 #include "purpl/graphics/vulkan/sync.h"
 
-
+bool vulkan_create_semaphores()
+{
+	VkSemaphoreCreateInfo semaphore_create_info = { 0 };
+}
 

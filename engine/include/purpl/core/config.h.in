@@ -37,6 +37,12 @@
 /// Whether to show the full paths to source files in log messages
 #cmakedefine PURPL_LOG_FULL_PATHS
 
+/// Whether a static build has been enabled
+#cmakedefine PURPL_STATIC_BUILD
+
+/// Whether to disable Vulkan validation layers in debug builds
+#cmakedefine PURPL_DISABLE_VULKAN_VALIDATION_LAYERS
+
 #ifdef PURPL_ENABLE_DISCORD
 /// The Discord app ID to use
 #define PURPL_DISCORD_APP_ID @PURPL_DISCORD_APP_ID@

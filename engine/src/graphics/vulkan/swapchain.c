@@ -31,7 +31,8 @@ bool vulkan_create_swapchain(void)
 	VkResult result;
 	size_t i;
 
-	u32 queue_families[] = { (u32)vulkan->queue_families.graphics_family, (u32)vulkan->queue_families.presentation_family };
+	u32 queue_families[] = { (u32)vulkan->queue_families.graphics_family,
+				 (u32)vulkan->queue_families.presentation_family };
 
 	PURPL_LOG_INFO(purpl_inst->logger, "Creating swapchain");
 
@@ -65,11 +66,7 @@ bool vulkan_create_swapchain(void)
 	swapchain_create_info.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
 	swapchain_create_info.presentMode = present_mode;
 	swapchain_create_info.clipped = VK_TRUE;
-	swapchain_create_info.oldSwapchain = vulkan->swapchain; // Because of
-								// calloc, this
-								// will be NULL
-								// the first
-								// time
+	swapchain_create_info.oldSwapchain = vulkan->swapchain; // Because of calloc, this will be NULL the first time
 
 	result = vkCreateSwapchainKHR(vulkan->device, &swapchain_create_info, NULL, &vulkan->swapchain);
 	if (result != VK_SUCCESS) {
@@ -249,11 +246,13 @@ VkPresentModeKHR vulkan_choose_swap_present_mode(void)
 
 	for (i = 0; i < stbds_arrlenu(vulkan->swapchain_info.present_modes); i++) {
 		present_mode = vulkan->swapchain_info.present_modes[i];
-		if (present_mode == VK_PRESENT_MODE_MAILBOX_KHR)
+		if (present_mode == VK_PRESENT_MODE_MAILBOX_KHR) {
+			PURPL_LOG_INFO(purpl_inst->logger, "Using present mode %zu", i + 1);
 			return present_mode;
+		}
 	}
 
-	PURPL_LOG_INFO(purpl_inst->logger, "Using present mode %zu", present_mode);
+	PURPL_LOG_INFO(purpl_inst->logger, "Using default present mode (VK_PRESENT_MOD_FIFO_KHR %d)", VK_PRESENT_MODE_FIFO_KHR);
 
 	return VK_PRESENT_MODE_FIFO_KHR;
 }

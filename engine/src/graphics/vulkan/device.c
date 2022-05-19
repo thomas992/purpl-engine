@@ -178,9 +178,6 @@ u64 vulkan_score_device(VkPhysicalDevice device, size_t idx)
 		return 0;
 	}
 
-	// Give more points for devices that support newer standards
-	score += VK_API_VERSION_MINOR(properties.apiVersion) * 100;
-
 	// iGPUs are usually shit, and on a system that doesn't follow that
 	// rule (i.e. the Steam Deck or a mobile device) there probably
 	// won't be a dGPU

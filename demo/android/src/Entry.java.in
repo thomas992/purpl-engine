@@ -1,0 +1,16 @@
+package @PURPL_APP_JAVA_ID@;
+
+import org.libsdl.app.SDLActivity;
+
+public class @PURPL_APP_UPPER_ID@ extends SDLActivity {
+	public String getEntryPoint() {
+		return "main";
+	}
+
+	public String[] getLibraries() {
+		return new String[] {
+			"@target@",
+		};
+	}
+}
+

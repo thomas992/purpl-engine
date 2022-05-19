@@ -37,7 +37,7 @@ bool vulkan_create_instance(void)
 						      PURPL_GET_PATCH_VERSION(purpl_inst->app_version));
 	app_info.pEngineName = "Purpl Engine";
 	app_info.engineVersion = VK_MAKE_VERSION(PURPL_MAJOR_VERSION, PURPL_MINOR_VERSION, PURPL_PATCH_VERSION);
-	app_info.apiVersion = VK_API_VERSION_1_3;
+	app_info.apiVersion = VK_API_VERSION_1_1;
 
 	create_info.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
 	create_info.pApplicationInfo = &app_info;
@@ -54,7 +54,11 @@ bool vulkan_create_instance(void)
 	VkDebugUtilsMessengerCreateInfoEXT debug_create_info = { 0 };
 	size_t i;
 
+#ifdef PURPL_DISABLE_VULKAN_VALIDATION_LAYERS
+	const char *validation_layers[] = { };
+#else // !PURPL_DISABLE_VALIDATION_LAYERS
 	const char *validation_layers[] = { "VK_LAYER_KHRONOS_validation" };
+#endif // !PURPL_DISABLE_VULKAN_VALIDATION_LAYERS
 	layer_count = PURPL_SIZEOF_ARRAY(validation_layers);
 
 	create_info.enabledLayerCount = (u32)layer_count;

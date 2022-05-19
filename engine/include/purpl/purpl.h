@@ -24,9 +24,9 @@
 #define SDL_MAIN_HANDLED
 
 #include "core/coredefs.h"
-#include "core/features.h"
 #include "core/init.h"
 #include "core/inst.h"
+#include "core/platform.h"
 #include "core/types.h"
 
 #include "graphics/window.h"
