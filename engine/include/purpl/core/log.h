@@ -49,7 +49,11 @@ enum purpl_log_level {
 
 #ifdef PURPL_DEBUG
 /// The default log message format
+#ifdef __ANDROID__
+#define PURPL_LOG_DEFAULT_FORMAT "[#W] [#L] #msg"
+#else // __ANDROID__
 #define PURPL_LOG_DEFAULT_FORMAT "[PID #P TID #T] [#ds #t] [#W] [#L] #msg"
+#endif // __ANDROID__
 
 /// The default log file name, relative to the data directory
 #define PURPL_LOG_DEFAULT_NAME "logs/purpl-<date>-debug.log"

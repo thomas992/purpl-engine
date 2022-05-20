@@ -91,12 +91,17 @@ bool vulkan_create_swapchain(void)
 	vulkan->swapchain_format = surface_format->format;
 	vulkan->swapchain_extent = extent;
 
+	if (!vulkan_create_image_views())
+		return false;
+
 	return true;
 }
 
 void vulkan_destroy_swapchain(void)
 {
 	PURPL_ALIAS_GRAPHICS_DATA(vulkan);
+
+	vulkan_destroy_image_views();
 
 	if (vulkan->swapchain_images) {
 		stbds_arrfree(vulkan->swapchain_images);

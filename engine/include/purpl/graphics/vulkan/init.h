@@ -40,6 +40,7 @@
 #include "pipeline.h"
 #include "render.h"
 #include "swapchain.h"
+#include "sync.h"
 
 /// Initialize Vulkan
 ///

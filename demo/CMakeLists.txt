@@ -5,14 +5,6 @@ project(purpl-demo VERSION 1.0.0 LANGUAGES C)
 # Sources
 set(DEMO_SOURCES src/main.c)
 
-if (WIN32)
-	set(DEMO_SOURCES ${DEMO_SOURCES} ${CMAKE_CURRENT_BINARY_DIR}/purpl-demo.rc purpl-demo.rc.in)
-elseif (${CMAKE_SYSTEM_NAME} MATCHES "WindowsStore")
-	set(DEMO_SOURCES ${DEMO_SOURCES} ${CMAKE_CURRENT_BINARY_DIR}/Package.appxmanifest uwp/Package.appxmanifest.in)
-elseif (ANDROID)
-	set(DEMO_SOURCES ${DEMO_SOURCES} ${CMAKE_CURRENT_BINARY_DIR}/AndroidManifest.xml ${CMAKE_CURRENT_BINARY_DIR}/strings.xml ${CMAKE_CURRENT_BINARY_DIR}/Entry.java android/AndroidManifest.xml.in android/strings.xml.in android/Entry.java.in)
-endif()
-
 # Information about the application
 set(PURPL_APP_ID "purpl-demo")
 set(PURPL_APP_JAVA_ID "ca.randomcode.purpl_demo")

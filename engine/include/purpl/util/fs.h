@@ -167,5 +167,7 @@ extern PURPL_API size_t purpl_get_size(const char *path, bool relative, bool dat
 /// Get the per-user data folder such as AppData/Roaming on Windows, and
 /// XDG_DATA_HOME on everything else (and Windows if it's set)
 ///
+/// \param system_data System-specific data
+///
 /// \return Returns the path to use
-extern PURPL_API char *purpl_get_system_data_dir(void);
+extern PURPL_API char *purpl_get_system_data_dir(void *system_data);

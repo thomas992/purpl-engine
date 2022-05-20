@@ -81,11 +81,6 @@ bool purpl_vulkan_init(void)
 		return false;
 	}
 
-	if (!vulkan_create_image_views()) {
-		purpl_vulkan_shutdown();
-		return false;
-	}
-
 	if (!vulkan_create_command_pool()) {
 		purpl_vulkan_shutdown();
 		return false;
@@ -106,6 +101,11 @@ bool purpl_vulkan_init(void)
 		return false;
 	}
 
+	if (!vulkan_create_semaphores()) {
+		purpl_vulkan_shutdown();
+		return false;
+	}
+
 	if (!vulkan_create_pipeline()) {
 		purpl_vulkan_shutdown();
 		return false;
@@ -117,6 +117,16 @@ bool purpl_vulkan_init(void)
 void purpl_vulkan_shutdown(void)
 {
 	PURPL_ALIAS_GRAPHICS_DATA(vulkan);
+
+	if (vulkan->render_semaphore) {
+		vkDestroySemaphore(vulkan->device, vulkan->render_semaphore, NULL);
+		PURPL_LOG_INFO(purpl_inst->logger, "Destroyed render semaphore with handle 0x%" PRIX64, vulkan->render_semaphore);
+	}
+
+	if (vulkan->present_semaphore) {
+		vkDestroySemaphore(vulkan->device, vulkan->present_semaphore, NULL);
+		PURPL_LOG_INFO(purpl_inst->logger, "Destroyed presentation semaphore with handle 0x%" PRIX64, vulkan->render_semaphore);
+	}
 
 	vulkan_destroy_framebuffers();
 
@@ -130,7 +140,6 @@ void purpl_vulkan_shutdown(void)
 		PURPL_LOG_INFO(purpl_inst->logger, "Destroyed command pool with handle 0x%" PRIX64, vulkan->cmd_pool);
 	}
 
-	vulkan_destroy_image_views();
 	vulkan_destroy_swapchain();
 
 	if (vulkan->device) {

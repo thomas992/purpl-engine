@@ -1,15 +1,33 @@
 package @PURPL_APP_JAVA_ID@;
 
+import android.util.Log;
+
+import java.io.File;
+
 import org.libsdl.app.SDLActivity;
 
 public class @PURPL_APP_UPPER_ID@ extends SDLActivity {
-	public String getEntryPoint() {
+	public String getMainFunction() {
 		return "main";
 	}
 
 	public String[] getLibraries() {
 		return new String[] {
 			"@target@",
+		};
+	}
+
+	private String makeDataDir() {
+		File path = new File(getFilesDir() + "/@PURPL_APP_ID@");
+
+		Log.i("@PURPL_APP_ID@", "Using path " + path.toString() + " as the engine's data directory");
+
+		return path.toString();
+	}
+
+	public String[] getArguments() {
+		return new String[] {
+			makeDataDir(),
 		};
 	}
 }

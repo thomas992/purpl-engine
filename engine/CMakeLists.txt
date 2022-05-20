@@ -45,7 +45,8 @@ set(ENGINE_VULKAN_HEADERS
     include/purpl/graphics/vulkan/inst.h
     include/purpl/graphics/vulkan/pipeline.h
     include/purpl/graphics/vulkan/render.h
-    include/purpl/graphics/vulkan/swapchain.h)
+    include/purpl/graphics/vulkan/swapchain.h
+    include/purpl/graphics/vulkan/sync.h)
 
 set(ENGINE_UTIL_HEADERS
     include/purpl/util/discord.h
@@ -79,7 +80,8 @@ set(ENGINE_VULKAN_SOURCES
     src/graphics/vulkan/inst.c
     src/graphics/vulkan/pipeline.c
     src/graphics/vulkan/render.c
-    src/graphics/vulkan/swapchain.c)
+    src/graphics/vulkan/swapchain.c
+    src/graphics/vulkan/sync.c)
 
 set(ENGINE_METAL_SOURCES
     src/graphics/metal/init.swift)
@@ -172,7 +174,7 @@ else()
 endif()
 
 # Add the two libraries
-add_library(engine_preinit STATIC src/core/main.c src/core/preinit.cc ${CMAKE_SOURCE_DIR}/tools/dumppe.py ${CMAKE_SOURCE_DIR}/tools/dumpelf.py ${CMAKE_SOURCE_DIR}/tools/dumpmacho.py ${EXPORTS_HEADER})
+add_library(engine_preinit OBJECT src/core/main.c src/core/preinit.cc ${CMAKE_SOURCE_DIR}/tools/dumppe.py ${CMAKE_SOURCE_DIR}/tools/dumpelf.py ${CMAKE_SOURCE_DIR}/tools/dumpmacho.py ${EXPORTS_HEADER})
 add_library(engine ${engine_lib_type} ${ENGINE_ALL_HEADERS} ${ENGINE_ALL_SOURCES} ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 
 # Libraries and preprocessor definitions
@@ -213,6 +215,7 @@ if(NOT WIN32)
 	set_target_properties(engine PROPERTIES C_VISIBILITY_PRESET hidden)
 	set_target_properties(engine PROPERTIES CXX_VISIBILITY_PRESET hidden)
 endif()
+
 
 # Dump exports for engine_preinit
 if (NOT ${PURPL_STATIC_BUILD})

@@ -19,6 +19,39 @@
 
 bool vulkan_create_semaphores()
 {
+	PURPL_ALIAS_GRAPHICS_DATA(vulkan);
+
+	VkResult res;
+
 	VkSemaphoreCreateInfo semaphore_create_info = { 0 };
+
+	PURPL_LOG_INFO(purpl_inst->logger, "Creating semaphores");
+
+	semaphore_create_info.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+
+	res = vkCreateSemaphore(vulkan->device, &semaphore_create_info, NULL, &vulkan->present_semaphore);
+	if (res != VK_SUCCESS) {
+		PURPL_LOG_INFO(purpl_inst->logger, "Failed to create presentation semaphore: VkResult %d", res);
+		return false;
+	}
+
+	PURPL_LOG_INFO(purpl_inst->logger, "Successfully created presentation semaphore with handle 0x%" PRIX64, vulkan->present_semaphore);
+
+	res = vkCreateSemaphore(vulkan->device, &semaphore_create_info, NULL, &vulkan->render_semaphore);
+	if (res != VK_SUCCESS) {
+		PURPL_LOG_INFO(purpl_inst->logger, "Failed to create render semaphore: VkResult %d", res);
+		return false;
+	}
+
+	PURPL_LOG_INFO(purpl_inst->logger, "Successfully created render semaphore with handle 0x%" PRIX64, vulkan->render_semaphore);
+
+	return true;
+}
+
+bool vulkan_create_render_fence()
+{
+	PURPL_ALIAS_GRAPHICS_DATA(vulkan);
+
+
 }
 

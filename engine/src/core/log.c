@@ -18,6 +18,8 @@
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#elif defined __ANDROID__
+#include <android/log.h>
 #else // _WIN32
 #include <syslog.h>
 #endif // _WIN32
@@ -330,7 +332,11 @@ PURPL_API void purpl_log_write(struct purpl_logger *logger, enum purpl_log_level
 	fflush(logger->file);
 #ifdef _WIN32
 	OutputDebugStringA(buf);
-#else
+#elif defined __ANDROID__
+	char *tag = purpl_strfmt(NULL, "%s %s", purpl_inst->app_name, purpl_format_version(purpl_inst->app_version));
+	__android_log_write(ANDROID_LOG_INFO, tag, buf);
+	free(tag);
+#else // _WIN32
 	syslog(LOG_INFO, "%s", buf);
 #endif // _WIN32
 #ifdef PURPL_DEBUG

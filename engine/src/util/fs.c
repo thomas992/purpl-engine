@@ -315,29 +315,36 @@ PURPL_API size_t purpl_get_size(const char *path, bool relative, bool data_relat
 	return info.size;
 }
 
-PURPL_API char *purpl_get_system_data_dir(void)
+PURPL_API char *purpl_get_system_data_dir(void *system_data)
 {
 	char *path;
 	char *path2;
 
-	path = getenv("PURPL_DATA_DIR");
-	if (!path) {
+	if (!purpl_inst || !purpl_inst->engine_data_dir) {
+		path = getenv("PURPL_DATA_DIR");
+		if (!path) {
 #ifdef _WIN32
-		char appdata[MAX_PATH];
+			char appdata[MAX_PATH];
 
-		if (SHGetFolderPathA(NULL, CSIDL_APPDATA, NULL, 0, appdata) != ERROR_SUCCESS)
-			strncpy(appdata, "C:/", PURPL_SIZEOF_ARRAY(appdata));
-		path = appdata;
+			if (SHGetFolderPathA(NULL, CSIDL_APPDATA, NULL, 0, appdata) != ERROR_SUCCESS)
+				strncpy(appdata, "C:/", PURPL_SIZEOF_ARRAY(appdata));
+			path = appdata;
+#elif defined __ANDROID__
+			path = system_data;
 #else // _WIN32
-		if (getenv("HOME"))
-			path = purpl_strfmt(NULL, "%s/.local/share", getenv("HOME"));
-		else
-			path = "/tmp";
+			if (getenv("HOME"))
+				path = purpl_strfmt(NULL, "%s/.local/share", getenv("HOME"));
+			else
+				path = "/tmp";
 #endif // _WIN32
-	}
+		}
 
-	path = purpl_strdup(path);
-	path2 = purpl_pathfmt(NULL, path, 0, false, false);
-	free(path);
-	return path2;
+		path = purpl_strdup(path);
+		path2 = purpl_pathfmt(NULL, path, 0, false, false);
+		free(path);
+
+		return path2;
+	} else {
+		return purpl_inst->engine_data_dir;
+	}
 }

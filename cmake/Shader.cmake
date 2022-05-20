@@ -27,6 +27,7 @@ function(add_shader target shader shaders_dir)
 
 	set(current_shader_path ${CMAKE_CURRENT_SOURCE_DIR}/${shader})
 	set(current_output_path ${target}.spv)
+	set(shaders_dir_build ${CMAKE_CURRENT_BINARY_DIR}/${shaders_dir})
 
 	# Add a custom command to compile GLSL to SPIR_V.
 	foreach(shader_type comp;frag;geom;vert)
@@ -39,12 +40,12 @@ function(add_shader target shader shaders_dir)
 	string(REPLACE ".spv" ".metal" msl_output ${current_output_path})
 
 	add_custom_target(${target}
-			  COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/${shaders_dir}/spirv
-			  COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/${shaders_dir}/directx
-			  COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/${shaders_dir}/metal
-			  COMMAND ${Vulkan_GLSLC_EXECUTABLE} -o ${CMAKE_CURRENT_BINARY_DIR}/${shaders_dir}/spirv/${current_output_path} ${current_shader_path}
-			  COMMAND ${SPIRV_CROSS_EXECUTABLE} --hlsl --shader-model 50 ${current_output_path} --output ${CMAKE_CURRENT_BINARY_DIR}/${shaders_dir}/directx/${hlsl_output}
-			  COMMAND ${SPIRV_CROSS_EXECUTABLE} --msl ${current_output_path} --output ${CMAKE_CURRENT_BINARY_DIR}/${shaders_dir}/metal/${msl_output}
+			  COMMAND ${CMAKE_COMMAND} -E make_directory ${shaders_dir_build}/spirv
+			  COMMAND ${CMAKE_COMMAND} -E make_directory ${shaders_dir_build}/directx
+			  COMMAND ${CMAKE_COMMAND} -E make_directory ${shaders_dir_build}/metal
+			  COMMAND ${Vulkan_GLSLC_EXECUTABLE} -o ${shaders_dir_build}/spirv/${current_output_path} ${current_shader_path}
+			  COMMAND ${SPIRV_CROSS_EXECUTABLE} --hlsl --shader-model 50 ${shaders_dir_build}/spirv/${current_output_path} --output ${shaders_dir_build}/directx/${hlsl_output}
+			  COMMAND ${SPIRV_CROSS_EXECUTABLE} --msl ${shaders_dir_build}/spirv/${current_output_path} --output ${shaders_dir_build}/metal/${msl_output}
 			  DEPENDS ${SPIRV_CROSS_EXECUTABLE}
 			  BYPRODUCTS ${current_output_path}
 			  VERBATIM

@@ -78,4 +78,8 @@ struct purpl_instance_vulkan {
 
 	VkRenderPass renderpass; /// Render pass
 	VkFramebuffer *framebuffers; /// Framebuffers
+	
+	VkSemaphore present_semaphore; /// Presentation semaphore
+	VkSemaphore render_semaphore; /// Render semaphore
+	VkFence render_fence; /// Render fence
 };

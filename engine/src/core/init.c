@@ -28,8 +28,9 @@
 
 #define PREINIT_MAGIC (PURPL_VERSION << 8 | 0x01)
 
-u64 preinit_called;
-char *engine_dir;
+u64 preinit_called = 0;
+char *engine_dir = NULL;
+char *data_dir = NULL;
 
 // Sets preinit_called to PREINIT_MAGIC
 PURPL_API s32 purpl_complete_preinit(purpl_main_t main_func, int argc, char *argv[])
@@ -42,6 +43,10 @@ PURPL_API s32 purpl_complete_preinit(purpl_main_t main_func, int argc, char *arg
 
 	SDL_WinRTRunApp(main_func, NULL);
 	return 0;
+#elif defined __ANDROID__
+	data_dir = argv[1];
+	SDL_SetMainReady();
+	return main_func(argc, argv);
 #else // PURPL_WINRT
 	SDL_SetMainReady();
 	return main_func(argc, argv);
@@ -52,8 +57,6 @@ PURPL_API void purpl_internal_shutdown(void);
 
 PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 {
-	char *data_dir;
-
 	purpl_inst = calloc(1, sizeof(struct purpl_instance));
 	if (!purpl_inst) {
 		fprintf(stderr, "Error: failed to allocate memory for the engine instance: %s\n", purpl_strerror());
@@ -68,7 +71,7 @@ PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 	purpl_inst->app_name = purpl_strdup(app_name ? app_name : "purpl-unknown-app");
 	purpl_inst->app_version = app_version;
 
-	data_dir = purpl_get_system_data_dir();
+	data_dir = purpl_get_system_data_dir(data_dir);
 	purpl_inst->engine_data_dir = purpl_strfmt(NULL, "%s/%s", data_dir, purpl_inst->app_name);
 	free(data_dir);
 	fprintf(stderr, "Data directory is %s\n", purpl_inst->engine_data_dir);
