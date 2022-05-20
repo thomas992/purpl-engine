@@ -49,14 +49,13 @@ typedef bool (*purpl_frame_t)(u32 delta, void *user_data);
 /// where it loads the libraries needed by the engine (listed by
 /// engine_libs.txt)
 ///
-/// \param main The entry point of the application
-/// \param argc The number of arguments passed to the program, the first
-///		parameter of main
-/// \param argv The array of arguments passed to the program, the second
-///		parameter of main
+/// \param data An array of void pointers with 3 elements (in this order):
+///			purpl_main_t main_func
+///			s64 argc
+///			char *argv[]
 ///
 /// \return Returns the value returned by the application
-extern s32 purpl_preinit(purpl_main_t main_func, s32 argc, char *argv[]);
+extern s32 purpl_preinit(void *data);
 
 /// Initialize the engine
 ///

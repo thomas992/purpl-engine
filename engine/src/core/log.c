@@ -193,7 +193,7 @@ static char *log_format(struct purpl_logger *logger, enum purpl_log_level level,
 				}
 
 				str = purpl_strfmt(NULL, "%s %s/%s/%s", short_form ? "#wD" : "#WD,",
-						   joke ? "#JD" : "#D", joke ? "#JM" : "#M", joke ? "#JY" : "#Y");
+						   joke ? "#JY" : "#Y", joke ? "#JM" : "#M", joke ? "#JD" : "#D");
 
 				p++;
 				passes++;
@@ -234,6 +234,9 @@ static char *log_format(struct purpl_logger *logger, enum purpl_log_level level,
 			} else if (*p == 'P') {
 				p++;
 				str = purpl_strfmt(NULL, "%lld", purpl_get_pid());
+			} else if (strncmp(p, "TN", 2) == 0) {
+				p += 2;
+				str = purpl_strdup(SDL_GetThreadName(NULL) ? SDL_GetThreadName(NULL) : "unnamed");
 			} else if (*p == 'T') {
 				p++;
 				str = purpl_strfmt(NULL, "%lld", purpl_get_tid());

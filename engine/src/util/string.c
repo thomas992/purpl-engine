@@ -153,15 +153,12 @@ PURPL_API char *purpl_vstrfmt(size_t *size, const char *fmt, va_list args)
 
 PURPL_API char *purpl_strdup(const char *str)
 {
-	return purpl_strndup(str, strlen(str));
+	return purpl_strndup(str, str ? strlen(str) : 0);
 }
 
 PURPL_API char *purpl_strndup(const char *str, size_t n)
 {
 	char *buf;
-
-	if (!str || !n)
-		return NULL;
 
 	buf = calloc(n + 1, sizeof(char));
 	if (!buf)

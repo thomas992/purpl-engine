@@ -23,9 +23,9 @@
 
 int32_t main(int32_t argc, char *argv[])
 {
-	int32_t ret;
+	int32_t ret = 0;
 
-	ret = purpl_preinit(purpl_main, argc, argv);
+	ret = purpl_preinit((void *[]){purpl_main, (void *)(int64_t)argc, argv});
 	purpl_shutdown();
 
 	exit(ret);

@@ -1,4 +1,4 @@
-// Definition of the engine instance structure
+// Logger definitions (this is for sure the thing I'm the most proud of in the engine so far)
 //
 // Copyright 2022 MobSlicer152
 // This file is part of Purpl Engine
@@ -50,16 +50,16 @@ enum purpl_log_level {
 #ifdef PURPL_DEBUG
 /// The default log message format
 #ifdef __ANDROID__
-#define PURPL_LOG_DEFAULT_FORMAT "[#W] [#L] #msg"
+#define PURPL_LOG_DEFAULT_FORMAT "[THR #TN] [#W] [#L] #msg"
 #else // __ANDROID__
-#define PURPL_LOG_DEFAULT_FORMAT "[PID #P TID #T] [#ds #t] [#W] [#L] #msg"
+#define PURPL_LOG_DEFAULT_FORMAT "[#ds #t] [PID #P TID #T] [THR #TN] [#W] [#L] #msg"
 #endif // __ANDROID__
 
 /// The default log file name, relative to the data directory
 #define PURPL_LOG_DEFAULT_NAME "logs/purpl-<date>-debug.log"
 #else // PURPL_DEBUG
 /// The default log message format
-#define PURPL_LOG_DEFAULT_FORMAT "[#d #t] [#n #v] [#L]\t#msg"
+#define PURPL_LOG_DEFAULT_FORMAT "[#d #t] [THR #TN] [#n #v] [#L]\t#msg"
 
 /// The default log file name, relative to the data directory
 #define PURPL_LOG_DEFAULT_NAME "logs/purpl-<date>.log"
@@ -112,7 +112,8 @@ struct purpl_logger {
 ///	#JY	- The current year, minus 1970
 ///
 ///	#P	- The process ID of the engine
-///	#T	- The thread ID of the current thread
+///	#TN	- The name of the current thread
+///	#T	- The ID of the current thread
 ///	#W	- The location of this call to whatever logging function was
 ///		  used in the format #F:#FL@#f
 ///	#F	- The source file the logger was called from
@@ -125,18 +126,13 @@ struct purpl_logger {
 ///	#n	- The name of the application
 ///	#v	- The version of the application
 ///
-///	#msg	- The message logged (pretty sure this will cause an infinite
-///		  loop if you put it in a message, but can be used more than
-///		  once in the format)
-///	#def	- The default pattern (passing NULL for format also gives
-///		  this), which is equivalent to "[#d #t] [#n #v] [#L]\t#msg" in release builds, or
-///		  "[PID #P TID #T] [#ds #t] [#W] [#L] #msg" in debug builds
+///	#msg	- The message logged (pretty sure this will cause an infinite loop if you put it in a message, but can
+///		  be used more than once in the pattern)
+///	#def	- The default pattern (passing NULL for format also gives this), which is equivalent to PURPL_LOG_DEFAULT_FORMAT
 ///
-///	The sequences can also be used in messages passed to
-///	purpl_log_write (and the macros wrapping it), as they
-///	are processed by that function and the parsing only
-///	stops when there are no more hashtags (#), which have
-///	to be escaped with another #.
+///	The way the specifiers are parsed is like printf (I copied the structure of the OSDev Wiki's printf
+///	implementation but made it do multiple passes for things that have the potential to introduce new hashtags) but
+///	with '#' in the place of '%'
 ///
 /// clang-format on
 ///
@@ -153,7 +149,7 @@ extern PURPL_API struct purpl_logger *purpl_log_create(const char *file, enum pu
 /// \param function Pass PURPL_CURRENT_FUNCTION (because some compilers support
 ///		    nicer formats than __func__)
 /// \param msg The message to write. Supports printf format specifiers and the
-///	       directives specified for purpl_log_create's format parameter.
+///	       directives described for purpl_log_create's format parameter.
 extern PURPL_API void purpl_log_write(struct purpl_logger *logger, enum purpl_log_level level, const char *file,
 				      int line, const char *function, const char *msg, ...);
 

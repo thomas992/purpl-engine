@@ -324,6 +324,8 @@ PURPL_API char *purpl_get_system_data_dir(void *system_data)
 		path = getenv("PURPL_DATA_DIR");
 		if (!path) {
 #ifdef _WIN32
+			PURPL_IGNORE(system_data);
+
 			char appdata[MAX_PATH];
 
 			if (SHGetFolderPathA(NULL, CSIDL_APPDATA, NULL, 0, appdata) != ERROR_SUCCESS)
@@ -332,6 +334,8 @@ PURPL_API char *purpl_get_system_data_dir(void *system_data)
 #elif defined __ANDROID__
 			path = system_data;
 #else // _WIN32
+			PURPL_IGNORE(system_data);
+
 			if (getenv("HOME"))
 				path = purpl_strfmt(NULL, "%s/.local/share", getenv("HOME"));
 			else

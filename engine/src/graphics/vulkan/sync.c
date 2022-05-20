@@ -17,7 +17,43 @@
 
 #include "purpl/graphics/vulkan/sync.h"
 
-bool vulkan_create_semaphores()
+bool vulkan_create_sync_objs(void)
+{
+	PURPL_LOG_INFO(purpl_inst->logger, "Creating synchronization objects");
+
+	if (!vulkan_create_semaphores() || !vulkan_create_render_fence()) {
+		PURPL_LOG_INFO(purpl_inst->logger, "Failed to create synchronization objects");
+		return false;
+	}
+
+	PURPL_LOG_INFO(purpl_inst->logger, "Created synchronization objects");
+
+	return true;
+}
+
+void vulkan_destroy_sync_objs(void)
+{
+	PURPL_ALIAS_GRAPHICS_DATA(vulkan);
+
+	PURPL_LOG_INFO(purpl_inst->logger, "Destroying synchronization objects");
+
+	if (vulkan->render_fence) {
+		vkDestroyFence(vulkan->device, vulkan->render_fence, NULL);
+		PURPL_LOG_INFO(purpl_inst->logger, "Destroyed render fence with handle 0x%" PRIX64, vulkan->render_fence);
+	}
+
+	if (vulkan->render_semaphore) {
+		vkDestroySemaphore(vulkan->device, vulkan->render_semaphore, NULL);
+		PURPL_LOG_INFO(purpl_inst->logger, "Destroyed render semaphore with handle 0x%" PRIX64, vulkan->render_semaphore);
+	}
+
+	if (vulkan->present_semaphore) {
+		vkDestroySemaphore(vulkan->device, vulkan->present_semaphore, NULL);
+		PURPL_LOG_INFO(purpl_inst->logger, "Destroyed presentation semaphore with handle 0x%" PRIX64, vulkan->present_semaphore);
+	}
+}
+
+bool vulkan_create_semaphores(void)
 {
 	PURPL_ALIAS_GRAPHICS_DATA(vulkan);
 
@@ -35,7 +71,7 @@ bool vulkan_create_semaphores()
 		return false;
 	}
 
-	PURPL_LOG_INFO(purpl_inst->logger, "Successfully created presentation semaphore with handle 0x%" PRIX64, vulkan->present_semaphore);
+	PURPL_LOG_INFO(purpl_inst->logger, "Created presentation semaphore with handle 0x%" PRIX64, vulkan->present_semaphore);
 
 	res = vkCreateSemaphore(vulkan->device, &semaphore_create_info, NULL, &vulkan->render_semaphore);
 	if (res != VK_SUCCESS) {
@@ -43,15 +79,33 @@ bool vulkan_create_semaphores()
 		return false;
 	}
 
-	PURPL_LOG_INFO(purpl_inst->logger, "Successfully created render semaphore with handle 0x%" PRIX64, vulkan->render_semaphore);
+	PURPL_LOG_INFO(purpl_inst->logger, "Created render semaphore with handle 0x%" PRIX64, vulkan->render_semaphore);
 
 	return true;
 }
 
-bool vulkan_create_render_fence()
+bool vulkan_create_render_fence(void)
 {
 	PURPL_ALIAS_GRAPHICS_DATA(vulkan);
 
+	VkFenceCreateInfo fence_create_info = { 0 };
+	VkResult res;
 
+	PURPL_LOG_INFO(purpl_inst->logger, "Creating render fence");
+
+	fence_create_info.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+	
+	// This allows waiting on the fence in the first frame, before it's used
+	fence_create_info.flags = VK_FENCE_CREATE_SIGNALED_BIT;
+
+	res = vkCreateFence(vulkan->device, &fence_create_info, NULL, &vulkan->render_fence);
+	if (res != VK_SUCCESS) {
+		PURPL_LOG_ERROR(purpl_inst->logger, "Failed to create render fence: VkResult %d", res);
+		return false;
+	}
+
+	PURPL_LOG_INFO(purpl_inst->logger, "Created render fence with handle 0x%" PRIX64, vulkan->render_fence);
+
+	return true;
 }
 

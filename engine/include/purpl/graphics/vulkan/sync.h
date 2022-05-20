@@ -28,13 +28,21 @@
 
 #include "purpl/util/util.h"
 
+/// Create all needed synchronization objects
+///
+/// \return Returns true if creation was successful, false otherwise
+extern bool vulkan_create_sync_objs(void);
+
+/// Destroy synchronization objects
+extern void vulkan_destroy_sync_objs(void);
+
 /// Create presentation and render semaphores
 ///
 /// \return Returns true if creation was successful, false otherwise
-extern bool vulkan_create_semaphores();
+extern bool vulkan_create_semaphores(void);
 
 /// Create the render fence
 ///
 /// \return Returns true if creation was successful, false otherwise
-extern bool vulkan_create_render_fence();
+extern bool vulkan_create_render_fence(void);
 

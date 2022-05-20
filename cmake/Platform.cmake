@@ -38,7 +38,7 @@ function(purpl_setup target sources)
 	endif()
 
 	# Link to the engine
-	target_link_libraries(${target} PRIVATE engine_preinit)
+	target_link_libraries(${target} PRIVATE engine_preinit ${SDL2_LIBRARIES})
 	if (${PURPL_STATIC_BUILD})
 		target_link_libraries(${target} PRIVATE engine)
 	endif()

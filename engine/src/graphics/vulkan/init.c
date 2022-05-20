@@ -101,7 +101,7 @@ bool purpl_vulkan_init(void)
 		return false;
 	}
 
-	if (!vulkan_create_semaphores()) {
+	if (!vulkan_create_sync_objs()) {
 		purpl_vulkan_shutdown();
 		return false;
 	}
@@ -118,15 +118,7 @@ void purpl_vulkan_shutdown(void)
 {
 	PURPL_ALIAS_GRAPHICS_DATA(vulkan);
 
-	if (vulkan->render_semaphore) {
-		vkDestroySemaphore(vulkan->device, vulkan->render_semaphore, NULL);
-		PURPL_LOG_INFO(purpl_inst->logger, "Destroyed render semaphore with handle 0x%" PRIX64, vulkan->render_semaphore);
-	}
-
-	if (vulkan->present_semaphore) {
-		vkDestroySemaphore(vulkan->device, vulkan->present_semaphore, NULL);
-		PURPL_LOG_INFO(purpl_inst->logger, "Destroyed presentation semaphore with handle 0x%" PRIX64, vulkan->render_semaphore);
-	}
+	vulkan_destroy_sync_objs();
 
 	vulkan_destroy_framebuffers();
 
