@@ -53,6 +53,35 @@ PURPL_API bool purpl_graphics_init(void)
 	return true;
 }
 
+PURPL_API bool purpl_graphics_update(u32 delta)
+{
+	if (!purpl_inst)
+		return false;
+
+	switch (purpl_inst->graphics_api) {
+	case PURPL_GRAPHICS_API_SOFTWARE:
+		return false;
+	case PURPL_GRAPHICS_API_OPENGL:
+		return false;
+#ifndef __APPLE__
+	case PURPL_GRAPHICS_API_VULKAN:
+		return purpl_vulkan_update(delta);
+#endif // !__APPLE__
+#ifdef _WIN32
+	case PURPL_GRAPHICS_API_DIRECT3D:
+		return false;
+#endif // _WIN32
+#ifdef __APPLE__
+	case PURPL_GRAPHICS_API_METAL:
+		return purpl_metal_update(delta);
+#endif // __APPLE__;
+	case PURPL_GRAPHICS_API_MAX:
+		return false;
+	}
+
+	return false;
+}
+
 PURPL_API void purpl_graphics_shutdown(void)
 {
 	if (!purpl_inst)

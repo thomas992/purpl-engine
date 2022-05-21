@@ -40,6 +40,7 @@ set(ENGINE_VULKAN_HEADERS
     include/purpl/graphics/vulkan/command.h
     include/purpl/graphics/vulkan/debug.h
     include/purpl/graphics/vulkan/device.h
+    include/purpl/graphics/vulkan/draw.h
     include/purpl/graphics/vulkan/init.h
     include/purpl/graphics/vulkan/inst_data.h
     include/purpl/graphics/vulkan/inst.h
@@ -76,6 +77,7 @@ set(ENGINE_VULKAN_SOURCES
     src/graphics/vulkan/command.c
     src/graphics/vulkan/debug.c
     src/graphics/vulkan/device.c
+    src/graphics/vulkan/draw.c
     src/graphics/vulkan/init.c
     src/graphics/vulkan/inst.c
     src/graphics/vulkan/pipeline.c

@@ -35,5 +35,12 @@
 /// \return Returns true if initialization succeeded, false otherwise
 extern PURPL_API bool purpl_graphics_init(void);
 
+/// Update graphics
+///
+/// \param delta The number of milliseconds since the last update
+///
+/// \return Returns true if successful, false otherwise
+extern PURPL_API bool purpl_graphics_update(u32 delta);
+
 /// Shut down graphics
 extern PURPL_API void purpl_graphics_shutdown(void);

@@ -114,6 +114,13 @@ bool purpl_vulkan_init(void)
 	return true;
 }
 
+bool purpl_vulkan_update(u32 delta)
+{
+	PURPL_IGNORE(delta);
+
+	return vulkan_draw();
+}
+
 void purpl_vulkan_shutdown(void)
 {
 	PURPL_ALIAS_GRAPHICS_DATA(vulkan);

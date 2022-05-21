@@ -212,6 +212,8 @@ PURPL_API void purpl_run(purpl_frame_t frame, void *user_data)
 		discord_update_activity(delta);
 #endif // PURPL_ENABLE_DISCORD
 
+		running = purpl_graphics_update(delta);
+
 		if (frame)
 			running = frame(delta, user_data);
 		last = now;

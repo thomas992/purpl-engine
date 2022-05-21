@@ -1,4 +1,4 @@
-// Vulkan initialization
+// Draw functions
 //
 // Copyright 2022 MobSlicer152
 // This file is part of Purpl Engine
@@ -17,43 +17,15 @@
 
 #pragma once
 
-#ifndef PURPL_BUILD
-#error This header should only be included in engine files
-#endif // !PURPL_BUILD
-
 #include <vulkan/vulkan.h>
-
-#include "SDL.h"
 
 #include "purpl/core/coredefs.h"
 #include "purpl/core/inst.h"
+#include "purpl/core/log.h"
 #include "purpl/core/types.h"
 
-#include "purpl/graphics/window.h"
-
-#include "purpl/util/util.h"
-
-#include "command.h"
-#include "debug.h"
-#include "device.h"
-#include "draw.h"
-#include "inst.h"
-#include "pipeline.h"
-#include "render.h"
-#include "swapchain.h"
-#include "sync.h"
-
-/// Initialize Vulkan
-///
-/// \return Returns true if initialization was successful, false otherwise
-extern bool purpl_vulkan_init(void);
-
-/// Update stuff (swapchain, surface, drawing)
-///
-/// \param delta The number of milliseconds since the last call
+/// Draw the current frame
 ///
 /// \return Returns true if successful, false otherwise
-extern bool purpl_vulkan_update(u32 delta);
+extern bool vulkan_draw(void);
 
-/// Shut down Vulkan (if it's initialized)
-extern void purpl_vulkan_shutdown(void);
