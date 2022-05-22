@@ -53,6 +53,11 @@ PURPL_API bool purpl_graphics_init(void)
 	return true;
 }
 
+PURPL_API void purpl_graphics_run(void)
+{
+	
+}
+
 PURPL_API bool purpl_graphics_update(u32 delta)
 {
 	if (!purpl_inst)

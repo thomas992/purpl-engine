@@ -20,4 +20,6 @@
 #include "error.h"
 #include "fs.h"
 #include "misc.h"
+#include "parallel.h"
 #include "string.h"
+

@@ -67,6 +67,7 @@ enum purpl_log_level {
 
 /// A logger
 struct purpl_logger {
+	void *mutex; /// Mutex for this logger
 	FILE *file; /// Log file this logger logs to
 	enum purpl_log_level level; /// Current default log level
 	enum purpl_log_level max_level; /// Maximum log level (i.e. messages
@@ -189,7 +190,7 @@ extern PURPL_API enum purpl_log_level purpl_log_set_max_level(struct purpl_logge
 /// \param format The new format for the logger (NULL or #def for the default)
 extern PURPL_API void purpl_log_set_format(struct purpl_logger *logger, const char *format);
 
-/// Close the given logger
+/// Close the given logger. Not thread safe, no logger functions may be in progress when this function is called.
 ///
 /// \param logger The logger to close
 /// \param last_message Whether to write a final message to the log

@@ -115,9 +115,8 @@ PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 		return false;
 	}
 
-	PURPL_LOG_INFO(purpl_inst->logger, "Video driver in use is %s", SDL_GetCurrentVideoDriver());
-
-	PURPL_LOG_INFO(purpl_inst->logger, "Successfully initialized SDL");
+	PURPL_LOG_INFO(purpl_inst->logger, "Successfully initialized SDL, video driver in use is %s",
+		       SDL_GetCurrentVideoDriver());
 
 	PURPL_LOG_INFO(purpl_inst->logger, "Initializing graphics");
 	if (!purpl_graphics_init()) {
@@ -186,11 +185,14 @@ PURPL_API void purpl_run(purpl_frame_t frame, void *user_data)
 	u32 last;
 	u32 delta;
 
-	if (!purpl_inst || !frame) {
-		if (purpl_inst)
-			PURPL_LOG_DEBUG(purpl_inst->logger, "No frame callback given");
+	if (!purpl_inst) {
+		PURPL_LOG_DEBUG(purpl_inst->logger,
+				"The engine must be initialized with purpl_init before calling this function");
 		return;
 	}
+
+	purpl_inst->graphics_thread = purpl_create_thread(purpl_graphics_run, "graphics", NULL);
+	purpl_detach_thread(purpl_inst->graphics_thread);
 
 	last = SDL_GetTicks();
 	running = true;
@@ -202,17 +204,10 @@ PURPL_API void purpl_run(purpl_frame_t frame, void *user_data)
 		if (!running)
 			break;
 
-		if (strcmp(purpl_inst->wnd_title, SDL_GetWindowTitle(purpl_inst->wnd)) != 0) {
-			free(purpl_inst->wnd_title);
-			purpl_inst->wnd_title = purpl_strdup(SDL_GetWindowTitle(purpl_inst->wnd));
-		}
-
 #ifdef PURPL_ENABLE_DISCORD
 		running = discord_run_callbacks(delta);
 		discord_update_activity(delta);
 #endif // PURPL_ENABLE_DISCORD
-
-		running = purpl_graphics_update(delta);
 
 		if (frame)
 			running = frame(delta, user_data);

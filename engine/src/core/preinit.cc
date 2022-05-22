@@ -15,10 +15,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <functional>
 #include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <thread>
 
 #ifdef _WIN32
 #include <windows.h>
@@ -192,7 +194,8 @@ EXTERN_C int32_t purpl_preinit(void **data)
 	static const char *(*wine_get_version)(void);
 	*(void **)&wine_get_version = (void *)GetProcAddress(GetModuleHandleA("ntdll.dll"), "wine_get_version");
 	if (wine_get_version)
-		PREINIT_MESSAGE(WARN,
+		PREINIT_MESSAGE(
+			WARN,
 			"Detected that the engine is running in Wine/Proton %s. If you aren't testing this application, see about a"
 			" native build of it for your platform\n",
 			wine_get_version());

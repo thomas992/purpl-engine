@@ -21,14 +21,8 @@
 #include <processthreadsapi.h>
 #elif defined __APPLE__ // _WIN32
 #define _ALL_SOURCE
-#include <pthread.h>
 #include <unistd.h>
 #else // _WIN32
-#ifdef __linux__
-#define _GNU_SOURCE
-#elif __FreeBSD__
-#include <pthread_np.h>
-#endif // __linux__
 #define _ALL_SOURCE
 #include <unistd.h>
 #endif
@@ -50,22 +44,6 @@ PURPL_API u64 purpl_get_pid(void)
 	return GetCurrentProcessId();
 #else
 	return getpid();
-#endif // _WIN32
-}
-
-PURPL_API u64 purpl_get_tid(void)
-{
-#if defined _WIN32
-	return GetCurrentThreadId();
-#elif defined __APPLE__
-	u64 id;
-
-	pthread_threadid_np(NULL, &id);
-	return id;
-#elif defined __linux__
-	return gettid();
-#elif defined __FreeBSD__
-	return pthread_getthreadid_np();
 #endif // _WIN32
 }
 

@@ -129,10 +129,5 @@ extern PURPL_API u64 purpl_random(u64 limit);
 /// \return Returns the current process ID
 extern PURPL_API u64 purpl_get_pid(void);
 
-/// Get the current thread ID
-///
-/// \return Returns the current thread ID
-extern PURPL_API u64 purpl_get_tid(void);
-
 /// Trigger a debug breakpoint (debug builds only)
 extern PURPL_API void purpl_debug_break(void);

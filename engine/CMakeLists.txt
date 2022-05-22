@@ -234,7 +234,7 @@ if (NOT ${PURPL_STATIC_BUILD})
 		add_custom_command(OUTPUT ${EXPORTS_HEADER}
 				   COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tools/${DUMPEXPORTS_NAME} $<TARGET_FILE:engine> ${EXPORTS_HEADER} purpl
 				   DEPENDS engine ${CMAKE_SOURCE_DIR}/tools/${DUMPEXPORTS_NAME})
-		target_link_libraries(engine_preinit PUBLIC dl)
+		target_link_libraries(engine_preinit PUBLIC dl pthread)
 	endif()
 endif()
 

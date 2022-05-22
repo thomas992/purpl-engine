@@ -31,7 +31,7 @@
 // Boolean
 #ifndef __cplusplus
 #undef bool
-typedef _Bool bool;
+typedef _Bool bool; /// Boolean
 #endif // __cplusplus
 
 // Integers

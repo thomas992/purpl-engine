@@ -31,6 +31,8 @@
 
 #include "purpl/graphics/inst_data.h"
 
+#include "purpl/util/parallel.h"
+
 // Forward declaration of purpl_logger instead of including log.h to reduce chances of rebuild
 struct purpl_logger;
 
@@ -70,6 +72,9 @@ struct purpl_instance {
 	struct purpl_logger *logger; /// The logger for this instance
 	time_t start_time; /// When the engine started
 
+	purpl_thread_t graphics_thread; /// Graphics thread (does rendering and stuff)
+	purpl_mutex_t graphics_mutex; /// Graphics data mutex
+
 	SDL_Window *wnd; /// The main window for the engine
 	char *wnd_title; /// The title of the window
 	s32 wnd_width; /// The width of the window
@@ -88,6 +93,7 @@ struct purpl_instance {
 					      /// on startup
 
 #ifdef PURPL_ENABLE_DISCORD
+	/// Discord information, no mutex needed
 	struct purpl_instance_discord {
 		s32 request_cooldown; /// Keeps track of the 16 millisecond API
 				      /// cooldown

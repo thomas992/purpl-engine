@@ -24,6 +24,8 @@
 #include <syslog.h>
 #endif // _WIN32
 
+#include "SDL.h"
+
 #include "purpl/core/log.h"
 
 PURPL_API struct purpl_logger *purpl_log_create(const char *file, enum purpl_log_level level,
@@ -42,6 +44,8 @@ PURPL_API struct purpl_logger *purpl_log_create(const char *file, enum purpl_log
 	logger = calloc(1, sizeof(struct purpl_logger));
 	if (!logger)
 		return NULL;
+
+	logger->mutex = SDL_CreateMutex();
 
 	t = time(NULL);
 	t2 = localtime(&t);
@@ -236,7 +240,7 @@ static char *log_format(struct purpl_logger *logger, enum purpl_log_level level,
 				str = purpl_strfmt(NULL, "%lld", purpl_get_pid());
 			} else if (strncmp(p, "TN", 2) == 0) {
 				p += 2;
-				str = purpl_strdup(SDL_GetThreadName(NULL) ? SDL_GetThreadName(NULL) : "unnamed");
+				str = purpl_thread_get_name(purpl_thread_self());
 			} else if (*p == 'T') {
 				p++;
 				str = purpl_strfmt(NULL, "%lld", purpl_get_tid());
@@ -311,6 +315,8 @@ PURPL_API void purpl_log_write(struct purpl_logger *logger, enum purpl_log_level
 	if (!logger || !msg)
 		return;
 
+	SDL_LockMutex(logger->mutex);
+
 	effective_level = level;
 	if (effective_level >= PURPL_LOG_LEVEL_MAX)
 		effective_level = logger->max_level;
@@ -333,6 +339,9 @@ PURPL_API void purpl_log_write(struct purpl_logger *logger, enum purpl_log_level
 
 	fwrite(buf, sizeof(char), strlen(buf), logger->file);
 	fflush(logger->file);
+
+	SDL_UnlockMutex(logger->mutex);
+
 #ifdef _WIN32
 	OutputDebugStringA(buf);
 #elif defined __ANDROID__
@@ -357,32 +366,59 @@ PURPL_API void purpl_log_write(struct purpl_logger *logger, enum purpl_log_level
 
 PURPL_API enum purpl_log_level purpl_log_get_level(struct purpl_logger *logger)
 {
-	return logger->level;
+	enum purpl_log_level level;
+
+	if (!logger)
+		return 0;
+
+	SDL_LockMutex(logger->mutex);
+	level = logger->level;
+	SDL_UnlockMutex(logger->mutex);
+
+	return level;
 }
 
 PURPL_API enum purpl_log_level purpl_log_set_level(struct purpl_logger *logger, enum purpl_log_level level)
 {
 	enum purpl_log_level old;
 
+	if (!logger)
+		return 0;
+
+	SDL_LockMutex(logger->mutex);
 	old = logger->level;
 	if (level > PURPL_LOG_LEVEL_CURRENT)
 		logger->level = level;
 
 	if (level >= PURPL_LOG_LEVEL_MAX)
 		logger->level = logger->max_level;
+	SDL_UnlockMutex(logger->mutex);
 
 	return old;
 }
 
 PURPL_API enum purpl_log_level purpl_log_get_max_level(struct purpl_logger *logger)
 {
-	return logger->max_level;
+	enum purpl_log_level level;
+
+	if (!logger)
+		return 0;
+
+	SDL_LockMutex(logger->mutex);
+	level = logger->max_level;
+	SDL_UnlockMutex(logger->mutex);
+
+	return level;
 }
 
 PURPL_API enum purpl_log_level purpl_log_set_max_level(struct purpl_logger *logger, enum purpl_log_level level)
 {
 	enum purpl_log_level old;
 
+	if (!logger)
+		return 0;
+
+	SDL_LockMutex(logger->mutex);
 	old = logger->max_level;
 	if (level >= PURPL_LOG_LEVEL_MAX)
 		logger->max_level = PURPL_LOG_LEVEL_MAX - 1;
@@ -390,6 +426,7 @@ PURPL_API enum purpl_log_level purpl_log_set_max_level(struct purpl_logger *logg
 		logger->max_level = logger->level;
 	else
 		logger->max_level = level;
+	SDL_UnlockMutex(logger->mutex);
 
 	return old;
 }
@@ -401,8 +438,10 @@ PURPL_API void purpl_log_set_format(struct purpl_logger *logger, const char *for
 	if (!logger)
 		return;
 
+	SDL_LockMutex(logger->mutex);
 	message_format = purpl_strdup(format ? format : "#def");
 	logger->format = purpl_strrplc(message_format, "#def", PURPL_LOG_DEFAULT_FORMAT, NULL);
+	SDL_UnlockMutex(logger->mutex);
 
 	free(message_format);
 }
@@ -440,6 +479,7 @@ PURPL_API void purpl_log_close(struct purpl_logger *logger, bool last_message)
 		free(msg);
 	}
 
+	SDL_DestroyMutex(logger->mutex);
 	fclose(logger->file);
 	free(logger->format);
 	free(logger);

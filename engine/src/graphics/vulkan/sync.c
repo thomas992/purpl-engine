@@ -38,6 +38,8 @@ void vulkan_destroy_sync_objs(void)
 	PURPL_LOG_INFO(purpl_inst->logger, "Destroying synchronization objects");
 
 	if (vulkan->render_fence) {
+		PURPL_LOG_INFO(purpl_inst->logger, "Waiting for render fence with handle 0x%" PRIX64 " before destroying it", vulkan->render_fence);
+		vkWaitForFences(vulkan->device, 1, &vulkan->render_fence, true, -1);
 		vkDestroyFence(vulkan->device, vulkan->render_fence, NULL);
 		PURPL_LOG_INFO(purpl_inst->logger, "Destroyed render fence with handle 0x%" PRIX64, vulkan->render_fence);
 	}
