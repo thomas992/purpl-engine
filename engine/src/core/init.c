@@ -18,6 +18,8 @@
 #include "SDL.h"
 #include "SDL_syswm.h"
 
+#include "stb_ds.h"
+
 #include "purpl/core/init.h"
 
 #include "purpl/graphics/init.h"
@@ -59,7 +61,7 @@ PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 {
 	purpl_inst = calloc(1, sizeof(struct purpl_instance));
 	if (!purpl_inst) {
-		fprintf(stderr, "Error: failed to allocate memory for the engine instance: %s\n", purpl_strerror());
+		fprintf(stderr, "ERROR: failed to allocate memory for the engine instance: %s\n", purpl_strerror());
 		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Purpl Engine", "Failed to allocate the engine instance",
 					 NULL);
 		return false;
@@ -74,7 +76,7 @@ PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 	data_dir = purpl_get_system_data_dir(data_dir);
 	purpl_inst->engine_data_dir = purpl_strfmt(NULL, "%s/%s", data_dir, purpl_inst->app_name);
 	free(data_dir);
-	fprintf(stderr, "Data directory is %s\n", purpl_inst->engine_data_dir);
+	fprintf(stderr, "INFO: Data directory is %s\n", purpl_inst->engine_data_dir);
 
 	if (!purpl_path_exists("logs", false, true))
 		purpl_mkdir("logs", PURPL_FS_MKDIR_RECURSE, PURPL_FS_MODE_ALL, false, true);
@@ -115,7 +117,7 @@ PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 		return false;
 	}
 
-	PURPL_LOG_INFO(purpl_inst->logger, "Successfully initialized SDL, video driver in use is %s",
+	PURPL_LOG_INFO(purpl_inst->logger, "Initialized SDL, video driver in use is %s",
 		       SDL_GetCurrentVideoDriver());
 
 	PURPL_LOG_INFO(purpl_inst->logger, "Initializing graphics");
@@ -149,15 +151,19 @@ static bool purpl_handle_events(void)
 					PURPL_LOG_DEBUG(purpl_inst->logger, "Window maximized");
 					break;
 				case SDL_WINDOWEVENT_MOVED:
+					purpl_mutex_lock(purpl_inst->graphics_mutex);
 					purpl_inst->wnd_x = e.window.data1;
 					purpl_inst->wnd_y = e.window.data2;
+					purpl_mutex_unlock(purpl_inst->graphics_mutex);
 					PURPL_LOG_DEBUG(purpl_inst->logger, "Window moved to (%d, %d)", purpl_inst->wnd_x,
 							purpl_inst->wnd_y);
 					break;
 				case SDL_WINDOWEVENT_RESIZED:
+					purpl_mutex_lock(purpl_inst->graphics_mutex);
 					purpl_inst->wnd_width = e.window.data1;
 					purpl_inst->wnd_height =
 						e.window.data2;
+					purpl_mutex_unlock(purpl_inst->graphics_mutex);
 					PURPL_LOG_DEBUG(purpl_inst->logger, "Window resized to %dx%d", purpl_inst->wnd_width,
 						purpl_inst->wnd_height);
 					break;
@@ -191,8 +197,8 @@ PURPL_API void purpl_run(purpl_frame_t frame, void *user_data)
 		return;
 	}
 
-	purpl_inst->graphics_thread = purpl_create_thread(purpl_graphics_run, "graphics", NULL);
-	purpl_detach_thread(purpl_inst->graphics_thread);
+	purpl_inst->graphics_thread = purpl_thread_create(purpl_graphics_run, "graphics", 0, NULL);
+	purpl_thread_detach(purpl_inst->graphics_thread);
 
 	last = SDL_GetTicks();
 	running = true;

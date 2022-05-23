@@ -39,9 +39,12 @@ for x in out.split("\n"):
     end = name.find(" ")
     end = len(name) if end == -1 else end
     name = name[:end]
-    if len(x.split()) and x.split()[1] == "T" and name != "_init" and name != "_fini" and name != "_etext" and name != "etext" and name[0:len(prefix)] == prefix:
-        print(name)
-        names.append(name)
+    if len(x.split()):
+        if x.split()[1] == "U" and name[0:len(prefix)] == prefix:
+            print(f"Warning: undefined symbol {name} matching prefix {prefix}")
+        if x.split()[1] == "T" and name != "_init" and name != "_fini" and name != "_etext" and name != "etext" and name[0:len(prefix)] == prefix:
+            print(name)
+            names.append(name)
 
 f = open(sys.argv[2], "wb+")
 f.write(bytes(f"#ifdef __cplusplus\n#define EXTERN_C extern \"C\"\n#else // __cplusplus\n#define EXTERN_C\n#endif // __cplusplus\n\n", encoding="utf-8"))

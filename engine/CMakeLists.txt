@@ -54,6 +54,7 @@ set(ENGINE_UTIL_HEADERS
     include/purpl/util/error.h
     include/purpl/util/fs.h
     include/purpl/util/misc.h
+    include/purpl/util/parallel.h
     include/purpl/util/steam.h
     include/purpl/util/string.h
     include/purpl/util/util.h)
@@ -92,6 +93,7 @@ set(ENGINE_UTIL_SOURCES
     src/util/error.c
     src/util/fs.c
     src/util/misc.c
+    src/util/parallel.c
     src/util/stb.c
     src/util/string.c)
 
@@ -258,6 +260,7 @@ target_include_directories(engine
 				${SDL2_INCLUDE_DIRS}
 				${CMAKE_SOURCE_DIR}/deps/glad2/include
 				${CMAKE_SOURCE_DIR}/deps/sdl2/include
+				${CMAKE_SOURCE_DIR}/deps/sdl2/src/thread
 				${CMAKE_SOURCE_DIR}/deps/stb)
 
 # Platform specific stuff

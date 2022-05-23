@@ -36,7 +36,11 @@
 extern PURPL_API bool purpl_graphics_init(void);
 
 /// Render loop
-extern PURPL_API void purpl_graphics_run(void);
+///
+/// \param data Unused data pointer
+///
+/// \return Returns 0
+extern PURPL_API s32 purpl_graphics_run(void *data);
 
 /// Update graphics
 ///

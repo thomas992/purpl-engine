@@ -28,13 +28,14 @@
 #endif
 
 #include "purpl/util/misc.h"
+#include "purpl/util/parallel.h"
 
 extern u64 PURPL_ASM_CALL purpl_arch_random(void);
 
 PURPL_API u64 purpl_random(u64 limit)
 {
 	// Entropy
-	srand((u32)(purpl_arch_random() * time(NULL) | purpl_get_tid()));
+	srand((u32)(purpl_arch_random() * time(NULL) | purpl_thread_get_id(NULL)));
 	return (purpl_arch_random() ^ rand() + purpl_get_pid()) % (limit + 1);
 }
 

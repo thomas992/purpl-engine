@@ -53,9 +53,13 @@ PURPL_API bool purpl_graphics_init(void)
 	return true;
 }
 
-PURPL_API void purpl_graphics_run(void)
+PURPL_API s32 purpl_graphics_run(void *data)
 {
-	
+	PURPL_IGNORE(data);
+
+	PURPL_LOG_INFO(purpl_inst->logger, "asdf");
+
+	return 0;
 }
 
 PURPL_API bool purpl_graphics_update(u32 delta)

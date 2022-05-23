@@ -30,7 +30,13 @@ char *purpl_get_initial_window_title(void)
 
 PURPL_API char *purpl_graphics_window_get_title(void)
 {
-	return purpl_strdup(purpl_inst->wnd_title);
+	char *title;
+
+	purpl_mutex_lock(purpl_inst->graphics_mutex);
+	title = purpl_strdup(purpl_inst->wnd_title);
+	purpl_mutex_unlock(purpl_inst->graphics_mutex);
+
+	return title;
 }
 
 PURPL_API void purpl_graphics_window_set_title(const char *title, ...)
@@ -55,8 +61,10 @@ PURPL_API void purpl_graphics_window_set_title(const char *title, ...)
 		return;
 	}
 
+	purpl_mutex_lock(purpl_inst->graphics_mutex);
 	free(purpl_inst->wnd_title);
 	purpl_inst->wnd_title = new_title;
+	purpl_mutex_unlock(purpl_inst->graphics_mutex);
 
 	SDL_SetWindowTitle(purpl_inst->wnd, purpl_inst->wnd_title);
 }

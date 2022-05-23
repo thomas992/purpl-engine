@@ -50,16 +50,16 @@ enum purpl_log_level {
 #ifdef PURPL_DEBUG
 /// The default log message format
 #ifdef __ANDROID__
-#define PURPL_LOG_DEFAULT_FORMAT "[THR #TN] [#W] [#L] #msg"
+#define PURPL_LOG_DEFAULT_FORMAT "[#W] [#L] #msg"
 #else // __ANDROID__
-#define PURPL_LOG_DEFAULT_FORMAT "[#ds #t] [PID #P TID #T] [THR #TN] [#W] [#L] #msg"
+#define PURPL_LOG_DEFAULT_FORMAT "[#ds #t] [PID #P TID #T] [#W] [#L] #msg"
 #endif // __ANDROID__
 
 /// The default log file name, relative to the data directory
 #define PURPL_LOG_DEFAULT_NAME "logs/purpl-<date>-debug.log"
 #else // PURPL_DEBUG
 /// The default log message format
-#define PURPL_LOG_DEFAULT_FORMAT "[#d #t] [THR #TN] [#n #v] [#L]\t#msg"
+#define PURPL_LOG_DEFAULT_FORMAT "[#d #t] [TID #T] [#n #v] [#L]\t#msg"
 
 /// The default log file name, relative to the data directory
 #define PURPL_LOG_DEFAULT_NAME "logs/purpl-<date>.log"
@@ -67,7 +67,7 @@ enum purpl_log_level {
 
 /// A logger
 struct purpl_logger {
-	void *mutex; /// Mutex for this logger
+	purpl_mutex_t mutex; /// Mutex for this logger
 	FILE *file; /// Log file this logger logs to
 	enum purpl_log_level level; /// Current default log level
 	enum purpl_log_level max_level; /// Maximum log level (i.e. messages
@@ -113,7 +113,6 @@ struct purpl_logger {
 ///	#JY	- The current year, minus 1970
 ///
 ///	#P	- The process ID of the engine
-///	#TN	- The name of the current thread
 ///	#T	- The ID of the current thread
 ///	#W	- The location of this call to whatever logging function was
 ///		  used in the format #F:#FL@#f
