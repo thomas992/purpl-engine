@@ -113,7 +113,8 @@ struct purpl_logger {
 ///	#JY	- The current year, minus 1970
 ///
 ///	#P	- The process ID of the engine
-///	#T	- The ID of the current thread
+///	#T	- The ID of the current thread in hexadecimal
+///	#TD	- The ID of the current thread in decimal
 ///	#W	- The location of this call to whatever logging function was
 ///		  used in the format #F:#FL@#f
 ///	#F	- The source file the logger was called from

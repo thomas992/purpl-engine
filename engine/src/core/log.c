@@ -236,9 +236,12 @@ static char *log_format(struct purpl_logger *logger, enum purpl_log_level level,
 			} else if (*p == 'P') {
 				p++;
 				str = purpl_strfmt(NULL, "%" PRId64, purpl_get_pid());
+			} else if (strcmp(p, "TD") == 0) {
+				p += 2;
+				str = purpl_strfmt(NULL, "%" PRId64, purpl_thread_get_id(NULL));
 			} else if (*p == 'T') {
 				p++;
-				str = purpl_strfmt(NULL, "%" PRIX64, purpl_thread_get_id(NULL));
+				str = purpl_strfmt(NULL, "0x%" PRIX64, purpl_thread_get_id(NULL));
 			} else if (*p == 'W') {
 				p++;
 				str = purpl_strdup("#F:#FL@#f");

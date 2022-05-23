@@ -73,13 +73,6 @@ extern PURPL_API s32 purpl_thread_wait(purpl_thread_t thread);
 /// \return Returns the ID of the thread
 extern PURPL_API s64 purpl_thread_get_id(purpl_thread_t thread);
 
-/// Get the name of the given thread
-///
-/// \param thread The thread to get the name of. Specify NULL for the current thread.
-///
-/// \return Returns a freeable buffer containing the name of the thread
-extern PURPL_API char *purpl_thread_get_name(purpl_thread_t thread);
-
 /// Create a mutex
 ///
 /// \return Returns a new mutex or NULL
