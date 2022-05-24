@@ -205,26 +205,6 @@ if (NOT ${PURPL_USE_SYSTEM_SDL} OR NOT ${SDL2_FOUND})
 endif()
 
 find_program(SPIRV_CROSS_EXECUTABLE "spirv-cross")
-if (${SPIRV_CROSS_EXECUTABLE} STREQUAL "SPIRV_CROSS_EXECUTABLE-NOTFOUND")
-	set(spirv_cross_dir ${CMAKE_BINARY_DIR}/deps/spirv-cross)
-	set(SPIRV_CROSS_SKIP_INSTALL ON CACHE BOOL "" FORCE)
-	set(SPIRV_CROSS_SHARED OFF CACHE BOOL "" FORCE)
-	# Make sure to compile for the host architecture
-	execute_process(COMMAND ${CMAKE_COMMAND} -S${CMAKE_SOURCE_DIR}/deps/spirv-cross -B${spirv_cross_dir}
-				-G "${CMAKE_GENERATOR}"
-				-DCMAKE_BUILD_TYPE=MinSizeRel
-				-DCMAKE_MAKE_PROGRAM=${CMAKE_MAKE_PROGRAM}
-				-DCMAKE_SYSTEM_PROCESSOR=${CMAKE_HOST_SYSTEM_PROCESSOR}
-				-DCMAKE_SYSTEM_NAME=${CMAKE_HOST_SYSTEM_NAME})
-	if (${CMAKE_GENERATOR} MATCHES "Visual Studio")
-		set(SPIRV_CROSS_EXECUTABLE ${spirv_cross_dir}/MinSizeRel/spirv-cross.exe)
-	elseif(WIN32)
-		set(SPIRV_CROSS_EXECUTABLE ${spirv_cross_dir}/spirv-cross.exe)
-	else()
-		set(SPIRV_CROSS_EXECUTABLE ${spirv_cross_dir}/spirv-cross)
-	endif()
-	execute_process(COMMAND ${CMAKE_COMMAND} --build ${spirv_cross_dir})
-endif()
 
 if (${PURPL_ENABLE_DISCORD})
 	if (NOT DEFINED PURPL_DISCORD_APP_ID)
@@ -250,16 +230,16 @@ set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 
 # Graphics APIs
 if (APPLE)
-	set(Vulkan_GLSLC_EXECUTABLE ${CMAKE_SOURCE_DIR}/tools/glslc)
+	find_program(Vulkan_GLSLC_EXECUTABLE "glslc")
 else()
 	find_package(Vulkan REQUIRED)
 
-	if ("${Vulkan_GLSLC_EXECUTABLE}" STREQUAL "Vulkan_GLSLC_EXECUTABLE-NOTFOUND")
-		message(FATAL_ERRROR "GLSL compiler not found, install glslc")
-	endif()
-
 	glad_add_library(glad_opengl REPRODUCIBLE LANGUAGE c LOADER API gl:core=4.6)
 	glad_add_library(glad_vulkan REPRODUCIBLE LANGUAGE c LOADER API vulkan=1.3)
+endif()
+
+if ("${Vulkan_GLSLC_EXECUTABLE}" STREQUAL "Vulkan_GLSLC_EXECUTABLE-NOTFOUND")
+	message(FATAL_ERRROR "GLSL compiler not found, install glslc")
 endif()
 
 include(cmake/Shader.cmake)
