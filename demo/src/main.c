@@ -45,7 +45,7 @@ s32 purpl_main(s32 argc, char *argv[])
 
 	// Run the main loop, it takes a void pointer passed to the frame
 	// function
-	purpl_run(frame_func, &info);
+	purpl_run(NULL, frame_func, &info);
 
 	printf("Rendered a total of %*.Lf frames, with an average delta of %Lf milliseconds\n",
 	       0, info.frames, info.deltas / info.frames);
@@ -57,7 +57,7 @@ bool frame_func(u64 delta, void *data)
 {
 	struct demo_info *info = data;
 
-	// Tabs are to prevent characters from staying behind
+	// Spaces are to prevent characters from staying behind
 	printf("\rFrame delta: %" PRId64 "ms   ", delta);
 
 	info->deltas += delta;

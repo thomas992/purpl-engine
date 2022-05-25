@@ -35,7 +35,7 @@
 extern s32 purpl_main(s32 argc, char *argv[]);
 typedef s32 (*purpl_main_t)(s32 argc, char *argv[]);
 
-/// A user-supplied function to be called each frame
+/// A user-supplied function to be called by purpl_run
 ///
 /// \param delta The number of milliseconds that have passed since the last
 ///		 call
@@ -43,7 +43,7 @@ typedef s32 (*purpl_main_t)(s32 argc, char *argv[]);
 ///		     purpl_run
 ///
 /// \return Should return true if nothing went wrong, false otherwise
-typedef bool (*purpl_frame_t)(u64 delta, void *user_data);
+typedef bool (*purpl_update_t)(u64 delta, void *user_data);
 
 /// This function is called by the main implemented by the engine,
 /// where it loads the libraries needed by the engine (listed by
@@ -71,12 +71,13 @@ extern s32 purpl_preinit(void *data);
 ///	    will not work.
 extern PURPL_API bool purpl_init(const char *app_name, u32 app_version);
 
-/// Enter the engine's main loop
+/// Enter the engine's main loop. All the callbacks are run on separate threads so use synchronization with any shared
+/// data.
 ///
-/// \param frame This function, if supplied, will be called after event
-///		 processing
-/// \param user_data This pointer will be passed to frame
-extern PURPL_API void purpl_run(purpl_frame_t frame, void *user_data);
+/// \param update This function, if supplied, will be called after events are handled
+/// \param frame This function, if supplied, will be called before each frame is drawn processing
+/// \param user_data This pointer will be passed to update and frame
+extern PURPL_API void purpl_run(purpl_update_t update, purpl_update_t frame, void *user_data);
 
 /// Shut down the engine
 extern void purpl_shutdown(void);

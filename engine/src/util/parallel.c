@@ -85,12 +85,17 @@ PURPL_API void purpl_semaphore_destroy(purpl_semaphore_t semaphore)
 
 PURPL_API s32 purpl_semaphore_post(purpl_semaphore_t semaphore)
 {
-	return SDL_SemPost(semaphore);
+	return SDL_SemPost(semaphore) == 0;
 }
 
 PURPL_API bool purpl_semaphore_wait(purpl_semaphore_t semaphore)
 {
 	return SDL_SemWait(semaphore) == 0;
+}
+
+PURPL_API s8 purpl_semaphore_wait_noblock(purpl_semaphore_t semaphore)
+{
+	return SDL_SemTryWait(semaphore);
 }
 
 PURPL_API s8 purpl_semaphore_wait_timeout(purpl_semaphore_t semaphore, u32 timeout)

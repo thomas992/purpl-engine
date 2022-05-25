@@ -96,6 +96,11 @@ bool purpl_vulkan_init(void)
 		return false;
 	}
 
+	if (!vulkan_create_pipeline()) {
+		purpl_vulkan_shutdown();
+		return false;
+	}
+
 	if (!vulkan_create_framebuffers()) {
 		purpl_vulkan_shutdown();
 		return false;
@@ -106,15 +111,10 @@ bool purpl_vulkan_init(void)
 		return false;
 	}
 
-	if (!vulkan_create_pipeline()) {
-		purpl_vulkan_shutdown();
-		return false;
-	}
-
 	return true;
 }
 
-bool purpl_vulkan_update(u32 delta)
+bool purpl_vulkan_update(u64 delta)
 {
 	PURPL_IGNORE(delta);
 

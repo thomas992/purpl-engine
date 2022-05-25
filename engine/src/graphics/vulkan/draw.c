@@ -35,17 +35,23 @@ bool vulkan_draw(void)
 		PURPL_LOG_ERROR(purpl_inst->logger, "Failed to wait for render fence: VkResult %d", res);
 		return false;
 	}
-	res = vkResetFences(vulkan->device, 1, &vulkan->render_fence);
-	if (res != VK_SUCCESS) {
-		PURPL_LOG_ERROR(purpl_inst->logger, "Failed to reset render fence: VkResult %d", res);
-		return false;
-	}
 
 	res = vkAcquireNextImageKHR(vulkan->device, vulkan->swapchain, 1000000000, vulkan->present_semaphore, NULL,
 				    &target_image_idx);
 	if (res != VK_SUCCESS) {
-		PURPL_LOG_ERROR(purpl_inst->logger, "Failed to get index of next image from swapchain: VkResult %d",
-				res);
+		if (res == VK_ERROR_OUT_OF_DATE_KHR || res == VK_SUBOPTIMAL_KHR) {
+			vulkan_recreate_swapchain();
+			return true;
+		} else {
+			PURPL_LOG_ERROR(purpl_inst->logger, "Failed to get index of next image from swapchain: VkResult %d",
+					res);
+			return false;
+		}
+	}
+
+	res = vkResetFences(vulkan->device, 1, &vulkan->render_fence);
+	if (res != VK_SUCCESS) {
+		PURPL_LOG_ERROR(purpl_inst->logger, "Failed to reset render fence: VkResult %d", res);
 		return false;
 	}
 
@@ -65,7 +71,7 @@ bool vulkan_draw(void)
 	}
 
 	// Clear the screen to purple
-	clear_value.color = (VkClearColorValue){ { 0.3f, 0.1f, 1.0f, 0.0f } };
+	clear_value.color = (VkClearColorValue){ { 0.4f, 0.1f, 1.0f, 0.0f } };
 
 	renderpass_begin_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
 
@@ -118,8 +124,13 @@ bool vulkan_draw(void)
 
 	res = vkQueuePresentKHR(vulkan->graphics_queue, &present_info);
 	if (res != VK_SUCCESS) {
-		PURPL_LOG_ERROR(purpl_inst->logger, "Failed to present image %u: VkResult %d", target_image_idx + 1, res);
-		return false;
+		if (res == VK_ERROR_OUT_OF_DATE_KHR || res == VK_SUBOPTIMAL_KHR) {
+			vulkan_recreate_swapchain();
+			return true;
+		} else {
+			PURPL_LOG_ERROR(purpl_inst->logger, "Failed to present image %u: VkResult %d", target_image_idx + 1, res);
+			return false;
+		}
 	}
 
 	return true;

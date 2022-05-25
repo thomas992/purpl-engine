@@ -59,12 +59,15 @@ PURPL_API bool purpl_graphics_init(void)
 
 PURPL_API s32 purpl_graphics_run(void *data)
 {
-	PURPL_IGNORE(data);
-
 	bool running;
 	u64 now;
 	u64 last;
 	u64 delta;
+
+	bool (*frame)(u64 delta, void *data) = ((void **)data)[0];
+	void *user_data = ((void **)data)[1];
+
+	purpl_inst->graphics_alive = true;
 
 	last = SDL_GetTicks64();
 	running = true;
@@ -72,14 +75,20 @@ PURPL_API s32 purpl_graphics_run(void *data)
 		now = SDL_GetTicks64();
 		delta = now - last;
 
+		if (frame)
+			running = frame(delta, user_data);
+
 		running = purpl_graphics_update(delta);
 		if (!running)
 			break;
 
-		running = purpl_semaphore_post(purpl_inst->graphics_shutdown_semaphore);
+		running = purpl_inst->graphics_alive;
 
 		last = now;
 	}
+
+	purpl_inst->graphics_alive = false;
+	purpl_semaphore_post(purpl_inst->graphics_shutdown_semaphore);
 
 	return 0;
 }
@@ -122,6 +131,7 @@ PURPL_API void purpl_graphics_shutdown(void)
 	if (!purpl_inst)
 		return;
 
+	purpl_inst->graphics_alive = false;
 	PURPL_LOG_WARNING(purpl_inst->logger, "Shutting down graphics");
 
 	purpl_semaphore_wait(purpl_inst->graphics_shutdown_semaphore);

@@ -24,6 +24,8 @@
 #include "purpl/core/log.h"
 #include "purpl/core/types.h"
 
+#include "swapchain.h"
+
 /// Draw the current frame
 ///
 /// \return Returns true if successful, false otherwise

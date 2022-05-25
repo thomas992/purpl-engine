@@ -169,7 +169,7 @@ static bool purpl_handle_events(void)
 					break;
 				case SDL_WINDOWEVENT_CLOSE:
 					PURPL_LOG_DEBUG(purpl_inst->logger, "Window closed");
-					return false;
+					break;
 				}
 			}
 			break;
@@ -184,7 +184,7 @@ static bool purpl_handle_events(void)
 	return true;
 }
 
-PURPL_API void purpl_run(purpl_frame_t frame, void *user_data)
+PURPL_API void purpl_run(purpl_update_t update, purpl_update_t frame, void *user_data)
 {
 	bool running;
 	u64 now;
@@ -197,7 +197,7 @@ PURPL_API void purpl_run(purpl_frame_t frame, void *user_data)
 		return;
 	}
 
-	purpl_inst->graphics_thread = purpl_thread_create(purpl_graphics_run, "graphics", 0, NULL);
+	purpl_inst->graphics_thread = purpl_thread_create(purpl_graphics_run, "graphics", 0, (void *[]){ frame, user_data });
 	purpl_thread_detach(purpl_inst->graphics_thread);
 
 	last = SDL_GetTicks64();
@@ -211,12 +211,15 @@ PURPL_API void purpl_run(purpl_frame_t frame, void *user_data)
 			break;
 
 #ifdef PURPL_ENABLE_DISCORD
-		running = discord_run_callbacks(delta);
+		discord_run_callbacks(delta);
 		discord_update_activity(delta);
 #endif // PURPL_ENABLE_DISCORD
 
-		if (frame)
-			running = frame(delta, user_data);
+		if (update)
+			running = update(delta, user_data);
+
+		running = purpl_inst->graphics_alive;
+
 		last = now;
 	}
 }

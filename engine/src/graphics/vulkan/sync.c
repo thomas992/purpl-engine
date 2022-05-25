@@ -21,7 +21,7 @@ bool vulkan_create_sync_objs(void)
 {
 	PURPL_LOG_INFO(purpl_inst->logger, "Creating synchronization objects");
 
-	if (!vulkan_create_semaphores() || !vulkan_create_render_fence()) {
+	if (!vulkan_create_render_fence() || !vulkan_create_semaphores()) {
 		PURPL_LOG_INFO(purpl_inst->logger, "Failed to create synchronization objects");
 		return false;
 	}

@@ -33,6 +33,11 @@
 /// \return Returns true if the swapchain was created successfully, false otherwise
 extern bool vulkan_create_swapchain(void);
 
+/// Recreate the swapchaing
+///
+/// \return Returns true if successful, false if not
+extern bool vulkan_recreate_swapchain(void);
+
 /// Destroy the swapchain and related information
 extern void vulkan_destroy_swapchain(void);
 

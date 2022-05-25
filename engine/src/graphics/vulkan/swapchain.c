@@ -19,6 +19,9 @@
 
 #include "purpl/graphics/vulkan/swapchain.h"
 
+#include "purpl/graphics/vulkan/pipeline.h"
+#include "purpl/graphics/vulkan/render.h"
+
 bool vulkan_create_swapchain(void)
 {
 	PURPL_ALIAS_GRAPHICS_DATA(vulkan);
@@ -66,7 +69,6 @@ bool vulkan_create_swapchain(void)
 	swapchain_create_info.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
 	swapchain_create_info.presentMode = present_mode;
 	swapchain_create_info.clipped = VK_TRUE;
-	swapchain_create_info.oldSwapchain = vulkan->swapchain; // Because of calloc, this will be NULL the first time
 
 	result = vkCreateSwapchainKHR(vulkan->device, &swapchain_create_info, NULL, &vulkan->swapchain);
 	if (result != VK_SUCCESS) {
@@ -94,6 +96,27 @@ bool vulkan_create_swapchain(void)
 	if (!vulkan_create_image_views())
 		return false;
 
+	return true;
+}
+
+bool vulkan_recreate_swapchain(void)
+{
+	PURPL_ALIAS_GRAPHICS_DATA(vulkan);
+
+	PURPL_LOG_INFO(purpl_inst->logger, "Recreating swapchain with handle 0x%" PRIX64, vulkan->swapchain);
+
+	vkDeviceWaitIdle(vulkan->device);
+
+	vulkan_destroy_framebuffers();
+	vkDestroyRenderPass(vulkan->device, vulkan->renderpass, NULL);
+	vulkan_destroy_image_views();
+	vulkan_destroy_swapchain();
+
+	if (!vulkan_get_swapchain_info(vulkan->phys_device, &vulkan->swapchain_info) || !vulkan_create_swapchain() ||
+	    !vulkan_create_default_renderpass() || !vulkan_create_pipeline() || !vulkan_create_framebuffers())
+		return false;
+
+	PURPL_LOG_INFO(purpl_inst->logger, "Swapchain recreated with new handle 0x%" PRIX64, vulkan->swapchain);
 	return true;
 }
 
@@ -257,7 +280,8 @@ VkPresentModeKHR vulkan_choose_swap_present_mode(void)
 		}
 	}
 
-	PURPL_LOG_INFO(purpl_inst->logger, "Using default present mode (VK_PRESENT_MOD_FIFO_KHR %d)", VK_PRESENT_MODE_FIFO_KHR);
+	PURPL_LOG_INFO(purpl_inst->logger, "Using default present mode (VK_PRESENT_MOD_FIFO_KHR %d)",
+		       VK_PRESENT_MODE_FIFO_KHR);
 
 	return VK_PRESENT_MODE_FIFO_KHR;
 }
@@ -267,14 +291,14 @@ VkExtent2D vulkan_choose_swap_extent(void)
 	PURPL_ALIAS_GRAPHICS_DATA(vulkan);
 
 	VkExtent2D extent;
-	u32 width;
-	u32 height;
 
-	SDL_Vulkan_GetDrawableSize(purpl_inst->wnd, (s32 *)&width, (s32 *)&height);
-	extent.width = PURPL_CLAMP(width, vulkan->swapchain_info.capabilities.minImageExtent.width,
+	purpl_mutex_lock(purpl_inst->wnd_mutex);
+	extent.width = PURPL_CLAMP((u32)purpl_inst->wnd_width, vulkan->swapchain_info.capabilities.minImageExtent.width,
 				   vulkan->swapchain_info.capabilities.maxImageExtent.width);
-	extent.height = PURPL_CLAMP(height, vulkan->swapchain_info.capabilities.minImageExtent.height,
+	extent.height = PURPL_CLAMP((u32)purpl_inst->wnd_height,
+				    vulkan->swapchain_info.capabilities.minImageExtent.height,
 				    vulkan->swapchain_info.capabilities.maxImageExtent.height);
+	purpl_mutex_unlock(purpl_inst->wnd_mutex);
 
 	PURPL_LOG_INFO(purpl_inst->logger, "Using swap extent %ux%u", extent.width, extent.height);
 	return extent;

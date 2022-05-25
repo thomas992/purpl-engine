@@ -53,7 +53,7 @@ extern bool purpl_vulkan_init(void);
 /// \param delta The number of milliseconds since the last call
 ///
 /// \return Returns true if successful, false otherwise
-extern bool purpl_vulkan_update(u32 delta);
+extern bool purpl_vulkan_update(u64 delta);
 
 /// Shut down Vulkan (if it's initialized)
 extern void purpl_vulkan_shutdown(void);

@@ -67,8 +67,7 @@
 #define PURPL_ISVOWEL(c) ((c) == 'a' || (c) == 'e' || (c) == 'i' || (c) == 'o' || (c) == 'u')
 
 /// Clamp x to the range [min, max]
-#define PURPL_CLAMP(x, min, max) ((x) < (min) ? (min) : ((x) > (max) ? (max) : (x)))
-
+#define PURPL_CLAMP(x, lo, hi) ((x) < (lo) ? (lo) : (x) > (hi) ? (hi) : (x))
 #ifdef __ANDROID__
 #include <android/log.h>
 /// Preinit message
