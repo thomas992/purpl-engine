@@ -342,7 +342,7 @@ endif()
 install(TARGETS engine
 	LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/${engine_install_dir})
 
-if (MSVC AND ${PURPL_IS_DEBUG})
+if (MSVC AND "${PURPL_IS_DEBUG}")
 	install(PROGRAMS $<TARGET_PDB_FILE:engine>
 		DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 endif()

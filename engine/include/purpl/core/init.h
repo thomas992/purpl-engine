@@ -43,7 +43,7 @@ typedef s32 (*purpl_main_t)(s32 argc, char *argv[]);
 ///		     purpl_run
 ///
 /// \return Should return true if nothing went wrong, false otherwise
-typedef bool (*purpl_frame_t)(u32 delta, void *user_data);
+typedef bool (*purpl_frame_t)(u64 delta, void *user_data);
 
 /// This function is called by the main implemented by the engine,
 /// where it loads the libraries needed by the engine (listed by

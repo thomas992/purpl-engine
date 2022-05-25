@@ -47,7 +47,7 @@ extern PURPL_API s32 purpl_graphics_run(void *data);
 /// \param delta The number of milliseconds since the last update
 ///
 /// \return Returns true if successful, false otherwise
-extern PURPL_API bool purpl_graphics_update(u32 delta);
+extern PURPL_API bool purpl_graphics_update(u64 delta);
 
 /// Shut down graphics
 extern PURPL_API void purpl_graphics_shutdown(void);

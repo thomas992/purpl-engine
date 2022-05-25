@@ -151,19 +151,19 @@ static bool purpl_handle_events(void)
 					PURPL_LOG_DEBUG(purpl_inst->logger, "Window maximized");
 					break;
 				case SDL_WINDOWEVENT_MOVED:
-					purpl_mutex_lock(purpl_inst->graphics_mutex);
+					purpl_mutex_lock(purpl_inst->wnd_mutex);
 					purpl_inst->wnd_x = e.window.data1;
 					purpl_inst->wnd_y = e.window.data2;
-					purpl_mutex_unlock(purpl_inst->graphics_mutex);
+					purpl_mutex_unlock(purpl_inst->wnd_mutex);
 					PURPL_LOG_DEBUG(purpl_inst->logger, "Window moved to (%d, %d)", purpl_inst->wnd_x,
 							purpl_inst->wnd_y);
 					break;
 				case SDL_WINDOWEVENT_RESIZED:
-					purpl_mutex_lock(purpl_inst->graphics_mutex);
+					purpl_mutex_lock(purpl_inst->wnd_mutex);
 					purpl_inst->wnd_width = e.window.data1;
 					purpl_inst->wnd_height =
 						e.window.data2;
-					purpl_mutex_unlock(purpl_inst->graphics_mutex);
+					purpl_mutex_unlock(purpl_inst->wnd_mutex);
 					PURPL_LOG_DEBUG(purpl_inst->logger, "Window resized to %dx%d", purpl_inst->wnd_width,
 						purpl_inst->wnd_height);
 					break;
@@ -187,9 +187,9 @@ static bool purpl_handle_events(void)
 PURPL_API void purpl_run(purpl_frame_t frame, void *user_data)
 {
 	bool running;
-	u32 now;
-	u32 last;
-	u32 delta;
+	u64 now;
+	u64 last;
+	u64 delta;
 
 	if (!purpl_inst) {
 		PURPL_LOG_DEBUG(purpl_inst->logger,
@@ -200,10 +200,10 @@ PURPL_API void purpl_run(purpl_frame_t frame, void *user_data)
 	purpl_inst->graphics_thread = purpl_thread_create(purpl_graphics_run, "graphics", 0, NULL);
 	purpl_thread_detach(purpl_inst->graphics_thread);
 
-	last = SDL_GetTicks();
+	last = SDL_GetTicks64();
 	running = true;
 	while (running) {
-		now = SDL_GetTicks();
+		now = SDL_GetTicks64();
 		delta = now - last;
 
 		running = purpl_handle_events();

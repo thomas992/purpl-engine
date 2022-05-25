@@ -74,7 +74,7 @@ function(purpl_setup target sources)
 		RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
 	
 	# Install debug symbols
-	if (MSVC AND ${PURPL_IS_DEBUG})
+	if (MSVC AND "${PURPL_IS_DEBUG}")
 		install(PROGRAMS $<TARGET_PDB_FILE:${target}>
 			DESTINATION ${CMAKE_INSTALL_PREFIX})
 	endif()

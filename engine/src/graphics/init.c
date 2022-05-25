@@ -26,6 +26,10 @@ PURPL_API bool purpl_graphics_init(void)
 
 	purpl_inst->graphics_api = PURPL_GRAPHICS_API_MAX;
 
+	purpl_inst->graphics_mutex = purpl_mutex_create();
+	purpl_inst->wnd_mutex = purpl_mutex_create();
+	purpl_inst->graphics_shutdown_semaphore = purpl_semaphore_create(0);
+
 #ifdef __APPLE__
 	init = purpl_metal_init();
 	if (!init) {
@@ -57,15 +61,35 @@ PURPL_API s32 purpl_graphics_run(void *data)
 {
 	PURPL_IGNORE(data);
 
-	PURPL_LOG_INFO(purpl_inst->logger, "asdf");
+	bool running;
+	u64 now;
+	u64 last;
+	u64 delta;
+
+	last = SDL_GetTicks64();
+	running = true;
+	while (running) {
+		now = SDL_GetTicks64();
+		delta = now - last;
+
+		running = purpl_graphics_update(delta);
+		if (!running)
+			break;
+
+		running = purpl_semaphore_post(purpl_inst->graphics_shutdown_semaphore);
+
+		last = now;
+	}
 
 	return 0;
 }
 
-PURPL_API bool purpl_graphics_update(u32 delta)
+PURPL_API bool purpl_graphics_update(u64 delta)
 {
 	if (!purpl_inst)
 		return false;
+
+	purpl_mutex_lock(purpl_inst->graphics_mutex);
 
 	switch (purpl_inst->graphics_api) {
 	case PURPL_GRAPHICS_API_SOFTWARE:
@@ -88,6 +112,8 @@ PURPL_API bool purpl_graphics_update(u32 delta)
 		return false;
 	}
 
+	purpl_mutex_unlock(purpl_inst->graphics_mutex);
+
 	return false;
 }
 
@@ -97,6 +123,8 @@ PURPL_API void purpl_graphics_shutdown(void)
 		return;
 
 	PURPL_LOG_WARNING(purpl_inst->logger, "Shutting down graphics");
+
+	purpl_semaphore_wait(purpl_inst->graphics_shutdown_semaphore);
 
 	switch (purpl_inst->graphics_api) {
 	case PURPL_GRAPHICS_API_SOFTWARE:
@@ -125,4 +153,7 @@ PURPL_API void purpl_graphics_shutdown(void)
 		free(purpl_inst->wnd_title);
 	if (purpl_inst->wnd)
 		SDL_DestroyWindow(purpl_inst->wnd);
+
+	purpl_mutex_destroy(purpl_inst->wnd_mutex);
+	purpl_mutex_destroy(purpl_inst->graphics_mutex);
 }

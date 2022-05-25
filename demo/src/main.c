@@ -26,7 +26,7 @@ struct demo_info {
 };
 
 // This will be called each frame by the engine
-bool frame_func(u32 delta, void *data);
+bool frame_func(u64 delta, void *data);
 
 // This will be called by the engine when the program starts
 s32 purpl_main(s32 argc, char *argv[])
@@ -53,12 +53,12 @@ s32 purpl_main(s32 argc, char *argv[])
 	return 0;
 }
 
-bool frame_func(u32 delta, void *data)
+bool frame_func(u64 delta, void *data)
 {
 	struct demo_info *info = data;
 
 	// Tabs are to prevent characters from staying behind
-	printf("\rFrame delta: %ums   ", delta);
+	printf("\rFrame delta: %" PRId64 "ms   ", delta);
 
 	info->deltas += delta;
 	info->frames++;

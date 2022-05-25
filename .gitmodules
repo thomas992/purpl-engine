@@ -8,6 +8,3 @@
 	path = deps/glad
 	url = https://github.com/Dav1dde/glad.git
 	branch = glad2
-[submodule "deps/spirv-cross"]
-	path = deps/spirv-cross
-	url = https://github.com/KhronosGroup/SPIRV-Cross.git

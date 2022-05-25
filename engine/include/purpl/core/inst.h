@@ -72,8 +72,7 @@ struct purpl_instance {
 	struct purpl_logger *logger; /// The logger for this instance
 	time_t start_time; /// When the engine started
 
-	purpl_thread_t graphics_thread; /// Graphics thread (does rendering and stuff)
-	purpl_mutex_t graphics_mutex; /// Graphics data mutex
+	purpl_mutex_t wnd_mutex; /// Window data mutex
 
 	SDL_Window *wnd; /// The main window for the engine
 	char *wnd_title; /// The title of the window
@@ -81,6 +80,10 @@ struct purpl_instance {
 	s32 wnd_height; /// The height of the window
 	s32 wnd_x; /// The X position of the window
 	s32 wnd_y; /// The Y position of the window
+
+	purpl_thread_t graphics_thread; /// Graphics thread (does rendering and stuff)
+	purpl_mutex_t graphics_mutex; /// Graphics data mutex
+	purpl_semaphore_t graphics_shutdown_semaphore; /// Used to signal the graphics thread to shut down
 
 	union {
 #ifdef __APPLE__
