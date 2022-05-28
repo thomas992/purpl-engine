@@ -103,9 +103,9 @@ steps:
       curl -fsGL https://packages.lunarg.com/lunarg-signing-key-pub.asc | sudo apt-key add -
       curl -fsGL https://packages.lunarg.com/vulkan/$(vulkanSdkVersion)/lunarg-vulkan-$(vulkanSdkVersion)-focal.list | sudo tee /etc/apt/sources.list.d/lunarg-vulkan-focal.list
       sudo apt update -qq
-      sudo apt install -y libsdl2-dev mold vulkan-sdk
+      sudo apt install -y libsdl2-dev vulkan-sdk
     condition: eq(variables['Agent.OS'], 'Linux')
-    displayName: Install mold, SDL, and Vulkan SDK with APT
+    displayName: Install SDL and Vulkan SDK with APT
 
   - bash: |
       brew install mold sdl2
@@ -126,7 +126,7 @@ steps:
       mkdir spirv-cross
       tar xvzf spirv-cross.tar.gz -C spirv-cross
     condition: eq(variables['Agent.OS'], 'Windows_NT')
-    displayName: Install shader compilation tools (Windows)
+    displayName: Install tools (Windows)
 
   - script: |
       curl -fsGL https://storage.googleapis.com/shaderc/artifacts/prod/graphics_shader_compiler/shaderc/linux/continuous_clang_release/380/20220202-124409/install.tgz -o glslc.tar.gz
@@ -135,8 +135,11 @@ steps:
       curl -fsGL https://github.com/KhronosGroup/SPIRV-Cross/releases/download/2021-01-15/spirv-cross-clang-trusty-64bit-9acb9ec31f.tar.gz -o spirv-cross.tar.gz
       mkdir spirv-cross
       tar xvzf spirv-cross.tar.gz -C spirv-cross
+      curl -fsGL https://github.com/rui314/mold/releases/download/v1.2.1/mold-1.2.1-x86_64-linux.tar.gz -o mold.tar.gz
+      mkdir mold
+      tar xvzf mold.tar.xz -C mold
     condition: eq(variables['Agent.OS'], 'Linux')
-    displayName: Install shader compilation tools (Linux)
+    displayName: Install tools (Linux)
 
   - script: |
       curl -fsGL https://storage.googleapis.com/shaderc/artifacts/prod/graphics_shader_compiler/shaderc/macos/continuous_clang_release/388/20220202-124410/install.tgz -o glslc.tar.gz
@@ -146,7 +149,7 @@ steps:
       mkdir spirv-cross
       tar xvzf spirv-cross.tar.gz -C spirv-cross
     condition: eq(variables['Agent.OS'], 'Darwin')
-    displayName: Install shader compilation tools (macOS)
+    displayName: Install tools (macOS)
 
   - script: |
       call tools\buildenv.bat x64
@@ -160,7 +163,7 @@ steps:
       cmake -S. -Bbuild -GNinja -DVulkan_LIBRARY=/usr/lib/x86_64-linux-gnu/libvulkan.so -DCMAKE_C_COMPILER=$(cc) -DCMAKE_CXX_COMPILER=$(cxx) -DCMAKE_BUILD_TYPE=$(config) -DSDL_LIBRARY=/usr/lib/x86_64-linux-gnu/libSDL2.so -DPURPL_USE_SYSTEM_SDL=1 -DPURPL_ENABLE_DISCORD=0 -DPURPL_ENABLE_STEAM=0 -DPURPL_LINKER_FLAGS=$(ld)
     condition: eq(variables['Agent.OS'], 'Linux')
     env:
-      PATH: 'glslc/bin:spirv-cross/bin:$(PATH)'
+      PATH: 'glslc/bin:mold/bin:spirv-cross/bin:$(PATH)'
     displayName: Generate build files (Linux)
 
   - script: |
