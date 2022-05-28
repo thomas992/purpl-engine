@@ -107,19 +107,55 @@ steps:
     displayName: Install requirements for glad
 
   - script: |
+      curl -fsGL https://storage.googleapis.com/shaderc/badges/build_link_windows_vs2017_release.html -o glslc.zip
+      7z x glslc.zip
+      mv install glslc
+      curl -fsGL https://github.com/KhronosGroup/SPIRV-Cross/releases/download/2021-01-15/spirv-cross-vs2017-64bit-9acb9ec31f.tar.gz -o spirv-cross.tar.gz
+      mkdir spirv-cross
+      tar xvzf spirv-cross.tar.xz -C spirv-cross
+    condition: eq(variables['Agent.OS'], 'Windows_NT')
+    displayName: Install shader compilation tools (Windows)
+
+  - script: |
+      curl -fsGL https://storage.googleapis.com/shaderc/badges/build_link_linux_clang_release.html -o glslc.tar.gz
+      tar xvzf glslc.tar.gz
+      mv install glslc
+      curl -fsGL https://github.com/KhronosGroup/SPIRV-Cross/releases/download/2021-01-15/spirv-cross-clang-trusty-64bit-9acb9ec31f.tar.gz -o spirv-cross.tar.gz
+      mkdir spirv-cross
+      tar xvzf spirv-cross.tar.xz -C spirv-cross
+    condition: eq(variables['Agent.OS'], 'Linux')
+    displayName: Install shader compilation tools (Linux)
+
+  - script: |
+      curl -fsGL https://storage.googleapis.com/shaderc/badges/build_link_macos_clang_release.html -o glslc.tar.gz
+      tar xvzf glslc.tar.gz
+      mv install glslc
+      curl -fsGL https://github.com/KhronosGroup/SPIRV-Cross/releases/download/2021-01-15/spirv-cross-clang-macos-64bit-9acb9ec31f.tar.gz -o spirv-cross.tar.gz
+      mkdir spirv-cross
+      tar xvzf spirv-cross.tar.xz -C spirv-cross
+    condition: eq(variables['Agent.OS'], 'Darwin')
+    displayName: Install shader compilation tools (macOS)
+
+  - script: |
       call tools\buildenv.bat x64
       cmake -S. -Bbuild -GNinja -DVULKAN_SDK=$(vulkanSdk) -DVulkan_LIBRARY=$(vulkanSdk)/Lib/vulkan-1.lib -DVulkan_INCLUDE_DIR=$(vulkanSdk)/Include -DCMAKE_C_COMPILER=$(cc) -DCMAKE_CXX_COMPILER=$(cxx) -DCMAKE_BUILD_TYPE=$(config) -DPURPL_ENABLE_DISCORD=0 -DPURPL_ENABLE_STEAM=0
     condition: eq(variables['Agent.OS'], 'Windows_NT')
+    env:
+      PATH: $(PATH) glslc/bin spirv-cross/bin
     displayName: Generate build files (Windows)
 
   - script: |
       cmake -S. -Bbuild -GNinja -DVulkan_LIBRARY=/usr/lib/x86_64-linux-gnu/libvulkan.so -DCMAKE_C_COMPILER=$(cc) -DCMAKE_CXX_COMPILER=$(cxx) -DCMAKE_BUILD_TYPE=$(config) -DSDL_LIBRARY=/usr/lib/x86_64-linux-gnu/libSDL2.so -DPURPL_USE_SYSTEM_SDL=1 -DPURPL_ENABLE_DISCORD=0 -DPURPL_ENABLE_STEAM=0
     condition: eq(variables['Agent.OS'], 'Linux')
+    env:
+      PATH: $(PATH) glslc/bin spirv-cross/bin
     displayName: Generate build files (Linux)
 
   - script: |
       cmake -S. -Bbuild -GXcode -DCMAKE_C_COMPILER=$(cc) -DCMAKE_CXX_COMPILER=$(cxx) -DCMAKE_BUILD_TYPE=$(config) -DPURPL_USE_SYSTEM_SDL=1 -DPURPL_ENABLE_DISCORD=0 -DPURPL_ENABLE_STEAM=0
     condition: eq(variables['Agent.OS'], 'Darwin')
+    env:
+      PATH: $(PATH) glslc/bin spirv-cross/bin
     displayName: Generate build files (macOS)
 
   - script: |
