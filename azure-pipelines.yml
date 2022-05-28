@@ -112,7 +112,7 @@ steps:
       mv install glslc
       curl -fsGL https://github.com/KhronosGroup/SPIRV-Cross/releases/download/2021-01-15/spirv-cross-vs2017-64bit-9acb9ec31f.tar.gz -o spirv-cross.tar.gz
       mkdir spirv-cross
-      tar xvzf spirv-cross.tar.xz -C spirv-cross
+      tar xvzf spirv-cross.tar.gz -C spirv-cross
     condition: eq(variables['Agent.OS'], 'Windows_NT')
     displayName: Install shader compilation tools (Windows)
 
@@ -122,7 +122,7 @@ steps:
       mv install glslc
       curl -fsGL https://github.com/KhronosGroup/SPIRV-Cross/releases/download/2021-01-15/spirv-cross-clang-trusty-64bit-9acb9ec31f.tar.gz -o spirv-cross.tar.gz
       mkdir spirv-cross
-      tar xvzf spirv-cross.tar.xz -C spirv-cross
+      tar xvzf spirv-cross.tar.gz -C spirv-cross
     condition: eq(variables['Agent.OS'], 'Linux')
     displayName: Install shader compilation tools (Linux)
 
@@ -132,7 +132,7 @@ steps:
       mv install glslc
       curl -fsGL https://github.com/KhronosGroup/SPIRV-Cross/releases/download/2021-01-15/spirv-cross-clang-macos-64bit-9acb9ec31f.tar.gz -o spirv-cross.tar.gz
       mkdir spirv-cross
-      tar xvzf spirv-cross.tar.xz -C spirv-cross
+      tar xvzf spirv-cross.tar.gz -C spirv-cross
     condition: eq(variables['Agent.OS'], 'Darwin')
     displayName: Install shader compilation tools (macOS)
 
