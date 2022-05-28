@@ -44,19 +44,19 @@ strategy:
       config: 'MinSizeRel'
       cc: 'clang'
       cxx: 'clang++'
-      ld: '-fuse-ld=lld'
+      ld: 'ld64.lld'
     macos-release:
       imageName: 'macOS-12'
       config: 'RelWithDebInfo'
       cc: 'clang'
       cxx: 'clang++'
-      ld: '-fuse-ld=lld'
+      ld: 'ld64.lld'
     macos-debug:
       imageName: 'macOS-12'
       config: 'Debug'
       cc: 'clang'
       cxx: 'clang++'
-      ld: '-fuse-ld=lld'
+      ld: 'ld64.lld'
     linux-dist:
       imageName: 'ubuntu-22.04'
       config: 'MinSizeRel'
