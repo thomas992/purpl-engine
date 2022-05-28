@@ -238,7 +238,7 @@ else()
 endif()
 
 if ("${Vulkan_GLSLC_EXECUTABLE}" STREQUAL "Vulkan_GLSLC_EXECUTABLE-NOTFOUND")
-	message(FATAL_ERRROR "GLSL compiler not found, install glslc")
+	message(FATAL_ERROR "GLSL compiler not found, install glslc")
 endif()
 
 find_program(SPIRV_CROSS_EXECUTABLE "spirv-cross")
