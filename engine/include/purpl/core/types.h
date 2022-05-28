@@ -19,7 +19,6 @@
 
 #include <ctype.h>
 #include <inttypes.h>
-#include <stdatomic.h>
 #include <stdbool.h>
 #include <stddef.h>
 
@@ -28,12 +27,6 @@
 #endif
 
 #include "platform.h"
-
-// Boolean
-#ifndef __cplusplus
-#undef bool
-typedef _Bool bool; /// Boolean
-#endif // __cplusplus
 
 // Integers
 typedef int8_t s8; /// Signed 8-bit integer

@@ -84,7 +84,7 @@ struct purpl_instance {
 	purpl_thread_t graphics_thread; /// Graphics thread (does rendering and stuff)
 	purpl_mutex_t graphics_mutex; /// Graphics data mutex
 	purpl_semaphore_t graphics_shutdown_semaphore; /// Used to signal the graphics thread to shut down
-	_Atomic bool graphics_alive; /// Whether the graphics thread is alive
+	bool graphics_alive; /// Whether the graphics thread is alive
 
 	union {
 #ifdef __APPLE__
