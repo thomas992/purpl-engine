@@ -36,7 +36,9 @@ typedef struct _THREADNAME_INFO {
 #define _GNU_SOURCE
 #include <pthread.h>
 
+#ifndef __APPLE__
 extern int32_t pthread_setname_np(pthread_t thread, const char *name);
+#endif // !__APPLE__
 #endif // _WIN32
 
 #include "purpl/core/init.h"
