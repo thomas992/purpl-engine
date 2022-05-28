@@ -3,9 +3,9 @@
 #include "SDL.h"
 
 #include "coredefs.h"
-#include "features.h"
 #include "init.h"
 #include "inst.h"
+#include "platform.h"
 #include "types.h"
 
 #include "purpl/graphics/window.h"
