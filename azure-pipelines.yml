@@ -108,9 +108,9 @@ steps:
     displayName: Install SDL and Vulkan SDK with APT
 
   - bash: |
-      brew install sdl2
+      brew install llvm sdl2
     condition: eq(variables['Agent.OS'], 'Darwin')
-    displayName: Install SDL with Homebrew
+    displayName: Install LLVM and SDL with Homebrew
 
   - script: |
       pip install MarkupSafe==2.1.0

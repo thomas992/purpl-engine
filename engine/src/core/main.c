@@ -54,14 +54,14 @@ int32_t main(int32_t argc, char *argv[])
 	HRESULT (*SetThreadDescription_l)(HANDLE, wchar_t *);
 	THREADNAME_INFO thr_info = { 0 };
 
-	SetThreadDescription_l = GetProcAddress(GetModuleHandle("kernel32.dll", "SetThreadDescription");
+	SetThreadDescription_l = GetProcAddress(GetModuleHandle("kernel32.dll", "SetThreadDescription"));
 	if (SetThreadDescription_l)
 		SetThreadDescription_l(GetCurrentThread(), L"main");
 
 	// Also do weird shit using SEH to set the thread name for older Windows versions (only works if a debugger is attached)
 	if (IsDebuggerPresent()) {
 		thr_info.dwType = 0x1000;
-		strncpy(thr_info.szName, "main");
+		thr_info.szName = "main";
 		thr_info.dwThreadID = -1;
 
 		RaiseException(0x406D1388, 0, sizeof(thr_info) / sizeof(ULONG), (const ULONG_PTR *)&thr_info);
