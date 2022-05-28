@@ -27,7 +27,7 @@
 #include <sys/types.h>
 #endif
 
-#include "features.h"
+#include "platform.h"
 
 // Boolean
 #ifndef __cplusplus
