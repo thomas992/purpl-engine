@@ -62,10 +62,12 @@ int32_t main(int32_t argc, char *argv[])
 	if (IsDebuggerPresent()) {
 		thr_info.dwType = 0x1000;
 		thr_info.szName = "main";
-		thr_info.dwThreadID = -1;
+		thr_info.dwThreadID = UINT32_MAX;
 
 		RaiseException(0x406D1388, 0, sizeof(thr_info) / sizeof(ULONG), (const ULONG_PTR *)&thr_info);
 	}
+#elif defined __APPLE__ // _WIN32
+	pthread_setname_np("main");
 #else // _WIN32
 	pthread_setname_np(pthread_self(), "main");
 #endif // _WIN32

@@ -77,7 +77,6 @@
 /// Preinit message
 #define PREINIT_MESSAGE(type, ...)                                        \
 	do {                                                              \
-		OutputDebugStringA(PURPL_FIRST_MACRO_ARG(__VA_ARGS__));   \
 		fprintf(stderr, PURPL_STRINGIFY_(type) ": " __VA_ARGS__); \
 		fprintf(stderr, "\n");                                    \
 	} while (0)
