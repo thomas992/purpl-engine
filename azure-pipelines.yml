@@ -44,19 +44,19 @@ strategy:
       config: 'MinSizeRel'
       cc: 'clang'
       cxx: 'clang++'
-      ld: 'ld64.lld'
+      ld: ''
     macos-release:
       imageName: 'macOS-12'
       config: 'RelWithDebInfo'
       cc: 'clang'
       cxx: 'clang++'
-      ld: 'ld64.lld'
+      ld: ''
     macos-debug:
       imageName: 'macOS-12'
       config: 'Debug'
       cc: 'clang'
       cxx: 'clang++'
-      ld: 'ld64.lld'
+      ld: ''
     linux-dist:
       imageName: 'ubuntu-22.04'
       config: 'MinSizeRel'
@@ -108,9 +108,9 @@ steps:
     displayName: Install SDL and Vulkan SDK with APT
 
   - bash: |
-      brew install llvm sdl2
+      brew install sdl2
     condition: eq(variables['Agent.OS'], 'Darwin')
-    displayName: Install LLVM and SDL with Homebrew
+    displayName: Install SDL with Homebrew
 
   - script: |
       pip install MarkupSafe==2.1.0
@@ -164,7 +164,7 @@ steps:
     displayName: Generate build files (Linux)
 
   - script: |
-      cmake -S. -Bbuild -GXcode -DCMAKE_C_COMPILER=$(cc) -DCMAKE_CXX_COMPILER=$(cxx) -DCMAKE_BUILD_TYPE=$(config) -DPURPL_USE_SYSTEM_SDL=1 -DPURPL_ENABLE_DISCORD=0 -DPURPL_ENABLE_STEAM=0 -DPURPL_LINKER_FLAGS=$(ld)
+      cmake -S. -Bbuild -GXcode -DCMAKE_C_COMPILER=$(cc) -DCMAKE_CXX_COMPILER=$(cxx) -DCMAKE_BUILD_TYPE=$(config) -DPURPL_USE_SYSTEM_SDL=1 -DPURPL_ENABLE_DISCORD=0 -DPURPL_ENABLE_STEAM=0
     condition: eq(variables['Agent.OS'], 'Darwin')
     env:
       PATH: 'glslc/bin:spirv-cross/bin:$(PATH)'

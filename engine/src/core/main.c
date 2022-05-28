@@ -54,7 +54,7 @@ int32_t main(int32_t argc, char *argv[])
 	HRESULT (*SetThreadDescription_l)(HANDLE, wchar_t *);
 	THREADNAME_INFO thr_info = { 0 };
 
-	SetThreadDescription_l = GetProcAddress(GetModuleHandle("kernel32.dll", "SetThreadDescription"));
+	SetThreadDescription_l = GetProcAddress(GetModuleHandle("kernel32.dll"), "SetThreadDescription");
 	if (SetThreadDescription_l)
 		SetThreadDescription_l(GetCurrentThread(), L"main");
 
