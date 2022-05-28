@@ -137,7 +137,7 @@ steps:
       tar xvzf spirv-cross.tar.gz -C spirv-cross
       curl -fsGL https://github.com/rui314/mold/releases/download/v1.2.1/mold-1.2.1-x86_64-linux.tar.gz -o mold.tar.gz
       mkdir mold
-      tar xvzf mold.tar.xz -C mold
+      tar xvzf mold.tar.gz -C mold
     condition: eq(variables['Agent.OS'], 'Linux')
     displayName: Install tools (Linux)
 
