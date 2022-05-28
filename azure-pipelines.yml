@@ -44,37 +44,37 @@ strategy:
       config: 'MinSizeRel'
       cc: 'clang'
       cxx: 'clang++'
-      ld: '-fuse-ld=mold'
+      ld: '-fuse-ld=lld'
     macos-release:
       imageName: 'macOS-12'
       config: 'RelWithDebInfo'
       cc: 'clang'
       cxx: 'clang++'
-      ld: '-fuse-ld=mold'
+      ld: '-fuse-ld=lld'
     macos-debug:
       imageName: 'macOS-12'
       config: 'Debug'
       cc: 'clang'
       cxx: 'clang++'
-      ld: '-fuse-ld=mold'
+      ld: '-fuse-ld=lld'
     linux-dist:
       imageName: 'ubuntu-22.04'
       config: 'MinSizeRel'
       cc: 'clang'
       cxx: 'clang++'
-      ld: '-fuse-ld=mold'
+      ld: '-fuse-ld=lld'
     linux-release:
       imageName: 'ubuntu-22.04'
       config: 'RelWithDebInfo'
       cc: 'clang'
       cxx: 'clang++'
-      ld: '-fuse-ld=mold'
+      ld: '-fuse-ld=lld'
     linux-debug:
       imageName: 'ubuntu-22.04'
       config: 'Debug'
       cc: 'clang'
       cxx: 'clang++'
-      ld: '-fuse-ld=mold'
+      ld: '-fuse-ld=lld'
 
 variables:
   artifactArchive: $(Build.ArtifactStagingDirectory)/purpl-$(imageName)-$(config)-$(cc).7z
@@ -108,9 +108,9 @@ steps:
     displayName: Install SDL and Vulkan SDK with APT
 
   - bash: |
-      brew install mold sdl2
+      brew install sdl2
     condition: eq(variables['Agent.OS'], 'Darwin')
-    displayName: Install mold and SDL with Homebrew
+    displayName: Install SDL with Homebrew
 
   - script: |
       pip install MarkupSafe==2.1.0
@@ -135,9 +135,6 @@ steps:
       curl -fsGL https://github.com/KhronosGroup/SPIRV-Cross/releases/download/2021-01-15/spirv-cross-clang-trusty-64bit-9acb9ec31f.tar.gz -o spirv-cross.tar.gz
       mkdir spirv-cross
       tar xvzf spirv-cross.tar.gz -C spirv-cross
-      curl -fsGL https://github.com/rui314/mold/releases/download/v1.2.1/mold-1.2.1-x86_64-linux.tar.gz -o mold.tar.gz
-      mkdir mold
-      tar xvzf mold.tar.gz -C mold
     condition: eq(variables['Agent.OS'], 'Linux')
     displayName: Install tools (Linux)
 
@@ -163,7 +160,7 @@ steps:
       cmake -S. -Bbuild -GNinja -DVulkan_LIBRARY=/usr/lib/x86_64-linux-gnu/libvulkan.so -DCMAKE_C_COMPILER=$(cc) -DCMAKE_CXX_COMPILER=$(cxx) -DCMAKE_BUILD_TYPE=$(config) -DSDL_LIBRARY=/usr/lib/x86_64-linux-gnu/libSDL2.so -DPURPL_USE_SYSTEM_SDL=1 -DPURPL_ENABLE_DISCORD=0 -DPURPL_ENABLE_STEAM=0 -DPURPL_LINKER_FLAGS=$(ld)
     condition: eq(variables['Agent.OS'], 'Linux')
     env:
-      PATH: 'glslc/bin:mold/bin:spirv-cross/bin:$(PATH)'
+      PATH: 'glslc/bin:spirv-cross/bin:$(PATH)'
     displayName: Generate build files (Linux)
 
   - script: |
