@@ -201,7 +201,7 @@ PURPL_API void purpl_run(purpl_update_t update, purpl_update_t frame, void *user
 	purpl_thread_detach(purpl_inst->graphics_thread);
 
 	// Wait for the graphics thread to enter its loop
-	while (!purpl_inst->graphics_alive)
+	while (!purpl_inst->graphics_running)
 		;
 
 	last = SDL_GetTicks64();
@@ -225,7 +225,7 @@ PURPL_API void purpl_run(purpl_update_t update, purpl_update_t frame, void *user
 				break;
 		}
 
-		running = purpl_inst->graphics_alive;
+		running = purpl_inst->graphics_running;
 
 		last = now;
 	}

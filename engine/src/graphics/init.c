@@ -66,7 +66,7 @@ PURPL_API s32 purpl_graphics_run(void *data)
 	bool (*frame)(u64 delta, void *data) = ((void **)data)[0];
 	void *user_data = ((void **)data)[1];
 
-	purpl_inst->graphics_alive = true;
+	purpl_inst->graphics_running = true;
 
 	last = SDL_GetTicks64();
 	running = true;
@@ -85,12 +85,13 @@ PURPL_API s32 purpl_graphics_run(void *data)
 			break;
 
 		// Make sure to finish drawing before breaking the loop
-		running = purpl_inst->graphics_alive;
+		running = purpl_inst->graphics_running;
 
 		last = now;
 	}
 
-	purpl_inst->graphics_alive = true;
+	purpl_inst->graphics_running = false;
+	purpl_inst->graphics_done = true;
 
 	PURPL_LOG_WARNING(purpl_inst->logger, "Exiting graphics thread");
 
@@ -136,9 +137,10 @@ PURPL_API void purpl_graphics_shutdown(void)
 		return;
 
 	PURPL_LOG_INFO(purpl_inst->logger, "Waiting for graphics thread to finish");
-	if (purpl_inst->graphics_alive)
-		purpl_inst->graphics_alive = false;
-	while (!purpl_inst->graphics_alive)
+	if (!purpl_inst->graphics_running)
+		purpl_inst->graphics_done = true;
+	purpl_inst->graphics_running = false;
+	while (!purpl_inst->graphics_done)
 		;
 
 	PURPL_LOG_WARNING(purpl_inst->logger, "Shutting down graphics");
