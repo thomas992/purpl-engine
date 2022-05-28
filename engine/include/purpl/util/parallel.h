@@ -45,13 +45,11 @@ typedef void *purpl_condition_t;
 ///
 /// \param func The function to execute on the thread
 /// \param name The name of the thread (will be "unnamed" if NULL). The length limit for this is usually pretty short.
-/// \param stack_size The size of the stack for the new thread (0 for the system default, which can range from a few
-/// 		      kilobytes to a few megabytes)
 /// \param data Arbitrary data for the function, use a struct or an array of void pointers or something, and it will be
 ///		passed to the function
 ///
 /// \return Returns a new thread or NULL
-extern PURPL_API purpl_thread_t purpl_thread_create(purpl_thread_func_t func, const char *name, size_t stack_size, void *data);
+extern PURPL_API purpl_thread_t purpl_thread_create(purpl_thread_func_t func, const char *name, void *data);
 
 /// Detach a thread (begin the thread and let it run to completion). Use this OR purpl_thread_wait, but not both
 ///

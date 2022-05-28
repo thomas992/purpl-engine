@@ -16,6 +16,11 @@ func purpl_metal_init() -> Bool {
 	return true
 }
 
+@_cdecl("purpl_metal_update")
+func purpl_metal_update(delta: UInt64) -> Bool {
+    return true
+}
+
 @_cdecl("purpl_metal_shutdown")
 func purpl_metal_shutdown() {
 	purpl_inst.pointee.graphics.metal.deallocate()

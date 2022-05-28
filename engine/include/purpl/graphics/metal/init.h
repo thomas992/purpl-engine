@@ -28,5 +28,12 @@
 /// \return Returns true if initialization was successful, false otherwise
 extern bool purpl_metal_init(void);
 
+/// Draw a frame
+///
+/// \param delta The number of milliseconds since the last call
+///
+/// \return Returns true if successful, false otherwise
+extern bool purpl_metal_update(u64 delta);
+
 /// Shut down Metal (if it's initialized)
 extern void purpl_metal_shutdown(void);

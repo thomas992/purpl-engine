@@ -197,7 +197,7 @@ PURPL_API void purpl_run(purpl_update_t update, purpl_update_t frame, void *user
 		return;
 	}
 
-	purpl_inst->graphics_thread = purpl_thread_create(purpl_graphics_run, "graphics", 0, (void *[]){ frame, user_data });
+	purpl_inst->graphics_thread = purpl_thread_create(purpl_graphics_run, "graphics", (void *[]){ frame, user_data });
 	purpl_thread_detach(purpl_inst->graphics_thread);
 
 	// Wait for the graphics thread to enter its loop

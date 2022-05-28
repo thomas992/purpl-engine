@@ -24,9 +24,9 @@
 
 #include "purpl/util/parallel.h"
 
-PURPL_API purpl_thread_t purpl_thread_create(purpl_thread_func_t func, const char *name, size_t stack_size, void *data)
+PURPL_API purpl_thread_t purpl_thread_create(purpl_thread_func_t func, const char *name, void *data)
 {
-	return SDL_CreateThreadWithStackSize(func, name ? name : "unnamed", stack_size, data);
+	return SDL_CreateThread(func, name ? name : "unnamed", data);
 }
 
 PURPL_API void purpl_thread_detach(purpl_thread_t thread)
