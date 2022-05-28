@@ -8,61 +8,73 @@ strategy:
       config: 'MinSizeRel'
       cc: 'cl'
       cxx: 'cl'
+      ld: ''
     windows-msvc-release:
       imageName: 'windows-2022'
       config: 'RelWithDebInfo'
       cc: 'cl'
       cxx: 'cl'
+      ld: ''
     windows-msvc-debug:
       imageName: 'windows-2022'
       config: 'Debug'
       cc: 'cl'
       cxx: 'cl'
+      ld: ''
     windows-clang-dist:
       imageName: 'windows-2022'
       config: 'MinSizeRel'
       cc: 'clang'
-      cxx: 'clang'
+      cxx: 'clang++'
+      ld: '-fuse-ld=lld-link'
     windows-clang-release:
       imageName: 'windows-2022'
       config: 'RelWithDebInfo'
       cc: 'clang'
-      cxx: 'clang'
+      cxx: 'clang++'
+      ld: '-fuse-ld=lld-link'
     windows-clang-debug:
       imageName: 'windows-2022'
       config: 'Debug'
       cc: 'clang'
-      cxx: 'clang'
+      cxx: 'clang++'
+      ld: '-fuse-ld=lld-link'
     macos-dist:
       imageName: 'macos-latest'
       config: 'MinSizeRel'
       cc: 'clang'
       cxx: 'clang++'
+      ld: '-fuse-ld=mold'
     macos-release:
       imageName: 'macos-latest'
       config: 'RelWithDebInfo'
       cc: 'clang'
       cxx: 'clang++'
+      ld: '-fuse-ld=mold'
     macos-debug:
       imageName: 'macos-latest'
       config: 'Debug'
       cc: 'clang'
       cxx: 'clang++'
+      ld: '-fuse-ld=mold'
     linux-dist:
       imageName: 'ubuntu-latest'
       config: 'MinSizeRel'
       cc: 'clang'
       cxx: 'clang++'
+      ld: '-fuse-ld=mold'
     linux-release:
       imageName: 'ubuntu-latest'
       config: 'RelWithDebInfo'
       cc: 'clang'
       cxx: 'clang++'
+      ld: '-fuse-ld=mold'
     linux-debug:
       imageName: 'ubuntu-latest'
       config: 'Debug'
       cc: 'clang'
       cxx: 'clang++'
+      ld: '-fuse-ld=mold'
 
 variables:
   artifactArchive: $(Build.ArtifactStagingDirectory)/purpl-$(imageName)-$(config)-$(cc).7z
@@ -91,14 +103,14 @@ steps:
       curl -fsGL https://packages.lunarg.com/lunarg-signing-key-pub.asc | sudo apt-key add -
       curl -fsGL https://packages.lunarg.com/vulkan/$(vulkanSdkVersion)/lunarg-vulkan-$(vulkanSdkVersion)-focal.list | sudo tee /etc/apt/sources.list.d/lunarg-vulkan-focal.list
       sudo apt update -qq
-      sudo apt install -y libsdl2-dev vulkan-sdk
+      sudo apt install -y libsdl2-dev mold vulkan-sdk
     condition: eq(variables['Agent.OS'], 'Linux')
-    displayName: Install SDL and Vulkan SDK with APT
+    displayName: Install mold, SDL, and Vulkan SDK with APT
 
   - bash: |
-      brew install sdl2
+      brew install mold sdl2
     condition: eq(variables['Agent.OS'], 'Darwin')
-    displayName: Install SDL with Homebrew
+    displayName: Install mold and SDL with Homebrew
 
   - script: |
       pip install MarkupSafe==2.1.0
@@ -138,21 +150,21 @@ steps:
 
   - script: |
       call tools\buildenv.bat x64
-      cmake -S. -Bbuild -GNinja -DVULKAN_SDK=$(vulkanSdk) -DVulkan_LIBRARY=$(vulkanSdk)/Lib/vulkan-1.lib -DVulkan_INCLUDE_DIR=$(vulkanSdk)/Include -DCMAKE_C_COMPILER=$(cc) -DCMAKE_CXX_COMPILER=$(cxx) -DCMAKE_BUILD_TYPE=$(config) -DPURPL_ENABLE_DISCORD=0 -DPURPL_ENABLE_STEAM=0
+      cmake -S. -Bbuild -GNinja -DVULKAN_SDK=$(vulkanSdk) -DVulkan_LIBRARY=$(vulkanSdk)/Lib/vulkan-1.lib -DVulkan_INCLUDE_DIR=$(vulkanSdk)/Include -DCMAKE_C_COMPILER=$(cc) -DCMAKE_CXX_COMPILER=$(cxx) -DCMAKE_BUILD_TYPE=$(config) -DPURPL_ENABLE_DISCORD=0 -DPURPL_ENABLE_STEAM=0 -DPURPL_LINKER_FLAGS=$(ld)
     condition: eq(variables['Agent.OS'], 'Windows_NT')
     env:
       PATH: 'glslc/bin;spirv-cross/bin;$(PATH)'
     displayName: Generate build files (Windows)
 
   - script: |
-      cmake -S. -Bbuild -GNinja -DVulkan_LIBRARY=/usr/lib/x86_64-linux-gnu/libvulkan.so -DCMAKE_C_COMPILER=$(cc) -DCMAKE_CXX_COMPILER=$(cxx) -DCMAKE_BUILD_TYPE=$(config) -DSDL_LIBRARY=/usr/lib/x86_64-linux-gnu/libSDL2.so -DPURPL_USE_SYSTEM_SDL=1 -DPURPL_ENABLE_DISCORD=0 -DPURPL_ENABLE_STEAM=0
+      cmake -S. -Bbuild -GNinja -DVulkan_LIBRARY=/usr/lib/x86_64-linux-gnu/libvulkan.so -DCMAKE_C_COMPILER=$(cc) -DCMAKE_CXX_COMPILER=$(cxx) -DCMAKE_BUILD_TYPE=$(config) -DSDL_LIBRARY=/usr/lib/x86_64-linux-gnu/libSDL2.so -DPURPL_USE_SYSTEM_SDL=1 -DPURPL_ENABLE_DISCORD=0 -DPURPL_ENABLE_STEAM=0 -DPURPL_LINKER_FLAGS=$(ld)
     condition: eq(variables['Agent.OS'], 'Linux')
     env:
       PATH: 'glslc/bin:spirv-cross/bin:$(PATH)'
     displayName: Generate build files (Linux)
 
   - script: |
-      cmake -S. -Bbuild -GXcode -DCMAKE_C_COMPILER=$(cc) -DCMAKE_CXX_COMPILER=$(cxx) -DCMAKE_BUILD_TYPE=$(config) -DPURPL_USE_SYSTEM_SDL=1 -DPURPL_ENABLE_DISCORD=0 -DPURPL_ENABLE_STEAM=0
+      cmake -S. -Bbuild -GXcode -DCMAKE_C_COMPILER=$(cc) -DCMAKE_CXX_COMPILER=$(cxx) -DCMAKE_BUILD_TYPE=$(config) -DPURPL_USE_SYSTEM_SDL=1 -DPURPL_ENABLE_DISCORD=0 -DPURPL_ENABLE_STEAM=0 -DPURPL_LINKER_FLAGS=$(ld)
     condition: eq(variables['Agent.OS'], 'Darwin')
     env:
       PATH: 'glslc/bin:spirv-cross/bin:$(PATH)'
