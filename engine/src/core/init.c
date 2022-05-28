@@ -200,6 +200,10 @@ PURPL_API void purpl_run(purpl_update_t update, purpl_update_t frame, void *user
 	purpl_inst->graphics_thread = purpl_thread_create(purpl_graphics_run, "graphics", 0, (void *[]){ frame, user_data });
 	purpl_thread_detach(purpl_inst->graphics_thread);
 
+	// Wait for the graphics thread to enter its loop
+	while (!purpl_inst->graphics_alive)
+		;
+
 	last = SDL_GetTicks64();
 	running = true;
 	while (running) {
@@ -215,8 +219,11 @@ PURPL_API void purpl_run(purpl_update_t update, purpl_update_t frame, void *user
 		discord_update_activity(delta);
 #endif // PURPL_ENABLE_DISCORD
 
-		if (update)
+		if (update) {
 			running = update(delta, user_data);
+			if (!running)
+				break;
+		}
 
 		running = purpl_inst->graphics_alive;
 

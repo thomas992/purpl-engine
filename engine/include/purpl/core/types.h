@@ -19,6 +19,7 @@
 
 #include <ctype.h>
 #include <inttypes.h>
+#include <stdatomic.h>
 #include <stdbool.h>
 #include <stddef.h>
 

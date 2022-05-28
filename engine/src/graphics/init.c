@@ -28,7 +28,6 @@ PURPL_API bool purpl_graphics_init(void)
 
 	purpl_inst->graphics_mutex = purpl_mutex_create();
 	purpl_inst->wnd_mutex = purpl_mutex_create();
-	purpl_inst->graphics_shutdown_semaphore = purpl_semaphore_create(0);
 
 #ifdef __APPLE__
 	init = purpl_metal_init();
@@ -75,20 +74,25 @@ PURPL_API s32 purpl_graphics_run(void *data)
 		now = SDL_GetTicks64();
 		delta = now - last;
 
-		if (frame)
+		if (frame) {
 			running = frame(delta, user_data);
+			if (!running)
+				break;
+		}
 
 		running = purpl_graphics_update(delta);
 		if (!running)
 			break;
 
+		// Make sure to finish drawing before breaking the loop
 		running = purpl_inst->graphics_alive;
 
 		last = now;
 	}
 
-	purpl_inst->graphics_alive = false;
-	purpl_semaphore_post(purpl_inst->graphics_shutdown_semaphore);
+	purpl_inst->graphics_alive = true;
+
+	PURPL_LOG_WARNING(purpl_inst->logger, "Exiting graphics thread");
 
 	return 0;
 }
@@ -131,10 +135,13 @@ PURPL_API void purpl_graphics_shutdown(void)
 	if (!purpl_inst)
 		return;
 
-	purpl_inst->graphics_alive = false;
-	PURPL_LOG_WARNING(purpl_inst->logger, "Shutting down graphics");
+	PURPL_LOG_INFO(purpl_inst->logger, "Waiting for graphics thread to finish");
+	if (purpl_inst->graphics_alive)
+		purpl_inst->graphics_alive = false;
+	while (!purpl_inst->graphics_alive)
+		;
 
-	purpl_semaphore_wait(purpl_inst->graphics_shutdown_semaphore);
+	PURPL_LOG_WARNING(purpl_inst->logger, "Shutting down graphics");
 
 	switch (purpl_inst->graphics_api) {
 	case PURPL_GRAPHICS_API_SOFTWARE:
@@ -161,9 +168,9 @@ PURPL_API void purpl_graphics_shutdown(void)
 
 	if (purpl_inst->wnd_title)
 		free(purpl_inst->wnd_title);
-	if (purpl_inst->wnd)
-		SDL_DestroyWindow(purpl_inst->wnd);
+	SDL_DestroyWindow(purpl_inst->wnd);
 
 	purpl_mutex_destroy(purpl_inst->wnd_mutex);
 	purpl_mutex_destroy(purpl_inst->graphics_mutex);
 }
+
