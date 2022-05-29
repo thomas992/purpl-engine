@@ -53,16 +53,10 @@ bool purpl_vulkan_init(void)
 
 	gladLoaderLoadVulkan(vulkan->inst, NULL, NULL);
 
-	// Surface creation is only one line (excluding error checking, which
-	// is about the same here as it would be in a separate function), it
-	// really doesn't need its own file or function
-	PURPL_LOG_INFO(purpl_inst->logger, "Creating surface");
-	if (!SDL_Vulkan_CreateSurface(purpl_inst->wnd, vulkan->inst, &vulkan->surface)) {
-		PURPL_LOG_ERROR(purpl_inst->logger, "Failed to create surface: %s", SDL_GetError());
+	if (!vulkan_create_surface()) {
 		purpl_vulkan_shutdown();
 		return false;
 	}
-	PURPL_LOG_INFO(purpl_inst->logger, "Successfully created surface with handle 0x%" PRIX64, vulkan->surface);
 
 	if (!vulkan_pick_physical_device()) {
 		purpl_vulkan_shutdown();

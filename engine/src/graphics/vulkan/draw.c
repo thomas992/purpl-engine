@@ -39,7 +39,10 @@ bool vulkan_draw(void)
 	res = vkAcquireNextImageKHR(vulkan->device, vulkan->swapchain, 1000000000, vulkan->present_semaphore, NULL,
 				    &target_image_idx);
 	if (res != VK_SUCCESS) {
-		if (res == VK_ERROR_OUT_OF_DATE_KHR || res == VK_SUBOPTIMAL_KHR) {
+		if (res == VK_ERROR_SURFACE_LOST_KHR) {
+			vulkan_recreate_surface();
+			return true;
+		} else if (res == VK_ERROR_OUT_OF_DATE_KHR || res == VK_SUBOPTIMAL_KHR) {
 			vulkan_recreate_swapchain();
 			return true;
 		} else {

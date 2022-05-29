@@ -28,12 +28,15 @@
 
 #include "purpl/util/util.h"
 
+#include "pipeline.h"
+#include "render.h"
+
 /// Create a swapchain
 ///
 /// \return Returns true if the swapchain was created successfully, false otherwise
 extern bool vulkan_create_swapchain(void);
 
-/// Recreate the swapchaing
+/// Recreate the swapchain
 ///
 /// \return Returns true if successful, false if not
 extern bool vulkan_recreate_swapchain(void);

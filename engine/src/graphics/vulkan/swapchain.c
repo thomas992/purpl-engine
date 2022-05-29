@@ -15,12 +15,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "SDL_vulkan.h"
-
 #include "purpl/graphics/vulkan/swapchain.h"
-
-#include "purpl/graphics/vulkan/pipeline.h"
-#include "purpl/graphics/vulkan/render.h"
 
 bool vulkan_create_swapchain(void)
 {
@@ -109,6 +104,7 @@ bool vulkan_recreate_swapchain(void)
 
 	vulkan_destroy_framebuffers();
 	vkDestroyRenderPass(vulkan->device, vulkan->renderpass, NULL);
+	PURPL_LOG_INFO(purpl_inst->logger, "Destroyed renderpass with handle 0x%" PRIX64, vulkan->renderpass);
 	vulkan_destroy_image_views();
 	vulkan_destroy_swapchain();
 

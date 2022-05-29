@@ -24,6 +24,7 @@
 #include "purpl/core/log.h"
 #include "purpl/core/types.h"
 
+#include "surface.h"
 #include "swapchain.h"
 
 /// Draw the current frame
