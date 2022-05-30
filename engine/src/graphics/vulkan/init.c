@@ -43,8 +43,6 @@ bool purpl_vulkan_init(void)
 		return false;
 	}
 
-	SDL_HideWindow(purpl_inst->wnd);
-
 	if (!vulkan_create_instance()) {
 		purpl_vulkan_shutdown();
 		return false;

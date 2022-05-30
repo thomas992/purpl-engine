@@ -93,7 +93,7 @@ PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 					   "initialization started.");
 
 	// Check that preinit was called so a warning can be issued otherwise
-	PURPL_LOG_DEBUG(purpl_inst->logger, "preinit_called = 0x%" PRIX64 " (PREINIT_MAGIC = 0x%" PRIX64 ")",
+	PURPL_LOG_DEBUG(purpl_inst->logger, "preinit_called == 0x%" PRIX64 " (PREINIT_MAGIC == 0x%" PRIX64 ")",
 			preinit_called, PREINIT_MAGIC);
 	if (preinit_called != PREINIT_MAGIC)
 		PURPL_LOG_DEBUG(purpl_inst->logger,
@@ -126,9 +126,6 @@ PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 		purpl_internal_shutdown();
 		return false;
 	}
-
-	// The window is created in purpl_graphics_init
-	SDL_ShowWindow(purpl_inst->wnd);
 
 	PURPL_LOG_INFO(purpl_inst->logger, "Purpl Engine #V initialized for application #n #v");
 

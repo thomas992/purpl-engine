@@ -15,8 +15,6 @@ func purpl_metal_init() -> Bool {
 		return false
 	}
 
-	SDL_HideWindow(purpl_inst.pointee.wnd)
-
 	return true
 }
 

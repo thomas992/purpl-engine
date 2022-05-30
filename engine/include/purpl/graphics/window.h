@@ -27,7 +27,7 @@
 #include "purpl/util/util.h"
 
 #ifdef PURPL_BUILD
-#define PURPL_DEFAULT_WINDOW_FLAGS (SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI)
+#define PURPL_DEFAULT_WINDOW_FLAGS (SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_HIDDEN)
 
 /// Get the default window title so that it doesn't need to be in every
 /// graphics initialization function

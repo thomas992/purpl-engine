@@ -47,6 +47,9 @@ PURPL_API bool purpl_graphics_init(void)
 		return false;
 	}
 
+	PURPL_LOG_INFO(purpl_inst->logger, "Showing window");
+	SDL_ShowWindow(purpl_inst->wnd);
+
 	SDL_GetWindowPosition(purpl_inst->wnd, &purpl_inst->wnd_x, &purpl_inst->wnd_y);
 	SDL_GetWindowSize(purpl_inst->wnd, &purpl_inst->wnd_width, &purpl_inst->wnd_height);
 

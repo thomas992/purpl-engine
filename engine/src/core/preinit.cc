@@ -66,6 +66,8 @@ EXTERN_C __declspec(dllexport) DWORD NvOptimusEnablement = 0x00000001;
 EXTERN_C __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 #endif // _WIN32
 
+#define COMMENT_STR "//"
+
 #ifdef _WIN32
 #define PATH_SEP '\\'
 #define PATH_SEP_STR "\\"
@@ -164,11 +166,24 @@ EXTERN_C int32_t purpl_preinit(void **data)
 	if (!engine_libs)
 		PREINIT_ERROR(ENOMEM, "Failed to allocate memory for engine library list");
 	while (fgets(tmp, MAX_PATH, engine_libs_fp)) {
-		if (strncmp(tmp, "//", 2) != 0) {
-			engine_libs[i] = (char *)calloc(strlen(tmp), sizeof(char));
+		if (strstr(tmp, COMMENT_STR) != tmp) {
+			size_t real_len = 0;
+
+			// Deal with comments
+			if (strstr(tmp, COMMENT_STR)) {
+				real_len = strstr(tmp, COMMENT_STR) - tmp;
+				while (tmp[real_len - 1] == ' ' || tmp[real_len - 1] == '\t')
+					real_len--;
+			} else if (strchr(tmp, '\r')) {
+				real_len = strchr(tmp, '\r') - tmp;
+			} else {
+				real_len = strchr(tmp, '\n') - tmp;
+			}
+
+			engine_libs[i] = (char *)calloc(real_len + 1, sizeof(char));
 			if (!engine_libs[i])
 				PREINIT_ERROR(ENOMEM, "Failed to allocate memory for engine library list");
-			strncpy(engine_libs[i], tmp, (strchr(tmp, '\r') ? strchr(tmp, '\r') : strchr(tmp, '\n')) - tmp);
+			strncpy(engine_libs[i], tmp, real_len);
 			i++;
 		}
 	}
