@@ -117,8 +117,7 @@ PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 		return false;
 	}
 
-	PURPL_LOG_INFO(purpl_inst->logger, "Initialized SDL, video driver in use is %s",
-		       SDL_GetCurrentVideoDriver());
+	PURPL_LOG_INFO(purpl_inst->logger, "Initialized SDL, video driver in use is %s", SDL_GetCurrentVideoDriver());
 
 	PURPL_LOG_INFO(purpl_inst->logger, "Initializing graphics");
 	if (!purpl_graphics_init()) {
@@ -191,13 +190,11 @@ PURPL_API void purpl_run(purpl_update_t update, purpl_update_t frame, void *user
 	u64 last;
 	u64 delta;
 
-	if (!purpl_inst) {
-		PURPL_LOG_DEBUG(purpl_inst->logger,
-				"The engine must be initialized with purpl_init before calling this function");
+	if (!purpl_inst)
 		return;
-	}
 
-	purpl_inst->graphics_thread = purpl_thread_create(purpl_graphics_run, "graphics", (void *[]){ frame, user_data });
+	purpl_inst->graphics_thread =
+		purpl_thread_create(purpl_graphics_run, "graphics", (void *[]){ frame, user_data });
 	purpl_thread_detach(purpl_inst->graphics_thread);
 
 	// Wait for the graphics thread to enter its loop

@@ -458,17 +458,15 @@ PURPL_API void purpl_log_close(struct purpl_logger *logger, bool last_message)
 	log_get_time(&t, NULL);
 
 	if (last_message) {
-		if (t->tm_hour >= 4 && t->tm_hour < 6)
+		if (t->tm_hour >= 4 && t->tm_hour < 5)
 			time_of_day = "dawn";
-		else if (t->tm_hour >= 6 && t->tm_hour < 12)
+		else if (t->tm_hour >= 5 && t->tm_hour < 12)
 			time_of_day = "morning";
 		else if (t->tm_hour >= 12 && t->tm_hour < 17)
 			time_of_day = "afternoon";
-		else if (t->tm_hour >= 17 && t->tm_hour < 18)
+		else if (t->tm_hour >= 17 && t->tm_hour < 21)
 			time_of_day = "evening";
-		else if (t->tm_hour >= 18 && t->tm_hour < 22)
-			time_of_day = "dusk";
-		else if (t->tm_hour >= 22 || t->tm_hour < 4)
+		else if (t->tm_hour >= 21 || t->tm_hour < 4)
 			time_of_day = "night";
 
 		msg = purpl_strfmt(NULL, "This logger is shutting down. Have a%s %s %s.",

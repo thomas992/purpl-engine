@@ -82,7 +82,7 @@ void purpl_discord_shutdown(void)
 	}
 }
 
-bool discord_run_callbacks(u32 delta)
+bool discord_run_callbacks(u64 delta)
 {
 	PURPL_ALIAS_DISCORD();
 
@@ -109,7 +109,7 @@ bool discord_run_callbacks(u32 delta)
 /// Result for discord_update_activity
 enum EDiscordResult activity_result;
 
-void discord_update_activity(u32 delta)
+void discord_update_activity(u64 delta)
 {
 	PURPL_ALIAS_DISCORD();
 

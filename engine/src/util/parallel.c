@@ -63,9 +63,9 @@ PURPL_API bool purpl_mutex_lock(purpl_mutex_t mutex)
 	return SDL_LockMutex(mutex) == 0;
 }
 
-PURPL_API u8 purpl_mutex_lock_noblock(purpl_mutex_t mutex)
+PURPL_API s8 purpl_mutex_lock_noblock(purpl_mutex_t mutex)
 {
-	return SDL_TryLockMutex(mutex);
+	return (s8)SDL_TryLockMutex(mutex);
 }
 
 PURPL_API bool purpl_mutex_unlock(purpl_mutex_t mutex)
@@ -83,9 +83,9 @@ PURPL_API void purpl_semaphore_destroy(purpl_semaphore_t semaphore)
 	SDL_DestroySemaphore(semaphore);
 }
 
-PURPL_API s32 purpl_semaphore_post(purpl_semaphore_t semaphore)
+PURPL_API s8 purpl_semaphore_post(purpl_semaphore_t semaphore)
 {
-	return SDL_SemPost(semaphore) == 0;
+	return (s8)SDL_SemPost(semaphore) == 0;
 }
 
 PURPL_API bool purpl_semaphore_wait(purpl_semaphore_t semaphore)
@@ -95,12 +95,12 @@ PURPL_API bool purpl_semaphore_wait(purpl_semaphore_t semaphore)
 
 PURPL_API s8 purpl_semaphore_wait_noblock(purpl_semaphore_t semaphore)
 {
-	return SDL_SemTryWait(semaphore);
+	return (s8)SDL_SemTryWait(semaphore);
 }
 
 PURPL_API s8 purpl_semaphore_wait_timeout(purpl_semaphore_t semaphore, u32 timeout)
 {
-	return SDL_SemWaitTimeout(semaphore, timeout);
+	return (s8)SDL_SemWaitTimeout(semaphore, timeout);
 }
 
 PURPL_API u32 purpl_semaphore_get(purpl_semaphore_t semaphore)
@@ -130,5 +130,5 @@ PURPL_API bool purpl_condition_signal(purpl_condition_t cond)
 
 PURPL_API s8 purpl_condition_wait_timeout(purpl_condition_t cond, purpl_mutex_t mutex, u32 timeout)
 {
-	return SDL_CondWaitTimeout(cond, mutex, timeout);
+	return (s8)SDL_CondWaitTimeout(cond, mutex, timeout);
 }

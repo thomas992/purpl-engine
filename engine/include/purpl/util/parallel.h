@@ -93,7 +93,7 @@ extern PURPL_API bool purpl_mutex_lock(purpl_mutex_t mutex);
 /// \param mutex The mutex to lock
 ///
 /// \return Returns 0 if the mutex could be locked, 1 if the wait would block, and -1 if there was an error
-extern PURPL_API u8 purpl_mutex_lock_noblock(purpl_mutex_t mutex);
+extern PURPL_API s8 purpl_mutex_lock_noblock(purpl_mutex_t mutex);
 
 /// Unlock a mutex
 ///
@@ -119,7 +119,7 @@ extern PURPL_API void purpl_semaphore_destroy(purpl_semaphore_t semaphore);
 /// \param semaphore The semaphore to increment
 ///
 /// \return Returns true on success, false if there was an error
-extern PURPL_API s32 purpl_semaphore_post(purpl_semaphore_t semaphore);
+extern PURPL_API s8 purpl_semaphore_post(purpl_semaphore_t semaphore);
 
 /// Wait until a semaphore has a positive value and then decrement it
 ///

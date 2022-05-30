@@ -99,9 +99,9 @@ struct purpl_instance {
 #ifdef PURPL_ENABLE_DISCORD
 	/// Discord information, no mutex needed
 	struct purpl_instance_discord {
-		s32 request_cooldown; /// Keeps track of the 16 millisecond API
+		s64 request_cooldown; /// Keeps track of the 16 millisecond API
 				      /// cooldown
-		s32 activity_cooldown; /// Keeps track of the 5 second cooldown for
+		s64 activity_cooldown; /// Keeps track of the 5 second cooldown for
 				       /// updating the activity
 
 		struct IDiscordCore *core;

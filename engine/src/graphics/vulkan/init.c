@@ -32,10 +32,7 @@ bool purpl_vulkan_init(void)
 
 	purpl_inst->graphics_api = PURPL_GRAPHICS_API_VULKAN;
 
-	// The window is created here because SDL doesn't support OpenGL and
-	// Vulkan in the same window
 	purpl_inst->wnd_title = purpl_get_initial_window_title();
-
 	PURPL_LOG_INFO(purpl_inst->logger, "Creating a window titled \"%s\"", purpl_inst->wnd_title);
 	purpl_inst->wnd = SDL_CreateWindow(purpl_inst->wnd_title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
 					   PURPL_INITIAL_WINDOW_WIDTH, PURPL_INITIAL_WINDOW_HEIGHT,
@@ -45,6 +42,8 @@ bool purpl_vulkan_init(void)
 		purpl_vulkan_shutdown();
 		return false;
 	}
+
+	SDL_HideWindow(purpl_inst->wnd);
 
 	if (!vulkan_create_instance()) {
 		purpl_vulkan_shutdown();
