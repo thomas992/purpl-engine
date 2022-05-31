@@ -194,7 +194,7 @@ u64 vulkan_score_device(VkPhysicalDevice device, size_t idx)
 	PURPL_LOG_INFO(purpl_inst->logger, "Device %zu (handle 0x%" PRIX64 "):", idx + 1, device);
 	PURPL_LOG_INFO(purpl_inst->logger, "\tName: %s", properties.deviceName);
 	PURPL_LOG_INFO(purpl_inst->logger, "\tType: %d", properties.deviceType);
-	PURPL_LOG_INFO(purpl_inst->logger, "\tPCI ID: %x:%x", properties.vendorID, properties.deviceID);
+	PURPL_LOG_INFO(purpl_inst->logger, "\tPCI ID: %x:%x (%s)", properties.vendorID, properties.deviceID, vulkan_get_device_vendor(properties.vendorID));
 	PURPL_LOG_INFO(purpl_inst->logger, "\tScore: %d", score);
 	PURPL_LOG_INFO(purpl_inst->logger, "\tSupported extension count: %zu", extension_count);
 	PURPL_LOG_INFO(purpl_inst->logger, "\tQueue family indices:");
@@ -209,6 +209,18 @@ u64 vulkan_score_device(VkPhysicalDevice device, size_t idx)
 	stbds_arrfree(swapchain_info.present_modes);
 
 	return score;
+}
+
+const char *vulkan_get_device_vendor(enum vulkan_device_vendor_id id)
+{
+	switch (id) {
+	case VULKAN_DEVICE_VENDOR_AMD:
+		return "AMD";
+	case VULKAN_DEVICE_VENDOR_INTEL:
+		return "Intel";
+	case VULKAN_DEVICE_VENDOR_NVIDIA:
+		return "NVIDIA";
+	}
 }
 
 char **vulkan_get_device_extensions(void)

@@ -34,6 +34,13 @@
 
 #include "swapchain.h"
 
+/// Vendor IDs
+enum vulkan_device_vendor_id {
+	VULKAN_DEVICE_VENDOR_AMD = 0x1002, /// AMD
+	VULKAN_DEVICE_VENDOR_INTEL = 0x8086, /// Intel
+	VULKAN_DEVICE_VENDOR_NVIDIA = 0x10de, /// Linus Torvalds's nemesis
+};
+
 /// Pick the best physical device
 ///
 /// \return Returns the device chosen
@@ -50,6 +57,13 @@ extern bool vulkan_create_logical_device(void);
 ///
 /// \return Returns the device's score
 extern u64 vulkan_score_device(VkPhysicalDevice device, size_t idx);
+
+/// Get the name of a device vendor
+///
+/// \param id The vendor id (VkPhysicalDeviceProperties.vendorID)
+///
+/// \return Returns a string literal
+extern const char *vulkan_get_device_vendor(enum vulkan_device_vendor_id id);
 
 /// Get the required extensions for devices
 ///
