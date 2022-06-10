@@ -59,6 +59,8 @@ PURPL_API void purpl_internal_shutdown(void);
 
 PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 {
+	SDL_DisplayMode display_mode;
+
 	purpl_inst = calloc(1, sizeof(struct purpl_instance));
 	if (!purpl_inst) {
 		fprintf(stderr, "ERROR: failed to allocate memory for the engine instance: %s\n", purpl_strerror());
@@ -127,6 +129,15 @@ PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 		return false;
 	}
 
+	purpl_inst->display = SDL_GetWindowDisplayIndex(purpl_inst->wnd);
+	purpl_inst->display_name = SDL_GetDisplayName(purpl_inst->display);
+	PURPL_LOG_INFO(purpl_inst->logger, "Getting video mode of display %d (%s)", purpl_inst->display,
+		       SDL_GetDisplayName(purpl_inst->display));
+	SDL_GetDisplayMode(purpl_inst->display, 0, &display_mode);
+	purpl_inst->refresh_rate = display_mode.refresh_rate;
+	PURPL_LOG_INFO(purpl_inst->logger, "Refresh rate of display %d (%s) is %d", purpl_inst->display,
+		       SDL_GetDisplayName(purpl_inst->display), purpl_inst->refresh_rate);
+
 	PURPL_LOG_INFO(purpl_inst->logger, "Purpl Engine #V initialized for application #n #v");
 
 	return true;
@@ -167,6 +178,22 @@ static bool purpl_handle_events(void)
 					PURPL_LOG_DEBUG(purpl_inst->logger, "Window closed");
 					break;
 				}
+
+				if (purpl_inst->display != SDL_GetWindowDisplayIndex(purpl_inst->wnd)) {
+					SDL_DisplayMode display_mode;
+
+					PURPL_LOG_INFO(purpl_inst->logger, "Window moved from display %d (%s) to %d (%s)",
+						purpl_inst->display, purpl_inst->display_name, SDL_GetWindowDisplayIndex(purpl_inst->wnd),
+						SDL_GetDisplayName(SDL_GetWindowDisplayIndex(purpl_inst->wnd)));
+					purpl_inst->display_name = SDL_GetDisplayName(purpl_inst->display);
+					purpl_inst->display = SDL_GetWindowDisplayIndex(purpl_inst->wnd);
+					PURPL_LOG_INFO(purpl_inst->logger, "Getting video mode of display %d (%s)", purpl_inst->display,
+						SDL_GetDisplayName(purpl_inst->display));
+					SDL_GetDisplayMode(purpl_inst->display, 0, &display_mode);
+					purpl_inst->refresh_rate = display_mode.refresh_rate;
+					PURPL_LOG_INFO(purpl_inst->logger, "Refresh rate of display %d (%s) is %d", purpl_inst->display,
+						SDL_GetDisplayName(purpl_inst->display), purpl_inst->refresh_rate);
+				}
 			}
 			break;
 		case SDL_QUIT:
@@ -191,7 +218,7 @@ PURPL_API void purpl_run(purpl_update_t update, purpl_update_t frame, void *user
 		return;
 
 	purpl_inst->graphics_thread =
-		purpl_thread_create(purpl_graphics_run, "graphics", (void *[]){ frame, user_data });
+		purpl_thread_create(purpl_graphics_run, "graphics", (void *[]){ (void *)frame, user_data });
 	purpl_thread_detach(purpl_inst->graphics_thread);
 
 	// Wait for the graphics thread to enter its loop

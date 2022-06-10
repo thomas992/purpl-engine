@@ -221,6 +221,8 @@ const char *vulkan_get_device_vendor(enum vulkan_device_vendor_id id)
 	case VULKAN_DEVICE_VENDOR_NVIDIA:
 		return "NVIDIA";
 	}
+
+	return "Unknown";
 }
 
 char **vulkan_get_device_extensions(void)

@@ -66,7 +66,8 @@ PURPL_API s32 purpl_graphics_run(void *data)
 	u64 last;
 	u64 delta;
 
-	bool (*frame)(u64 delta, void *data) = ((void **)data)[0];
+	bool (*frame)(u64 delta, void *data);
+	*(void **)&frame = ((void **)data)[0];
 	void *user_data = ((void **)data)[1];
 
 	purpl_inst->graphics_running = true;
@@ -86,6 +87,12 @@ PURPL_API s32 purpl_graphics_run(void *data)
 		running = purpl_graphics_update(delta);
 		if (!running)
 			break;
+
+		if (delta < 1000 / purpl_inst->refresh_rate) {
+			while (SDL_GetTicks64() < now + 1000 / purpl_inst->refresh_rate)
+				;
+			now = SDL_GetTicks64();
+		}
 
 		// Make sure to finish drawing before breaking the loop
 		running = purpl_inst->graphics_running;

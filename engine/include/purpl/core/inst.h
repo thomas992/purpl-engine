@@ -81,6 +81,10 @@ struct purpl_instance {
 	s32 wnd_x; /// The X position of the window
 	s32 wnd_y; /// The Y position of the window
 
+	s32 display; /// The index of the display the window is on
+	const char *display_name; /// The name of the display the window is on
+	s32 refresh_rate; /// The refresh rate of the display the window is on
+
 	purpl_thread_t graphics_thread; /// Graphics thread (does rendering and stuff)
 	purpl_mutex_t graphics_mutex; /// Graphics data mutex
 	bool graphics_running; /// Whether the graphics thread is being shut down
