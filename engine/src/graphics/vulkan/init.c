@@ -65,7 +65,7 @@ bool purpl_vulkan_init(void)
 		return false;
 	}
 
-	gladLoaderLoadVulkan(vulkan->inst, vulkan->phys_device, vulkan->device);
+	//gladLoaderLoadVulkan(vulkan->inst, vulkan->phys_device, vulkan->device);
 
 	if (!vulkan_create_swapchain()) {
 		purpl_vulkan_shutdown();

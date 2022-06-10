@@ -84,6 +84,8 @@ struct purpl_instance {
 	s32 display; /// The index of the display the window is on
 	const char *display_name; /// The name of the display the window is on
 	s32 refresh_rate; /// The refresh rate of the display the window is on
+	s32 target_framerate; /// Target framerate
+	bool vsync; /// Whether to set target_framerate to refresh_rate
 
 	purpl_thread_t graphics_thread; /// Graphics thread (does rendering and stuff)
 	purpl_mutex_t graphics_mutex; /// Graphics data mutex

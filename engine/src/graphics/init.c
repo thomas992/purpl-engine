@@ -88,11 +88,8 @@ PURPL_API s32 purpl_graphics_run(void *data)
 		if (!running)
 			break;
 
-		if (delta < 1000 / purpl_inst->refresh_rate) {
-			while (SDL_GetTicks64() < now + 1000 / purpl_inst->refresh_rate)
-				;
-			now = SDL_GetTicks64();
-		}
+		if (delta < 1000 / purpl_inst->target_framerate)
+			SDL_Delay((u32)ceilf(1000.0f / purpl_inst->target_framerate));
 
 		// Make sure to finish drawing before breaking the loop
 		running = purpl_inst->graphics_running;

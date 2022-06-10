@@ -129,14 +129,21 @@ PURPL_API bool purpl_init(const char *app_name, u32 app_version)
 		return false;
 	}
 
+	purpl_inst->vsync = true;
 	purpl_inst->display = SDL_GetWindowDisplayIndex(purpl_inst->wnd);
 	purpl_inst->display_name = SDL_GetDisplayName(purpl_inst->display);
 	PURPL_LOG_INFO(purpl_inst->logger, "Getting video mode of display %d (%s)", purpl_inst->display,
 		       SDL_GetDisplayName(purpl_inst->display));
 	SDL_GetDisplayMode(purpl_inst->display, 0, &display_mode);
 	purpl_inst->refresh_rate = display_mode.refresh_rate;
-	PURPL_LOG_INFO(purpl_inst->logger, "Refresh rate of display %d (%s) is %d", purpl_inst->display,
-		       SDL_GetDisplayName(purpl_inst->display), purpl_inst->refresh_rate);
+	// TODO: make this less shit when there's config file stuff
+	if (purpl_inst->vsync)
+		purpl_inst->target_framerate = purpl_inst->refresh_rate;
+	else
+		purpl_inst->target_framerate = 69; // nice
+	PURPL_LOG_INFO(purpl_inst->logger, "Refresh rate of display %d (%s) is %d (target framerate is %d, VSync %b)",
+		       purpl_inst->display, SDL_GetDisplayName(purpl_inst->display), purpl_inst->refresh_rate,
+		       purpl_inst->target_framerate, purpl_inst->vsync);
 
 	PURPL_LOG_INFO(purpl_inst->logger, "Purpl Engine #V initialized for application #n #v");
 
@@ -191,8 +198,10 @@ static bool purpl_handle_events(void)
 						SDL_GetDisplayName(purpl_inst->display));
 					SDL_GetDisplayMode(purpl_inst->display, 0, &display_mode);
 					purpl_inst->refresh_rate = display_mode.refresh_rate;
-					PURPL_LOG_INFO(purpl_inst->logger, "Refresh rate of display %d (%s) is %d", purpl_inst->display,
-						SDL_GetDisplayName(purpl_inst->display), purpl_inst->refresh_rate);
+					if (purpl_inst->vsync)
+						purpl_inst->target_framerate = purpl_inst->refresh_rate;
+					PURPL_LOG_INFO(purpl_inst->logger, "Refresh rate of display %d (%s) is %d (target framerate is %d, VSync %b)", purpl_inst->display,
+						SDL_GetDisplayName(purpl_inst->display), purpl_inst->refresh_rate, purpl_inst->target_framerate, purpl_inst->vsync);
 				}
 			}
 			break;
