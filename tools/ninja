@@ -1,6 +1,0 @@
-#!/usr/bin/env sh
-
-SYSTEM=$(uname | tr '[:upper:]' '[:lower:]')
-chmod a+x $0.$SYSTEM
-$0.$SYSTEM $*
-
