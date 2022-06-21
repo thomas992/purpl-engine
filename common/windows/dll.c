@@ -24,11 +24,5 @@ bool sys_dll_load(dll_t *dll)
 
 void sys_dll_unload(dll_t *dll)
 {
-	if (!dll)
-		return;
-
-	PURPL_LOG("Unloading DLL %s\n", dll->path);
-	stbds_arrfree(dll->path);
 	FreeLibrary(dll->handle);
-	free(dll);
 }

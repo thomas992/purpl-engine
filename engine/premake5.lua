@@ -13,5 +13,6 @@ project "engine"
 	}
 
 	sharedlibs {
+		"libzstd",
 		"SDL2",
 	}

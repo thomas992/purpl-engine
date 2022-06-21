@@ -26,16 +26,17 @@ dll_t *dll_load(const char *path)
 	char *path2;
 
 	path2 = util_normalize_path(path);
-	PURPL_LOG("Loading DLL %s\n", path2);
 
 	dll = calloc(1, sizeof(dll_t));
 	PURPL_ASSERT(dll);
 	dll->path = path2;
 
 	if (!util_fexist(dll->path)) {
-		util_prepend(dll->path, DLL_PREFIX);
-		util_append(dll->path, DLL_EXT);
+		dll->path = util_prepend(dll->path, DLL_PREFIX);
+		dll->path = util_append(dll->path, DLL_EXT);
 	}
+
+	PURPL_LOG("Loading DLL %s\n", dll->path);
 
 	if (!sys_dll_load(dll))
 		return NULL;
@@ -45,5 +46,11 @@ dll_t *dll_load(const char *path)
 
 void dll_unload(dll_t *dll)
 {
+	if (!dll)
+		return;
+
+	PURPL_LOG("Unloading DLL %s\n", dll->path);
+	stbds_arrfree(dll->path);
 	sys_dll_unload(dll);
+	free(dll);
 }

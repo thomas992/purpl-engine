@@ -2,6 +2,12 @@
 
 #pragma once
 
+#ifdef _WIN32
+// This is renamed to make sure no collisions happen
+#include "_dirent.h"
+#else
+#include <dirent.h>
+#endif
 #include <errno.h>
 #include <inttypes.h>
 #include <stdarg.h>
@@ -15,6 +21,14 @@
 
 #include "stb_ds.h"
 #include "stb_sprintf.h"
+
+#define XXH_INLINE_ALL
+#include "xxhash.h"
+#ifdef PURPL_X64
+#include "xxh_x86dispatch.h"
+#endif
+
+#include "zstd.h"
 
 // Make a version
 #define PURPL_MAKE_VERSION(major, minor, patch, tweak) (((major) << 24) | ((minor) << 16) | ((patch) << 8) | (tweak))

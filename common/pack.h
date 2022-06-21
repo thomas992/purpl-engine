@@ -1,83 +1,50 @@
-// A partial reimplementation of the System Interface Library for games (https://achurch.org/SIL) package format
+// Pack file. Pretty much a ripoff of Valve's VPK format but kinda different
+
+// All fields are little endian because fuck big endian (most architectures in wide use like x86, ARM, RISC-V are LE
+// anyway)
 
 #pragma once
 
 #include "common.h"
 #include "util.h"
 
-// The magic bytes for the format.
-#define PKG_MAGIC "PKG\12"
+// Pack signature (1 signifies this is the first format added)
+#define PACK_SIGNATURE "PURPL\1"
 
-// Package header
-typedef struct pkg_header {
-	char magic[4]; // Must be PKG_MAGIC
-	uint16_t header_size; // Size of the header (sizeof pkg_header_t)
-	uint16_t entry_size; // Size of an entry (sizeof pkg_entry_t)
-	uint32_t entry_count; // Number of entries
-	uint32_t path_size; // Size of the path buffer
-} pkg_header_t;
+// Pack version
+#define PACK_VERSION 1
 
-// Package entry
-typedef struct pkg_entry {
-	uint32_t hash; // Hash of the path
-	union {
-		uint32_t nameofs_flags;
-		struct {
-			uint32_t nameofs : 24; // Offset into the path buffer
-			uint32_t flags : 8; // Flags
-		};
-	};
-	uint32_t offset; // Offset within the package to the data for this entry
-	uint32_t size; // Size of the data stored in the package
-	uint32_t data_size; // Size of the data after decompression
-} pkg_entry_t;
+// Split data into 69 MB (nice) files to make it easier to update packs
+#define PACK_SPLIT_SIZE 72351744
 
-// Package file
-typedef struct pkg_file {
-	char *path; // Path to the file
-	FILE *fp; // File stream
-	pkg_header_t header; // File header
-	pkg_entry_t *entries; // Entries in the file
-	char *path_buf; // Path buffer
-} pkg_file_t;
+// Pack header (combined with entry_count entries and the path buffer, forms the "directory", because I couldn't be
+// bothered to think of a more accurate name)
+typedef struct pack_header {
+	uint64_t signature; // Must equal PACK_SIGNATURE
+	uint8_t version; // Must equal PACK_VERSION
+	uint64_t pathbuf_size; // Size of the path buffer
+	uint32_t entry_count; // The number of entries
+	uint16_t split_count; // The number of split off data files
+} pack_header_t;
 
-// Read a package file
-extern pkg_file_t *pkg_parse(const char *path);
+// Pack entry
+typedef struct pack_entry {
+	uint64_t hash; // xxHash of the data uncompressed
+	uint64_t path_offset; // Offset to the entry's path in the path buffer
+	uint32_t offset; // The offset from the start of the first split file
+	uint32_t size; // The size of the compressed data in the file
+	uint64_t real_size; // The size of the uncompressed data in memory
+} pack_entry_t;
 
-// Close a package
-extern void pkg_close(pkg_file_t *file);
+// Pack file
+typedef struct pack_file {
+	char *name; // Path up until _dir.pak or _###.pak
+	FILE *dir; // File stream of the directory
+	pack_header_t header; // The header
+	char *pathbuf; // Path buffer
+	pack_entry_t *entries; // The entries
+	FILE **split; // File streams of the split files
+} pack_file_t;
 
-// Read a file from a package
-extern uint8_t *pkg_read(pkg_file_t *file, pkg_entry_t *entry);
-
-// Get a file entry within a package by its path
-extern pkg_entry_t *pkg_get(pkg_file_t *file, const char *path);
-
-// Hash function for package file entries
-inline uint32_t pkg_hash(const char *path)
-{
-	uint32_t hash;
-	uint32_t c;
-
-	if (!path)
-		return 0;
-
-	hash = 0;
-	while (*path) {
-		c = *path++;
-		if (c >= 'A' && c <= 'Z')
-			c |= 0x20; // make letters lowercase
-		hash = hash << 27 | hash >> 5;
-		hash ^= c;
-	}
-	return hash;
-}
-
-// Get a file's name by index
-inline const char *pkg_get_entry_name(pkg_file_t *file, pkg_entry_t *entry)
-{
-	if (!file || entry->nameofs > file->header.path_size)
-		return "";
-
-	return file->path_buf + entry->nameofs;
-}
+// Create a pack file
+extern pack_file_t *pack_create(const char *name, const char *src);

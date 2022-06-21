@@ -14,10 +14,10 @@ extern size_t util_fsize(FILE *stream);
 extern char *util_normalize_path(const char *path);
 
 // Prepend to a string
-extern void util_prepend(char *str, const char *prefix);
+extern char *util_prepend(char *str, const char *prefix);
 
 // Append to a string
-extern void util_append(char *str, const char *suffix);
+extern char *util_append(char *str, const char *suffix);
 
 // Duplicate a string
 extern char *util_strdup(const char *str);

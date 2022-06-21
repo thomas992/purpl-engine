@@ -25,7 +25,7 @@ typedef void (*dll_shutdown_t)(void);
 typedef struct dll {
 	char *path; // Path to the DLL
 	void *handle; // Handle to the DLL
-	uint32_t version; // A version number
+	uint32_t version; // The DLL's version number
 	dll_init_t init; // Called at the start
 	dll_frame_t frame; // Called each frame or update
 	dll_shutdown_t shutdown; // Called at the end

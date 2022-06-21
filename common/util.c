@@ -6,16 +6,16 @@
 
 #include "util.h"
 
-bool util_fexist(const char* path)
+bool util_fexist(const char *path)
 {
 	FILE *fp;
 
 	fp = fopen(path, "r");
-	if (!fp && errno == ENOENT)
-		return false;
+	if (!fp)
+		return errno != ENOENT;
 
 	fclose(fp);
-	return fp;
+	return true;
 }
 
 size_t util_fsize(FILE *stream)
@@ -52,9 +52,40 @@ char *util_normalize_path(const char *path)
 	return buf;
 }
 
-void util_prepend(char *str, const char *prefix) {}
+char *util_prepend(char *str, const char *prefix)
+{
+	char *str2;
+	size_t len;
 
-void util_append(char *str, const char *suffix) {}
+	if (!str || !prefix || !strlen(prefix))
+		return str;
+
+	str2 = str;
+	len = strlen(prefix);
+	stbds_arraddnindex(str2, len);
+	memmove(str2 + len, str2, strlen(str2));
+	strncpy(str2, prefix, len);
+	str2[stbds_arrlenu(str2) - 1] = 0;
+
+	return str2;
+}
+
+char *util_append(char *str, const char *suffix)
+{
+	char *str2;
+	size_t len;
+
+	if (!str || !suffix || !strlen(suffix))
+		return str;
+
+	str2 = str;
+	len = strlen(suffix);
+	stbds_arraddnindex(str2, len);
+	strncpy(str2 + strlen(str2), suffix, len);
+	str2[stbds_arrlenu(str2) - 1] = 0;
+
+	return str2;
+}
 
 char *util_strdup(const char *str)
 {

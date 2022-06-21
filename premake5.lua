@@ -17,6 +17,17 @@ workspace "purpl"
 		"common"
 	}
 
+	if _ACTION ~= nil then
+		prebuildcmd = "{CHDIR} " .. _MAIN_SCRIPT_DIR .. " && " .. _PREMAKE_COMMAND .. " " .. _ACTION
+		table.foreachi(_ARGS, function(_arg)
+			prebuildcmd = prebuildcmd .. " " .. _arg
+		end)
+		prebuildmessage "Regenerating projects for workspace %{wks.name}"
+		prebuildcommands {
+			prebuildcmd
+		}
+	end
+
 	libdirs {
 		"deps/lib/%{cfg.platform}"
 	}
