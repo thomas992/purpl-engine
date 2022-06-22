@@ -23,13 +23,10 @@ extern void sys_dll_unload(dll_t *dll);
 dll_t *dll_load(const char *path)
 {
 	dll_t *dll;
-	char *path2;
-
-	path2 = util_normalize_path(path);
 
 	dll = calloc(1, sizeof(dll_t));
 	PURPL_ASSERT(dll);
-	dll->path = path2;
+	dll->path = util_normalize_path(path);
 
 	if (!util_fexist(dll->path)) {
 		dll->path = util_prepend(dll->path, DLL_PREFIX);
@@ -41,6 +38,10 @@ dll_t *dll_load(const char *path)
 	if (!sys_dll_load(dll))
 		return NULL;
 
+	if (dll->version != PURPL_VERSION)
+		PURPL_LOG("Version mismatch, DLL v%u.%u.%u.%u, engine v%u.%u.%u.%u\n",
+			  PURPL_VERSION_FORMAT(dll->version), PURPL_VERSION_FORMAT(PURPL_VERSION));
+
 	return dll;
 }
 
@@ -50,7 +51,7 @@ void dll_unload(dll_t *dll)
 		return;
 
 	PURPL_LOG("Unloading DLL %s\n", dll->path);
-	stbds_arrfree(dll->path);
+	free(dll->path);
 	sys_dll_unload(dll);
 	free(dll);
 }

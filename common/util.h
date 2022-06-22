@@ -26,7 +26,7 @@ extern char *util_strdup(const char *str);
 extern char *util_strndup(const char *str, size_t n);
 
 // Format a string
-extern char *util_strfmt(size_t *size, const char *fmt, ...);
+extern char *util_strfmt(const char *fmt, ...);
 
 // Format a string
-extern char *util_vstrfmt(size_t *size, const char *fmt, va_list args);
+extern char *util_vstrfmt(const char *fmt, va_list args);

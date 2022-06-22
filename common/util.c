@@ -1,7 +1,6 @@
 // Implementations of util.h
 
 // All the stb headers (that're used) are included in common.h, which util.h includes
-#define STB_DS_IMPLEMENTATION
 #define STB_SPRINTF_IMPLEMENTATION
 
 #include "util.h"
@@ -54,37 +53,18 @@ char *util_normalize_path(const char *path)
 
 char *util_prepend(char *str, const char *prefix)
 {
-	char *str2;
-	size_t len;
-
 	if (!str || !prefix || !strlen(prefix))
 		return str;
 
-	str2 = str;
-	len = strlen(prefix);
-	stbds_arraddnindex(str2, len);
-	memmove(str2 + len, str2, strlen(str2));
-	strncpy(str2, prefix, len);
-	str2[stbds_arrlenu(str2) - 1] = 0;
-
-	return str2;
+	return util_strfmt("%s%s", prefix, str);
 }
 
 char *util_append(char *str, const char *suffix)
 {
-	char *str2;
-	size_t len;
-
 	if (!str || !suffix || !strlen(suffix))
 		return str;
 
-	str2 = str;
-	len = strlen(suffix);
-	stbds_arraddnindex(str2, len);
-	strncpy(str2 + strlen(str2), suffix, len);
-	str2[stbds_arrlenu(str2) - 1] = 0;
-
-	return str2;
+	return util_strfmt("%s%s", str, suffix);
 }
 
 char *util_strdup(const char *str)
@@ -94,31 +74,31 @@ char *util_strdup(const char *str)
 
 char *util_strndup(const char *str, size_t n)
 {
-	char *buf = NULL;
+	char *buf;
 
-	stbds_arrsetlen(buf, n);
+	buf = calloc(n, sizeof(char));
+	PURPL_ASSERT(buf);
 	strncpy(buf, str, n);
-	buf[n - 1] = 0;
 
 	return buf;
 }
 
-char *util_strfmt(size_t *size, const char *fmt, ...)
+char *util_strfmt(const char *fmt, ...)
 {
 	va_list args;
 	char *buf;
 
 	va_start(args, fmt);
-	buf = util_vstrfmt(size, fmt, args);
+	buf = util_vstrfmt(fmt, args);
 	va_end(args);
 
 	return buf;
 }
 
-char *util_vstrfmt(size_t *size, const char *fmt, va_list args)
+char *util_vstrfmt(const char *fmt, va_list args)
 {
 	va_list args2;
-	char *buf = NULL;
+	char *buf;
 	int len;
 
 	if (!fmt)
@@ -127,9 +107,9 @@ char *util_vstrfmt(size_t *size, const char *fmt, va_list args)
 	va_copy(args2, args);
 
 	len = stbsp_vsnprintf(NULL, 0, fmt, args2) + 1;
-	stbds_arrsetlen(buf, len);
+	buf = calloc(len, sizeof(char));
+	PURPL_ASSERT(buf);
 	stbsp_vsnprintf(buf, len, fmt, args2);
-	if (size)
-		*size = len;
+
 	return buf;
 }

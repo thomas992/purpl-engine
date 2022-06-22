@@ -9,5 +9,7 @@ int32_t main(int32_t argc, char *argv[])
 	dll_t *engine;
 
 	engine = dll_load("engine");
+	engine->init();
+	engine->shutdown();
 	dll_unload(engine);
 }

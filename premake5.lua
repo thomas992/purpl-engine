@@ -17,17 +17,6 @@ workspace "purpl"
 		"common"
 	}
 
-	if _ACTION ~= nil then
-		prebuildcmd = "{CHDIR} " .. _MAIN_SCRIPT_DIR .. " && " .. _PREMAKE_COMMAND .. " " .. _ACTION
-		table.foreachi(_ARGS, function(_arg)
-			prebuildcmd = prebuildcmd .. " " .. _arg
-		end)
-		prebuildmessage "Regenerating projects for workspace %{wks.name}"
-		prebuildcommands {
-			prebuildcmd
-		}
-	end
-
 	libdirs {
 		"deps/lib/%{cfg.platform}"
 	}
@@ -76,7 +65,7 @@ function sharedlibs(_libs)
 			_postbuildcmds = table.flatten({ _postbuildcmds, { _cmd } })
 			i = i + 1
 		end)
-		postbuildmessage("Copying " .. i .. " libraries for target %{cfg.linktarget.name}")
+		postbuildmessage("Copying " .. i .. " " .. iif(i == 1, "library", "libraries") .. " for target %{prj.name}")
 		postbuildcommands(_postbuildcmds)
 	end
 end

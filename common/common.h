@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include <assert.h>
 #ifdef _WIN32
 // This is renamed to make sure no collisions happen
 #include "_dirent.h"
@@ -19,10 +20,8 @@
 #include "SDL2/SDL.h"
 #undef main // No SDL_main
 
-#include "stb_ds.h"
 #include "stb_sprintf.h"
 
-#define XXH_INLINE_ALL
 #include "xxhash.h"
 #ifdef PURPL_X64
 #include "xxh_x86dispatch.h"
@@ -44,6 +43,10 @@
 
 // Get the tweak number of a version
 #define PURPL_VERSION_TWEAK(version) ((version) & 0xFF)
+
+// Macro for putting versions in format functions
+#define PURPL_VERSION_FORMAT(version) \
+	PURPL_VERSION_MAJOR(version), PURPL_VERSION_MINOR(version), PURPL_VERSION_PATCH(version), PURPL_VERSION_TWEAK(version)
 
 // Version of the engine
 #define PURPL_VERSION PURPL_MAKE_VERSION(1, 0, 0, 0)
@@ -99,13 +102,4 @@ typedef uint8_t byte_t;
 #define PURPL_PERCENT(n, total) (((n) / (double)(total)) * 100)
 
 // Assertion
-#define PURPL_ASSERT(cond)                                                                                    \
-	if (!(cond)) {                                                                                        \
-		fprintf(stderr, "Assertion PURPL_ASSERT(" #cond ") at %s:%d:%s failed\n", __FILE__, __LINE__, \
-			PURPL_FUNCNAME);                                                                      \
-		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Assertion failed",                            \
-					 "Assertion \"" #cond "\" failed at " __FILE__                        \
-					 ":" PURPL_STRINGIZE_EXPAND(__LINE__),                                \
-					 NULL);                                                               \
-		PURPL_DEBUGBREAK();                                                                           \
-	}
+#define PURPL_ASSERT(cond) assert(cond)
