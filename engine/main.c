@@ -7,17 +7,13 @@
 bool engine_init(void)
 {
 	pack_file_t *pack;
-	pack_entry_t *ent;
-	uint8_t *buf;
+	uint32_t i;
 
 	PURPL_LOG("Initializing engine\n");
 
 	pack = pack_load("purpl");
-	ent = pack_get(pack, "license/stb.txt");
-	buf = pack_read(pack, ent);
-
-	printf("%.*s\n", ent->real_size, buf);
-
+	for (i = 0; i < pack->header.entry_count; i++)
+		printf("%s\n", PACK_GET_NAME(pack, pack->entries + i));
 	pack_close(pack);
 
 	return true;
