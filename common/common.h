@@ -29,6 +29,9 @@
 
 #include "zstd.h"
 
+// Pluralize
+#define PURPL_PLURALIZE(count, plural, singular) ((count) == 1 ? (singular) : (plural))
+
 // Make a version
 #define PURPL_MAKE_VERSION(major, minor, patch, tweak) (((major) << 24) | ((minor) << 16) | ((patch) << 8) | (tweak))
 
