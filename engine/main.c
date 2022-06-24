@@ -12,7 +12,7 @@ bool engine_init(void)
 
 	PURPL_LOG("Initializing engine\n");
 
-	pack = pack_create("purpl", "purpl");
+	pack = pack_load("purpl");
 	ent = pack_get(pack, "license/stb.txt");
 	buf = pack_read(pack, ent);
 

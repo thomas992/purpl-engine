@@ -67,10 +67,8 @@ pack_file_t *pack_load(const char *name)
 	pack->entries = calloc(pack->header.entry_count, sizeof(pack_entry_t));
 	PURPL_ASSERT(pack->entries);
 
-	for (i = 0; i < pack->header.entry_count; i++) {
+	for (i = 0; i < pack->header.entry_count; i++)
 		fread(pack->entries + i, sizeof(pack_entry_t), 1, pack->dir);
-		PURPL_LOG("Read entry %s\n", PACK_GET_NAME(pack, pack->entries + i));
-	}
 	PURPL_LOG("Read %u entries\n", pack->header.entry_count);
 
 	return pack;
@@ -147,14 +145,13 @@ uint8_t *pack_read(pack_file_t *pack, pack_entry_t *entry)
 
 	split_idx = (uint16_t)PACK_SPLIT(entry->offset);
 	split_name = util_strfmt("%s_%0.5u.pak", pack->name, split_idx);
-	PURPL_LOG("Reading file %s (%u %s compressed, %" PRIu64 " %s raw, expected hash 0x%" PRIX64
+	PURPL_LOG("Reading file %s (%u %s compressed, %" PRIu64 " %s raw, stored hash 0x%" PRIX64
 		  ", offset 0x%u) from pack split %s\n",
 		  PACK_GET_NAME(pack, entry), entry->size, PURPL_PLURALIZE(entry->size, "bytes", "byte"),
 		  entry->real_size, PURPL_PLURALIZE(entry->real_size, "bytes", "byte"), entry->hash, entry->offset,
 		  split_name);
 	split = fopen(split_name, "rb");
 	PURPL_ASSERT(split);
-	free(split_name);
 
 	fseek(split, PACK_SPLIT_OFFSET(entry->offset), SEEK_SET);
 	fread(compressed, 1, entry->size, split);
@@ -169,6 +166,9 @@ uint8_t *pack_read(pack_file_t *pack, pack_entry_t *entry)
 		return NULL;
 	}
 
+	PURPL_LOG("Read file %s from pack split %s\n", PACK_GET_NAME(pack, entry), split_name);
+
+	free(split_name);
 	return buf;
 }
 
