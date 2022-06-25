@@ -35,8 +35,10 @@ dll_t *dll_load(const char *path)
 
 	PURPL_LOG("Loading DLL %s\n", dll->path);
 
-	if (!sys_dll_load(dll))
+	if (!sys_dll_load(dll)) {
+		free(dll);
 		return NULL;
+	}
 
 	if (dll->version != PURPL_VERSION)
 		PURPL_LOG("Version mismatch, DLL v%u.%u.%u.%u, engine v%u.%u.%u.%u\n",

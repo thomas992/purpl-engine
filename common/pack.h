@@ -32,7 +32,7 @@
 #define PACK_OFFSET(pack) (PACK_LAST_ENTRY((pack)) ? PACK_LAST_ENTRY(pack)->offset + PACK_LAST_ENTRY(pack)->size : 0)
 
 // Get the split number of a file given its offset
-#define PACK_SPLIT(offset) (min((offset), (offset) / PACK_SPLIT_SIZE))
+#define PACK_SPLIT(offset) ((uint16_t)fmin((offset), (offset) / PACK_SPLIT_SIZE))
 
 // Make an offset relative to a split
 #define PACK_SPLIT_OFFSET(offset) ((offset) % PACK_SPLIT_SIZE)
