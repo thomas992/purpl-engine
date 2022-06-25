@@ -18,6 +18,9 @@
 // Pack version
 #define PACK_VERSION 1
 
+// Enable logging in pack_add and pack_read
+#define PACK_DEBUG 0
+
 // Split data into 69 MB (nice) files to make it easier to update packs
 #define PACK_SPLIT_SIZE 72351744
 
@@ -45,6 +48,7 @@ typedef struct pack_header {
 	uint8_t version; // Must equal PACK_VERSION
 	uint64_t pathbuf_size; // Size of the path buffer
 	uint32_t entry_count; // The number of entries
+	uint64_t total_size; // The total size of all the split files combined
 } pack_header_t;
 
 // Pack entry
@@ -52,7 +56,7 @@ typedef struct pack_entry {
 	uint64_t path_hash; // xxHash of the path
 	uint64_t hash; // xxHash of the data uncompressed
 	uint64_t path_offset; // Offset to the entry's path in the path buffer
-	uint32_t offset; // The offset from the start of the first split file
+	uint64_t offset; // The offset from the start of the first split file
 	uint32_t size; // The size of the compressed data in the file
 	uint64_t real_size; // The size of the uncompressed data in memory
 } pack_entry_t;
@@ -78,7 +82,7 @@ extern void pack_write(pack_file_t *pack);
 // Close a pack file, invalidating all entries
 extern void pack_close(pack_file_t *pack);
 
-// Get a file entry from a pack
+// Get a file entry from a pack. Do not pass to pack_read, because you'll want the size of the buffer returned.
 extern pack_entry_t *pack_get(pack_file_t *pack, const char *path);
 
 // Read a file from a pack

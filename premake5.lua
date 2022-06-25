@@ -9,8 +9,6 @@ workspace "purpl"
 	cdialect "C11"
 	warnings "Extra"
 
-	files { "premake5.lua", "config.lua" }
-
 	includedirs {
 		"deps/include",
 		"deps/stb",
@@ -44,6 +42,14 @@ workspace "purpl"
 		}
 	filter ""
 
+project "files"
+	kind "Utility"
+
+	files { "premake5.lua",
+		"config.lua",
+		"tools/premake5.lua",
+	}
+
 -- Links against libraries and copies them to the output folder on Windows
 function sharedlibs(_libs)
 	_libs2 = {}
@@ -75,3 +81,4 @@ include "config.lua"
 include "common"
 include "engine"
 include "launcher"
+include "tools"

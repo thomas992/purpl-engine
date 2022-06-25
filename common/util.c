@@ -36,7 +36,9 @@ size_t util_fsize(FILE *stream)
 char *util_normalize_path(const char *path)
 {
 	char *buf;
+	char *buf2;
 	char *p;
+	size_t len;
 
 	if (!path)
 		return NULL;
@@ -48,7 +50,16 @@ char *util_normalize_path(const char *path)
 		p = strchr(++p, '\\');
 	}
 
-	return buf;
+	p = strstr(buf, "//");
+	while (p) {
+		len = strlen(buf) - (p - buf);
+		memmove(p, p + 1, len);
+		p[len - 1] = 0;
+	}
+
+	buf2 = util_strdup(buf);
+	free(buf);
+	return buf2;
 }
 
 char *util_prepend(char *str, const char *prefix)
@@ -112,4 +123,35 @@ char *util_vstrfmt(const char *fmt, va_list args)
 	stbsp_vsnprintf(buf, len, fmt, args2);
 
 	return buf;
+}
+
+// Adapted from https://gist.github.com/JonathonReinhart/8c0d90191c38af2dcadb102c4e202950
+void util_mkdir(const char *path)
+{
+	size_t len;
+	char *path2;
+	char *p;
+
+	path2 = util_normalize_path(path);
+	for (p = path2 + 1; *p; p++) {
+		if (*p == '/') {
+			*p = 0;
+
+			// No error checking because opening a file in the directory will fail and that's pretty much
+			// guaranteed to happen eventually after this function is called, because why else would you
+			// create a directory?
+#ifdef _WIN32
+			CreateDirectoryA(path2, NULL);
+#else
+			mkdir(path2, 777);
+#endif
+			*p = '/';
+		}
+	}
+
+#ifdef _WIN32
+	CreateDirectoryA(path2, NULL);
+#else
+	mkdir(path2, NULL);
+#endif
 }

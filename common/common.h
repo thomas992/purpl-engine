@@ -4,10 +4,13 @@
 
 #include <assert.h>
 #ifdef _WIN32
+#include <windows.h>
+
 // This is renamed to make sure no collisions happen
 #include "_dirent.h"
 #else
 #include <dirent.h>
+#include <unistd.h>
 #endif
 #include <errno.h>
 #include <inttypes.h>

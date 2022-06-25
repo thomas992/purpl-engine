@@ -145,11 +145,13 @@ uint8_t *pack_read(pack_file_t *pack, pack_entry_t *entry)
 
 	split_idx = (uint16_t)PACK_SPLIT(entry->offset);
 	split_name = util_strfmt("%s_%0.5u.pak", pack->name, split_idx);
-	PURPL_LOG("Reading file %s (%u %s compressed, %" PRIu64 " %s raw, stored hash 0x%" PRIX64
-		  ", offset 0x%u) from pack split %s\n",
+#ifdef PACK_DEBUG
+	PURPL_LOG("Reading file %s (%u %s compressed, %" PRIu64 " %s raw, stored hash 0x%" PRIX64 ", offset 0x%" PRIu64
+		  ") from pack split %s\n",
 		  PACK_GET_NAME(pack, entry), entry->size, PURPL_PLURALIZE(entry->size, "bytes", "byte"),
 		  entry->real_size, PURPL_PLURALIZE(entry->real_size, "bytes", "byte"), entry->hash, entry->offset,
 		  split_name);
+#endif
 	split = fopen(split_name, "rb");
 	PURPL_ASSERT(split);
 
@@ -166,7 +168,9 @@ uint8_t *pack_read(pack_file_t *pack, pack_entry_t *entry)
 		return NULL;
 	}
 
+#ifdef PACK_DEBUG
 	PURPL_LOG("Read file %s from pack split %s\n", PACK_GET_NAME(pack, entry), split_name);
+#endif
 
 	free(split_name);
 	return buf;
@@ -178,7 +182,7 @@ pack_entry_t *pack_add(pack_file_t *pack, const char *path, const char *internal
 	void *tmp;
 	size_t len;
 	size_t entry_idx;
-	pack_entry_t entry = { 0 };
+	pack_entry_t entry;
 	FILE *src;
 	FILE *dst;
 	uint8_t *compressed;
@@ -190,8 +194,11 @@ pack_entry_t *pack_add(pack_file_t *pack, const char *path, const char *internal
 		return NULL;
 
 	path2 = util_normalize_path(path);
+#ifdef PACK_DEBUG
 	PURPL_LOG("Adding file %s to pack %s_*.pak as %s\n", path2, pack->name, internal_path);
+#endif
 
+	memset(&entry, 0, sizeof(pack_entry_t));
 	entry.offset = PACK_OFFSET(pack);
 
 	if (!pack->entries) {
@@ -241,9 +248,11 @@ pack_entry_t *pack_add(pack_file_t *pack, const char *path, const char *internal
 	compressed = calloc(entry.size, 1);
 	PURPL_ASSERT(compressed);
 	entry.size = (uint32_t)ZSTD_compress(compressed, entry.size, tmp, entry.real_size, ZSTD_btultra2);
+#ifdef PACK_DEBUG
 	PURPL_LOG("Read %" PRIu64 " %s, hash 0x%" PRIX64 "X, compressed size is %u %s\n", entry.real_size,
 		  PURPL_PLURALIZE(entry.real_size, "bytes", "byte"), entry.hash, entry.size,
 		  PURPL_PLURALIZE(entry.size, "bytes", "byte"));
+#endif
 	free(tmp);
 
 	// Write the compressed data, but not the header
@@ -264,6 +273,7 @@ pack_entry_t *pack_add(pack_file_t *pack, const char *path, const char *internal
 	}
 	free(compressed);
 
+#ifdef PACK_DEBUG
 	if (PACK_SPLIT(offset) != split_idx) {
 		PURPL_LOG("Wrote %u %s in pack splits %zu-%u\n", entry.size,
 			  PURPL_PLURALIZE(entry.size, "bytes", "byte"), PACK_SPLIT(offset), split_idx);
@@ -271,8 +281,10 @@ pack_entry_t *pack_add(pack_file_t *pack, const char *path, const char *internal
 		PURPL_LOG("\rWrote %u %s in pack split %u\n", entry.size, PURPL_PLURALIZE(entry.size, "bytes", "byte"),
 			  split_idx);
 	}
+#endif
 
 	pack->entries[entry_idx] = entry;
+	pack->header.total_size += entry.size;
 	return pack->entries + entry_idx;
 }
 
@@ -294,7 +306,7 @@ void pack_add_dir(pack_file_t *pack, const char *path)
 		if (strncmp(ent->d_name, ".", ent->d_namlen) == 0 || strncmp(ent->d_name, "..", ent->d_namlen) == 0)
 			continue;
 
-		path3 = util_strfmt("%s/%s", path2, ent->d_name);
+		path3 = util_strfmt("%s%s%s", path2, path2[strlen(path2) - 1] == '/' ? "" : "/", ent->d_name);
 		if (ent->d_type == DT_DIR)
 			pack_add_dir(pack, path3);
 		else

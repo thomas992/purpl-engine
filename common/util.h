@@ -30,3 +30,6 @@ extern char *util_strfmt(const char *fmt, ...);
 
 // Format a string
 extern char *util_vstrfmt(const char *fmt, va_list args);
+
+// Make directories
+extern void util_mkdir(const char *path);
