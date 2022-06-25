@@ -58,6 +58,7 @@ pack_file_t *pack_load(const char *name)
 
 	fread(&pack->header, sizeof(pack_header_t), 1, pack->dir);
 	PURPL_ASSERT(memcmp(pack->header.signature, PACK_SIGNATURE, PACK_SIGNATURE_LENGTH) == 0);
+	PURPL_ASSERT(pack->header.version == PACK_VERSION);
 
 	pack->pathbuf = calloc(pack->header.pathbuf_size, sizeof(char));
 	PURPL_ASSERT(pack->pathbuf);
