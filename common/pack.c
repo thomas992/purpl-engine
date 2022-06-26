@@ -131,10 +131,13 @@ uint8_t *pack_read(pack_file_t *pack, pack_entry_t *entry)
 {
 	uint8_t *compressed;
 	uint8_t *buf;
-	uint16_t split_idx;
+	uint16_t split_idx = 0;
 	char *split_name;
 	FILE *split;
 	uint64_t hash;
+	size_t offset;
+	size_t remaining;
+	size_t len;
 
 	if (!pack || !entry)
 		return NULL;
@@ -144,21 +147,33 @@ uint8_t *pack_read(pack_file_t *pack, pack_entry_t *entry)
 	buf = calloc(entry->real_size, 1);
 	PURPL_ASSERT(buf);
 
-	split_idx = (uint16_t)PACK_SPLIT(entry->offset);
-	split_name = util_strfmt("%s_%0.5u.pak", pack->name, split_idx);
-#ifdef PACK_DEBUG
-	PURPL_LOG("Reading file %s (%u %s compressed, %" PRIu64 " %s raw, stored hash 0x%" PRIX64 ", offset 0x%" PRIu64
-		  ") from pack split %s\n",
-		  PACK_GET_NAME(pack, entry), entry->size, PURPL_PLURALIZE(entry->size, "bytes", "byte"),
-		  entry->real_size, PURPL_PLURALIZE(entry->real_size, "bytes", "byte"), entry->hash, entry->offset,
-		  split_name);
-#endif
-	split = fopen(split_name, "rb");
-	PURPL_ASSERT(split);
+	offset = entry->offset;
+	remaining = entry->size;
+	while (remaining > 0) {
+		split_idx = (uint16_t)PACK_SPLIT(offset);
+		split_name = util_strfmt("%s_%0.5u.pak", pack->name, split_idx);
+		len = min(PACK_SPLIT_SIZE - PACK_SPLIT_OFFSET(offset), remaining);
 
-	fseek(split, PACK_SPLIT_OFFSET(entry->offset), SEEK_SET);
-	fread(compressed, 1, entry->size, split);
-	fclose(split);
+#ifdef PACK_DEBUG
+		PURPL_LOG("Reading %zu %s of file %s (%zu %s remaining, stored hash 0x%" PRIX64 ", offset 0x%" PRIu64
+			  ") from pack split %s\n",
+			  len, PURPL_PLURALIZE(len, "bytes", "byte"),
+			  PACK_GET_NAME(pack, entry), remaining, PURPL_PLURALIZE(remaining, "bytes", "byte"),
+			  entry->hash, offset, split_name);
+#endif
+
+		split = fopen(split_name, "rb");
+		PURPL_ASSERT(split);
+		free(split_name);
+
+		fseek(split, (long)PACK_SPLIT_OFFSET(offset), SEEK_SET);
+		fread(compressed + (offset - entry->offset), 1, len, split);
+		fclose(split);
+
+		remaining = len >= remaining ? 0 : remaining - len;
+		offset += len;
+	}
+
 	ZSTD_decompress(buf, entry->real_size, compressed, entry->size);
 	free(compressed);
 
@@ -170,16 +185,22 @@ uint8_t *pack_read(pack_file_t *pack, pack_entry_t *entry)
 	}
 
 #ifdef PACK_DEBUG
-	PURPL_LOG("Read file %s from pack split %s\n", PACK_GET_NAME(pack, entry), split_name);
+	if (PACK_SPLIT(offset) != split_idx) {
+		PURPL_LOG("Read %u %s from pack splits %s_%0.5u-%0.5u.pak\n", entry->size,
+			  PURPL_PLURALIZE(entry->size, "bytes", "byte"), pack->name, PACK_SPLIT(offset), split_idx);
+	} else {
+		PURPL_LOG("Read %u %s from pack split %s_%0.5u.pak\n", entry->size,
+			  PURPL_PLURALIZE(entry->size, "bytes", "byte"), pack->name, split_idx);
+	}
 #endif
 
-	free(split_name);
 	return buf;
 }
 
 pack_entry_t *pack_add(pack_file_t *pack, const char *path, const char *internal_path)
 {
 	char *path2;
+	char *internal_path2;
 	void *tmp;
 	size_t len;
 	size_t entry_idx;
@@ -187,16 +208,17 @@ pack_entry_t *pack_add(pack_file_t *pack, const char *path, const char *internal
 	FILE *src;
 	FILE *dst;
 	uint8_t *compressed;
-	uint16_t split_idx;
+	uint16_t split_idx = 0;
 	size_t offset;
 	size_t remaining;
 
-	if (!pack || !path || !strlen(path))
+	if (!pack || !path || !strlen(path) || !internal_path || !strlen(internal_path))
 		return NULL;
 
 	path2 = util_normalize_path(path);
+	internal_path2 = util_normalize_path(internal_path[0] == '/' ? internal_path + 1 : internal_path);
 #ifdef PACK_DEBUG
-	PURPL_LOG("Adding file %s to pack %s_*.pak as %s\n", path2, pack->name, internal_path);
+	PURPL_LOG("Adding file %s to pack %s_*.pak as %s\n", path2, pack->name, internal_path2);
 #endif
 
 	memset(&entry, 0, sizeof(pack_entry_t));
@@ -205,13 +227,16 @@ pack_entry_t *pack_add(pack_file_t *pack, const char *path, const char *internal
 	if (!pack->entries) {
 		pack->entries = calloc(1, sizeof(pack_entry_t));
 		PURPL_ASSERT(pack->entries);
+
 		pack->header.entry_count = 1;
 		entry_idx = 0;
 	} else {
 		tmp = calloc(pack->header.entry_count + 1, sizeof(pack_entry_t));
 		PURPL_ASSERT(tmp);
+
 		memcpy(tmp, pack->entries, pack->header.entry_count * sizeof(pack_entry_t));
 		free(pack->entries);
+
 		pack->entries = tmp;
 		entry_idx = pack->header.entry_count;
 		pack->header.entry_count++;
@@ -220,14 +245,17 @@ pack_entry_t *pack_add(pack_file_t *pack, const char *path, const char *internal
 	if (!pack->pathbuf) {
 		pack->pathbuf = calloc(len, sizeof(char));
 		PURPL_ASSERT(pack->pathbuf);
+
 		pack->header.pathbuf_size = len;
 		strncpy(pack->pathbuf, internal_path, len);
 	} else {
 		tmp = calloc(pack->header.pathbuf_size + len, sizeof(char));
 		PURPL_ASSERT(tmp);
+
 		memcpy(tmp, pack->pathbuf, pack->header.pathbuf_size);
-		strncpy((char *)tmp + pack->header.pathbuf_size, internal_path, len);
+		strncpy((char *)tmp + pack->header.pathbuf_size, internal_path2, len);
 		free(pack->pathbuf);
+
 		pack->pathbuf = tmp;
 		entry.path_offset = pack->header.pathbuf_size;
 		pack->header.pathbuf_size += len;
@@ -236,6 +264,7 @@ pack_entry_t *pack_add(pack_file_t *pack, const char *path, const char *internal
 	src = fopen(path2, "rb");
 	PURPL_ASSERT(src);
 	free(path2);
+	free(internal_path2);
 	entry.real_size = util_fsize(src);
 	tmp = calloc(entry.real_size, sizeof(uint8_t));
 	PURPL_ASSERT(tmp);
@@ -246,8 +275,10 @@ pack_entry_t *pack_add(pack_file_t *pack, const char *path, const char *internal
 	entry.path_hash = XXH3_64bits(PACK_GET_NAME(pack, &entry), strlen(PACK_GET_NAME(pack, &entry)) + 1);
 	entry.hash = XXH3_64bits(tmp, entry.real_size);
 	entry.size = (uint32_t)ZSTD_compressBound(entry.real_size);
+
 	compressed = calloc(entry.size, 1);
 	PURPL_ASSERT(compressed);
+
 	entry.size = (uint32_t)ZSTD_compress(compressed, entry.size, tmp, entry.real_size, ZSTD_btultra2);
 #ifdef PACK_DEBUG
 	PURPL_LOG("Read %" PRIu64 " %s, hash 0x%" PRIX64 "X, compressed size is %u %s\n", entry.real_size,
@@ -259,16 +290,18 @@ pack_entry_t *pack_add(pack_file_t *pack, const char *path, const char *internal
 	// Write the compressed data, but not the header
 	offset = entry.offset;
 	remaining = entry.size;
-	split_idx = (uint16_t)PACK_SPLIT(offset);
 	while (remaining > 0) {
 		split_idx = (uint16_t)PACK_SPLIT(offset);
 		path2 = util_strfmt("%s_%0.5u.pak", pack->name, split_idx);
+
 		len = min(PACK_SPLIT_SIZE - PACK_SPLIT_OFFSET(offset), remaining);
 		dst = fopen(path2, "ab+");
 		PURPL_ASSERT(dst);
 		free(path2);
+
 		fwrite(compressed + (offset - entry.offset), 1, len, dst);
 		fclose(dst);
+
 		remaining = len >= remaining ? 0 : remaining - len;
 		offset += len;
 	}
@@ -276,7 +309,7 @@ pack_entry_t *pack_add(pack_file_t *pack, const char *path, const char *internal
 
 #ifdef PACK_DEBUG
 	if (PACK_SPLIT(offset) != split_idx) {
-		PURPL_LOG("Wrote %u %s in pack splits %zu-%u\n", entry.size,
+		PURPL_LOG("Wrote %u %s in pack splits %u-%u\n", entry.size,
 			  PURPL_PLURALIZE(entry.size, "bytes", "byte"), PACK_SPLIT(offset), split_idx);
 	} else {
 		PURPL_LOG("\rWrote %u %s in pack split %u\n", entry.size, PURPL_PLURALIZE(entry.size, "bytes", "byte"),

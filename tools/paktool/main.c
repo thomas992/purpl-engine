@@ -117,6 +117,11 @@ int32_t main(int32_t argc, char *argv[])
 		FILE *dst;
 		size_t j;
 
+		if (util_fexist(pack_name)) {
+			PURPL_LOG("Removing old directory %s\n", pack_name);
+			remove(pack_name);
+		}
+
 		pack = pack_load(pack_name);
 		if (!pack) {
 			PURPL_LOG("Failed to read pack file %s\n", pack_name);
