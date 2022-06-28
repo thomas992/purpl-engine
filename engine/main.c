@@ -24,6 +24,6 @@ PURPL_INTERFACE void create_interface(dll_t *dll)
 	PURPL_LOG("Creating interface to the engine\n");
 
 	dll->version = PURPL_VERSION;
-	dll->init = engine_init;
+	dll->init = (dll_init_t)engine_init;
 	dll->shutdown = engine_shutdown;
 }

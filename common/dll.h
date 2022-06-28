@@ -13,7 +13,7 @@
 typedef void (*dll_create_interface_t)(void *dll);
 
 // Initialization function
-typedef bool (*dll_init_t)(const char *basedir, const char *gamedir);
+typedef bool (*dll_init_t)(void);
 
 // Frame function
 typedef void (*dll_frame_t)(uint64_t delta);

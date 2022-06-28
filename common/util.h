@@ -13,6 +13,9 @@ extern size_t util_fsize(FILE *stream);
 // Normalize a path
 extern char *util_normalize_path(const char *path);
 
+// Get an absolute path
+extern char *util_absolute_path(const char *path);
+
 // Prepend to a string
 extern char *util_prepend(char *str, const char *prefix);
 

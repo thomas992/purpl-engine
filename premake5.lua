@@ -2,9 +2,11 @@ workspace "purpl"
 	configurations { "Debug", "Release" }
 	platforms { "x64", "ARM64" }
 
-	location "proj"
+	location("proj" .. iif(_ACTION ~= nil, "/" .. _ACTION, ""))
 	targetdir "bin"
 	objdir "bin-int"
+
+	startproject "launcher"
 
 	cdialect "C11"
 	warnings "Extra"

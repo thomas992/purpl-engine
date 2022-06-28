@@ -62,6 +62,25 @@ char *util_normalize_path(const char *path)
 	return buf2;
 }
 
+char *util_absolute_path(const char *path)
+{
+	char *path2;
+	char *buf;
+	uint32_t len;
+
+#ifdef _WIN32
+	len = GetFullPathNameA(path, 0, NULL, 0);
+	buf = calloc(len, sizeof(char));
+	PURPL_ASSERT(buf);
+	GetFullPathNameA(path, len, buf, NULL);
+#endif
+
+	path2 = util_normalize_path(buf);
+	free(buf);
+
+	return path2;
+}
+
 char *util_prepend(char *str, const char *prefix)
 {
 	if (!str || !prefix || !strlen(prefix))
@@ -128,7 +147,6 @@ char *util_vstrfmt(const char *fmt, va_list args)
 // Adapted from https://gist.github.com/JonathonReinhart/8c0d90191c38af2dcadb102c4e202950
 void util_mkdir(const char *path)
 {
-	size_t len;
 	char *path2;
 	char *p;
 

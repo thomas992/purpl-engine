@@ -15,7 +15,7 @@ int32_t main(int32_t argc, char *argv[])
 	char *basedir;
 	char *gamedir;
 
-	basedir = util_normalize_path(argv[0]);
+	basedir = util_absolute_path(argv[0]);
 	*(strrchr(basedir, '/') + 1) = 0;
 	PURPL_LOG("Base directory is %s\n", basedir);
 
@@ -26,13 +26,13 @@ int32_t main(int32_t argc, char *argv[])
 			continue;
 
 		arg = argv[i] + 1;
-		if (strcmp(arg, "game")) {
+		if (strcmp(arg, "game") == 0) {
 			if (i >= argc - 1) {
 				PURPL_LOG("-game requires an argument\n");
 				error = true;
 				break;
 			}
-			gamedir = util_normalize_path(argv[++i]);
+			gamedir = util_absolute_path(argv[++i]);
 			if (!util_fexist(gamedir)) {
 				PURPL_LOG("Game directory \"%s\" does not exist\n", gamedir);
 				error = true;
@@ -40,6 +40,7 @@ int32_t main(int32_t argc, char *argv[])
 			}
 		}
 	}
+
 	if (error) {
 		if (gamedir)
 			free(gamedir);
@@ -48,14 +49,13 @@ int32_t main(int32_t argc, char *argv[])
 	}
 
 	if (!gamedir)
-		gamedir = util_strdup("purpl");
-	gamedir = util_prepend(gamedir, basedir);
+		gamedir = util_prepend("purpl", basedir);
 	if (gamedir[strlen(gamedir) - 1] != '/')
 		gamedir = util_append(gamedir, "/");
 	PURPL_LOG("Game directory is %s\n", gamedir);
 
 	engine = dll_load("engine");
-	engine->init(basedir, gamedir);
+	PURPL_RECAST_FUNCTION_PTR(engine->init, bool, const char *basedir, const char *gamedir)(basedir, gamedir);
 	engine->shutdown();
 	dll_unload(engine);
 

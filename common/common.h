@@ -71,6 +71,8 @@ typedef uint8_t byte_t;
 // Array size
 #define PURPL_ARRSIZE(a) (sizeof(a) / sizeof((a)[0]))
 
+#define PURPL_RECAST_FUNCTION_PTR(func, rettype, ...) ((rettype (*)(__VA_ARGS__))(func))
+
 // Function name
 #ifdef _MSC_VER
 #define PURPL_FUNCNAME __FUNCSIG__
