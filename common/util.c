@@ -81,6 +81,22 @@ char *util_absolute_path(const char *path)
 	return path2;
 }
 
+bool util_isabsolute(const char *path)
+{
+	char *path2;
+	char *path3;
+	bool ret;
+
+	path2 = util_normalize_path(path);
+	path3 = util_absolute_path(path);
+	ret = strcmp(path2, path2) == 0;
+
+	free(path2);
+	free(path3);
+
+	return ret;
+}
+
 char *util_prepend(char *str, const char *prefix)
 {
 	if (!str || !prefix || !strlen(prefix))

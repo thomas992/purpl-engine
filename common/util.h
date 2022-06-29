@@ -16,6 +16,9 @@ extern char *util_normalize_path(const char *path);
 // Get an absolute path
 extern char *util_absolute_path(const char *path);
 
+// Determine if a path is absolute
+extern bool util_isabsolute(const char *path);
+
 // Prepend to a string
 extern char *util_prepend(char *str, const char *prefix);
 
