@@ -1,6 +1,8 @@
 project "engine"
 	kind "SharedLib"
 	language "C"
+	
+	setdirs("", "data/bin")
 
 	files {
 		"premake5.lua",

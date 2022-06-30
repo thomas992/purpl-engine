@@ -3,44 +3,62 @@
 #include "dll.h"
 
 // DLL file prefix and extension
+#define DLL_PREFIX "lib"
 #ifdef _WIN32
 #define DLL_EXT ".dll"
-#define DLL_PREFIX ""
 #elif defined __APPLE__
 #define DLL_EXT ".dylib"
-#define DLL_PREFIX "lib"
 #else
 #define DLL_EXT ".so"
-#define DLL_PREFIX "lib"
 #endif
 
 // System-specific DLL loading function (calls LoadLibrary or dlopen)
-extern bool sys_dll_load(dll_t *dll);
+extern bool sys_dll_load(dll_t *dll, bool engine);
 
 // System-specific DLL unloading function (calls FreeLibrary or dlclose)
 extern void sys_dll_unload(dll_t *dll);
 
-dll_t *dll_load(const char *path)
+dll_t *dll_load(const char *path, bool engine)
 {
 	dll_t *dll;
+	char *path2;
+	char *tmp;
+	size_t pos;
 
 	dll = calloc(1, sizeof(dll_t));
 	PURPL_ASSERT(dll);
-	dll->path = util_normalize_path(path);
+	path2 = util_normalize_path(path);
+	dll->path = util_strdup(path2);
 
 	if (!util_fexist(dll->path)) {
-		dll->path = util_prepend(dll->path, DLL_PREFIX);
-		dll->path = util_append(dll->path, DLL_EXT);
+		tmp = util_append(dll->path, DLL_EXT);
+		free(dll->path);
+		dll->path = tmp;
+	}
+	if (!util_fexist(dll->path)) {
+		if (strrchr(dll->path, '/'))
+			pos = strrchr(dll->path, '/') - dll->path;
+		else
+			pos = 0;
+		tmp = util_insert(dll->path, pos, DLL_PREFIX);
+		PURPL_LOG("DLL %s does not exist, trying %s\n", dll->path, tmp);
+		free(dll->path);
+		dll->path = tmp;
+	}
+	if (!util_fexist(dll->path)) {
+		PURPL_LOG("DLL matching %s does not exist\n", path2);
+		dll_unload(dll);
+		return NULL;
 	}
 
 	PURPL_LOG("Loading DLL %s\n", dll->path);
 
-	if (!sys_dll_load(dll)) {
-		free(dll);
+	if (!sys_dll_load(dll, engine)) {
+		dll_unload(dll);
 		return NULL;
 	}
 
-	if (dll->version != PURPL_VERSION)
+	if (engine && dll->version != PURPL_VERSION)
 		PURPL_LOG("Version mismatch, DLL v%u.%u.%u.%u, engine v%u.%u.%u.%u\n",
 			  PURPL_VERSION_FORMAT(dll->version), PURPL_VERSION_FORMAT(PURPL_VERSION));
 

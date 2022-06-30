@@ -4,16 +4,26 @@
 #include "dll.h"
 #include "pack.h"
 
+static SDL_Window *g_wnd;
+
 bool engine_init(const char *basedir, const char *gamedir)
 {
 	PURPL_LOG("Initializing engine\n");
+
+	PURPL_LOG("Initializing SDL\n");
+	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+		PURPL_LOG("Failed to initialize SDL\n");
+		return false;
+	}
+
+	//g_wnd = SDL_CreateWindow("Purpl", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 1024, 768, 0);
 
 	return true;
 }
 
 void engine_frame(uint64_t delta)
 {
-	printf("\rFrame delta: %" PRIX64 "ms", delta);
+	printf("\rDelta: %" PRIu64 "ms\t", delta);
 }
 
 void engine_shutdown(void)

@@ -1,7 +1,8 @@
 // DLL loading interface. When a DLL is loaded, it's expected to export a function called create_interface that fills a
 // dll_t structure with functions to be called at various points. This mechanism is what Quake and Source engine employ,
 // and likely other engines. I chose it because it seems way better and simpler than using three different shitty Python
-// scripts to generate an interface header.
+// scripts to generate an interface header. Also, shared libraries are referred to as DLLs because it sounds cooler and
+// Dynamic Linking Library makes just as much sense as shared library
 
 #pragma once
 
@@ -25,6 +26,7 @@ typedef void (*dll_shutdown_t)(void);
 typedef struct dll {
 	char *path; // Path to the DLL
 	void *handle; // Handle to the DLL
+	bool engine; // Whether the fields after this one are valid
 	uint32_t version; // The DLL's version number
 	dll_init_t init; // Called at the start
 	dll_frame_t frame; // Called each frame or update
@@ -32,7 +34,7 @@ typedef struct dll {
 } dll_t;
 
 // Load a DLL
-extern dll_t *dll_load(const char *path);
+extern dll_t *dll_load(const char *path, bool engine);
 
 // Unload a DLL
 extern void dll_unload(dll_t *dll);

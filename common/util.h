@@ -20,10 +20,13 @@ extern char *util_absolute_path(const char *path);
 extern bool util_isabsolute(const char *path);
 
 // Prepend to a string
-extern char *util_prepend(char *str, const char *prefix);
+extern char *util_prepend(const char *str, const char *prefix);
+
+// Insert into a string
+extern char *util_insert(const char *str, size_t pos, const char *insert);
 
 // Append to a string
-extern char *util_append(char *str, const char *suffix);
+extern char *util_append(const char *str, const char *suffix);
 
 // Duplicate a string
 extern char *util_strdup(const char *str);
@@ -39,3 +42,6 @@ extern char *util_vstrfmt(const char *fmt, va_list args);
 
 // Make directories
 extern void util_mkdir(const char *path);
+
+// Get the number of milliseconds since the universe (1970) started
+extern uint64_t util_getaccuratetime(void);

@@ -53,6 +53,8 @@ char *util_normalize_path(const char *path)
 	p = strstr(buf, "//");
 	while (p) {
 		len = strlen(buf) - (p - buf);
+		if (len > strlen(buf))
+			break;
 		memmove(p, p + 1, len);
 		p[len - 1] = 0;
 	}
@@ -97,18 +99,26 @@ bool util_isabsolute(const char *path)
 	return ret;
 }
 
-char *util_prepend(char *str, const char *prefix)
+char *util_prepend(const char *str, const char *prefix)
 {
 	if (!str || !prefix || !strlen(prefix))
-		return str;
+		return NULL;
 
 	return util_strfmt("%s%s", prefix, str);
 }
 
-char *util_append(char *str, const char *suffix)
+char *util_insert(const char *str, size_t pos, const char *insert)
+{
+	if (!str || !insert || !strlen(insert))
+		return NULL;
+
+	return util_strfmt("%.*s%s%s", pos + 1, str, insert, str + pos + 1);
+}
+
+char *util_append(const char *str, const char *suffix)
 {
 	if (!str || !suffix || !strlen(suffix))
-		return str;
+		return NULL;
 
 	return util_strfmt("%s%s", str, suffix);
 }
@@ -188,4 +198,14 @@ void util_mkdir(const char *path)
 #else
 	mkdir(path2, NULL);
 #endif
+}
+
+uint64_t util_getaccuratetime(void)
+{
+	uint64_t time;
+#ifdef _WIN32
+	GetSystemTimeAsFileTime((FILETIME *)&time);
+	time /= 10000; // FILETIME is 100 nanosecond intervals, convert to milliseconds
+#endif
+	return time;
 }

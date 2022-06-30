@@ -17,6 +17,9 @@ int32_t main(int32_t argc, char *argv[])
 	bool error;
 	char *basedir;
 	char *gamedir;
+	char *path;
+
+	char *dlls[] = { "SDL2", "zstd" };
 
 	basedir = util_absolute_path(argv[0]);
 	*(strrchr(basedir, '/') + 1) = 0;
@@ -58,7 +61,23 @@ int32_t main(int32_t argc, char *argv[])
 	}
 	PURPL_LOG("Game directory is %s\n", gamedir);
 
-	engine = dll_load("engine");
+	// Load the other libraries needed
+	for (i = 0; i < PURPL_ARRSIZE(dlls); i++) {
+		path = util_strfmt("%sbin/%s", basedir, dlls[i]);
+		dll_load(path, false);
+		free(path);
+	}
+
+	path = util_append(basedir, "bin/engine");
+	engine = dll_load(path, true);
+	free(path);
+	if (!engine) {
+		PURPL_LOG("Failed to load engine, exiting\n");
+		free(gamedir);
+		free(basedir);
+		exit(1);
+	}
+
 	PURPL_RECAST_FUNCTION_PTR(engine->init, bool, const char *basedir, const char *gamedir)(basedir, gamedir);
 
 	run(
@@ -67,8 +86,7 @@ int32_t main(int32_t argc, char *argv[])
 			// client,
 			// server,
 		},
-		1 // 3
-	);
+		1);
 
 	engine->shutdown();
 	dll_unload(engine);
@@ -85,10 +103,10 @@ void run(dll_t **dlls, uint8_t dll_count)
 	uint64_t delta;
 	uint64_t i;
 
-	last = SDL_GetTicks64();
+	last = util_getaccuratetime();
 	running = true;
 	while (running) {
-		now = SDL_GetTicks64();
+		now = util_getaccuratetime();
 		delta = now - last;
 
 		// Update the DLLs

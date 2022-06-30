@@ -1,9 +1,45 @@
+-- Set the location of the project
+function setdirs(_location, _bindir)
+	location(_MAIN_SCRIPT_DIR .. "/proj" .. iif(_ACTION ~= nil, "/" .. _ACTION, "") .. "/" .. _location)
+	targetdir(_MAIN_SCRIPT_DIR .. "/" .. _bindir)
+end
+
+-- Links against libraries and copies them to the output folder on Windows
+_libs2 = {}
+_outlibs = {}
+_libcopycmds = {}
+function sharedlibs(_libs)
+	table.foreachi(_libs, function(_lib)
+		_lib2 = _lib
+		if _TARGET_OS ~= "windows" then
+			_lib2 = string.gsub(_lib, "lib", "")
+		end
+		if not table.contains(_libs2, _lib2) then
+			-- print("Adding " .. _lib2 .. " to list of libraries")
+			_libs2 = table.flatten({ _libs2, { _lib2 } })
+		end
+	end)
+	links(_libs2)
+	if _TARGET_OS == "windows" then
+		table.foreachi(_libs2, function(_lib)
+			_libname = _lib .. ".dll"
+			_pdbname = _lib .. ".pdb"
+			_lib2 = _MAIN_SCRIPT_DIR .. "/deps/lib/%{cfg.platform}/" .. _libname
+			_cmd = "{COPYFILE} " .. _lib2 .. " " .. _MAIN_SCRIPT_DIR .. "/data/bin/<NAME>"
+			_libcmd = string.gsub(_cmd, "<NAME>", _libname)
+			if not table.contains(_libcopycmds, _libcmd) then
+				-- print("Adding " .. _libcmd .. " to list of commands")
+				_libcopycmds = table.flatten({ _libcopycmds, { _libcmd } })
+			end
+		end)
+	end
+end
+
 workspace "purpl"
 	configurations { "Debug", "Release" }
 	platforms { "x64", "ARM64" }
 
-	location("proj" .. iif(_ACTION ~= nil, "/" .. _ACTION, ""))
-	targetdir "bin"
+	setdirs("", "bin")
 	objdir "bin-int"
 
 	startproject "launcher"
@@ -47,42 +83,18 @@ workspace "purpl"
 	filter ""
 
 project "files"
-	kind "Utility"
+	kind "None"
 
 	files { "premake5.lua",
 		"config.lua",
 		"tools/premake5.lua",
 	}
 
--- Links against libraries and copies them to the output folder on Windows
-function sharedlibs(_libs)
-	_libs2 = {}
-	table.foreachi(_libs, function(_lib)
-		_lib2 = _lib
-		if _TARGET_OS ~= "windows" then
-			_lib2 = string.gsub(_lib, "lib", "")
-		end
-		_libs2 = table.flatten({ _libs2, { _lib2 } })
-	end)
-	links(_libs2)
-	if _TARGET_OS == "windows" then
-		_libpat = "<LIBNAME>.dll"
-		_postbuildcmds = {}
-		i = 0
-		table.foreachi(_libs2, function(_lib)
-			_libname = string.gsub(_libpat, "<LIBNAME>", _lib)
-			_cmd = "{COPYFILE} " .. _MAIN_SCRIPT_DIR .. "/deps/lib/%{cfg.platform}/" .. _libname .. " %{cfg.linktarget.directory}/" .. _libname
-			_postbuildcmds = table.flatten({ _postbuildcmds, { _cmd } })
-			i = i + 1
-		end)
-		postbuildmessage("Copying " .. i .. " " .. iif(i == 1, "library", "libraries") .. " for target %{prj.name}")
-		postbuildcommands(_postbuildcmds)
-	end
-end
-
 include "config.lua"
 
 include "common"
 include "engine"
+include "game/client"
+include "game/server"
 include "launcher"
 include "tools"
