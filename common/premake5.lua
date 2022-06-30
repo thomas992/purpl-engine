@@ -7,6 +7,7 @@ project "common"
 
 		"common.h",
 		"dll.h",
+		"gameinfo.h",
 		"ini.h",
 		"pack.h",
 		"util.h",
@@ -14,6 +15,7 @@ project "common"
 
 		_TARGET_OS .. "/dll.c",
 		"dll.c",
+		"gameinfo.c",
 		"ini.c",
 		"pack.c",
 		"util.c",

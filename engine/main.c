@@ -2,11 +2,12 @@
 
 #include "common.h"
 #include "dll.h"
+#include "gameinfo.h"
 #include "pack.h"
 
 static SDL_Window *g_wnd;
 
-bool engine_init(const char *basedir, const char *gamedir)
+bool engine_init(const char *basedir, const char *gamedir, gameinfo_t *game)
 {
 	PURPL_LOG("Initializing engine\n");
 
@@ -16,14 +17,14 @@ bool engine_init(const char *basedir, const char *gamedir)
 		return false;
 	}
 
-	//g_wnd = SDL_CreateWindow("Purpl", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 1024, 768, 0);
+	g_wnd = SDL_CreateWindow(game->title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 1024, 768, SDL_WINDOW_ALLOW_HIGHDPI);
 
 	return true;
 }
 
 void engine_frame(uint64_t delta)
 {
-	printf("\rDelta: %" PRIu64 "ms\t", delta);
+	PURPL_LOG("\rDelta: %" PRIu64 "ms\t", delta);
 }
 
 void engine_shutdown(void)

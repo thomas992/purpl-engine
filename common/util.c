@@ -123,6 +123,36 @@ char *util_append(const char *str, const char *suffix)
 	return util_strfmt("%s%s", str, suffix);
 }
 
+char *util_replace(const char *str, const char *orig, const char *rplc)
+{
+	char *str1;
+	char *str2;
+	
+	if (!str || !orig || !rplc)
+		return NULL;
+	
+	str1 = util_strdup(str);
+	while ((str2 = strstr(str1, orig))) {
+		str2 = util_strfmt("%.*s%s%s", str2 - str1, str1, rplc, str2 + strlen(orig));
+		free(str1);
+		str1 = str2;
+	}
+
+	return str1;
+}
+
+char *util_remove(const char *str, const char *del)
+{
+	return util_replace(str, del, "");
+}
+
+char* util_removeidx(const char* str, size_t start, size_t end) {
+	if (!str || start > strlen(str) || end > strlen(str))
+		return NULL;
+
+	return util_strfmt("%.*s%s", start + 1, str, str + end + 1);
+}
+
 char *util_strdup(const char *str)
 {
 	return util_strndup(str, strlen(str) + 1);

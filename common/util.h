@@ -28,6 +28,15 @@ extern char *util_insert(const char *str, size_t pos, const char *insert);
 // Append to a string
 extern char *util_append(const char *str, const char *suffix);
 
+// Replace a string in a string
+extern char *util_replace(const char *str, const char *orig, const char *rplc);
+
+// Remove a string from a string
+extern char *util_remove(const char *str, const char *del);
+
+// Remove part of a string
+extern char *util_removeidx(const char *str, size_t start, size_t end);
+
 // Duplicate a string
 extern char *util_strdup(const char *str);
 
