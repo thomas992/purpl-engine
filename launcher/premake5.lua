@@ -13,6 +13,7 @@ project "launcher"
 
 	links {
 		"common",
+		"zstd_static",
 	}
 	
 	_cmds = {

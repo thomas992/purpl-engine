@@ -2,10 +2,34 @@
 
 #include "common.h"
 #include "dll.h"
+#include "gameinfo.h"
 #include "util.h"
 
 // Enter the loop that runs the engine
-void run(dll_t **dlls, uint8_t dll_count);
+void run(dll_t **dlls, uint8_t dll_count)
+{
+	bool running;
+	uint64_t now;
+	uint64_t last;
+	uint64_t delta;
+	uint64_t i;
+
+	last = util_getaccuratetime();
+	running = true;
+	while (running) {
+		now = util_getaccuratetime();
+		delta = now - last;
+
+		// Update the DLLs
+		for (i = 0; i < dll_count; i++) {
+			if (dlls[i] && dlls[i]->frame) {
+				running = running && dlls[i]->frame(delta);
+			}
+		}
+
+		last = now;
+	}
+}
 
 int32_t main(int32_t argc, char *argv[])
 {
@@ -18,6 +42,7 @@ int32_t main(int32_t argc, char *argv[])
 	char *basedir;
 	char *gamedir;
 	char *path;
+	gameinfo_t *info;
 
 	char *dlls[] = { "SDL2", "zstd" };
 
@@ -72,13 +97,22 @@ int32_t main(int32_t argc, char *argv[])
 	engine = dll_load(path, true);
 	free(path);
 	if (!engine) {
-		PURPL_LOG("Failed to load engine, exiting\n");
+		PURPL_LOG("Failed to load engine\n");
 		free(gamedir);
 		free(basedir);
 		exit(1);
 	}
 
-	PURPL_RECAST_FUNCTION_PTR(engine->init, bool, const char *basedir, const char *gamedir)(basedir, gamedir);
+	info = gameinfo_parse("game.ini", gamedir);
+	if (!info) {
+		PURPL_LOG("Failed to parse game.ini\n");
+		dll_unload(engine);
+		free(gamedir);
+		free(basedir);
+		exit(1);
+	}
+
+	PURPL_RECAST_FUNCPTR(engine->init, bool, const char *basedir, const char *gamedir, gameinfo_t *info)(basedir, gamedir, info);
 
 	run(
 		(dll_t *[]){
@@ -93,28 +127,4 @@ int32_t main(int32_t argc, char *argv[])
 
 	free(basedir);
 	free(gamedir);
-}
-
-void run(dll_t **dlls, uint8_t dll_count)
-{
-	bool running;
-	uint64_t now;
-	uint64_t last;
-	uint64_t delta;
-	uint64_t i;
-
-	last = util_getaccuratetime();
-	running = true;
-	while (running) {
-		now = util_getaccuratetime();
-		delta = now - last;
-
-		// Update the DLLs
-		for (i = 0; i < dll_count; i++) {
-			if (dlls[i] && dlls[i]->frame)
-				dlls[i]->frame(delta);
-		}
-
-		last = now;
-	}
 }
