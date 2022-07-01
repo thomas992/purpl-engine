@@ -23,12 +23,13 @@ dll_t *dll_load(const char *path, bool engine)
 	dll_t *dll;
 	char *path2;
 	char *tmp;
-	size_t pos;
 
 	dll = calloc(1, sizeof(dll_t));
 	PURPL_ASSERT(dll);
 	path2 = util_normalize_path(path);
 	dll->path = util_strdup(path2);
+
+	PURPL_LOG("Searching for DLL matching %s\n", path2);
 
 	if (!util_fexist(dll->path)) {
 		tmp = util_append(dll->path, DLL_EXT);
@@ -36,12 +37,8 @@ dll_t *dll_load(const char *path, bool engine)
 		dll->path = tmp;
 	}
 	if (!util_fexist(dll->path)) {
-		if (strrchr(dll->path, '/'))
-			pos = strrchr(dll->path, '/') - dll->path;
-		else
-			pos = 0;
-		tmp = util_insert(dll->path, pos, DLL_PREFIX);
-		PURPL_LOG("DLL %s does not exist, trying %s\n", dll->path, tmp);
+		tmp = util_insert(dll->path, strrchr(dll->path, '/') ? strrchr(dll->path, '/') - dll->path : 0,
+				  DLL_PREFIX);
 		free(dll->path);
 		dll->path = tmp;
 	}

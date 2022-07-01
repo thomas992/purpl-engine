@@ -52,5 +52,5 @@ extern char *util_vstrfmt(const char *fmt, va_list args);
 // Make directories
 extern void util_mkdir(const char *path);
 
-// Get the number of milliseconds since the universe (1970) started
+// Get the number of milliseconds since 1970
 extern uint64_t util_getaccuratetime(void);

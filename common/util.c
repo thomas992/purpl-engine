@@ -132,10 +132,12 @@ char *util_replace(const char *str, const char *orig, const char *rplc)
 		return NULL;
 	
 	str1 = util_strdup(str);
-	while ((str2 = strstr(str1, orig))) {
+	str2 = strstr(str1, orig);
+	while (str2) {
 		str2 = util_strfmt("%.*s%s%s", str2 - str1, str1, rplc, str2 + strlen(orig));
 		free(str1);
 		str1 = str2;
+		str2 = strstr(str1, orig);
 	}
 
 	return str1;
@@ -150,7 +152,7 @@ char* util_removeidx(const char* str, size_t start, size_t end) {
 	if (!str || start > strlen(str) || end > strlen(str))
 		return NULL;
 
-	return util_strfmt("%.*s%s", start + 1, str, str + end + 1);
+	return util_strfmt("%.*s%s", start, str, str + end);
 }
 
 char *util_strdup(const char *str)
@@ -236,6 +238,7 @@ uint64_t util_getaccuratetime(void)
 #ifdef _WIN32
 	GetSystemTimeAsFileTime((FILETIME *)&time);
 	time /= 10000; // FILETIME is 100 nanosecond intervals, convert to milliseconds
+	time -= 11644473600000; // 1601 -> 1970
 #endif
 	return time;
 }

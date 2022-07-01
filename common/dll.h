@@ -17,7 +17,7 @@ typedef void (*dll_create_interface_t)(void *dll);
 typedef bool (*dll_init_t)(void);
 
 // Frame function
-typedef void (*dll_frame_t)(uint64_t delta);
+typedef bool (*dll_frame_t)(uint64_t delta);
 
 // Shutdown function
 typedef void (*dll_shutdown_t)(void);
