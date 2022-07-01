@@ -8,11 +8,16 @@
 
 // Structure representing game.ini
 typedef struct gameinfo {
+	char *gamedir; // The directory of the file's game
+	char *path; // The path to the file
+
 	char *game; // The name of the game
 	char *title; // The title of the game
 
 	char **dirs; // Paths to the directories
+	uint16_t dir_count; // Number of directories
 	pack_file_t **packs; // Pack files
+	uint16_t pack_count; // Number of pack files
 } gameinfo_t;
 
 // Parse a game.ini file

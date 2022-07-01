@@ -1,5 +1,5 @@
 // Pack file. Pretty much a ripoff of Valve's VPK format but kinda different and also due to laziness you have to
-// recreate files when their contents change
+// recreate files when their contents change rather than them being updated, but I don't forsee that being a huge issue
 
 // All fields are little endian because fuck big endian (most architectures in wide use like x86, ARM, RISC-V are LE
 // anyway)

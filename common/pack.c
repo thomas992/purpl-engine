@@ -336,7 +336,8 @@ void pack_add_dir(pack_file_t *pack, const char *path)
 	dir = opendir(path2);
 	PURPL_ASSERT(dir);
 
-	while ((ent = readdir(dir))) {
+	ent = readdir(dir);
+	while (ent) {
 		if (strncmp(ent->d_name, ".", ent->d_namlen) == 0 || strncmp(ent->d_name, "..", ent->d_namlen) == 0)
 			continue;
 
@@ -347,6 +348,7 @@ void pack_add_dir(pack_file_t *pack, const char *path)
 			pack_add(pack, path3, strchr(path3, '/') + 1);
 
 		free(path3);
+		ent = readdir(dir);
 	}
 
 	free(path2);
