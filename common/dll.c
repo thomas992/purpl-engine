@@ -28,7 +28,7 @@ dll_t *dll_load(const char *path, bool engine)
 	path2 = util_normalize_path(path);
 	dll->path = util_strdup(path2);
 
-	PURPL_LOG("Searching for DLL matching %s\n", path2);
+	PURPL_LOG(COMMON_LOG_PREFIX "Searching for DLL matching %s\n", path2);
 
 	if (!util_fexist(dll->path)) {
 		tmp = util_append(dll->path, DLL_EXT);
@@ -42,12 +42,12 @@ dll_t *dll_load(const char *path, bool engine)
 		dll->path = tmp;
 	}
 	if (!util_fexist(dll->path)) {
-		PURPL_LOG("DLL matching %s does not exist\n", path2);
+		PURPL_LOG(COMMON_LOG_PREFIX "DLL matching %s does not exist\n", path2);
 		dll_unload(dll);
 		return NULL;
 	}
 
-	PURPL_LOG("Loading DLL %s\n", dll->path);
+	PURPL_LOG(COMMON_LOG_PREFIX "Loading DLL %s\n", dll->path);
 
 	if (!sys_dll_load(dll, engine)) {
 		dll_unload(dll);
@@ -55,7 +55,7 @@ dll_t *dll_load(const char *path, bool engine)
 	}
 
 	if (engine && dll->version != PURPL_VERSION)
-		PURPL_LOG("Version mismatch, DLL v%u.%u.%u.%u, engine v%u.%u.%u.%u. EXPECT CATASROPHIC FAILURE!\n",
+		PURPL_LOG(COMMON_LOG_PREFIX "Version mismatch, DLL v%u.%u.%u.%u, engine v%u.%u.%u.%u. EXPECT CATASROPHIC FAILURE!\n",
 			  PURPL_VERSION_FORMAT(dll->version), PURPL_VERSION_FORMAT(PURPL_VERSION));
 
 	return dll;
@@ -66,7 +66,7 @@ void dll_unload(dll_t *dll)
 	if (!dll)
 		return;
 
-	PURPL_LOG("Unloading DLL %s\n", dll->path);
+	PURPL_LOG(COMMON_LOG_PREFIX "Unloading DLL %s\n", dll->path);
 	free(dll->path);
 	sys_dll_unload(dll);
 	free(dll);

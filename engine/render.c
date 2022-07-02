@@ -1,5 +1,6 @@
 // Rendering abstraction
 
+#include "engine.h"
 #include "render.h"
 
 render_api_t g_render_api;
@@ -36,7 +37,7 @@ bool engine_render_init(render_api_t api)
 		return engine_metal_init();
 #endif
 	default:
-		PURPL_LOG("Render initialization attempted with invalid API %d\n", api);
+		PURPL_LOG(RENDER_LOG_PREFIX "Render initialization attempted with invalid API %d\n", api);
 		return false;
 	}
 }
@@ -57,7 +58,7 @@ bool engine_render_begin_frame(uint64_t delta)
 		return engine_metal_begin_frame(delta);
 #endif
 	default:
-		PURPL_LOG("Frame setup attempted with invalid API %d\n", g_render_api);
+		PURPL_LOG(RENDER_LOG_PREFIX "Frame setup attempted with invalid API %d\n", g_render_api);
 		return false;
 	}
 }
@@ -78,7 +79,7 @@ bool engine_render_end_frame(uint64_t delta)
 		return engine_metal_end_frame(delta);
 #endif
 	default:
-		PURPL_LOG("Frame draw attempted with invalid API %d\n", g_render_api);
+		PURPL_LOG(RENDER_LOG_PREFIX "Frame draw attempted with invalid API %d\n", g_render_api);
 		return false;
 	}
 }
@@ -99,7 +100,7 @@ void engine_render_shutdown(void)
 		engine_metal_shutdown();
 #endif
 	default:
-		PURPL_LOG("Render shutdown attempted with invalid API %d\n", g_render_api);
+		PURPL_LOG(RENDER_LOG_PREFIX "Render shutdown attempted with invalid API %d\n", g_render_api);
 		break;
 	}
 }

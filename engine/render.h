@@ -15,6 +15,8 @@
 #define METAL_ENABLED 1
 #endif
 
+#define RENDER_LOG_PREFIX ENGINE_LOG_PREFIX "RENDER: "
+
 // Rendering API
 typedef enum render_api {
 	RENDER_API_VULKAN = 0, // Vulkan, non-Apple only

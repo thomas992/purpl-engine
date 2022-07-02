@@ -10,6 +10,8 @@
 #include "globals.h"
 #include "render.h"
 
+#define ENGINE_LOG_PREFIX "ENGINE: "
+
 // Interface to the engine
 typedef struct engine_dll {
 	// Fields shared with dll_t

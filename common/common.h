@@ -39,6 +39,8 @@
 
 #include "zstd.h"
 
+#define COMMON_LOG_PREFIX "COMMON: "
+
 // Pluralize
 #define PURPL_PLURALIZE(count, plural, singular) ((count) == 1 ? (singular) : (plural))
 

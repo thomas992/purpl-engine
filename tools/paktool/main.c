@@ -3,6 +3,9 @@
 #include "common/common.h"
 #include "common/pack.h"
 
+#define PAKTOOL_LOG_PREFIX "PAKTOOL: "
+
+// Mode for the tool
 typedef enum paktool_mode {
 	LIST, // List files
 	READ, // Read a file
@@ -58,7 +61,7 @@ int32_t main(int32_t argc, char *argv[])
 	case LIST: {
 		pack = pack_load(pack_name);
 		if (!pack) {
-			PURPL_LOG("Failed to read pack file %s\n", pack_name);
+			PURPL_LOG(PAKTOOL_LOG_PREFIX "Failed to read pack file %s\n", pack_name);
 			free(pack_name);
 			exit(1);
 		}
@@ -83,7 +86,7 @@ int32_t main(int32_t argc, char *argv[])
 
 		pack = pack_load(pack_name);
 		if (!pack) {
-			PURPL_LOG("Failed to read pack file %s\n", pack_name);
+			PURPL_LOG(PAKTOOL_LOG_PREFIX "Failed to read pack file %s\n", pack_name);
 			free(pack_name);
 			free(other);
 			exit(1);
@@ -92,7 +95,7 @@ int32_t main(int32_t argc, char *argv[])
 		entry = pack_get(pack, other);
 		buf = pack_read(pack, entry);
 		if (!buf) {
-			PURPL_LOG("Failed to read file %s from pack file %s\n", other, pack_name);
+			PURPL_LOG(PAKTOOL_LOG_PREFIX "Failed to read file %s from pack file %s\n", other, pack_name);
 			free(pack_name);
 			free(other);
 			pack_close(pack);
@@ -100,7 +103,7 @@ int32_t main(int32_t argc, char *argv[])
 		}
 
 		dst_path = strrchr(other, '/') ? strrchr(other, '/') + 1 : "";
-		PURPL_LOG("Writing contents of %s to %s\n", other, dst_path);
+		PURPL_LOG(PAKTOOL_LOG_PREFIX "Writing contents of %s to %s\n", other, dst_path);
 		dst = fopen(dst_path, "wb+");
 		PURPL_ASSERT(dst);
 
@@ -118,19 +121,19 @@ int32_t main(int32_t argc, char *argv[])
 		size_t j;
 
 		if (util_fexist(pack_name)) {
-			PURPL_LOG("Removing old directory %s\n", pack_name);
+			PURPL_LOG(PAKTOOL_LOG_PREFIX "Removing old directory %s\n", pack_name);
 			remove(pack_name);
 		}
 
 		pack = pack_load(pack_name);
 		if (!pack) {
-			PURPL_LOG("Failed to read pack file %s\n", pack_name);
+			PURPL_LOG(PAKTOOL_LOG_PREFIX "Failed to read pack file %s\n", pack_name);
 			free(pack_name);
 			free(other);
 			exit(1);
 		}
 
-		PURPL_LOG("Extracting pack file %s\n", pack_name);
+		PURPL_LOG(PAKTOOL_LOG_PREFIX "Extracting pack file %s\n", pack_name);
 		util_mkdir(pack_name);
 
 		for (j = 0; j < pack->header.entry_count; j++) {
@@ -143,7 +146,7 @@ int32_t main(int32_t argc, char *argv[])
 
 			buf = pack_read(pack, entry);
 			if (!buf) {
-				PURPL_LOG("Failed to read file %s from pack file %s\n", other, pack_name);
+				PURPL_LOG(PAKTOOL_LOG_PREFIX "Failed to read file %s from pack file %s\n", other, pack_name);
 				free(dst_path);
 				free(pack_name);
 				free(other);
@@ -151,7 +154,7 @@ int32_t main(int32_t argc, char *argv[])
 				exit(1);
 			}
 
-			PURPL_LOG("Extracting %s from %s\n", dst_path, pack_name);
+			PURPL_LOG(PAKTOOL_LOG_PREFIX "Extracting %s from %s\n", dst_path, pack_name);
 			dst = fopen(dst_path, "wb+");
 			PURPL_ASSERT(dst);
 
@@ -170,7 +173,7 @@ int32_t main(int32_t argc, char *argv[])
 		tmp = util_append(pack_name, "_dir.pak");
 		if (util_fexist(tmp)) {
 			pack = pack_load(pack_name);
-			PURPL_LOG("Removing old files\n");
+			PURPL_LOG(PAKTOOL_LOG_PREFIX "Removing old files\n");
 			remove(tmp);
 			free(tmp);
 			for (i = 0; i < pack->header.total_size / PACK_SPLIT_SIZE + 1; i++) {
@@ -186,7 +189,7 @@ int32_t main(int32_t argc, char *argv[])
 
 		pack = pack_create(pack_name, other);
 		if (!pack) {
-			PURPL_LOG("Failed to create pack file %s from directory %s\n", pack_name, other);
+			PURPL_LOG(PAKTOOL_LOG_PREFIX "Failed to create pack file %s from directory %s\n", pack_name, other);
 			free(pack_name);
 			free(other);
 			exit(1);

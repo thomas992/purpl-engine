@@ -10,13 +10,13 @@ static bool parse(const char *section, const char *key, const char *value, gamei
 	if (strcmp(section, "game") == 0) {
 		if (strcmp(key, "game") == 0) {
 			info->game = util_strdup(value);
-			PURPL_LOG("Game info %s is for game %s\n", info->path, info->game);
+			PURPL_LOG(COMMON_LOG_PREFIX "Game info %s is for game %s\n", info->path, info->game);
 		}
 		else if (strcmp(key, "title") == 0) {
 			info->title = util_strdup(value);
-			PURPL_LOG("Title of game %s is %s\n", info->game, info->title);
+			PURPL_LOG(COMMON_LOG_PREFIX "Title of game %s is %s\n", info->game, info->title);
 		} else {
-			PURPL_LOG("Ignoring unknown key %s with value %s in section [%s]\n", key, value, section);
+			PURPL_LOG(COMMON_LOG_PREFIX "Ignoring unknown key %s with value %s in section [%s]\n", key, value, section);
 		}
 	} else if (strcmp(section, "data") == 0) {
 		if (strcmp(key, "dir") == 0) {
@@ -37,7 +37,7 @@ static bool parse(const char *section, const char *key, const char *value, gamei
 				info->dirs[info->dir_count] = util_replace(value, ".", info->gamedir);
 				info->dir_count++;
 			}
-			PURPL_LOG("Added directory %s to search paths for game %s\n", info->dirs[info->dir_count - 1], info->game);
+			PURPL_LOG(COMMON_LOG_PREFIX "Added directory %s to search paths for game %s\n", info->dirs[info->dir_count - 1], info->game);
 		} else if (strcmp(key, "pack") == 0) {
 			if (!info->packs) {
 				info->packs = calloc(1, sizeof(pack_file_t *));
@@ -55,12 +55,12 @@ static bool parse(const char *section, const char *key, const char *value, gamei
 				info->packs[info->pack_count] = pack_load(value);
 				info->pack_count++;
 			}
-			PURPL_LOG("Added pack %s_*.pak to search paths for game %s\n", value, info->game);
+			PURPL_LOG(COMMON_LOG_PREFIX "Added pack %s_*.pak to search paths for game %s\n", value, info->game);
 		} else {
-			PURPL_LOG("Ignoring unknown key %s with value %s in section [%s]\n", key, value, section);
+			PURPL_LOG(COMMON_LOG_PREFIX "Ignoring unknown key %s with value %s in section [%s]\n", key, value, section);
 		}
 	} else {
-		PURPL_LOG("Ignoring unknown key %s with value %s in section [%s]\n", key, value, section);
+		PURPL_LOG(COMMON_LOG_PREFIX "Ignoring unknown key %s with value %s in section [%s]\n", key, value, section);
 	}
 
 	return true;
@@ -79,7 +79,7 @@ gameinfo_t *gameinfo_parse(const char *name, const char *gamedir)
 	info = util_alloc(1, sizeof(gameinfo_t), NULL);
 	info->gamedir = gamedir;
 	info->path = util_absolute_path(name2);
-	PURPL_LOG("Parsing gameinfo in %s\n", info->path);
+	PURPL_LOG(COMMON_LOG_PREFIX "Parsing gameinfo in %s\n", info->path);
 
 	ini_browse((INI_CALLBACK)parse, info, name2);
 

@@ -11,13 +11,13 @@ bool g_wnd_visible;
 
 bool engine_init(const char *basedir, const char *gamedir, gameinfo_t *game, render_api_t render_api, bool devmode)
 {
-	PURPL_LOG("Initializing engine for game %s\n", game->title);
+	PURPL_LOG(ENGINE_LOG_PREFIX "Initializing engine for game %s\n", game->title);
 
 	g_engine->dev = devmode;
 
-	PURPL_LOG("Initializing SDL\n");
+	PURPL_LOG(ENGINE_LOG_PREFIX "Initializing SDL\n");
 	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-		PURPL_LOG("Failed to initialize SDL\n");
+		PURPL_LOG(ENGINE_LOG_PREFIX "Failed to initialize SDL\n");
 		return false;
 	}
 
@@ -40,15 +40,15 @@ bool engine_begin_frame(uint64_t delta)
 		if (event.type == SDL_WINDOWEVENT && event.window.windowID == SDL_GetWindowID(g_wnd)) {
 			switch (event.window.event) {
 			case SDL_WINDOWEVENT_HIDDEN:
-				PURPL_LOG("Window hidden\n");
+				PURPL_LOG(ENGINE_LOG_PREFIX "Window hidden\n");
 				g_wnd_visible = false;
 				break;
 			case SDL_WINDOWEVENT_EXPOSED:
-				PURPL_LOG("Window exposed\n");
+				PURPL_LOG(ENGINE_LOG_PREFIX "Window exposed\n");
 				g_wnd_visible = true;
 				break;
 			case SDL_WINDOWEVENT_CLOSE:
-				PURPL_LOG("Window closed\n");
+				PURPL_LOG(ENGINE_LOG_PREFIX "Window closed\n");
 				return false;
 			}
 		}
@@ -64,12 +64,12 @@ bool engine_end_frame(uint64_t delta)
 
 void engine_shutdown(void)
 {
-	PURPL_LOG("Shutting down\n");
+	PURPL_LOG(ENGINE_LOG_PREFIX "Shutting down\n");
 
-	PURPL_LOG("Destroying window\n");
+	PURPL_LOG(ENGINE_LOG_PREFIX "Destroying window\n");
 	SDL_DestroyWindow(g_wnd);
 
-	PURPL_LOG("Shutting down SDL\n");
+	PURPL_LOG(ENGINE_LOG_PREFIX "Shutting down SDL\n");
 	SDL_Quit();
 }
 
@@ -78,7 +78,7 @@ PURPL_INTERFACE void create_interface(engine_dll_t *dll)
 	if (!dll)
 		return;
 
-	PURPL_LOG("Creating interface to engine v%u.%u.%u.%u\n", PURPL_VERSION_FORMAT(PURPL_VERSION));
+	PURPL_LOG(ENGINE_LOG_PREFIX "Creating interface to engine v%u.%u.%u.%u\n", PURPL_VERSION_FORMAT(PURPL_VERSION));
 
 	g_engine = dll;
 	g_engine->version = PURPL_VERSION;

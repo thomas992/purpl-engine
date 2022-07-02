@@ -15,7 +15,7 @@ pack_file_t *pack_create(const char *name, const char *src)
 
 	pack->name = util_normalize_path(name);
 	src2 = util_normalize_path(src);
-	PURPL_LOG("Creating pack file %s_*.pak from directory %s\n", pack->name, src2);
+	PURPL_LOG(COMMON_LOG_PREFIX "Creating pack file %s_*.pak from directory %s\n", pack->name, src2);
 
 	path = util_strfmt("%s_dir.pak", pack->name);
 	pack->dir = fopen(path, "wb+");
@@ -46,7 +46,7 @@ pack_file_t *pack_load(const char *name)
 	PURPL_ASSERT(pack);
 
 	pack->name = util_normalize_path(name);
-	PURPL_LOG("Reading pack file %s_*.pak\n", pack->name);
+	PURPL_LOG(COMMON_LOG_PREFIX "Reading pack file %s_*.pak\n", pack->name);
 
 	path = util_strfmt("%s_dir.pak", pack->name);
 	pack->dir = fopen(path, "rb");
@@ -61,14 +61,14 @@ pack_file_t *pack_load(const char *name)
 	pack->pathbuf = calloc(pack->header.pathbuf_size, sizeof(char));
 	PURPL_ASSERT(pack->pathbuf);
 	fread(pack->pathbuf, 1, pack->header.pathbuf_size, pack->dir);
-	PURPL_LOG("Read %" PRIu64 " byte path buffer\n", pack->header.pathbuf_size);
+	PURPL_LOG(COMMON_LOG_PREFIX "Read %" PRIu64 " byte path buffer\n", pack->header.pathbuf_size);
 
 	pack->entries = calloc(pack->header.entry_count, sizeof(pack_entry_t));
 	PURPL_ASSERT(pack->entries);
 
 	for (i = 0; i < pack->header.entry_count; i++)
 		fread(pack->entries + i, sizeof(pack_entry_t), 1, pack->dir);
-	PURPL_LOG("Read %u entries\n", pack->header.entry_count);
+	PURPL_LOG(COMMON_LOG_PREFIX "Read %u entries\n", pack->header.entry_count);
 
 	return pack;
 }
@@ -78,7 +78,7 @@ void pack_write(pack_file_t *pack)
 	if (!pack)
 		return;
 
-	PURPL_LOG("Writing pack %s_*.pak with %u %s and %zu %s in the path buffer\n", pack->name,
+	PURPL_LOG(COMMON_LOG_PREFIX "Writing pack %s_*.pak with %u %s and %zu %s in the path buffer\n", pack->name,
 		  pack->header.entry_count, PURPL_PLURALIZE(pack->header.entry_count, "entries", "entry"),
 		  pack->header.pathbuf_size, PURPL_PLURALIZE(pack->header.pathbuf_size, "bytes", "byte"));
 
@@ -87,7 +87,7 @@ void pack_write(pack_file_t *pack)
 	fwrite(pack->pathbuf, 1, pack->header.pathbuf_size, pack->dir);
 	fwrite(pack->entries, sizeof(pack_entry_t), pack->header.entry_count, pack->dir);
 
-	PURPL_LOG("Flushing file stream\n");
+	PURPL_LOG(COMMON_LOG_PREFIX "Flushing file stream\n");
 	fflush(pack->dir);
 }
 
@@ -96,7 +96,7 @@ void pack_close(pack_file_t *pack)
 	if (!pack)
 		return;
 
-	PURPL_LOG("Closing pack %s_*.pak\n", pack->name);
+	PURPL_LOG(COMMON_LOG_PREFIX "Closing pack %s_*.pak\n", pack->name);
 
 	free(pack->name);
 	free(pack->pathbuf);
@@ -151,7 +151,7 @@ uint8_t *pack_read(pack_file_t *pack, pack_entry_t *entry)
 		len = min(PACK_SPLIT_SIZE - PACK_SPLIT_OFFSET(offset), remaining);
 
 #ifdef PACK_DEBUG
-		PURPL_LOG("Reading %zu %s of file %s (%zu %s remaining, stored hash 0x%" PRIX64 ", offset 0x%" PRIu64
+		PURPL_LOG(COMMON_LOG_PREFIX "Reading %zu %s of file %s (%zu %s remaining, stored hash 0x%" PRIX64 ", offset 0x%" PRIu64
 			  ") from pack split %s\n",
 			  len, PURPL_PLURALIZE(len, "bytes", "byte"),
 			  PACK_GET_NAME(pack, entry), remaining, PURPL_PLURALIZE(remaining, "bytes", "byte"),
@@ -175,17 +175,17 @@ uint8_t *pack_read(pack_file_t *pack, pack_entry_t *entry)
 
 	hash = XXH3_64bits(buf, entry->real_size);
 	if (hash != entry->hash) {
-		PURPL_LOG("Hash 0x%" PRIX64 " does not match expected hash 0x%" PRIX64 "\n", hash, entry->hash);
+		PURPL_LOG(COMMON_LOG_PREFIX "Hash 0x%" PRIX64 " does not match expected hash 0x%" PRIX64 "\n", hash, entry->hash);
 		free(buf);
 		return NULL;
 	}
 
 #ifdef PACK_DEBUG
 	if (PACK_SPLIT(offset) != split_idx) {
-		PURPL_LOG("Read %u %s from pack splits %s_%0.5u-%0.5u.pak\n", entry->size,
+		PURPL_LOG(COMMON_LOG_PREFIX "Read %u %s from pack splits %s_%0.5u-%0.5u.pak\n", entry->size,
 			  PURPL_PLURALIZE(entry->size, "bytes", "byte"), pack->name, PACK_SPLIT(offset), split_idx);
 	} else {
-		PURPL_LOG("Read %u %s from pack split %s_%0.5u.pak\n", entry->size,
+		PURPL_LOG(COMMON_LOG_PREFIX "Read %u %s from pack split %s_%0.5u.pak\n", entry->size,
 			  PURPL_PLURALIZE(entry->size, "bytes", "byte"), pack->name, split_idx);
 	}
 #endif
@@ -214,7 +214,7 @@ pack_entry_t *pack_add(pack_file_t *pack, const char *path, const char *internal
 	path2 = util_normalize_path(path);
 	internal_path2 = util_normalize_path(internal_path[0] == '/' ? internal_path + 1 : internal_path);
 #ifdef PACK_DEBUG
-	PURPL_LOG("Adding file %s to pack %s_*.pak as %s\n", path2, pack->name, internal_path2);
+	PURPL_LOG(COMMON_LOG_PREFIX "Adding file %s to pack %s_*.pak as %s\n", path2, pack->name, internal_path2);
 #endif
 
 	memset(&entry, 0, sizeof(pack_entry_t));
@@ -246,7 +246,7 @@ pack_entry_t *pack_add(pack_file_t *pack, const char *path, const char *internal
 
 	entry.size = (uint32_t)ZSTD_compress(compressed, entry.size, tmp, entry.real_size, ZSTD_btultra2);
 #ifdef PACK_DEBUG
-	PURPL_LOG("Read %" PRIu64 " %s, hash 0x%" PRIX64 "X, compressed size is %u %s\n", entry.real_size,
+	PURPL_LOG(COMMON_LOG_PREFIX "Read %" PRIu64 " %s, hash 0x%" PRIX64 "X, compressed size is %u %s\n", entry.real_size,
 		  PURPL_PLURALIZE(entry.real_size, "bytes", "byte"), entry.hash, entry.size,
 		  PURPL_PLURALIZE(entry.size, "bytes", "byte"));
 #endif
@@ -274,10 +274,10 @@ pack_entry_t *pack_add(pack_file_t *pack, const char *path, const char *internal
 
 #ifdef PACK_DEBUG
 	if (PACK_SPLIT(offset) != split_idx) {
-		PURPL_LOG("Wrote %u %s in pack splits %u-%u\n", entry.size,
+		PURPL_LOG(COMMON_LOG_PREFIX "Wrote %u %s in pack splits %u-%u\n", entry.size,
 			  PURPL_PLURALIZE(entry.size, "bytes", "byte"), PACK_SPLIT(offset), split_idx);
 	} else {
-		PURPL_LOG("\rWrote %u %s in pack split %u\n", entry.size, PURPL_PLURALIZE(entry.size, "bytes", "byte"),
+		PURPL_LOG(COMMON_LOG_PREFIX "\rWrote %u %s in pack split %u\n", entry.size, PURPL_PLURALIZE(entry.size, "bytes", "byte"),
 			  split_idx);
 	}
 #endif

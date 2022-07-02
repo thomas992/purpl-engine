@@ -7,6 +7,8 @@
 
 #include "engine/engine.h"
 
+#define LAUNCHER_LOG_PREFIX "LAUNCHER: "
+
 // Enter the loop that runs the engine
 void run(dll_t **dlls, uint8_t dll_count)
 {
@@ -57,7 +59,7 @@ int32_t main(int32_t argc, char *argv[])
 
 	basedir = util_absolute_path(argv[0]);
 	*(strrchr(basedir, '/') + 1) = 0;
-	PURPL_LOG("Base directory is %s\n", basedir);
+	PURPL_LOG(LAUNCHER_LOG_PREFIX "Base directory is %s\n", basedir);
 
 	different_api = false;
 	error = false;
@@ -74,14 +76,14 @@ int32_t main(int32_t argc, char *argv[])
 		arg = argv[i] + 1;
 		if (strcmp(arg, "game") == 0) {
 			if (i >= argc - 1) {
-				PURPL_LOG("-game requires an argument\n");
+				PURPL_LOG(LAUNCHER_LOG_PREFIX "-game requires an argument\n");
 				error = true;
 				break;
 			}
 			gamedir = util_absolute_path(argv[++i]);
 		} else if (strcmp(arg, "directx") == 0 || strcmp(arg, "direct3d") == 0) {
 #ifdef DIRECTX_ENABLED
-			PURPL_LOG("Setting render API to Direct3D 12\n");
+			PURPL_LOG(LAUNCHER_LOG_PREFIX "Setting render API to Direct3D 12\n");
 			render_api = RENDER_API_DIRECTX;
 			different_api = true;
 #else
@@ -89,17 +91,17 @@ int32_t main(int32_t argc, char *argv[])
 #endif
 		} else if (strcmp(arg, "vulkan") == 0) {
 #ifdef VULKAN_ENABLED
-			PURPL_LOG("Setting render API to Vulkan\n");
+			PURPL_LOG(LAUNCHER_LOG_PREFIX "Setting render API to Vulkan\n");
 			render_api = RENDER_API_VULKAN;
 			different_api = true;
 #else
 			PURPL_LOG("Ignoring -vulkan on unsupported platform\n");
 #endif
 		} else if (strcmp(arg, "dev") == 0 || strcmp(arg, "debug") == 0) {
-			PURPL_LOG("Enabling developer mode\n");
+			PURPL_LOG(LAUNCHER_LOG_PREFIX "Enabling developer mode\n");
 			devmode = true;
 		} else if (strcmp(arg, "nodev") == 0 || strcmp(arg, "nodebug") == 0) {
-			PURPL_LOG("Disabling developer mode\n");
+			PURPL_LOG(LAUNCHER_LOG_PREFIX "Disabling developer mode\n");
 			devmode = true;
 		} else if (strcmp(arg, "help") == 0) {
 			printf("\n-- LIST OF AVAILABLE OPTIONS --\n\n"
@@ -112,7 +114,7 @@ int32_t main(int32_t argc, char *argv[])
 			error = true;
 			break;
 		} else {
-			PURPL_LOG("Ignoring unknown argument %s\n", argv[i]);
+			PURPL_LOG(LAUNCHER_LOG_PREFIX "Ignoring unknown argument %s\n", argv[i]);
 		}
 	}
 
@@ -138,12 +140,12 @@ int32_t main(int32_t argc, char *argv[])
 	if (gamedir[strlen(gamedir) - 1] != '/')
 		gamedir = util_append(gamedir, "/");
 	if (!util_fexist(gamedir)) {
-		PURPL_LOG("Game directory \"%s\" does not exist\n", gamedir);
+		PURPL_LOG(LAUNCHER_LOG_PREFIX "Game directory \"%s\" does not exist\n", gamedir);
 		free(gamedir);
 		free(basedir);
 		exit(1);
 	}
-	PURPL_LOG("Game directory is %s\n", gamedir);
+	PURPL_LOG(LAUNCHER_LOG_PREFIX "Game directory is %s\n", gamedir);
 
 	// Load the other libraries needed
 	for (i = 0; i < PURPL_ARRSIZE(dlls); i++) {
@@ -156,7 +158,7 @@ int32_t main(int32_t argc, char *argv[])
 	engine = (engine_dll_t *)dll_load(path, true);
 	free(path);
 	if (!engine) {
-		PURPL_LOG("Failed to load engine\n");
+		PURPL_LOG(LAUNCHER_LOG_PREFIX "Failed to load engine\n");
 		free(gamedir);
 		free(basedir);
 		exit(1);
@@ -164,7 +166,7 @@ int32_t main(int32_t argc, char *argv[])
 
 	info = gameinfo_parse("game.ini", gamedir);
 	if (!info) {
-		PURPL_LOG("Failed to parse game.ini\n");
+		PURPL_LOG(LAUNCHER_LOG_PREFIX "Failed to parse game.ini\n");
 		dll_unload((dll_t *)engine);
 		free(gamedir);
 		free(basedir);
