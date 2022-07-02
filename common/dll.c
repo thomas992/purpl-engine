@@ -55,7 +55,7 @@ dll_t *dll_load(const char *path, bool engine)
 	}
 
 	if (engine && dll->version != PURPL_VERSION)
-		PURPL_LOG("Version mismatch, DLL v%u.%u.%u.%u, engine v%u.%u.%u.%u\n",
+		PURPL_LOG("Version mismatch, DLL v%u.%u.%u.%u, engine v%u.%u.%u.%u. EXPECT CATASROPHIC FAILURE!\n",
 			  PURPL_VERSION_FORMAT(dll->version), PURPL_VERSION_FORMAT(PURPL_VERSION));
 
 	return dll;

@@ -101,6 +101,16 @@ int32_t main(int32_t argc, char *argv[])
 		} else if (strcmp(arg, "nodev") == 0 || strcmp(arg, "nodebug") == 0) {
 			PURPL_LOG("Disabling developer mode\n");
 			devmode = true;
+		} else if (strcmp(arg, "help") == 0) {
+			printf("\n-- LIST OF AVAILABLE OPTIONS --\n\n"
+			       "-game <gamedir>\t\t- Set the game directory\n"
+			       "-directx/-direct3d\t- Use Direct3D 12 for rendering\n"
+			       "-vulkan\t\t\t- Use Vulkan for rendering\n"
+			       "-dev/-debug\t\t- Enable developer mode\n"
+			       "-nodev/-nodebug\t\t- Disable developer mode\n"
+			       "\nMost/all options print additional information if used incorrectly\n");
+			error = true;
+			break;
 		} else {
 			PURPL_LOG("Ignoring unknown argument %s\n", argv[i]);
 		}
