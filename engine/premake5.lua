@@ -7,7 +7,9 @@ project "engine"
 	files {
 		"premake5.lua",
 
+		"engine.h",
 		"render.h",
+		"scene.h",
 
 		"engine.c",
 		"render.c",
@@ -21,3 +23,32 @@ project "engine"
 		"libzstd",
 		"SDL2",
 	}
+
+	filter "system:not macos"
+		links {
+			"vulkan-1"
+		}
+
+		files {
+			"vk_glad.h",
+			"vk_glad_platform.h",
+			"vk_stuff.h",
+
+			"vk_glad.c",
+			"vk_main.c",
+		}
+	filter "system:windows"
+		links {
+			"d3d12"
+		}
+
+		files {
+			"dx_stuff.h",
+
+			"dx_main.c",
+		}
+	filter "system:macos"
+		files {
+			"mt_main.swift",
+		}
+	filter ""

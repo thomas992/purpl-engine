@@ -23,6 +23,8 @@
 #include <math.h>
 #include <time.h>
 
+#include "cglm/cglm.h"
+
 #include "SDL2/SDL.h"
 #undef main // No SDL_main
 

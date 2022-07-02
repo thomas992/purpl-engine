@@ -1,16 +1,13 @@
 // Main file of the engine DLL
 
-#include "common/common.h"
-#include "common/dll.h"
-#include "common/gameinfo.h"
-#include "common/pack.h"
+#include "engine.h"
 
-#include "render.h"
+engine_dll_t *g_engine;
 
-static SDL_Window *g_wnd;
-static int32_t g_wnd_width;
-static int32_t g_wnd_height;
-static bool g_wnd_visible;
+SDL_Window *g_wnd;
+int32_t g_wnd_width;
+int32_t g_wnd_height;
+bool g_wnd_visible;
 
 bool engine_init(const char *basedir, const char *gamedir, gameinfo_t *game, render_api_t render_api)
 {
@@ -74,16 +71,17 @@ void engine_shutdown(void)
 	SDL_Quit();
 }
 
-PURPL_INTERFACE void create_interface(dll_t *dll)
+PURPL_INTERFACE void create_interface(engine_dll_t *dll)
 {
 	if (!dll)
 		return;
 
 	PURPL_LOG("Creating interface to engine v%u.%u.%u.%u\n", PURPL_VERSION_FORMAT(PURPL_VERSION));
 
-	dll->version = PURPL_VERSION;
-	dll->init = (dll_init_t)engine_init;
-	dll->begin_frame = engine_begin_frame;
-	dll->end_frame = engine_end_frame;
-	dll->shutdown = engine_shutdown;
+	g_engine = dll;
+	g_engine->version = PURPL_VERSION;
+	g_engine->init = (dll_init_t)engine_init;
+	g_engine->begin_frame = engine_begin_frame;
+	g_engine->end_frame = engine_end_frame;
+	g_engine->shutdown = engine_shutdown;
 }

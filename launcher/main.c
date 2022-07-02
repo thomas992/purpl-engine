@@ -5,7 +5,7 @@
 #include "common/gameinfo.h"
 #include "common/util.h"
 
-#include "engine/render.h"
+#include "engine/engine.h"
 
 // Enter the loop that runs the engine
 void run(dll_t **dlls, uint8_t dll_count)
@@ -39,12 +39,13 @@ void run(dll_t **dlls, uint8_t dll_count)
 
 int32_t main(int32_t argc, char *argv[])
 {
-	dll_t *engine;
+	engine_dll_t *engine;
 	dll_t *client;
 	dll_t *server;
 	int32_t i;
 	char *arg;
 	bool error;
+	bool different_api;
 	char *basedir;
 	char *gamedir;
 	char *path;
@@ -57,11 +58,7 @@ int32_t main(int32_t argc, char *argv[])
 	*(strrchr(basedir, '/') + 1) = 0;
 	PURPL_LOG("Base directory is %s\n", basedir);
 
-#ifdef __APPLE__
-	api = RENDER_API_METAL;
-#else
-	render_api = RENDER_API_VULKAN;
-#endif
+	different_api = false;
 	error = false;
 	gamedir = NULL;
 	for (i = 0; i < argc; i++) {
@@ -76,19 +73,21 @@ int32_t main(int32_t argc, char *argv[])
 				break;
 			}
 			gamedir = util_absolute_path(argv[++i]);
-		} else if (strcmp(arg, "directx") == 0) {
-#ifdef _WIN32
-			PURPL_LOG("Setting render API to DirectX 12\n");
-//			api = RENDER_API_DIRECTX; DirectX isn't supported yet
+		} else if (strcmp(arg, "directx") == 0 || strcmp(arg, "direct3d") == 0) {
+#ifdef DIRECTX_ENABLED
+			PURPL_LOG("Setting render API to Direct3D 12\n");
+			render_api = RENDER_API_DIRECTX;
+			different_api = true;
 #else
-			PURPL_LOG("Ignoring -directx on unsupported platform\n");
+			PURPL_LOG("Ignoring %s on unsupported platform\n", argv[i]);
 #endif
 		} else if (strcmp(arg, "vulkan") == 0) {
-#ifdef __APPLE__
-			PURPL_LOG("Ignoring -vulkan because Apple platforms only support Metal\n");
-#else
+#ifdef VULKAN_ENABLED
 			PURPL_LOG("Setting render API to Vulkan\n");
 			render_api = RENDER_API_VULKAN;
+			different_api = true;
+#else
+			PURPL_LOG("Ignoring -vulkan on unsupported platform\n");
 #endif
 		} else {
 			PURPL_LOG("Ignoring unknown argument %s\n", argv[i]);
@@ -100,6 +99,16 @@ int32_t main(int32_t argc, char *argv[])
 			free(gamedir);
 		free(basedir);
 		exit(1);
+	}
+
+	if (!different_api) {
+#ifdef METAL_ENABLED
+		PURPL_LOG("Setting render API to Metal\n");
+		render_api = RENDER_API_METAL;
+#else
+		PURPL_LOG("Setting render API to Vulkan\n");
+		render_api = RENDER_API_VULKAN;
+#endif
 	}
 
 	if (!gamedir)
@@ -163,4 +172,6 @@ int32_t main(int32_t argc, char *argv[])
 
 	free(basedir);
 	free(gamedir);
+
+	return 0;
 }
