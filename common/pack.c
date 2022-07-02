@@ -11,8 +11,7 @@ pack_file_t *pack_create(const char *name, const char *src)
 	if (!name || !src || !strlen(src))
 		return NULL;
 
-	pack = calloc(1, sizeof(pack_file_t));
-	PURPL_ASSERT(pack);
+	pack = util_alloc(1, sizeof(pack_file_t), NULL);
 
 	pack->name = util_normalize_path(name);
 	src2 = util_normalize_path(src);
@@ -23,7 +22,6 @@ pack_file_t *pack_create(const char *name, const char *src)
 	PURPL_ASSERT(pack->dir);
 	free(path);
 
-	// Other fields are zeroed by calloc, so there's no need to set them
 	memcpy(pack->header.signature, PACK_SIGNATURE, PACK_SIGNATURE_LENGTH);
 	pack->header.version = PACK_VERSION;
 	pack_add_dir(pack, src2);
@@ -142,10 +140,8 @@ uint8_t *pack_read(pack_file_t *pack, pack_entry_t *entry)
 	if (!pack || !entry)
 		return NULL;
 
-	compressed = calloc(entry->size, 1);
-	PURPL_ASSERT(compressed);
-	buf = calloc(entry->real_size, 1);
-	PURPL_ASSERT(buf);
+	compressed = util_alloc(entry->size, 1, NULL);
+	buf = util_alloc(entry->real_size, 1, NULL);
 
 	offset = entry->offset;
 	remaining = entry->size;
@@ -224,50 +220,20 @@ pack_entry_t *pack_add(pack_file_t *pack, const char *path, const char *internal
 	memset(&entry, 0, sizeof(pack_entry_t));
 	entry.offset = PACK_OFFSET(pack);
 
-	if (!pack->entries) {
-		pack->entries = calloc(1, sizeof(pack_entry_t));
-		PURPL_ASSERT(pack->entries);
+	pack->entries = util_alloc(++pack->header.entry_count, sizeof(pack_entry_t), pack->entries);
+	entry_idx = pack->header.entry_count - 1;
 
-		pack->header.entry_count = 1;
-		entry_idx = 0;
-	} else {
-		tmp = calloc(pack->header.entry_count + 1, sizeof(pack_entry_t));
-		PURPL_ASSERT(tmp);
-
-		memcpy(tmp, pack->entries, pack->header.entry_count * sizeof(pack_entry_t));
-		free(pack->entries);
-
-		pack->entries = tmp;
-		entry_idx = pack->header.entry_count;
-		pack->header.entry_count++;
-	}
 	len = strlen(internal_path) + 1;
-	if (!pack->pathbuf) {
-		pack->pathbuf = calloc(len, sizeof(char));
-		PURPL_ASSERT(pack->pathbuf);
-
-		pack->header.pathbuf_size = len;
-		strncpy(pack->pathbuf, internal_path, len);
-	} else {
-		tmp = calloc(pack->header.pathbuf_size + len, sizeof(char));
-		PURPL_ASSERT(tmp);
-
-		memcpy(tmp, pack->pathbuf, pack->header.pathbuf_size);
-		strncpy((char *)tmp + pack->header.pathbuf_size, internal_path2, len);
-		free(pack->pathbuf);
-
-		pack->pathbuf = tmp;
-		entry.path_offset = pack->header.pathbuf_size;
-		pack->header.pathbuf_size += len;
-	}
+	pack->pathbuf = util_alloc(pack->header.pathbuf_size + len, sizeof(char), pack->pathbuf);
+	strncpy(pack->pathbuf + pack->header.pathbuf_size, internal_path2, len);
+	pack->header.pathbuf_size += len;
 
 	src = fopen(path2, "rb");
 	PURPL_ASSERT(src);
 	free(path2);
 	free(internal_path2);
 	entry.real_size = util_fsize(src);
-	tmp = calloc(entry.real_size, sizeof(uint8_t));
-	PURPL_ASSERT(tmp);
+	tmp = util_alloc(entry.real_size, sizeof(uint8_t), NULL);
 
 	fread(tmp, 1, entry.real_size, src);
 	fclose(src);
@@ -276,8 +242,7 @@ pack_entry_t *pack_add(pack_file_t *pack, const char *path, const char *internal
 	entry.hash = XXH3_64bits(tmp, entry.real_size);
 	entry.size = (uint32_t)ZSTD_compressBound(entry.real_size);
 
-	compressed = calloc(entry.size, 1);
-	PURPL_ASSERT(compressed);
+	compressed = util_alloc(entry.size, 1, NULL);
 
 	entry.size = (uint32_t)ZSTD_compress(compressed, entry.size, tmp, entry.real_size, ZSTD_btultra2);
 #ifdef PACK_DEBUG

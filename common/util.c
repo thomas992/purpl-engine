@@ -5,6 +5,20 @@
 
 #include "util.h"
 
+void *util_alloc(size_t count, size_t size, void *old)
+{
+	void *buf;
+
+	buf = calloc(count, size);
+	PURPL_ASSERT(buf);
+	if (old) {
+		memcpy(buf, old, count * size);
+		free(old);
+	}
+
+	return buf;
+}
+
 bool util_fexist(const char *path)
 {
 	FILE *fp;
@@ -72,8 +86,7 @@ char *util_absolute_path(const char *path)
 
 #ifdef _WIN32
 	len = GetFullPathNameA(path, 0, NULL, 0);
-	buf = calloc(len, sizeof(char));
-	PURPL_ASSERT(buf);
+	buf = util_alloc(len, sizeof(char), NULL);
 	GetFullPathNameA(path, len, buf, NULL);
 #endif
 
@@ -127,10 +140,10 @@ char *util_replace(const char *str, const char *orig, const char *rplc)
 {
 	char *str1;
 	char *str2;
-	
+
 	if (!str || !orig || !rplc)
 		return NULL;
-	
+
 	str1 = util_strdup(str);
 	str2 = strstr(str1, orig);
 	while (str2) {
@@ -148,7 +161,8 @@ char *util_remove(const char *str, const char *del)
 	return util_replace(str, del, "");
 }
 
-char* util_removeidx(const char* str, size_t start, size_t end) {
+char *util_removeidx(const char *str, size_t start, size_t end)
+{
 	if (!str || start > strlen(str) || end > strlen(str))
 		return NULL;
 
@@ -164,8 +178,7 @@ char *util_strndup(const char *str, size_t n)
 {
 	char *buf;
 
-	buf = calloc(n, sizeof(char));
-	PURPL_ASSERT(buf);
+	buf = util_alloc(n, sizeof(char), NULL);
 	strncpy(buf, str, n);
 
 	return buf;
@@ -195,8 +208,7 @@ char *util_vstrfmt(const char *fmt, va_list args)
 	va_copy(args2, args);
 
 	len = stbsp_vsnprintf(NULL, 0, fmt, args2) + 1;
-	buf = calloc(len, sizeof(char));
-	PURPL_ASSERT(buf);
+	buf = util_alloc(len, sizeof(char), NULL);
 	stbsp_vsnprintf(buf, len, fmt, args2);
 
 	return buf;

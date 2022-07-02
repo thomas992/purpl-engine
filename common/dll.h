@@ -32,6 +32,8 @@ typedef struct dll {
 	dll_frame_t begin_frame; // Called at the start of each frame
 	dll_frame_t end_frame; // Called at the end of each frame
 	dll_shutdown_t shutdown; // Called at the end
+
+	void *padding[20]; // Extra space for more fields
 } dll_t;
 
 // Load a DLL

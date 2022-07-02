@@ -24,8 +24,7 @@ dll_t *dll_load(const char *path, bool engine)
 	char *path2;
 	char *tmp;
 
-	dll = calloc(1, sizeof(dll_t));
-	PURPL_ASSERT(dll);
+	dll = util_alloc(1, sizeof(dll_t), NULL);
 	path2 = util_normalize_path(path);
 	dll->path = util_strdup(path2);
 

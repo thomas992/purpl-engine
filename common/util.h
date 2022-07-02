@@ -4,6 +4,9 @@
 
 #include "common.h"
 
+// Allocate or grow memory (growing invalidates old pointers)
+extern void *util_alloc(size_t count, size_t size, void *old);
+
 // Checks if a file exists
 extern bool util_fexist(const char *path);
 
