@@ -61,7 +61,8 @@ workspace "purpl"
 	}
 
 	libdirs {
-		"deps/lib/%{cfg.platform}"
+		PURPL_VULKAN_SDK .. "/lib",
+		"deps/lib/%{cfg.platform}",
 	}
 
 	pic "On"
