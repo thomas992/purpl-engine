@@ -23,7 +23,9 @@ typedef struct engine_dll {
 	dll_frame_t end_frame; // Called at the end of each frame
 	dll_shutdown_t shutdown; // Called at the end
 
-	scene_t *scene; // The current scene
+	bool dev; // Whether developer mode is enabled
+
+	ecs_world_t *world; // ECS world
 } engine_dll_t;
 
 // Global engine interface

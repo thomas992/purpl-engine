@@ -3,7 +3,6 @@
 #include "render.h"
 
 render_api_t g_render_api;
-scene_t *g_scene;
 
 const char *engine_render_api_name(render_api_t api)
 {
@@ -62,29 +61,6 @@ bool engine_render_begin_frame(uint64_t delta)
 		return false;
 	}
 }
-
-void engine_render_add_mesh(const char *name, vertex_t *verts, uint32_t vert_count, vec3 origin)
-{
-	mesh_t *mesh;
-
-	if (!g_scene || !name || !verts || !vert_count || !origin) {
-		PURPL_LOG("Not adding mesh with name %s and %u vertices to scene %s\n", name ? name : "<invalid mesh>", vert_count,
-			  g_scene ? g_scene->name : "<invalid scene>");
-		return;
-	}
-
-	mesh = calloc(1, sizeof(mesh_t));
-	PURPL_ASSERT(mesh);
-
-	mesh->name = util_strdup(name);
-	mesh->verts = calloc(vert_count, sizeof(vertex_t));
-	PURPL_ASSERT(mesh->verts);
-	memcpy(mesh->verts, verts, vert_count * sizeof(vertex_t));
-	mesh->vert_count = vert_count;
-	glm_vec3_copy(origin, mesh->origin);
-}
-
-void engine_render_add_light() {}
 
 bool engine_render_end_frame(uint64_t delta)
 {

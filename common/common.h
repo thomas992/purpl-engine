@@ -25,6 +25,8 @@
 
 #include "cglm/cglm.h"
 
+#include "flecs.h"
+
 #include "SDL2/SDL.h"
 #undef main // No SDL_main
 

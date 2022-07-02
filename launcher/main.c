@@ -46,6 +46,7 @@ int32_t main(int32_t argc, char *argv[])
 	char *arg;
 	bool error;
 	bool different_api;
+	bool devmode;
 	char *basedir;
 	char *gamedir;
 	char *path;
@@ -61,6 +62,11 @@ int32_t main(int32_t argc, char *argv[])
 	different_api = false;
 	error = false;
 	gamedir = NULL;
+#ifdef PURPL_DEBUG
+	devmode = true;
+#else
+	devmode = false;
+#endif
 	for (i = 0; i < argc; i++) {
 		if (argv[i][0] != '-')
 			continue;
@@ -89,6 +95,12 @@ int32_t main(int32_t argc, char *argv[])
 #else
 			PURPL_LOG("Ignoring -vulkan on unsupported platform\n");
 #endif
+		} else if (strcmp(arg, "dev") == 0 || strcmp(arg, "debug") == 0) {
+			PURPL_LOG("Enabling developer mode\n");
+			devmode = true;
+		} else if (strcmp(arg, "nodev") == 0 || strcmp(arg, "nodebug") == 0) {
+			PURPL_LOG("Disabling developer mode\n");
+			devmode = true;
 		} else {
 			PURPL_LOG("Ignoring unknown argument %s\n", argv[i]);
 		}
@@ -131,7 +143,7 @@ int32_t main(int32_t argc, char *argv[])
 	}
 
 	path = util_append(basedir, "bin/engine");
-	engine = dll_load(path, true);
+	engine = (engine_dll_t *)dll_load(path, true);
 	free(path);
 	if (!engine) {
 		PURPL_LOG("Failed to load engine\n");
@@ -143,7 +155,7 @@ int32_t main(int32_t argc, char *argv[])
 	info = gameinfo_parse("game.ini", gamedir);
 	if (!info) {
 		PURPL_LOG("Failed to parse game.ini\n");
-		dll_unload(engine);
+		dll_unload((dll_t *)engine);
 		free(gamedir);
 		free(basedir);
 		exit(1);
@@ -153,10 +165,10 @@ int32_t main(int32_t argc, char *argv[])
 	// engine/engine.c.
 	// clang-format off
 	PURPL_RECAST_FUNCPTR(engine->init, bool, const char *basedir, const char *gamedir, gameinfo_t *game,
-			     render_api_t render_api)(basedir, gamedir, info, render_api);
+			     render_api_t render_api, bool devmode)(basedir, gamedir, info, render_api, devmode);
 
 	run((dll_t *[]){
-			engine,
+			(dll_t *)engine,
 			// client,
 			// server,
 		}, 1);
@@ -168,7 +180,7 @@ int32_t main(int32_t argc, char *argv[])
 
 	dll_unload(client);
 	dll_unload(server);
-	dll_unload(engine);
+	dll_unload((dll_t *)engine);
 
 	free(basedir);
 	free(gamedir);

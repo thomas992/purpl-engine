@@ -99,6 +99,7 @@ workspace "purpl"
 			"_CRT_NONSTDC_NO_WARNINGS",
 		}
 		disablewarnings {
+			4201,
 			4206,
 		}
 		fatalwarnings {

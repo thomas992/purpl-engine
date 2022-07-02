@@ -9,7 +9,6 @@ project "engine"
 
 		"engine.h",
 		"render.h",
-		"scene.h",
 
 		"engine.c",
 		"render.c",
@@ -20,6 +19,7 @@ project "engine"
 	}
 
 	sharedlibs {
+		"flecs",
 		"libzstd",
 		"SDL2",
 	}

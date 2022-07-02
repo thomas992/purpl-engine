@@ -9,9 +9,11 @@ int32_t g_wnd_width;
 int32_t g_wnd_height;
 bool g_wnd_visible;
 
-bool engine_init(const char *basedir, const char *gamedir, gameinfo_t *game, render_api_t render_api)
+bool engine_init(const char *basedir, const char *gamedir, gameinfo_t *game, render_api_t render_api, bool devmode)
 {
 	PURPL_LOG("Initializing engine for game %s\n", game->title);
+
+	g_engine->dev = devmode;
 
 	PURPL_LOG("Initializing SDL\n");
 	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
