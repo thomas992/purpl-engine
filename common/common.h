@@ -1,4 +1,5 @@
-// Definitions used throughout the engine
+// Definitions used throughout the engine. Modifying this file is likely to cause a fuckload of stuff to rebuild, so be
+// careful.
 
 #pragma once
 

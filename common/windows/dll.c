@@ -3,7 +3,7 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
-#include "dll.h"
+#include "common/dll.h"
 
 bool sys_dll_load(dll_t *dll, bool engine)
 {

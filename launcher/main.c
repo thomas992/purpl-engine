@@ -1,9 +1,11 @@
 // Main file of the launcher. Loads the shared libraries for the engine.
 
-#include "common.h"
-#include "dll.h"
-#include "gameinfo.h"
-#include "util.h"
+#include "common/common.h"
+#include "common/dll.h"
+#include "common/gameinfo.h"
+#include "common/util.h"
+
+#include "engine/render.h"
 
 // Enter the loop that runs the engine
 void run(dll_t **dlls, uint8_t dll_count)
@@ -19,12 +21,16 @@ void run(dll_t **dlls, uint8_t dll_count)
 	while (running) {
 		now = util_getaccuratetime();
 		delta = now - last;
-
-		// Update the DLLs
 		for (i = 0; i < dll_count; i++) {
-			if (dlls[i] && dlls[i]->frame) {
-				running = running && dlls[i]->frame(delta);
-			}
+			if (dlls[i] && dlls[i]->begin_frame)
+				running = running && dlls[i]->begin_frame(delta);
+		}
+
+		now = util_getaccuratetime();
+		delta += now - last;
+		for (i = 0; i < dll_count; i++) {
+			if (dlls[i] && dlls[i]->end_frame)
+				running = running && dlls[i]->end_frame(delta);
 		}
 
 		last = now;
@@ -43,6 +49,7 @@ int32_t main(int32_t argc, char *argv[])
 	char *gamedir;
 	char *path;
 	gameinfo_t *info;
+	render_api_t render_api;
 
 	char *dlls[] = { "SDL2", "zstd" };
 
@@ -50,6 +57,11 @@ int32_t main(int32_t argc, char *argv[])
 	*(strrchr(basedir, '/') + 1) = 0;
 	PURPL_LOG("Base directory is %s\n", basedir);
 
+#ifdef __APPLE__
+	api = RENDER_API_METAL;
+#else
+	render_api = RENDER_API_VULKAN;
+#endif
 	error = false;
 	gamedir = NULL;
 	for (i = 0; i < argc; i++) {
@@ -64,6 +76,22 @@ int32_t main(int32_t argc, char *argv[])
 				break;
 			}
 			gamedir = util_absolute_path(argv[++i]);
+		} else if (strcmp(arg, "directx") == 0) {
+#ifdef _WIN32
+			PURPL_LOG("Setting render API to DirectX 12\n");
+//			api = RENDER_API_DIRECTX; DirectX isn't supported yet
+#else
+			PURPL_LOG("Ignoring -directx on unsupported platform\n");
+#endif
+		} else if (strcmp(arg, "vulkan") == 0) {
+#ifdef __APPLE__
+			PURPL_LOG("Ignoring -vulkan because Apple platforms only support Metal\n");
+#else
+			PURPL_LOG("Setting render API to Vulkan\n");
+			render_api = RENDER_API_VULKAN;
+#endif
+		} else {
+			PURPL_LOG("Ignoring unknown argument %s\n", argv[i]);
 		}
 	}
 
@@ -112,17 +140,25 @@ int32_t main(int32_t argc, char *argv[])
 		exit(1);
 	}
 
-	PURPL_RECAST_FUNCPTR(engine->init, bool, const char *basedir, const char *gamedir, gameinfo_t *info)(basedir, gamedir, info);
+	// Cast the engine's initialization function pointer correctly, must be the same as engine_init in
+	// engine/engine.c.
+	// clang-format off
+	PURPL_RECAST_FUNCPTR(engine->init, bool, const char *basedir, const char *gamedir, gameinfo_t *game,
+			     render_api_t render_api)(basedir, gamedir, info, render_api);
 
-	run(
-		(dll_t *[]){
+	run((dll_t *[]){
 			engine,
 			// client,
 			// server,
-		},
-		1);
+		}, 1);
+	// clang-format on
 
 	engine->shutdown();
+
+	gameinfo_free(info);
+
+	dll_unload(client);
+	dll_unload(server);
 	dll_unload(engine);
 
 	free(basedir);

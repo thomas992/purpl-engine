@@ -21,7 +21,7 @@ typedef struct gameinfo {
 } gameinfo_t;
 
 // Parse a game.ini file
-extern gameinfo_t *gameinfo_parse(const char *path);
+extern gameinfo_t *gameinfo_parse(const char *name, const char *gamedir);
 
 // Clean up a gameinfo_t's data
 extern void gameinfo_free(gameinfo_t *info);

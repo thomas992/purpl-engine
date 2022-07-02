@@ -1,3 +1,5 @@
+include "config.lua"
+
 -- Set the location of the project
 function setdirs(_location, _bindir)
 	location(_MAIN_SCRIPT_DIR .. "/proj" .. iif(_ACTION ~= nil, "/" .. _ACTION, "") .. "/" .. _location)
@@ -48,22 +50,37 @@ workspace "purpl"
 	warnings "Extra"
 
 	includedirs {
+		PURPL_VULKAN_SDK .. "/include",
+		"deps/cglm/include",
+		"deps/imgui",
+		"deps/imgui/backends",
 		"deps/include",
+		"deps/include/SDL2",
 		"deps/stb",
-		"common"
+		_MAIN_SCRIPT_DIR,
 	}
 
 	libdirs {
 		"deps/lib/%{cfg.platform}"
 	}
 
+	pic "On"
+	systemversion "latest"
+
+	filter "system:windows"
+		toolset "msc"
+	filter "system:linux"
+		-- GCC is bad, Clang is less bad, and everything else uses Clang or MSVC or something other than GCC
+		toolset "clang"
 	filter "configurations:Debug"
 		defines "PURPL_DEBUG=1"
+		runtime "Debug"
 		symbols "On"
 	filter "configurations:Release"
 		defines "PURPL_RELEASE=1"
-		symbols "Off"
 		optimize "On"
+		runtime "Release"
+		symbols "Off"
 	filter "platforms:x64"
 		architecture "x64"
 	filter "architecture:x64"
@@ -74,11 +91,17 @@ workspace "purpl"
 		defines "PURPL_ARM64=1"
 	filter ""
 
-	filter "action:vs*"
+	filter "toolset:msc"
 		defines {
 			"_CRT_SECURE_NO_DEPRACATE",
 			"_CRT_SECURE_NO_WARNINGS",
 			"_CRT_NONSTDC_NO_WARNINGS",
+		}
+		disablewarnings {
+			4206,
+		}
+		fatalwarnings {
+			4013,
 		}
 	filter ""
 
@@ -90,11 +113,10 @@ project "files"
 		"tools/premake5.lua",
 	}
 
-include "config.lua"
-
 include "common"
 include "engine"
 include "game/client"
 include "game/server"
 include "launcher"
 include "tools"
+

@@ -1,7 +1,7 @@
 // Pack file manipulation tool
 
-#include "common.h"
-#include "pack.h"
+#include "common/common.h"
+#include "common/pack.h"
 
 typedef enum paktool_mode {
 	LIST, // List files

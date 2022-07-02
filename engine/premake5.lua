@@ -7,7 +7,10 @@ project "engine"
 	files {
 		"premake5.lua",
 
-		"main.c",
+		"render.h",
+
+		"engine.c",
+		"render.c",
 	}
 
 	links {

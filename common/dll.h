@@ -29,7 +29,8 @@ typedef struct dll {
 	bool engine; // Whether the fields after this one are valid
 	uint32_t version; // The DLL's version number
 	dll_init_t init; // Called at the start
-	dll_frame_t frame; // Called each frame or update
+	dll_frame_t begin_frame; // Called at the start of each frame
+	dll_frame_t end_frame; // Called at the end of each frame
 	dll_shutdown_t shutdown; // Called at the end
 } dll_t;
 
