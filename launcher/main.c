@@ -190,8 +190,8 @@ int32_t main(int32_t argc, char *argv[])
 
 	gameinfo_free(info);
 
-	dll_unload(client);
-	dll_unload(server);
+	// dll_unload(client);
+	// dll_unload(server);
 	dll_unload((dll_t *)engine);
 
 	free(basedir);
