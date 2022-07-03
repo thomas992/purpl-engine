@@ -77,7 +77,7 @@ gameinfo_t *gameinfo_parse(const char *name, const char *gamedir)
 	name2 = util_append(gamedir, name);
 
 	info = util_alloc(1, sizeof(gameinfo_t), NULL);
-	info->gamedir = gamedir;
+	info->gamedir = util_strdup(gamedir);
 	info->path = util_absolute_path(name2);
 	PURPL_LOG(COMMON_LOG_PREFIX "Parsing gameinfo in %s\n", info->path);
 

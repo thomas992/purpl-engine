@@ -1,9 +1,13 @@
+.cache
+.ccls-cache
 .vs
 
 proj
-bin           
+bin
 bin-int
 data
+
+compile_commands.json
 
 *.aps
 

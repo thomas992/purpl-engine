@@ -39,12 +39,12 @@ bool engine_begin_frame(uint64_t delta)
 	while (SDL_PollEvent(&event)) {
 		if (event.type == SDL_WINDOWEVENT && event.window.windowID == SDL_GetWindowID(g_wnd)) {
 			switch (event.window.event) {
-			case SDL_WINDOWEVENT_HIDDEN:
-				PURPL_LOG(ENGINE_LOG_PREFIX "Window hidden\n");
+			case SDL_WINDOWEVENT_FOCUS_LOST:
+				PURPL_LOG(ENGINE_LOG_PREFIX "Window unfocused\n");
 				g_wnd_visible = false;
 				break;
-			case SDL_WINDOWEVENT_EXPOSED:
-				PURPL_LOG(ENGINE_LOG_PREFIX "Window exposed\n");
+			case SDL_WINDOWEVENT_FOCUS_GAINED:
+				PURPL_LOG(ENGINE_LOG_PREFIX "Window focused\n");
 				g_wnd_visible = true;
 				break;
 			case SDL_WINDOWEVENT_CLOSE:

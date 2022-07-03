@@ -2,7 +2,8 @@ include "config.lua"
 
 -- Set the location of the project
 function setdirs(_location, _bindir)
-	location(_MAIN_SCRIPT_DIR .. "/proj" .. iif(_ACTION ~= nil, "/" .. _ACTION, "") .. "/" .. _location)
+	_action = "/" .. iif(_ACTION ~= nil, _ACTION, "")
+	location(_MAIN_SCRIPT_DIR .. "/proj" .. _action .. "/" .. _location)
 	targetdir(_MAIN_SCRIPT_DIR .. "/" .. _bindir)
 end
 
@@ -101,6 +102,7 @@ workspace "purpl"
 		disablewarnings {
 			4201,
 			4206,
+			26439,
 		}
 		fatalwarnings {
 			4013,

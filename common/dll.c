@@ -43,7 +43,8 @@ dll_t *dll_load(const char *path, bool engine)
 	}
 	if (!util_fexist(dll->path)) {
 		PURPL_LOG(COMMON_LOG_PREFIX "DLL matching %s does not exist\n", path2);
-		dll_unload(dll);
+		free(dll->path);
+		free(dll);
 		return NULL;
 	}
 

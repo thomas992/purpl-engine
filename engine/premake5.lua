@@ -39,12 +39,15 @@ project "engine"
 		}
 	filter "system:windows"
 		links {
-			"d3d12"
+			"d3d12",
+			"dxgi",
+			"dxguid",
 		}
 
 		files {
 			"dx_stuff.h",
 
+			"dx_device.c",
 			"dx_main.c",
 		}
 	filter "system:macos"
