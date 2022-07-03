@@ -90,14 +90,17 @@ void engine_render_shutdown(void)
 #ifdef VULKAN_ENABLED
 	case RENDER_API_VULKAN:
 		engine_vulkan_shutdown();
+		break;
 #endif
 #ifdef DIRECTX_ENABLED
 	case RENDER_API_DIRECTX:
 		engine_directx_shutdown();
+		break;
 #endif
 #ifdef METAL_ENABLED
 	case RENDER_API_METAL:
 		engine_metal_shutdown();
+		break;
 #endif
 	default:
 		PURPL_LOG(RENDER_LOG_PREFIX "Render shutdown attempted with invalid API %d\n", g_render_api);

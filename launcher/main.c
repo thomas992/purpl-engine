@@ -6,6 +6,7 @@
 #include "common/util.h"
 
 #include "engine/engine.h"
+#include "engine/render.h"
 
 #define LAUNCHER_LOG_PREFIX "LAUNCHER: "
 
@@ -42,12 +43,11 @@ void run(dll_t **dlls, uint8_t dll_count)
 int32_t main(int32_t argc, char *argv[])
 {
 	engine_dll_t *engine;
-	dll_t *client;
-	dll_t *server;
+//	dll_t *client;
+//	dll_t *server;
 	int32_t i;
 	char *arg;
 	bool error;
-	bool different_api;
 	bool devmode;
 	char *basedir;
 	char *gamedir;
@@ -61,10 +61,17 @@ int32_t main(int32_t argc, char *argv[])
 	*(strrchr(basedir, '/') + 1) = 0;
 	PURPL_LOG(LAUNCHER_LOG_PREFIX "Base directory is %s\n", basedir);
 
-	different_api = false;
 	error = false;
 	gamedir = NULL;
+#ifdef __APPLE__
+	render_api = RENDER_API_METAL;
+	PURPL_LOG(LAUNCHER_LOG_PREFIX "Setting render API to Metal\n");
+#else
+	render_api = RENDER_API_VULKAN;
+	PURPL_LOG(LAUNCHER_LOG_PREFIX "Setting render API to Vulkan\n");
+#endif
 #ifdef PURPL_DEBUG
+	PURPL_LOG(LAUNCHER_LOG_PREFIX "Enabling developer mode\n");
 	devmode = true;
 #else
 	devmode = false;
@@ -81,26 +88,24 @@ int32_t main(int32_t argc, char *argv[])
 				break;
 			}
 			gamedir = util_absolute_path(argv[++i]);
-		} else if (strcmp(arg, "directx") == 0 || strcmp(arg, "direct3d") == 0) {
+		} else if ((strcmp(arg, "directx") == 0 || strcmp(arg, "direct3d") == 0) && render_api != RENDER_API_DIRECTX) {
 #ifdef DIRECTX_ENABLED
 			PURPL_LOG(LAUNCHER_LOG_PREFIX "Setting render API to Direct3D 12\n");
 			render_api = RENDER_API_DIRECTX;
-			different_api = true;
 #else
 			PURPL_LOG("Ignoring %s on unsupported platform\n", argv[i]);
 #endif
-		} else if (strcmp(arg, "vulkan") == 0) {
+		} else if ((strcmp(arg, "vulkan") == 0) && render_api == RENDER_API_VULKAN) {
 #ifdef VULKAN_ENABLED
 			PURPL_LOG(LAUNCHER_LOG_PREFIX "Setting render API to Vulkan\n");
 			render_api = RENDER_API_VULKAN;
-			different_api = true;
 #else
 			PURPL_LOG("Ignoring -vulkan on unsupported platform\n");
 #endif
-		} else if (strcmp(arg, "dev") == 0 || strcmp(arg, "debug") == 0) {
+		} else if ((strcmp(arg, "dev") == 0 || strcmp(arg, "debug") == 0) && !devmode) {
 			PURPL_LOG(LAUNCHER_LOG_PREFIX "Enabling developer mode\n");
 			devmode = true;
-		} else if (strcmp(arg, "nodev") == 0 || strcmp(arg, "nodebug") == 0) {
+		} else if ((strcmp(arg, "nodev") == 0 || strcmp(arg, "nodebug")) == 0 && devmode) {
 			PURPL_LOG(LAUNCHER_LOG_PREFIX "Disabling developer mode\n");
 			devmode = true;
 		} else if (strcmp(arg, "help") == 0) {
@@ -123,16 +128,6 @@ int32_t main(int32_t argc, char *argv[])
 			free(gamedir);
 		free(basedir);
 		exit(1);
-	}
-
-	if (!different_api) {
-#ifdef METAL_ENABLED
-		PURPL_LOG("Setting render API to Metal\n");
-		render_api = RENDER_API_METAL;
-#else
-		PURPL_LOG("Setting render API to Vulkan\n");
-		render_api = RENDER_API_VULKAN;
-#endif
 	}
 
 	if (!gamedir)

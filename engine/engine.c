@@ -71,6 +71,9 @@ void engine_shutdown(void)
 
 	PURPL_LOG(ENGINE_LOG_PREFIX "Shutting down SDL\n");
 	SDL_Quit();
+
+	PURPL_LOG(ENGINE_LOG_PREFIX "Shutting down rendering\n");
+	engine_render_shutdown();
 }
 
 PURPL_INTERFACE void create_interface(engine_dll_t *dll)
