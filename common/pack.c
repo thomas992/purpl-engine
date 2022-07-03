@@ -303,7 +303,7 @@ void pack_add_dir(pack_file_t *pack, const char *path)
 
 	ent = readdir(dir);
 	while (ent) {
-		if (strncmp(ent->d_name, ".", ent->d_namlen) == 0 || strncmp(ent->d_name, "..", ent->d_namlen) == 0)
+		if (strcmp(ent->d_name, ".") == 0 || strcmp(ent->d_name, "..") == 0)
 			continue;
 
 		path3 = util_strfmt("%s%s%s", path2, path2[strlen(path2) - 1] == '/' ? "" : "/", ent->d_name);
