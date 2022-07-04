@@ -5,7 +5,7 @@
 proj
 bin
 bin-int
-data
+/data
 
 compile_commands.json
 
