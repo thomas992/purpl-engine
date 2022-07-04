@@ -12,8 +12,5 @@ project "paktool"
 
 	links {
 		"common",
-	}
-
-	sharedlibs {
-		"libzstd",
+		"zstd_static_" .. _TARGET_OS
 	}
