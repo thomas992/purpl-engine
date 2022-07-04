@@ -91,6 +91,8 @@ char *util_absolute_path(const char *path)
 	GetFullPathNameA(path, len, buf, NULL);
 #else
 	buf = realpath(path, NULL);
+	if (!buf)
+		buf = path;
 #endif
 
 	path2 = util_normalize_path(buf);

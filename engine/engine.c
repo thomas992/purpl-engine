@@ -14,6 +14,7 @@ bool engine_init(const char *basedir, const char *gamedir, gameinfo_t *game, ren
 	PURPL_LOG(ENGINE_LOG_PREFIX "Initializing engine for game %s\n", game->title);
 
 	g_engine->dev = devmode;
+	g_engine->game = game;
 
 	PURPL_LOG(ENGINE_LOG_PREFIX "Initializing SDL\n");
 	if (SDL_Init(SDL_INIT_VIDEO) < 0) {

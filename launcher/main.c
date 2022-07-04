@@ -10,6 +10,12 @@
 
 #define LAUNCHER_LOG_PREFIX "LAUNCHER: "
 
+#ifdef __linux__
+#define DLL_SUFFIX "_linux"
+#else
+#define DLL_SUFFIX ""
+#endif
+
 // Enter the loop that runs the engine
 void run(dll_t **dlls, uint8_t dll_count)
 {
@@ -55,7 +61,7 @@ int32_t main(int32_t argc, char *argv[])
 	gameinfo_t *info;
 	render_api_t render_api;
 
-	char *dlls[] = { "SDL2", "zstd" };
+	char *dlls[] = { "flecs", "SDL2", "zstd" };
 
 	basedir = util_absolute_path(argv[0]);
 	*(strrchr(basedir, '/') + 1) = 0;
@@ -144,7 +150,7 @@ int32_t main(int32_t argc, char *argv[])
 
 	// Load the other libraries needed
 	for (i = 0; i < PURPL_ARRSIZE(dlls); i++) {
-		path = util_strfmt("%sbin/%s", basedir, dlls[i]);
+		path = util_strfmt("%sbin/%s" DLL_SUFFIX, basedir, dlls[i]);
 		dll_load(path, false);
 		free(path);
 	}
@@ -171,8 +177,15 @@ int32_t main(int32_t argc, char *argv[])
 	// Cast the engine's initialization function pointer correctly, must be the same as engine_init in
 	// engine/engine.c.
 	// clang-format off
-	PURPL_RECAST_FUNCPTR(engine->init, bool, const char *basedir, const char *gamedir, gameinfo_t *game,
-			     render_api_t render_api, bool devmode)(basedir, gamedir, info, render_api, devmode);
+	if (!PURPL_RECAST_FUNCPTR(engine->init, bool, const char *basedir, const char *gamedir, gameinfo_t *game,
+			     render_api_t render_api, bool devmode)(basedir, gamedir, info, render_api, devmode)) {
+		PURPL_LOG(LAUNCHER_LOG_PREFIX "Engine initialization failed, exiting\n");
+		dll_unload((dll_t *)engine);
+		gameinfo_free(info);
+		free(gamedir);
+		free(basedir);
+		exit(1);
+	}
 
 	run((dll_t *[]){
 			(dll_t *)engine,

@@ -38,6 +38,9 @@
 
 #include "stb_sprintf.h"
 
+#ifndef PURPL_X64
+#define XXH_INLINE_ALL
+#endif
 #include "xxhash.h"
 #ifdef PURPL_X64
 #include "xxh_x86dispatch.h"

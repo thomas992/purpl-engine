@@ -16,6 +16,9 @@ function sharedlibs(_libs)
 		_lib2 = _lib
 		if _TARGET_OS ~= "windows" then
 			_lib2 = string.gsub(_lib, "lib", "")
+			if _TARGET_OS ~= "macosx" then
+				_lib2 = _lib2 .. "_" .. _TARGET_OS
+			end
 		end
 		if not table.contains(_libs2, _lib2) then
 			-- print("Adding " .. _lib2 .. " to list of libraries")
@@ -23,19 +26,26 @@ function sharedlibs(_libs)
 		end
 	end)
 	links(_libs2)
-	if _TARGET_OS == "windows" then
-		table.foreachi(_libs2, function(_lib)
+	table.foreachi(_libs2, function(_lib)
+		_libpath = _MAIN_SCRIPT_DIR .. "/deps/lib/%{cfg.platform}/<NAME>"
+		if _TARGET_OS == "windows" then
 			_libname = _lib .. ".dll"
-			_pdbname = _lib .. ".pdb"
-			_lib2 = _MAIN_SCRIPT_DIR .. "/deps/lib/%{cfg.platform}/" .. _libname
-			_cmd = "{COPYFILE} " .. _lib2 .. " " .. _MAIN_SCRIPT_DIR .. "/data/bin/<NAME>"
-			_libcmd = string.gsub(_cmd, "<NAME>", _libname)
-			if not table.contains(_libcopycmds, _libcmd) then
-				-- print("Adding " .. _libcmd .. " to list of commands")
-				_libcopycmds = table.flatten({ _libcopycmds, { _libcmd } })
+		else
+			if _TARGET_OS == "macosx" then
+				_libname = "lib" .._lib .. ".dylib"
+			else
+				_libname = "lib" .. _lib .. ".so"
 			end
-		end)
-	end
+		end
+	
+		_lib2 =  string.gsub(_libpath, "<NAME>", _libname)
+		_cmd = "{COPYFILE} " .. _lib2 .. " " .. _MAIN_SCRIPT_DIR .. "/data/bin/<NAME>"
+		_libcmd = string.gsub(_cmd, "<NAME>", _libname)
+		if not table.contains(_libcopycmds, _libcmd) then
+			-- print("Adding " .. _libcmd .. " to list of commands")
+			_libcopycmds = table.flatten({ _libcopycmds, { _libcmd } })
+		end
+	end)
 end
 
 workspace "purpl"

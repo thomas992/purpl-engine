@@ -26,6 +26,7 @@ typedef struct engine_dll {
 	dll_shutdown_t shutdown; // Called at the end
 
 	bool dev; // Whether developer mode is enabled
+	gameinfo_t *game; // Game info of the curreng game
 
 	ecs_world_t *world; // ECS world
 } engine_dll_t;
