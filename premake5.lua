@@ -68,11 +68,12 @@ workspace "purpl"
 
 	pic "On"
 	systemversion "latest"
+	visibility "hidden"
 
 	filter "system:windows"
 		toolset "msc"
-	filter "system:linux"
-		-- GCC is bad, Clang is less bad, and everything else uses Clang or MSVC or something other than GCC
+	filter "system:not windows"
+		-- GCC is bad, Clang is somewhat less bad, MSVC is weird as fuck but has some interesting features
 		toolset "clang"
 	filter "configurations:Debug"
 		defines "PURPL_DEBUG=1"
@@ -91,7 +92,7 @@ workspace "purpl"
 		architecture "ARM64"
 	filter "architecture:ARM64"
 		defines "PURPL_ARM64=1"
-	filter ""
+	filter {}
 
 	filter "toolset:msc"
 		defines {
@@ -107,10 +108,10 @@ workspace "purpl"
 		fatalwarnings {
 			4013,
 		}
-	filter ""
+	filter {}
 
 project "files"
-	kind "None"
+	kind "Utility"
 
 	files { "premake5.lua",
 		"config.lua",

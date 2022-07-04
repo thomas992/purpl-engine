@@ -82,12 +82,15 @@ char *util_absolute_path(const char *path)
 {
 	char *path2;
 	char *buf;
-	uint32_t len;
 
 #ifdef _WIN32
+	uint32_t len;
+
 	len = GetFullPathNameA(path, 0, NULL, 0);
 	buf = util_alloc(len, sizeof(char), NULL);
 	GetFullPathNameA(path, len, buf, NULL);
+#else
+	buf = realpath(path, NULL);
 #endif
 
 	path2 = util_normalize_path(buf);
@@ -240,7 +243,7 @@ void util_mkdir(const char *path)
 #ifdef _WIN32
 	CreateDirectoryA(path2, NULL);
 #else
-	mkdir(path2, NULL);
+	mkdir(path2, 0);
 #endif
 }
 
@@ -251,6 +254,8 @@ uint64_t util_getaccuratetime(void)
 	GetSystemTimeAsFileTime((FILETIME *)&time);
 	time /= 10000; // FILETIME is 100 nanosecond intervals, convert to milliseconds
 	time -= 11644473600000; // 1601 -> 1970
+#else
+
 #endif
 	return time;
 }

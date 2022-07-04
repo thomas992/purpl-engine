@@ -2,7 +2,11 @@ project "launcher"
 	kind "ConsoleApp"
 	language "C"
 
-	targetname(PURPL_GAME_NAME)
+	filter "system:windows"
+		targetname(PURPL_GAME_NAME)
+	filter "system:not windows"
+		targetname(PURPL_GAME_NAME .. "_" .. _TARGET_OS)
+	filter {}
 	setdirs("", "data")
 
 	files {
@@ -13,8 +17,14 @@ project "launcher"
 
 	links {
 		"common",
-		"zstd_static",
+		"zstd_static_" .. _TARGET_OS,
 	}
+
+	filter "system:not windows"
+		links {
+			"dl"
+		}
+	filter {}
 	
 	_cmds = {
 			"{COPYDIR} " .. _MAIN_SCRIPT_DIR .. "/game/data/" .. PURPL_GAME_NAME .. " " .. _MAIN_SCRIPT_DIR .. "/data",

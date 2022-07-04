@@ -25,9 +25,15 @@ project "engine"
 	}
 
 	filter "system:not macos"
-		links {
-			"vulkan-1"
-		}
+		filter { "system:not macos", "system:windows" }
+			links {
+				"vulkan-1"
+			}
+		filter { "system:not macos", "system:windows" }
+			links {
+				"vulkan"
+			}
+		filter {}
 
 		files {
 			"vk_glad.h",
@@ -54,4 +60,4 @@ project "engine"
 		files {
 			"mt_main.swift",
 		}
-	filter ""
+	filter {}

@@ -76,7 +76,7 @@ int32_t main(int32_t argc, char *argv[])
 #else
 	devmode = false;
 #endif
-	for (i = 0; i < argc; i++) {
+	for (i = 1; i < argc; i++) {
 		if (argv[i][0] != '-')
 			continue;
 

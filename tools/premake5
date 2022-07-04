@@ -1,0 +1,6 @@
+#!/usr/bin/env sh
+
+os=$(uname | tr [:upper:] [:lower:])
+prog=$0.$os
+chmod a+x $prog
+$prog $*

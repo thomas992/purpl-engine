@@ -1,4 +1,3 @@
-* text eol=lf
-deps/lib/* binary
+* text=auto eol=lf
 engine/vk_glad.* linguist-vendored
 

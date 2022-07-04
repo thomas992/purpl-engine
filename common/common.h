@@ -3,6 +3,11 @@
 
 #pragma once
 
+// Feature macros for POSIX, no harm putting them outside an ifdef
+#define _BSD_SOURCE
+#define _DEFAULT_SOURCE
+#define _GNU_SOURCE
+
 #include <assert.h>
 #ifdef _WIN32
 #include <windows.h>
@@ -10,6 +15,7 @@
 // This is renamed to make sure no collisions happen
 #include "_dirent.h"
 #else
+#include <sys/stat.h>
 #include <dirent.h>
 #include <unistd.h>
 #endif
@@ -20,7 +26,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <math.h>
+#include <tgmath.h>
 #include <time.h>
 
 #include "cglm/cglm.h"
@@ -40,6 +46,9 @@
 #include "zstd.h"
 
 #define COMMON_LOG_PREFIX "COMMON: "
+
+// Smaller of two numbers
+#define PURPL_MIN(a, b) ((a) < (b) ? (a) : (b))
 
 // Pluralize
 #define PURPL_PLURALIZE(count, plural, singular) ((count) == 1 ? (singular) : (plural))
@@ -67,10 +76,14 @@
 #define PURPL_VERSION PURPL_MAKE_VERSION(1, 0, 0, 0)
 
 // Used to export create_interface
+#ifdef _WIN32
 #ifdef _MSC_VER
 #define PURPL_INTERFACE __declspec(dllexport)
 #else
 #define PURPL_INTERFACE __attribute__((dllexport))
+#endif
+#else
+#define PURPL_INTERFACE __attribute__((visibility("default")))
 #endif
 
 // Byte

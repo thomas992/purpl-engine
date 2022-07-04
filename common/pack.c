@@ -148,7 +148,7 @@ uint8_t *pack_read(pack_file_t *pack, pack_entry_t *entry)
 	while (remaining > 0) {
 		split_idx = (uint16_t)PACK_SPLIT(offset);
 		split_name = util_strfmt("%s_%0.5u.pak", pack->name, split_idx);
-		len = min(PACK_SPLIT_SIZE - PACK_SPLIT_OFFSET(offset), remaining);
+		len = PURPL_MIN(PACK_SPLIT_SIZE - PACK_SPLIT_OFFSET(offset), remaining);
 
 #ifdef PACK_DEBUG
 		PURPL_LOG(COMMON_LOG_PREFIX "Reading %zu %s of file %s (%zu %s remaining, stored hash 0x%" PRIX64 ", offset 0x%" PRIu64
@@ -259,7 +259,7 @@ pack_entry_t *pack_add(pack_file_t *pack, const char *path, const char *internal
 		split_idx = (uint16_t)PACK_SPLIT(offset);
 		path2 = util_strfmt("%s_%0.5u.pak", pack->name, split_idx);
 
-		len = min(PACK_SPLIT_SIZE - PACK_SPLIT_OFFSET(offset), remaining);
+		len = PURPL_MIN(PACK_SPLIT_SIZE - PACK_SPLIT_OFFSET(offset), remaining);
 		dst = fopen(path2, "ab+");
 		PURPL_ASSERT(dst);
 		free(path2);
@@ -293,6 +293,9 @@ void pack_add_dir(pack_file_t *pack, const char *path)
 	char *path3;
 	DIR *dir;
 	struct dirent *ent;
+#ifndef DT_DIR
+		struct stat st;
+#endif
 
 	if (!pack || !path || !strlen(path))
 		return;
@@ -307,7 +310,12 @@ void pack_add_dir(pack_file_t *pack, const char *path)
 			continue;
 
 		path3 = util_strfmt("%s%s%s", path2, path2[strlen(path2) - 1] == '/' ? "" : "/", ent->d_name);
+#ifdef DT_DIR
 		if (ent->d_type == DT_DIR)
+#else
+		stat(path3, &st);
+		if (S_ISDIR(st.st_mode))
+#endif
 			pack_add_dir(pack, path3);
 		else
 			pack_add(pack, path3, strchr(path3, '/') + 1);
