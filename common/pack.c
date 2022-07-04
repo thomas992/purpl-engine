@@ -306,8 +306,10 @@ void pack_add_dir(pack_file_t *pack, const char *path)
 
 	ent = readdir(dir);
 	while (ent) {
-		if (strcmp(ent->d_name, ".") == 0 || strcmp(ent->d_name, "..") == 0)
+		if (strcmp(ent->d_name, ".") == 0 || strcmp(ent->d_name, "..") == 0) {
+			ent = readdir(dir);
 			continue;
+		}
 
 		path3 = util_strfmt("%s%s%s", path2, path2[strlen(path2) - 1] == '/' ? "" : "/", ent->d_name);
 #ifdef DT_DIR
