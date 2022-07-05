@@ -46,11 +46,12 @@ void run(dll_t **dlls, uint8_t dll_count)
 	}
 }
 
-int32_t main(int32_t argc, char *argv[])
+// Gets called by main, so that SDL can do stuff
+int32_t launcher_main(int32_t argc, char *argv[])
 {
 	engine_dll_t *engine;
-//	dll_t *client;
-//	dll_t *server;
+	//	dll_t *client;
+	//	dll_t *server;
 	int32_t i;
 	char *arg;
 	bool error;
@@ -94,7 +95,8 @@ int32_t main(int32_t argc, char *argv[])
 				break;
 			}
 			gamedir = util_absolute_path(argv[++i]);
-		} else if ((strcmp(arg, "directx") == 0 || strcmp(arg, "direct3d") == 0) && render_api != RENDER_API_DIRECTX) {
+		} else if ((strcmp(arg, "directx") == 0 || strcmp(arg, "direct3d") == 0) &&
+			   render_api != RENDER_API_DIRECTX) {
 #ifdef DIRECTX_ENABLED
 			PURPL_LOG(LAUNCHER_LOG_PREFIX "Setting render API to Direct3D 12\n");
 			render_api = RENDER_API_DIRECTX;
@@ -206,4 +208,14 @@ int32_t main(int32_t argc, char *argv[])
 	free(gamedir);
 
 	return 0;
+}
+
+// Do some stuff to make things work
+int32_t main(int32_t argc, char *argv[])
+{
+#ifdef PURPL_UWP
+
+#else
+	return launcher_main(argc, argv);
+#endif
 }

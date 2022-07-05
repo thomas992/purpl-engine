@@ -7,7 +7,6 @@
 #include "common/gameinfo.h"
 #include "common/pack.h"
 
-#include "globals.h"
 #include "render.h"
 
 #define ENGINE_LOG_PREFIX "ENGINE: "

@@ -33,8 +33,8 @@
 
 #include "flecs.h"
 
+#define SDL_MAIN_HANDLED
 #include "SDL2/SDL.h"
-#undef main // No SDL_main
 
 #include "stb_sprintf.h"
 
