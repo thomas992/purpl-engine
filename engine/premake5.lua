@@ -1,7 +1,7 @@
 project "engine"
 	kind "SharedLib"
 	language "C"
-	
+
 	setdirs("", "data/bin")
 
 	files {
@@ -25,11 +25,11 @@ project "engine"
 	}
 
 	filter "system:not macos"
-		filter { "system:not macos", "system:windows" }
+		filter { "system:windows" }
 			links {
 				"vulkan-1"
 			}
-		filter { "system:not macos", "system:windows" }
+		filter { "system:not macos", "system:not windows" }
 			links {
 				"vulkan"
 			}
