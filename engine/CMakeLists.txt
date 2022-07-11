@@ -7,7 +7,7 @@ set(ENGINE_SOURCES engine.c
 		   render.c)
 
 # DirectX
-if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+if ("${CMAKE_HOST_SYSTEM_NAME}" MATCHES "Windows")
 	set(ENGINE_HEADERS ${ENGINE_HEADERS}
 			   dx_stuff.h)
 	set(ENGINE_SOURCES ${ENGINE_SOURCES}

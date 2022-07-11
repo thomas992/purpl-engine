@@ -30,18 +30,11 @@
 #include <time.h>
 
 #include "cglm/cglm.h"
-
 #include "flecs.h"
-
 #include "SDL.h"
-
 #include "stb_sprintf.h"
-
-#ifndef PURPL_X64
 #define XXH_INLINE_ALL
-#endif
 #include "xxhash.h"
-
 #include "zstd.h"
 
 #define COMMON_LOG_PREFIX "COMMON: "

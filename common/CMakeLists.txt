@@ -12,10 +12,10 @@ set(COMMON_SOURCES dll.c
 		   pack.c
 		   util.c)
 
-if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+if ("${CMAKE_HOST_SYSTEM_NAME}" MATCHES "Windows")
 	set(COMMON_SOURCES ${COMMON_SOURCES}
 			   win32_dll.c)
-elseif (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+elseif ("${CMAKE_HOST_SYSTEM_NAME}" MATCHES "Linux")
 	set(COMMON_SOURCES ${COMMON_SOURCES}
 			   linux_dll.c)
 endif()
