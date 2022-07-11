@@ -1,0 +1,15 @@
+[submodule "deps/sdl2"]
+	path = deps/sdl2
+	url = https://github.com/libsdl-org/SDL.git
+[submodule "deps/flecs"]
+	path = deps/flecs
+	url = https://github.com/SanderMertens/flecs.git
+[submodule "deps/cglm"]
+	path = deps/cglm
+	url = https://github.com/recp/cglm.git
+[submodule "deps/stb"]
+	path = deps/stb
+	url = https://github.com/nothing/stb.git
+[submodule "deps/zstd"]
+	path = deps/zstd
+	url = https://github.com/facebook/zstd.git
