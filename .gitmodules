@@ -9,7 +9,7 @@
 	url = https://github.com/recp/cglm.git
 [submodule "deps/stb"]
 	path = deps/stb
-	url = https://github.com/nothing/stb.git
+	url = https://github.com/nothings/stb.git
 [submodule "deps/zstd"]
 	path = deps/zstd
 	url = https://github.com/facebook/zstd.git
