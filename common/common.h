@@ -33,8 +33,7 @@
 
 #include "flecs.h"
 
-#define SDL_MAIN_HANDLED
-#include "SDL2/SDL.h"
+#include "SDL.h"
 
 #include "stb_sprintf.h"
 
@@ -42,9 +41,6 @@
 #define XXH_INLINE_ALL
 #endif
 #include "xxhash.h"
-#ifdef PURPL_X64
-#include "xxh_x86dispatch.h"
-#endif
 
 #include "zstd.h"
 

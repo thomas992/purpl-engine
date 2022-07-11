@@ -46,8 +46,7 @@ void run(dll_t **dlls, uint8_t dll_count)
 	}
 }
 
-// Gets called by main, so that SDL can do stuff
-int32_t launcher_main(int32_t argc, char *argv[])
+int32_t main(int32_t argc, char *argv[])
 {
 	engine_dll_t *engine;
 	//	dll_t *client;
@@ -208,14 +207,4 @@ int32_t launcher_main(int32_t argc, char *argv[])
 	free(gamedir);
 
 	return 0;
-}
-
-// Do some stuff to make things work
-int32_t main(int32_t argc, char *argv[])
-{
-#ifdef PURPL_UWP
-
-#else
-	return launcher_main(argc, argv);
-#endif
 }

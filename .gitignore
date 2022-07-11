@@ -2,10 +2,7 @@
 .ccls-cache
 .vs
 
-proj
-bin
-bin-int
-/data
+build
 
 compile_commands.json
 
