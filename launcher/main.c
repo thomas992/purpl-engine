@@ -56,9 +56,11 @@ int32_t main(int32_t argc, char *argv[])
 	bool error;
 	bool devmode;
 	char *basedir;
+	char *coredir;
 	char *gamedir;
 	char *path;
-	gameinfo_t *info;
+	gameinfo_t *coreinfo;
+	gameinfo_t *gameinfo;
 	render_api_t render_api;
 
 	char *dlls[] = { "flecs", "SDL2", "zstd" };
@@ -137,6 +139,7 @@ int32_t main(int32_t argc, char *argv[])
 		exit(1);
 	}
 
+	coredir = util_prepend("core", basedir);
 	if (!gamedir)
 		gamedir = util_prepend("purpl", basedir);
 	if (gamedir[strlen(gamedir) - 1] != '/')
@@ -144,6 +147,7 @@ int32_t main(int32_t argc, char *argv[])
 	if (!util_fexist(gamedir)) {
 		PURPL_LOG(LAUNCHER_LOG_PREFIX "Game directory \"%s\" does not exist\n", gamedir);
 		free(gamedir);
+		free(coredir);
 		free(basedir);
 		exit(1);
 	}
@@ -162,15 +166,28 @@ int32_t main(int32_t argc, char *argv[])
 	if (!engine) {
 		PURPL_LOG(LAUNCHER_LOG_PREFIX "Failed to load engine\n");
 		free(gamedir);
+		free(coredir);
 		free(basedir);
 		exit(1);
 	}
 
-	info = gameinfo_parse("game.ini", gamedir);
-	if (!info) {
-		PURPL_LOG(LAUNCHER_LOG_PREFIX "Failed to parse game.ini\n");
+	coreinfo = gameinfo_parse("game.ini", coredir);
+	if (!coreinfo) {
+		PURPL_LOG(LAUNCHER_LOG_PREFIX "Failed to parse %s/game.ini\n", coredir);
 		dll_unload((dll_t *)engine);
 		free(gamedir);
+		free(coredir);
+		free(basedir);
+		exit(1);
+	}
+
+	gameinfo = gameinfo_parse("game.ini", gamedir);
+	if (!gameinfo) {
+		PURPL_LOG(LAUNCHER_LOG_PREFIX "Failed to parse %s/game.ini\n", gamedir);
+		dll_unload((dll_t *)engine);
+		gameinfo_free(coreinfo);
+		free(gamedir);
+		free(coredir);
 		free(basedir);
 		exit(1);
 	}
@@ -178,12 +195,14 @@ int32_t main(int32_t argc, char *argv[])
 	// Cast the engine's initialization function pointer correctly, must be the same as engine_init in
 	// engine/engine.c.
 	// clang-format off
-	if (!PURPL_RECAST_FUNCPTR(engine->init, bool, const char *basedir, const char *gamedir, gameinfo_t *game,
-			     render_api_t render_api, bool devmode)(basedir, gamedir, info, render_api, devmode)) {
+	if (!PURPL_RECAST_FUNCPTR(engine->init, bool, const char *basedir, const char *coredir, const char *gamedir, gameinfo_t *core, gameinfo_t *game,
+			     render_api_t render_api, bool devmode)(basedir, coredir, gamedir, coreinfo, gameinfo, render_api, devmode)) {
 		PURPL_LOG(LAUNCHER_LOG_PREFIX "Engine initialization failed, exiting\n");
 		dll_unload((dll_t *)engine);
-		gameinfo_free(info);
+		gameinfo_free(coreinfo);
+		gameinfo_free(gameinfo);
 		free(gamedir);
+		free(coredir);
 		free(basedir);
 		exit(1);
 	}
@@ -197,13 +216,15 @@ int32_t main(int32_t argc, char *argv[])
 
 	engine->shutdown();
 
-	gameinfo_free(info);
+	gameinfo_free(coreinfo);
+	gameinfo_free(gameinfo);
 
 	// dll_unload(client);
 	// dll_unload(server);
 	dll_unload((dll_t *)engine);
 
 	free(basedir);
+	free(coredir);
 	free(gamedir);
 
 	return 0;

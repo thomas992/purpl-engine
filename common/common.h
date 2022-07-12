@@ -58,11 +58,12 @@
 #define PURPL_VERSION_PATCH(version) (((version) >> 8) & 0xFF)
 
 // Get the tweak number of a version
-#define PURPL_VERSION_TWEAK(version) ((version) & 0xFF)
+#define PURPL_VERSION_TWEAK(version) ((version)&0xFF)
 
 // Macro for putting versions in format functions
-#define PURPL_VERSION_FORMAT(version) \
-	PURPL_VERSION_MAJOR(version), PURPL_VERSION_MINOR(version), PURPL_VERSION_PATCH(version), PURPL_VERSION_TWEAK(version)
+#define PURPL_VERSION_FORMAT(version)                                                             \
+	PURPL_VERSION_MAJOR(version), PURPL_VERSION_MINOR(version), PURPL_VERSION_PATCH(version), \
+		PURPL_VERSION_TWEAK(version)
 
 // Version of the engine
 #define PURPL_VERSION PURPL_MAKE_VERSION(1, 0, 0, 0)
@@ -84,7 +85,7 @@ typedef uint8_t byte_t;
 // Array size
 #define PURPL_ARRSIZE(a) (sizeof(a) / sizeof((a)[0]))
 
-#define PURPL_RECAST_FUNCPTR(func, rettype, ...) ((rettype (*)(__VA_ARGS__))(func))
+#define PURPL_RECAST_FUNCPTR(func, rettype, ...) ((rettype(*)(__VA_ARGS__))(func))
 
 // Function name
 #ifdef _MSC_VER
@@ -96,7 +97,18 @@ typedef uint8_t byte_t;
 #endif
 
 // Print a message to the console
-#define PURPL_LOG(...) printf(__VA_ARGS__);
+#ifdef _WIN32
+#define PURPL_LOG(...)                          \
+	{                                       \
+		char *buf;                      \
+		buf = util_strfmt(__VA_ARGS__); \
+		OutputDebugStringA(buf);        \
+		printf("%s", buf);              \
+		free(buf);                      \
+	}
+#else
+#define PURPL_LOG(...) printf(__VA_ARGS__)
+#endif
 
 // Debug breakpoint
 #ifdef _MSC_VER

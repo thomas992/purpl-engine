@@ -105,8 +105,23 @@ install(TARGETS flecs
 		paktool
 	RUNTIME DESTINATION bin)
 
+if ("${CMAKE_VS_PLATFORM_NAME}" MATCHES "Gaming")
+	set(PURPL_GAME_XBOX_TARGET ${CMAKE_VS_PLATFORM_NAME})
+	string(REPLACE "Gaming" "" PURPL_GAME_XBOX_TARGET "${PURPL_GAME_XBOX_TARGET}")
+	string(REPLACE ".Xbox." "" PURPL_GAME_XBOX_TARGET "${PURPL_GAME_XBOX_TARGET}")
+	string(REPLACE ".x64" "" PURPL_GAME_XBOX_TARGET "${PURPL_GAME_XBOX_TARGET}")
+	string(REPLACE ".Desktop" "PC" PURPL_GAME_XBOX_TARGET "${PURPL_GAME_XBOX_TARGET}")
+	configure_file(${CMAKE_BINARY_DIR}/MicrosoftGame.Config ${CMAKE_BINARY_DIR}/configured/MicrosoftGame.Config)
+	install(FILES ${CMAKE_BINARY_DIR}/configured/MicrosoftGame.Config
+		      ${CMAKE_SOURCE_DIR}/launcher/Assets/StoreLogo.png
+		      ${CMAKE_SOURCE_DIR}/launcher/Assets/Logo.png
+		      ${CMAKE_SOURCE_DIR}/launcher/Assets/SmallLogo.png
+		      ${CMAKE_SOURCE_DIR}/launcher/Assets/SplashScreen.png
+		      ${CMAKE_SOURCE_DIR}/launcher/Assets/LargeLogo.png
+		DESTINATION ${CMAKE_INSTALL_PREFIX})
+endif()
 
-# Collect the licenses of the dependencies into one file like Source 2
+# Collect the licenses of the dependencies into one file like Source engine does
 string(REPEAT "*" 84 PURPL_LICENSE_SEPARATOR)
 set(PURPL_LICENSES_FILE ${CMAKE_BINARY_DIR}/thirdpartylegalnotices.txt)
 set(PURPL_LICENSES "CGLM (https://github.com/recp/cglm)" ${CMAKE_SOURCE_DIR}/deps/cglm/LICENSE

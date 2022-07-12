@@ -9,11 +9,12 @@ int32_t g_wnd_width;
 int32_t g_wnd_height;
 bool g_wnd_visible;
 
-bool engine_init(const char *basedir, const char *gamedir, gameinfo_t *game, render_api_t render_api, bool devmode)
+bool engine_init(const char *basedir, const char *coredir, const char *gamedir, gameinfo_t *core, gameinfo_t *game, render_api_t render_api, bool devmode)
 {
 	PURPL_LOG(ENGINE_LOG_PREFIX "Initializing engine for game %s\n", game->title);
 
 	g_engine->dev = devmode;
+	g_engine->core = core;
 	g_engine->game = game;
 
 	PURPL_LOG(ENGINE_LOG_PREFIX "Initializing SDL\n");
