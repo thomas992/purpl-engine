@@ -23,6 +23,8 @@ endif()
 # Enable compile_commands.json
 set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
 
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
 # Set the install directory
 set(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/game)
 
@@ -153,4 +155,5 @@ install(FILES ${PURPL_LICENSES_FILE}
 
 install(DIRECTORY ${CMAKE_SOURCE_DIR}/game/data/core/
 	DESTINATION core)
-
+install(DIRECTORY ${CMAKE_SOURCE_DIR}/game/data/purpl/
+	DESTINATION purpl)

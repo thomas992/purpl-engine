@@ -20,41 +20,13 @@ static bool parse(const char *section, const char *key, const char *value, gamei
 		}
 	} else if (strcmp(section, "data") == 0) {
 		if (strcmp(key, "dir") == 0) {
-			if (!info->dirs) {
-				info->dirs = calloc(1, sizeof(char *));
-				PURPL_ASSERT(info->dirs);
-
-				info->dirs[0] = util_replace(value, ".", info->gamedir);
-				info->dir_count = 1;
-			} else {
-				tmp = calloc(info->dir_count + 1, sizeof(char *));
-				PURPL_ASSERT(tmp);
-
-				memcpy(tmp, info->dirs, info->dir_count * sizeof(char *));
-				free(info->dirs);
-
-				info->dirs = tmp;
-				info->dirs[info->dir_count] = util_replace(value, ".", info->gamedir);
-				info->dir_count++;
-			}
+			info->dirs = util_alloc(++info->dir_count, sizeof(char *), info->dirs);
+			info->dirs[info->dir_count - 1] = util_replace(value, ".", info->gamedir);
 			PURPL_LOG(COMMON_LOG_PREFIX "Added directory %s to search paths for game %s\n", info->dirs[info->dir_count - 1], info->game);
 		} else if (strcmp(key, "pack") == 0) {
-			if (!info->packs) {
-				info->packs = calloc(1, sizeof(pack_file_t *));
-				PURPL_ASSERT(info->packs);
-
-				info->packs[0] = pack_load(value);
-				info->pack_count = 1;
-			} else {
-				tmp = calloc(info->pack_count + 1, sizeof(pack_file_t *));
-				PURPL_ASSERT(tmp);
-
-				memcpy(tmp, info->packs, info->pack_count * sizeof(pack_file_t *));
-				free(info->packs);
-
-				info->packs[info->pack_count] = pack_load(value);
-				info->pack_count++;
-			}
+			info->packs = util_alloc(++info->pack_count, sizeof(pack_file_t *), info->packs);
+			info->packs[info->pack_count - 1] = pack_load(value);
+			PURPL_ASSERT(info->packs[info->pack_count - 1]);
 			PURPL_LOG(COMMON_LOG_PREFIX "Added pack %s_*.pak to search paths for game %s\n", value, info->game);
 		} else {
 			PURPL_LOG(COMMON_LOG_PREFIX "Ignoring unknown key %s with value %s in section [%s]\n", key, value, section);

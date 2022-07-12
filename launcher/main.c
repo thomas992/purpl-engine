@@ -66,7 +66,10 @@ int32_t main(int32_t argc, char *argv[])
 	char *dlls[] = { "flecs", "SDL2", "zstd" };
 
 	basedir = util_absolute_path(argv[0]);
-	*(strrchr(basedir, '/') + 1) = 0;
+	if (strstr(basedir, "bin"))
+		*(strstr(basedir, "bin")) = 0;
+	else
+		*(strchr(basedir, '/')) = 0;
 	PURPL_LOG(LAUNCHER_LOG_PREFIX "Base directory is %s\n", basedir);
 
 	error = false;
@@ -140,6 +143,14 @@ int32_t main(int32_t argc, char *argv[])
 	}
 
 	coredir = util_prepend("core", basedir);
+	if (!util_fexist(coredir)) {
+		PURPL_LOG(LAUNCHER_LOG_PREFIX "Core data directory \"%s\" does not exist\n", gamedir);
+		free(gamedir);
+		free(coredir);
+		free(basedir);
+		exit(1);
+	}
+	PURPL_LOG(LAUNCHER_LOG_PREFIX "Core data directory is %s\n", coredir);
 	if (!gamedir)
 		gamedir = util_prepend("purpl", basedir);
 	if (gamedir[strlen(gamedir) - 1] != '/')

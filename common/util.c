@@ -143,22 +143,24 @@ char *util_append(const char *str, const char *suffix)
 
 char *util_replace(const char *str, const char *orig, const char *rplc)
 {
-	char *str1;
 	char *str2;
+	char *str3;
+	size_t i;
 
 	if (!str || !orig || !rplc)
 		return NULL;
 
-	str1 = util_strdup(str);
-	str2 = strstr(str1, orig);
-	while (str2) {
-		str2 = util_strfmt("%.*s%s%s", str2 - str1, str1, rplc, str2 + strlen(orig));
-		free(str1);
-		str1 = str2;
-		str2 = strstr(str1, orig);
+	str2 = util_strdup(str);
+	for (i = 0; i < strlen(str2); i++) {
+		if (strncmp(str2 + i, orig, strlen(orig)) == 0) {
+			str3 = util_strfmt("%.*s%s%s", i, str2, rplc, str2 + strlen(orig));
+			free(str2);
+			str2 = str3;
+			i += strlen(rplc);
+		}
 	}
 
-	return str1;
+	return str2;
 }
 
 char *util_remove(const char *str, const char *del)
