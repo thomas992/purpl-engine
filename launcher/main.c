@@ -56,6 +56,7 @@ int32_t main(int32_t argc, char *argv[])
 	bool error;
 	bool devmode;
 	char *basedir;
+	char *bindir;
 	char *coredir;
 	char *gamedir;
 	char *path;
@@ -66,11 +67,18 @@ int32_t main(int32_t argc, char *argv[])
 	char *dlls[] = { "flecs", "SDL2", "zstd" };
 
 	basedir = util_absolute_path(argv[0]);
-	if (strstr(basedir, "bin"))
+	if (strstr(basedir, "bin")) {
 		*(strstr(basedir, "bin")) = 0;
-	else
-		*(strchr(basedir, '/')) = 0;
-	PURPL_LOG(LAUNCHER_LOG_PREFIX "Base directory is %s\n", basedir);
+		bindir = util_append(basedir, "bin/");
+	} else {
+		strrchr(basedir, '/')[1] = 0;
+		bindir = util_append(basedir, "bin/");
+		if (!util_fexist(bindir)) {
+			free(bindir);
+			bindir = util_strdup(basedir);
+		}
+	}
+	PURPL_LOG(LAUNCHER_LOG_PREFIX "Base directory is %s, binary directory is %s\n", basedir, bindir);
 
 	error = false;
 	gamedir = NULL;
@@ -99,14 +107,14 @@ int32_t main(int32_t argc, char *argv[])
 				break;
 			}
 			gamedir = util_absolute_path(argv[++i]);
-		} else if ((strcmp(arg, "directx") == 0 || strcmp(arg, "direct3d") == 0) &&
-			   render_api != RENDER_API_DIRECTX) {
-#ifdef DIRECTX_ENABLED
-			PURPL_LOG(LAUNCHER_LOG_PREFIX "Setting render API to Direct3D 12\n");
-			render_api = RENDER_API_DIRECTX;
-#else
-			PURPL_LOG("Ignoring %s on unsupported platform\n", argv[i]);
-#endif
+//		} else if ((strcmp(arg, "directx") == 0 || strcmp(arg, "direct3d") == 0) &&
+//			   render_api != RENDER_API_DIRECTX) {
+//#ifdef DIRECTX_ENABLED
+//			PURPL_LOG(LAUNCHER_LOG_PREFIX "Setting render API to Direct3D 12\n");
+//			render_api = RENDER_API_DIRECTX;
+//#else
+//			PURPL_LOG("Ignoring %s on unsupported platform\n", argv[i]);
+//#endif
 		} else if ((strcmp(arg, "vulkan") == 0) && render_api == RENDER_API_VULKAN) {
 #ifdef VULKAN_ENABLED
 			PURPL_LOG(LAUNCHER_LOG_PREFIX "Setting render API to Vulkan\n");
@@ -123,7 +131,7 @@ int32_t main(int32_t argc, char *argv[])
 		} else if (strcmp(arg, "help") == 0) {
 			printf("\n-- LIST OF AVAILABLE OPTIONS --\n\n"
 			       "-game <gamedir>\t\t- Set the game directory\n"
-			       "-directx/-direct3d\t- Use Direct3D 12 for rendering\n"
+			       //"-directx/-direct3d\t- Use Direct3D 12 for rendering\n"
 			       "-vulkan\t\t\t- Use Vulkan for rendering\n"
 			       "-dev/-debug\t\t- Enable developer mode\n"
 			       "-nodev/-nodebug\t\t- Disable developer mode\n"
@@ -138,19 +146,22 @@ int32_t main(int32_t argc, char *argv[])
 	if (error) {
 		if (gamedir)
 			free(gamedir);
+		free(bindir);
 		free(basedir);
 		exit(1);
 	}
 
 	coredir = util_prepend("core", basedir);
 	if (!util_fexist(coredir)) {
-		PURPL_LOG(LAUNCHER_LOG_PREFIX "Core data directory \"%s\" does not exist\n", gamedir);
+		PURPL_LOG(LAUNCHER_LOG_PREFIX "Core data directory \"%s\" does not exist\n", coredir);
 		free(gamedir);
 		free(coredir);
+		free(bindir);
 		free(basedir);
 		exit(1);
 	}
 	PURPL_LOG(LAUNCHER_LOG_PREFIX "Core data directory is %s\n", coredir);
+
 	if (!gamedir)
 		gamedir = util_prepend("purpl", basedir);
 	if (gamedir[strlen(gamedir) - 1] != '/')
@@ -159,6 +170,7 @@ int32_t main(int32_t argc, char *argv[])
 		PURPL_LOG(LAUNCHER_LOG_PREFIX "Game directory \"%s\" does not exist\n", gamedir);
 		free(gamedir);
 		free(coredir);
+		free(bindir);
 		free(basedir);
 		exit(1);
 	}
@@ -166,18 +178,19 @@ int32_t main(int32_t argc, char *argv[])
 
 	// Load the other libraries needed
 	for (i = 0; i < PURPL_ARRSIZE(dlls); i++) {
-		path = util_strfmt("%sbin/%s" DLL_SUFFIX, basedir, dlls[i]);
+		path = util_strfmt("%s/%s" DLL_SUFFIX, bindir, dlls[i]);
 		dll_load(path, false);
 		free(path);
 	}
 
-	path = util_append(basedir, "bin/engine");
+	path = util_append(bindir, "engine");
 	engine = (engine_dll_t *)dll_load(path, true);
 	free(path);
 	if (!engine) {
 		PURPL_LOG(LAUNCHER_LOG_PREFIX "Failed to load engine\n");
 		free(gamedir);
 		free(coredir);
+		free(bindir);
 		free(basedir);
 		exit(1);
 	}
@@ -188,6 +201,7 @@ int32_t main(int32_t argc, char *argv[])
 		dll_unload((dll_t *)engine);
 		free(gamedir);
 		free(coredir);
+		free(bindir);
 		free(basedir);
 		exit(1);
 	}
@@ -199,6 +213,7 @@ int32_t main(int32_t argc, char *argv[])
 		gameinfo_free(coreinfo);
 		free(gamedir);
 		free(coredir);
+		free(bindir);
 		free(basedir);
 		exit(1);
 	}
@@ -214,6 +229,7 @@ int32_t main(int32_t argc, char *argv[])
 		gameinfo_free(gameinfo);
 		free(gamedir);
 		free(coredir);
+		free(bindir);
 		free(basedir);
 		exit(1);
 	}

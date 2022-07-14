@@ -4,17 +4,17 @@
 
 bool engine_vulkan_init(void)
 {
-	return false;
+	return true;
 }
 
 bool engine_vulkan_begin_frame(uint64_t delta)
 {
-	return false;
+	return true;
 }
 
 bool engine_vulkan_end_frame(uint64_t delta)
 {
-	return false;
+	return true;
 }
 
 void engine_vulkan_shutdown(void) {}

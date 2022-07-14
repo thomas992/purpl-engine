@@ -26,7 +26,7 @@ typedef struct engine_dll {
 
 	bool dev; // Whether developer mode is enabled
 	gameinfo_t *core; // Engine core data info
-	gameinfo_t *game; // Game info of the curreng game
+	gameinfo_t *game; // Game info of the current game
 
 	ecs_world_t *world; // ECS world
 } engine_dll_t;

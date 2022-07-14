@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.23)
 
+include(cmake/Util.cmake)
+
 # Declare the project
 project(purpl VERSION 1.0.0
 	      DESCRIPTION "The Purpl game engine"
