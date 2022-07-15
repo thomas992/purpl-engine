@@ -60,6 +60,9 @@
 // Get the tweak number of a version
 #define PURPL_VERSION_TWEAK(version) ((version)&0xFF)
 
+// Format string for versions
+#define PURPL_PRIVER "%u.%u.%u.%u"
+
 // Macro for putting versions in format functions
 #define PURPL_VERSION_FORMAT(version)                                                             \
 	PURPL_VERSION_MAJOR(version), PURPL_VERSION_MINOR(version), PURPL_VERSION_PATCH(version), \

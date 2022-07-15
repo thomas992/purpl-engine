@@ -4,11 +4,6 @@
 
 engine_dll_t *g_engine;
 
-SDL_Window *g_wnd;
-int32_t g_wnd_width;
-int32_t g_wnd_height;
-bool g_wnd_visible;
-
 bool engine_init(const char *basedir, const char *coredir, const char *gamedir, gameinfo_t *core, gameinfo_t *game, render_api_t render_api, bool devmode)
 {
 	PURPL_LOG(ENGINE_LOG_PREFIX "Initializing engine for game %s\n", game->title);
@@ -23,11 +18,11 @@ bool engine_init(const char *basedir, const char *coredir, const char *gamedir, 
 		return false;
 	}
 
-	g_wnd_width = 1024;
-	g_wnd_height = 576;
-	g_wnd = SDL_CreateWindow(game->title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, g_wnd_width, g_wnd_height,
+	g_engine->wnd_width = 1024;
+	g_engine->wnd_height = 576;
+	g_engine->wnd = SDL_CreateWindow(game->title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, g_engine->wnd_width, g_engine->wnd_height,
 				 SDL_WINDOW_ALLOW_HIGHDPI);
-	PURPL_ASSERT(g_wnd);
+	PURPL_ASSERT(g_engine->wnd);
 
 	PURPL_ASSERT(engine_render_init(render_api));
 
@@ -39,15 +34,15 @@ bool engine_begin_frame(uint64_t delta)
 	SDL_Event event;
 
 	while (SDL_PollEvent(&event)) {
-		if (event.type == SDL_WINDOWEVENT && event.window.windowID == SDL_GetWindowID(g_wnd)) {
+		if (event.type == SDL_WINDOWEVENT && event.window.windowID == SDL_GetWindowID(g_engine->wnd)) {
 			switch (event.window.event) {
 			case SDL_WINDOWEVENT_FOCUS_LOST:
 				PURPL_LOG(ENGINE_LOG_PREFIX "Window unfocused\n");
-				g_wnd_visible = false;
+				g_engine->wnd_visible = false;
 				break;
 			case SDL_WINDOWEVENT_FOCUS_GAINED:
 				PURPL_LOG(ENGINE_LOG_PREFIX "Window focused\n");
-				g_wnd_visible = true;
+				g_engine->wnd_visible = true;
 				break;
 			case SDL_WINDOWEVENT_CLOSE:
 				PURPL_LOG(ENGINE_LOG_PREFIX "Window closed\n");
@@ -69,7 +64,7 @@ void engine_shutdown(void)
 	PURPL_LOG(ENGINE_LOG_PREFIX "Shutting down\n");
 
 	PURPL_LOG(ENGINE_LOG_PREFIX "Destroying window\n");
-	SDL_DestroyWindow(g_wnd);
+	SDL_DestroyWindow(g_engine->wnd);
 
 	PURPL_LOG(ENGINE_LOG_PREFIX "Shutting down SDL\n");
 	SDL_Quit();

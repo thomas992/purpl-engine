@@ -28,14 +28,13 @@ typedef struct engine_dll {
 	gameinfo_t *core; // Engine core data info
 	gameinfo_t *game; // Game info of the current game
 
+	SDL_Window *wnd;
+	int32_t wnd_width;
+	int32_t wnd_height;
+	bool wnd_visible;
+
 	ecs_world_t *world; // ECS world
 } engine_dll_t;
 
 // Global engine interface
 extern engine_dll_t *g_engine;
-
-// Window state
-extern SDL_Window *g_wnd;
-extern int32_t g_wnd_width;
-extern int32_t g_wnd_height;
-extern bool g_wnd_visible;

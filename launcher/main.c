@@ -151,7 +151,7 @@ int32_t main(int32_t argc, char *argv[])
 		exit(1);
 	}
 
-	coredir = util_prepend("core", basedir);
+	coredir = util_prepend("core/", basedir);
 	if (!util_fexist(coredir)) {
 		PURPL_LOG(LAUNCHER_LOG_PREFIX "Core data directory \"%s\" does not exist\n", coredir);
 		free(gamedir);

@@ -13,6 +13,7 @@ typedef struct gameinfo {
 
 	char *game; // The name of the game
 	char *title; // The title of the game
+	uint32_t version; // The version of the game
 
 	char **dirs; // Paths to the directories
 	uint16_t dir_count; // Number of directories

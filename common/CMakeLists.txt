@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.23)
 
-set(COMMON_HEADERS dll.h
+set(COMMON_HEADERS common.h
+		   dll.h
 		   gameinfo.h
 		   ini.h
 		   pack.h

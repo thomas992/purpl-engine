@@ -7,6 +7,9 @@
 // Allocate or grow memory (growing invalidates old pointers)
 extern void *util_alloc(size_t count, size_t size, void *old);
 
+// Free a list
+extern void util_free_list(void **list, size_t count);
+
 // Checks if a file exists
 extern bool util_fexist(const char *path);
 
@@ -57,3 +60,6 @@ extern void util_mkdir(const char *path);
 
 // Get the number of milliseconds since 1970
 extern uint64_t util_getaccuratetime(void);
+
+// Parse a version number
+extern uint32_t util_parse_version(const char *version);

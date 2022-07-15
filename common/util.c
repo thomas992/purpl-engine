@@ -19,6 +19,19 @@ void *util_alloc(size_t count, size_t size, void *old)
 	return buf;
 }
 
+void util_free_list(void **list, size_t count)
+{
+	size_t i;
+
+	if (!list)
+		return;
+
+	for (i = 0; i < count; i++) {
+		if (list[i])
+			free(list[i]);
+	}
+}
+
 bool util_fexist(const char *path)
 {
 	FILE *fp;
@@ -119,24 +132,30 @@ bool util_isabsolute(const char *path)
 
 char *util_prepend(const char *str, const char *prefix)
 {
-	if (!str || !prefix || !strlen(prefix))
-		return NULL;
+	if (!str)
+		return util_strdup(prefix);
+	if (!prefix)
+		return util_strdup(str);
 
 	return util_strfmt("%s%s", prefix, str);
 }
 
 char *util_insert(const char *str, size_t pos, const char *insert)
 {
-	if (!str || !insert || !strlen(insert))
-		return NULL;
+	if (!str)
+		return util_strdup(insert);
+	if (!insert)
+		return util_strdup(str);
 
 	return util_strfmt("%.*s%s%s", pos + 1, str, insert, str + pos + 1);
 }
 
 char *util_append(const char *str, const char *suffix)
 {
-	if (!str || !suffix || !strlen(suffix))
-		return NULL;
+	if (!str)
+		return util_strdup(suffix);
+	if (!suffix)
+		return util_strdup(str);
 
 	return util_strfmt("%s%s", str, suffix);
 }
@@ -186,7 +205,8 @@ char *util_strndup(const char *str, size_t n)
 	char *buf;
 
 	buf = util_alloc(n, sizeof(char), NULL);
-	strncpy(buf, str, n);
+	if (strlen(str))
+		strncpy(buf, str, n);
 
 	return buf;
 }
@@ -232,9 +252,9 @@ void util_mkdir(const char *path)
 		if (*p == '/') {
 			*p = 0;
 
-			// No error checking because opening a file in the directory will fail and that's pretty much
-			// guaranteed to happen eventually after this function is called, because why else would you
-			// create a directory?
+			// No error checking because opening a file in the directory will fail and that's pretty
+			// much guaranteed to happen eventually after this function is called, because why else
+			// would you create a directory?
 #ifdef _WIN32
 			CreateDirectoryA(path2, NULL);
 #else
@@ -262,4 +282,32 @@ uint64_t util_getaccuratetime(void)
 
 #endif
 	return time;
+}
+
+uint32_t util_parse_version(const char *version)
+{
+	uint8_t i;
+	char *version2;
+	char *token;
+	uint8_t parts[4];
+
+	if (!version)
+		return 0;
+
+	if (version[0] == 'v')
+		version2 = util_strdup(version + 1);
+	else
+		version2 = util_strdup(version);
+
+	if (!strlen(version2))
+		return 0;
+
+	// strtok until 4 numbers or no more tokens
+	i = 0;
+	token = strtok(version2, ".");
+	memset(parts, 0, 4);
+	while (token && i < 4)
+		parts[i] = strtol(token, NULL, 10) & 0xFF;
+
+	return PURPL_MAKE_VERSION(parts[0], parts[1], parts[2], parts[3]);
 }
