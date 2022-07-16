@@ -106,7 +106,7 @@ bool engine_vulkan_init(void)
 	inst_info.ppEnabledExtensionNames = extensions;
 	inst_info.enabledExtensionCount = extension_count;
 	inst_info.ppEnabledLayerNames = validation_layers;
-	// Set the number of layers in devmode, otherwise it'll be zero and they'll be ignored
+	// When devmode is disabled the number of enabled layers will be 0 so none will be loaded
 	if (g_engine->dev)
 		inst_info.enabledLayerCount = PURPL_ARRSIZE(validation_layers);
 
