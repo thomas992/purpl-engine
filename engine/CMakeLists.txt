@@ -24,6 +24,7 @@ if (NOT APPLE)
 			   vk_glad_platform.h
 			   vk_stuff.h)
 	set(ENGINE_SOURCES ${ENGINE_SOURCES}
+			   vk_device.c
 			   vk_glad.c
 			   vk_main.c)
 	message(STATUS "Enabling Vulkan support")
@@ -46,6 +47,5 @@ endif()
 if (${ENGINE_VULKAN})
 	find_package(Vulkan REQUIRED)
 	target_include_directories(engine PRIVATE ${Vulkan_INCLUDE_DIRS})
-	target_link_libraries(engine PRIVATE ${Vulkan_LIBRARIES})
 endif()
 

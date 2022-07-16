@@ -1,4 +1,4 @@
-// Vulkan rendering initialization
+// Vulkan rendering initialization and update functions
 
 #include "engine.h"
 #include "render.h"
@@ -6,7 +6,7 @@
 VkInstance g_vulkan_inst;
 
 // Gets Vulkan instance extensions
-const char **get_extensions(uint32_t *extension_count)
+static const char **get_extensions(uint32_t *extension_count)
 {
 	const char **extensions;
 	uint32_t i;
@@ -23,7 +23,7 @@ const char **get_extensions(uint32_t *extension_count)
 }
 
 // Debug messenger callback
-VkBool32 VKAPI_CALL debug_messenger_callback(VkDebugUtilsMessageSeverityFlagBitsEXT severity,
+static VkBool32 VKAPI_CALL debug_messenger_callback(VkDebugUtilsMessageSeverityFlagBitsEXT severity,
 					     VkDebugUtilsMessageTypeFlagsEXT types,
 					     const VkDebugUtilsMessengerCallbackDataEXT *data, void *user)
 {
@@ -115,6 +115,11 @@ bool engine_vulkan_init(void)
 	free(extensions);
 	if (result != VK_SUCCESS) {
 		PURPL_LOG(RENDER_LOG_PREFIX "Failed to create VkInstance: VkResult %d\n", result);
+		engine_vulkan_shutdown();
+		return false;
+	}
+
+	if (!engine_vulkan_create_device()) {
 		engine_vulkan_shutdown();
 		return false;
 	}

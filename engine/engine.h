@@ -28,10 +28,12 @@ typedef struct engine_dll {
 	gameinfo_t *core; // Engine core data info
 	gameinfo_t *game; // Game info of the current game
 
-	SDL_Window *wnd;
-	int32_t wnd_width;
-	int32_t wnd_height;
-	bool wnd_visible;
+	SDL_Window *wnd; // Window
+	int32_t wnd_width; // Window width
+	int32_t wnd_height; // Window height
+	bool wnd_visible; // Whether the window is visible
+
+	int32_t device_idx; // Index of the graphics device
 
 	ecs_world_t *world; // ECS world
 } engine_dll_t;

@@ -24,6 +24,9 @@ bool engine_init(const char *basedir, const char *coredir, const char *gamedir, 
 				 SDL_WINDOW_ALLOW_HIGHDPI);
 	PURPL_ASSERT(g_engine->wnd);
 
+	// TODO: make this dependant on settings instead of just being hardcoded to my better GPU
+	g_engine->device_idx = 1;
+
 	PURPL_ASSERT(engine_render_init(render_api));
 
 	return true;

@@ -40,7 +40,10 @@ bool engine_directx_init(void)
 		return false;
 	}
 
-	engine_directx_create_device();
+	if (!engine_directx_create_device()) {
+		engine_directx_shutdown();
+		return false;
+	}
 
 	return true;
 }

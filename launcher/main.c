@@ -63,6 +63,7 @@ int32_t main(int32_t argc, char *argv[])
 	gameinfo_t *coreinfo;
 	gameinfo_t *gameinfo;
 	render_api_t render_api;
+	int32_t device_idx;
 
 	char *dlls[] = { "flecs", "SDL2", "zstd" };
 
@@ -122,19 +123,29 @@ int32_t main(int32_t argc, char *argv[])
 #else
 			PURPL_LOG("Ignoring -vulkan on unsupported platform\n");
 #endif
+		} else if (strcmp(arg, "deviceidx") == 0 || strcmp(arg, "deviceindex") == 0) {
+			if (i >= argc - 1) {
+				PURPL_LOG(LAUNCHER_LOG_PREFIX "-%s requires an argument\n", arg);
+				error = true;
+				break;
+			}
+			device_idx = atoi(argv[++i]);
+			PURPL_LOG(LAUNCHER_LOG_PREFIX "Using graphics device with index %d for rendering\n",
+				  device_idx);
 		} else if ((strcmp(arg, "dev") == 0 || strcmp(arg, "debug") == 0) && !devmode) {
 			PURPL_LOG(LAUNCHER_LOG_PREFIX "Enabling developer mode\n");
 			devmode = true;
 		} else if ((strcmp(arg, "nodev") == 0 || strcmp(arg, "nodebug")) == 0 && devmode) {
 			PURPL_LOG(LAUNCHER_LOG_PREFIX "Disabling developer mode\n");
-			devmode = true;
+			devmode = false;
 		} else if (strcmp(arg, "help") == 0) {
 			printf("\n-- LIST OF AVAILABLE OPTIONS --\n\n"
-			       "-game <gamedir>\t\t- Set the game directory\n"
+			       "-game <gamedir>\t\t\t- Set the game directory\n"
 			       //"-directx/-direct3d\t- Use Direct3D 12 for rendering\n"
-			       "-vulkan\t\t\t- Use Vulkan for rendering\n"
-			       "-dev/-debug\t\t- Enable developer mode\n"
-			       "-nodev/-nodebug\t\t- Disable developer mode\n"
+			       "-vulkan\t\t\t\t- Use Vulkan for rendering\n"
+			       "-deviceidx/-deviceindex <index> - The index (0-based) of the graphics device to render on\n"
+			       "-dev/-debug\t\t\t- Enable developer mode\n"
+			       "-nodev/-nodebug\t\t\t- Disable developer mode\n"
 			       "\nMost/all options print additional information if used incorrectly\n");
 			error = true;
 			break;
@@ -150,6 +161,11 @@ int32_t main(int32_t argc, char *argv[])
 		free(basedir);
 		exit(1);
 	}
+
+#ifdef _WIN32
+	if (!devmode)
+		FreeConsole();
+#endif
 
 	coredir = util_prepend("core/", basedir);
 	if (!util_fexist(coredir)) {
