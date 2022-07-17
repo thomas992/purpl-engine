@@ -4,6 +4,7 @@
 #include "render.h"
 
 VkInstance g_vulkan_inst;
+VkSurfaceKHR g_vulkan_surface;
 
 // Gets Vulkan instance extensions
 static const char **get_extensions(uint32_t *extension_count)
@@ -24,33 +25,30 @@ static const char **get_extensions(uint32_t *extension_count)
 
 // Debug messenger callback
 static VkBool32 VKAPI_CALL debug_messenger_callback(VkDebugUtilsMessageSeverityFlagBitsEXT severity,
-					     VkDebugUtilsMessageTypeFlagsEXT types,
-					     const VkDebugUtilsMessengerCallbackDataEXT *data, void *user)
+						    VkDebugUtilsMessageTypeFlagsEXT types,
+						    const VkDebugUtilsMessengerCallbackDataEXT *data, void *user)
 {
 	char *severity_str;
 	char *type_str;
+	char *tmp;
 
-	type_str = NULL;
+	type_str = util_alloc(1, sizeof(char), NULL);
 	if (types & VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT)
-		type_str = util_append(type_str, "GENERAL ");
+		UTIL_STRFUNC(type_str, util_append(type_str, "GENERAL "));
 	if (types & VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT)
-		type_str = util_append(type_str, "VALIDATION ");
+		UTIL_STRFUNC(type_str, util_append(type_str, "VALIDATION "));
 	if (types & VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT)
-		type_str = util_append(type_str, "PERFORMANCE ");
-	if (!type_str)
-		type_str = util_alloc(1, sizeof(char), NULL);
+		UTIL_STRFUNC(type_str, util_append(type_str, "PERFORMANCE "));
 
-	severity_str = NULL;
+	severity_str = util_alloc(1, sizeof(char), NULL);
 	if (severity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT)
-		severity_str = util_append(severity_str, "VERBOSE ");
+		UTIL_STRFUNC(severity_str, util_append(severity_str, "VERBOSE "));
 	if (severity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT)
-		severity_str = util_append(severity_str, "INFO ");
+		UTIL_STRFUNC(severity_str, util_append(severity_str, "INFO "));
 	if (severity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT)
-		severity_str = util_append(severity_str, "WARNING ");
+		UTIL_STRFUNC(severity_str, util_append(severity_str, "WARNING "));
 	if (severity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT)
-		severity_str = util_append(severity_str, "ERROR ");
-	if (!severity_str)
-		severity_str = util_alloc(1, sizeof(char), NULL);
+		UTIL_STRFUNC(severity_str, util_append(severity_str, "ERROR "));
 
 	PURPL_LOG(RENDER_LOG_PREFIX "VULKAN %s%sMESSAGE: %s\n", type_str, severity_str, data->pMessage);
 
@@ -73,7 +71,6 @@ bool engine_vulkan_init(void)
 	const char *validation_layers[] = { "VK_LAYER_KHRONOS_validation" };
 
 	PURPL_LOG(RENDER_LOG_PREFIX "Loading Vulkan\n");
-	SDL_Vulkan_LoadLibrary(NULL);
 	gladLoaderLoadVulkan(NULL, NULL, NULL);
 
 	PURPL_LOG(RENDER_LOG_PREFIX "Setting VkApplicationInfo fields\n");
@@ -90,8 +87,12 @@ bool engine_vulkan_init(void)
 
 	PURPL_LOG(RENDER_LOG_PREFIX "Setting VkDebugUtilsMessengerCreateInfoEXT fields\n");
 	debug_messenger_info.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
-	debug_messenger_info.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_FLAG_BITS_MAX_ENUM_EXT;
-	debug_messenger_info.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_FLAG_BITS_MAX_ENUM_EXT;
+	debug_messenger_info.messageSeverity = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
+					       VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
+					       VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
+	debug_messenger_info.messageType =
+		VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT |
+		VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
 	debug_messenger_info.pfnUserCallback = debug_messenger_callback;
 
 	inst_info.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
@@ -112,9 +113,20 @@ bool engine_vulkan_init(void)
 
 	PURPL_LOG(RENDER_LOG_PREFIX "Creating VkInstance\n");
 	result = vkCreateInstance(&inst_info, NULL, &g_vulkan_inst);
-	free(extensions);
+	free((void *)extensions);
 	if (result != VK_SUCCESS) {
-		PURPL_LOG(RENDER_LOG_PREFIX "Failed to create VkInstance: VkResult %d\n", result);
+		PURPL_LOG(RENDER_LOG_PREFIX "vkCreateInstance(0x%" PRIXPTR ", 0x%" PRIXPTR ", 0x%" PRIXPTR
+					    ") failed: VkResult %d\n ",
+			  &inst_info, NULL, &g_vulkan_inst, result);
+		engine_vulkan_shutdown();
+		return false;
+	}
+
+	PURPL_LOG(RENDER_LOG_PREFIX "Creating VkSurfaceKHR\n");
+	if (!SDL_Vulkan_CreateSurface(g_engine->wnd, g_vulkan_inst, &g_vulkan_surface)) {
+		PURPL_LOG(RENDER_LOG_PREFIX "SDL_Vulkan_CreateSurface(0x%" PRIXPTR ", 0x%" PRIXPTR ", 0x%" PRIXPTR
+					    ") failed: %s\n",
+			  g_engine->wnd, g_vulkan_inst, &g_vulkan_surface, SDL_GetError());
 		engine_vulkan_shutdown();
 		return false;
 	}
@@ -123,6 +135,9 @@ bool engine_vulkan_init(void)
 		engine_vulkan_shutdown();
 		return false;
 	}
+
+	PURPL_LOG(RENDER_LOG_PREFIX "Reloading Vulkan\n");
+	gladLoaderLoadVulkan(g_vulkan_inst, g_vulkan_phys_device, g_vulkan_device);
 
 	return true;
 }
@@ -139,6 +154,14 @@ bool engine_vulkan_end_frame(uint64_t delta)
 
 void engine_vulkan_shutdown(void)
 {
+	if (g_vulkan_device) {
+		PURPL_LOG(RENDER_LOG_PREFIX "Destroying VkDevice\n");
+		vkDestroyDevice(g_vulkan_device, NULL);
+	}
+	if (g_vulkan_surface) {
+		PURPL_LOG(RENDER_LOG_PREFIX "Destroying VkSurfaceKHR\n");
+		vkDestroySurfaceKHR(g_vulkan_inst, g_vulkan_surface, NULL);
+	}
 	if (g_vulkan_inst) {
 		PURPL_LOG(RENDER_LOG_PREFIX "Destroying VkInstance\n");
 		vkDestroyInstance(g_vulkan_inst, NULL);

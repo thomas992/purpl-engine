@@ -3,8 +3,6 @@
 #include "engine.h"
 #include "render.h"
 
-render_api_t g_render_api;
-
 const char *engine_render_api_name(render_api_t api)
 {
 	switch (api) {
@@ -21,9 +19,9 @@ const char *engine_render_api_name(render_api_t api)
 
 bool engine_render_init(render_api_t api)
 {
-	g_render_api = api;
+	g_engine->render_api = api;
 
-	switch (g_render_api) {
+	switch (g_engine->render_api) {
 #ifndef __APPLE__
 	case RENDER_API_VULKAN:
 		return engine_vulkan_init();
@@ -44,7 +42,7 @@ bool engine_render_init(render_api_t api)
 
 bool engine_render_begin_frame(uint64_t delta)
 {
-	switch (g_render_api) {
+	switch (g_engine->render_api) {
 #ifdef VULKAN_ENABLED
 	case RENDER_API_VULKAN:
 		return engine_vulkan_begin_frame(delta);
@@ -58,14 +56,14 @@ bool engine_render_begin_frame(uint64_t delta)
 		return engine_metal_begin_frame(delta);
 #endif
 	default:
-		PURPL_LOG(RENDER_LOG_PREFIX "Frame setup attempted with invalid API %d\n", g_render_api);
+		PURPL_LOG(RENDER_LOG_PREFIX "Frame setup attempted with invalid API %d\n", g_engine->render_api);
 		return false;
 	}
 }
 
 bool engine_render_end_frame(uint64_t delta)
 {
-	switch (g_render_api) {
+	switch (g_engine->render_api) {
 #ifdef VULKAN_ENABLED
 	case RENDER_API_VULKAN:
 		return engine_vulkan_end_frame(delta);
@@ -79,14 +77,14 @@ bool engine_render_end_frame(uint64_t delta)
 		return engine_metal_end_frame(delta);
 #endif
 	default:
-		PURPL_LOG(RENDER_LOG_PREFIX "Frame draw attempted with invalid API %d\n", g_render_api);
+		PURPL_LOG(RENDER_LOG_PREFIX "Frame draw attempted with invalid API %d\n", g_engine->render_api);
 		return false;
 	}
 }
 
 void engine_render_shutdown(void)
 {
-	switch (g_render_api) {
+	switch (g_engine->render_api) {
 #ifdef VULKAN_ENABLED
 	case RENDER_API_VULKAN:
 		engine_vulkan_shutdown();
@@ -103,7 +101,7 @@ void engine_render_shutdown(void)
 		break;
 #endif
 	default:
-		PURPL_LOG(RENDER_LOG_PREFIX "Render shutdown attempted with invalid API %d\n", g_render_api);
+		PURPL_LOG(RENDER_LOG_PREFIX "Render shutdown attempted with invalid API %d\n", g_engine->render_api);
 		break;
 	}
 }

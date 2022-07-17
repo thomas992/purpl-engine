@@ -24,6 +24,13 @@ typedef enum render_api {
 	RENDER_API_METAL = 2, // Metal, Apple systems only
 } render_api_t;
 
+// Graphics device vendors
+typedef enum pci_vendor_id {
+	PCI_VENDOR_AMD = 0x1002, // AMD
+	PCI_VENDOR_NVIDIA = 0x10de, // NVIDIA
+	PCI_VENDOR_INTEL = 0x8086, // Intel
+} pci_vendor_id_t;
+
 // Get the name of a render API
 extern const char *engine_render_api_name(render_api_t api);
 

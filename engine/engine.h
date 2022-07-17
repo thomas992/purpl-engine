@@ -33,6 +33,7 @@ typedef struct engine_dll {
 	int32_t wnd_height; // Window height
 	bool wnd_visible; // Whether the window is visible
 
+	render_api_t render_api; // Graphics API for rendering
 	int32_t device_idx; // Index of the graphics device
 
 	ecs_world_t *world; // ECS world

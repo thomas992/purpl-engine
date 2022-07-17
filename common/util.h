@@ -4,6 +4,14 @@
 
 #include "common.h"
 
+// Calls a string function and frees the old string
+#define UTIL_STRFUNC(str, call)     \
+	{                           \
+		char *tmp = (call); \
+		free((str));        \
+		(str) = tmp;        \
+	}
+
 // Allocate or grow memory (growing invalidates old pointers)
 extern void *util_alloc(size_t count, size_t size, void *old);
 

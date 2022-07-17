@@ -89,6 +89,12 @@ set(PURPL_INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/deps/cglm/include
 		       ${CMAKE_SOURCE_DIR}/deps/zstd/lib
 		       ${CMAKE_SOURCE_DIR})
 
+if ("${CMAKE_BUILD_TYPE}" MATCHES "Deb")
+	add_compile_definitions(PURPL_DEBUG=1)
+elseif ("${CMAKE_BUILD_TYPE}" MATCHES "Rel")
+	add_compile_definitions(PURPL_RELEASE=1)
+endif()
+
 # Subdirectories
 add_subdirectory(common)
 add_subdirectory(engine)

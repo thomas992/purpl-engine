@@ -9,4 +9,3 @@ function(copy_libs target)
 		endforeach()
 	endif()
 endfunction()
-

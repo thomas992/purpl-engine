@@ -26,6 +26,9 @@ extern void engine_vulkan_shutdown(void);
 // Vulkan instance
 extern VkInstance g_vulkan_inst;
 
+// Vulkan surface
+extern VkSurfaceKHR g_vulkan_surface;
+
 // Physical and logical devices
 extern VkPhysicalDevice g_vulkan_phys_device;
 extern VkDevice g_vulkan_device;

@@ -6,6 +6,8 @@ engine_dll_t *g_engine;
 
 bool engine_init(const char *basedir, const char *coredir, const char *gamedir, gameinfo_t *core, gameinfo_t *game, render_api_t render_api, bool devmode)
 {
+	SDL_WindowFlags wnd_flags;
+
 	PURPL_LOG(ENGINE_LOG_PREFIX "Initializing engine for game %s\n", game->title);
 
 	g_engine->dev = devmode;
@@ -18,14 +20,18 @@ bool engine_init(const char *basedir, const char *coredir, const char *gamedir, 
 		return false;
 	}
 
+	wnd_flags = SDL_WINDOW_ALLOW_HIGHDPI;
+	if (render_api == RENDER_API_VULKAN)
+		wnd_flags |= SDL_WINDOW_VULKAN;
+
 	g_engine->wnd_width = 1024;
 	g_engine->wnd_height = 576;
 	g_engine->wnd = SDL_CreateWindow(game->title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, g_engine->wnd_width, g_engine->wnd_height,
-				 SDL_WINDOW_ALLOW_HIGHDPI);
+				 wnd_flags);
 	PURPL_ASSERT(g_engine->wnd);
 
 	// TODO: make this dependant on settings instead of just being hardcoded to my better GPU
-	g_engine->device_idx = 1;
+	g_engine->device_idx = -1;
 
 	PURPL_ASSERT(engine_render_init(render_api));
 
@@ -54,11 +60,14 @@ bool engine_begin_frame(uint64_t delta)
 		}
 	}
 
+	engine_render_begin_frame(delta);
+
 	return true;
 }
 
 bool engine_end_frame(uint64_t delta)
 {
+	engine_render_end_frame(delta);
 	return true;
 }
 

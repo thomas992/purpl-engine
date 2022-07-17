@@ -62,7 +62,7 @@ gameinfo_t *gameinfo_parse(const char *name, const char *gamedir)
 
 	ini_browse((INI_CALLBACK)parse, info, name2);
 
-	PURPL_LOG(COMMON_LOG_PREFIX "Checking required fields");
+	PURPL_LOG(COMMON_LOG_PREFIX "Checking required fields for gameinfo %s\n", info->path);
 	PURPL_ASSERT(info->game);
 	PURPL_ASSERT(info->title);
 
