@@ -68,9 +68,8 @@ static int extension_sort(const VkExtensionProperties *a, const VkExtensionPrope
 }
 
 // Checks if a device supports the required extensions
-static bool check_extensions(VkPhysicalDevice device)
+static bool check_extensions(VkPhysicalDevice device, const char **extensions, size_t extension_count)
 {
-	const char *required[] = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
 	VkExtensionProperties *properties;
 	uint32_t supported_count;
 	bool supported;
@@ -82,7 +81,7 @@ static bool check_extensions(VkPhysicalDevice device)
 	qsort(properties, supported_count, sizeof(VkExtensionProperties),
 	      (int (*)(const void *, const void *))extension_sort);
 	supported = util_list_check(&PURPL_STRUCT(list_check_t, properties, supported_count,
-						  sizeof(VkExtensionProperties), required, PURPL_ARRSIZE(required),
+						  sizeof(VkExtensionProperties), extensions, extension_count,
 						  sizeof(const char *), (list_check_func_t)check_extension));
 
 	free(properties);
@@ -91,8 +90,8 @@ static bool check_extensions(VkPhysicalDevice device)
 
 // Gives a device a score based on its properties and features, also returning them to the calling function for further
 // use
-static uint32_t score_device(VkPhysicalDevice device, uint32_t i, VkPhysicalDeviceProperties *properties,
-			     VkPhysicalDeviceFeatures *features)
+static uint32_t score_device(VkPhysicalDevice device, const char **extensions, size_t extension_count, uint32_t i,
+			     VkPhysicalDeviceProperties *properties, VkPhysicalDeviceFeatures *features)
 {
 	uint32_t score;
 	queue_families_t indices;
@@ -109,7 +108,7 @@ static uint32_t score_device(VkPhysicalDevice device, uint32_t i, VkPhysicalDevi
 		return 0;
 	}
 
-	if (!check_extensions(device)) {
+	if (!check_extensions(device, extensions, extension_count)) {
 		PURPL_LOG(RENDER_LOG_PREFIX "Not all required extensions are supported by device %d, ignoring\n", i);
 		return 0;
 	}
@@ -157,7 +156,7 @@ static uint32_t score_device(VkPhysicalDevice device, uint32_t i, VkPhysicalDevi
 	return score;
 }
 
-bool engine_vulkan_choose_device(void)
+bool engine_vulkan_choose_device(const char **extensions, size_t extension_count)
 {
 	VkResult result;
 	uint32_t device_count;
@@ -197,7 +196,8 @@ bool engine_vulkan_choose_device(void)
 	best_score = 0;
 	best_idx = -1;
 	for (i = 0; i < device_count; i++) {
-		score = score_device(physical_devices[i], i, &properties, &features);
+		score = score_device(physical_devices[i], extensions, extension_count, i, &properties,
+				     &features);
 		if (score > best_score) {
 			best_score = score;
 			best_idx = (int32_t)i;
@@ -236,7 +236,7 @@ bool engine_vulkan_create_device(void)
 
 	const char *extensions[] = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
 
-	if (!engine_vulkan_choose_device())
+	if (!engine_vulkan_choose_device(extensions, PURPL_ARRSIZE(extensions)))
 		return false;
 
 	PURPL_LOG(RENDER_LOG_PREFIX "Getting queue family indices for device %d\n", g_engine->device_idx);

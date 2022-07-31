@@ -9,7 +9,7 @@
 extern bool engine_vulkan_init(void);
 
 // Choose a physical device
-extern bool engine_vulkan_choose_device(void);
+extern bool engine_vulkan_choose_device(const char **extensions, size_t extension_count);
 
 // Create a logical device
 extern bool engine_vulkan_create_device(void);
