@@ -90,6 +90,9 @@ typedef uint8_t byte_t;
 
 #define PURPL_RECAST_FUNCPTR(func, rettype, ...) ((rettype(*)(__VA_ARGS__))(func))
 
+// Instantiate a struct
+#define PURPL_STRUCT(s, ...) ((s){ __VA_ARGS__ })
+
 // Function name
 #ifdef _MSC_VER
 #define PURPL_FUNCNAME __FUNCSIG__
@@ -97,20 +100,6 @@ typedef uint8_t byte_t;
 #define PURPL_FUNCNAME __PRETTY_FUNCTION__
 #else
 #define PURPL_FUNCNAME __func__
-#endif
-
-// Print a message to the console
-#ifdef _WIN32
-#define PURPL_LOG(...)                          \
-	{                                       \
-		char *buf;                      \
-		buf = util_strfmt(__VA_ARGS__); \
-		OutputDebugStringA(buf);        \
-		printf("%s", buf);              \
-		free(buf);                      \
-	}
-#else
-#define PURPL_LOG(...) printf(__VA_ARGS__)
 #endif
 
 // Debug breakpoint

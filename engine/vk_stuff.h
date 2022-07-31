@@ -32,3 +32,6 @@ extern VkSurfaceKHR g_vulkan_surface;
 // Physical and logical devices
 extern VkPhysicalDevice g_vulkan_phys_device;
 extern VkDevice g_vulkan_device;
+
+// Queues
+extern VkQueue g_vulkan_present_queue;

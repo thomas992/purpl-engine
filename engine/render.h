@@ -34,6 +34,9 @@ typedef enum pci_vendor_id {
 // Get the name of a render API
 extern const char *engine_render_api_name(render_api_t api);
 
+// Get the name of a PCI vendor
+extern const char *engine_render_pci_vendor_name(pci_vendor_id_t vendor);
+
 // Initialize rendering
 extern bool engine_render_init(render_api_t api);
 

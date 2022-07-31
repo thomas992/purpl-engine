@@ -16,6 +16,12 @@
 #define DLL_SUFFIX ""
 #endif
 
+// Tell drivers to use the better GPU in laptops
+#ifdef _WIN32
+__declspec(dllexport) uint32_t NvOptimusEnablement = 1;
+__declspec(dllexport) uint32_t AmdPowerXpressRequestHighPerformance = 1;  
+#endif
+
 // Enter the loop that runs the engine
 void run(dll_t **dlls, uint8_t dll_count)
 {

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.23)
+cmake_minimum_required(VERSION 3.22)
 
 set(COMMON_HEADERS common.h
 		   dll.h
@@ -23,4 +23,8 @@ endif()
 
 add_library(common STATIC ${COMMON_HEADERS} ${COMMON_SOURCES})
 target_include_directories(common PRIVATE ${PURPL_INCLUDE_DIRS})
+
+if ("${CMAKE_HOST_SYSTEM_NAME}" MATCHES "Linux")
+	target_link_libraries(common PUBLIC dl m)
+endif()
 

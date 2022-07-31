@@ -5,6 +5,7 @@
 
 VkPhysicalDevice g_vulkan_phys_device;
 VkDevice g_vulkan_device;
+VkQueue g_vulkan_present_queue;
 
 // List of queue family indices
 typedef struct queue_families {
@@ -19,6 +20,7 @@ typedef struct queue_families {
 // Checks if all the queue families have been found
 #define CHECK_QUEUE_FAMILIES(indices) ((indices).graphics_found && (indices).present_found && (indices).compute_found)
 
+// Locates the required queue family indices for a device
 static queue_families_t find_queue_families(VkPhysicalDevice device)
 {
 	queue_families_t indices = { 0 };
@@ -53,6 +55,42 @@ static queue_families_t find_queue_families(VkPhysicalDevice device)
 	return indices;
 }
 
+// Used by the call to util_list_check in check_extensions
+static int check_extension(const char **name, const VkExtensionProperties *properties)
+{
+	return strcmp(*name, properties->extensionName);
+}
+
+// Used by the call to qsort in check_extensions
+static int extension_sort(const VkExtensionProperties *a, const VkExtensionProperties *b)
+{
+	return strcmp(a->extensionName, b->extensionName);
+}
+
+// Checks if a device supports the required extensions
+static bool check_extensions(VkPhysicalDevice device)
+{
+	const char *required[] = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
+	VkExtensionProperties *properties;
+	uint32_t supported_count;
+	bool supported;
+
+	vkEnumerateDeviceExtensionProperties(device, NULL, &supported_count, NULL);
+	properties = util_alloc(supported_count, sizeof(VkExtensionProperties), NULL);
+	vkEnumerateDeviceExtensionProperties(device, NULL, &supported_count, properties);
+
+	qsort(properties, supported_count, sizeof(VkExtensionProperties),
+	      (int (*)(const void *, const void *))extension_sort);
+	supported = util_list_check(&PURPL_STRUCT(list_check_t, properties, supported_count,
+						  sizeof(VkExtensionProperties), required, PURPL_ARRSIZE(required),
+						  sizeof(const char *), (list_check_func_t)check_extension));
+
+	free(properties);
+	return supported;
+}
+
+// Gives a device a score based on its properties and features, also returning them to the calling function for further
+// use
 static uint32_t score_device(VkPhysicalDevice device, uint32_t i, VkPhysicalDeviceProperties *properties,
 			     VkPhysicalDeviceFeatures *features)
 {
@@ -63,9 +101,16 @@ static uint32_t score_device(VkPhysicalDevice device, uint32_t i, VkPhysicalDevi
 	vkGetPhysicalDeviceProperties(device, properties);
 	vkGetPhysicalDeviceFeatures(device, features);
 
+	PURPL_LOG(RENDER_LOG_PREFIX "Checking if device %d (%s) is usable\n", i, properties->deviceName);
+
 	indices = find_queue_families(device);
 	if (!CHECK_QUEUE_FAMILIES(indices)) {
 		PURPL_LOG(RENDER_LOG_PREFIX "Not all queue families detected for device %d, ignoring\n", i);
+		return 0;
+	}
+
+	if (!check_extensions(device)) {
+		PURPL_LOG(RENDER_LOG_PREFIX "Not all required extensions are supported by device %d, ignoring\n", i);
 		return 0;
 	}
 
@@ -75,6 +120,7 @@ static uint32_t score_device(VkPhysicalDevice device, uint32_t i, VkPhysicalDevi
 	if (indices.graphics == indices.present)
 		score += 500;
 
+	// Pretty much always better if present, if not either the system sucks or is a console or something
 	if (properties->deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU)
 		score += 1000;
 
@@ -90,16 +136,23 @@ static uint32_t score_device(VkPhysicalDevice device, uint32_t i, VkPhysicalDevi
 #endif
 		score += 10;
 
-	score *= VK_VERSION_MINOR(properties->apiVersion);
+	score *= VK_API_VERSION_MINOR(properties->apiVersion);
 
-	PURPL_LOG(RENDER_LOG_PREFIX "Device %d information:\n", i);
-	PURPL_LOG(RENDER_LOG_PREFIX "\tName: %s\n", properties->deviceName);
-	PURPL_LOG(RENDER_LOG_PREFIX "\tPCI ID: %x:%x\n", properties->vendorID, properties->deviceID);
-	PURPL_LOG(RENDER_LOG_PREFIX "\tScore: %d\n", score);
-	PURPL_LOG(RENDER_LOG_PREFIX "\tQueue family indices:\n");
-	PURPL_LOG(RENDER_LOG_PREFIX "\t\tGraphics: %u\n", indices.graphics);
-	PURPL_LOG(RENDER_LOG_PREFIX "\t\tPresent: %u\n", indices.present);
-	PURPL_LOG(RENDER_LOG_PREFIX "\t\tCompute: %u\n", indices.compute);
+	// clang-format off
+	PURPL_LOG(RENDER_LOG_PREFIX "Device %d information:\n"
+		  RENDER_LOG_PREFIX "\tName: %s\n"
+		  RENDER_LOG_PREFIX "\tPCI ID: %x:%x (vendor is %s)\n"
+		  RENDER_LOG_PREFIX "\tVulkan API version: %u.%u.%u\n"
+		  RENDER_LOG_PREFIX "\tScore: %d\n"
+		  RENDER_LOG_PREFIX "\tQueue family indices:\n"
+		  RENDER_LOG_PREFIX "\t\tGraphics: %u\n"
+		  RENDER_LOG_PREFIX "\t\tPresent: %u\n"
+		  RENDER_LOG_PREFIX "\t\tCompute: %u\n",
+		  // clang-format on
+		  i, properties->deviceName, properties->vendorID, properties->deviceID,
+		  engine_render_pci_vendor_name(properties->vendorID), VK_API_VERSION_MAJOR(properties->apiVersion),
+		  VK_API_VERSION_MINOR(properties->apiVersion), VK_API_VERSION_PATCH(properties->apiVersion), score,
+		  indices.graphics, indices.present, indices.compute);
 
 	return score;
 }
@@ -181,6 +234,8 @@ bool engine_vulkan_create_device(void)
 	uint8_t i;
 	uint8_t j;
 
+	const char *extensions[] = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
+
 	if (!engine_vulkan_choose_device())
 		return false;
 
@@ -194,8 +249,10 @@ bool engine_vulkan_create_device(void)
 	queue_priority = 1;
 	memset(queue_infos, 0, sizeof(queue_infos));
 	for (i = 0, j = 0; i < 3; i++) {
-		if (i > 0 && queue_indices[i - 1] == queue_indices[i])
+		if (i > 0 && queue_indices[i - 1] == queue_indices[i]) {
+			PURPL_LOG("Queues at %u and %u both have index %u\n", i - 1, i, queue_indices[i]);
 			j++;
+		}
 		queue_infos[i - j].sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
 		queue_infos[i - j].queueFamilyIndex = queue_indices[i];
 		queue_infos[i - j].queueCount = 1;
@@ -207,6 +264,8 @@ bool engine_vulkan_create_device(void)
 	device_info.pEnabledFeatures = &features;
 	device_info.queueCreateInfoCount = i - j;
 	device_info.pQueueCreateInfos = queue_infos;
+	device_info.ppEnabledExtensionNames = extensions;
+	device_info.enabledExtensionCount = PURPL_ARRSIZE(extensions);
 
 	PURPL_LOG(RENDER_LOG_PREFIX "Creating VkDevice\n");
 	result = vkCreateDevice(g_vulkan_phys_device, &device_info, NULL, &g_vulkan_device);
@@ -216,6 +275,9 @@ bool engine_vulkan_create_device(void)
 			  g_vulkan_phys_device, &device_info, NULL, &g_vulkan_device, result);
 		return false;
 	}
+
+	PURPL_LOG(RENDER_LOG_PREFIX "Retrieving presentation queue\n");
+	vkGetDeviceQueue(g_vulkan_device, indices.present, 0, &g_vulkan_present_queue);
 
 	return true;
 }

@@ -1,11 +1,11 @@
-cmake_minimum_required(VERSION 3.23)
+cmake_minimum_required(VERSION 3.22)
 
 set(LAUNCHER_SOURCES main.c)
 
 add_executable(launcher ${LAUNCHER_SOURCES})
 target_include_directories(launcher PRIVATE ${PURPL_INCLUDE_DIRS})
 target_link_libraries(launcher PRIVATE common libzstd_static SDL2main SDL2)
-copy_libs(launcher flecs SDL2 libzstd_shared engine)
+copy_libs(launcher ${ENGINE_LIBS})
 
 add_custom_command(TARGET launcher
 		   POST_BUILD

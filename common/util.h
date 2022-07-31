@@ -12,6 +12,12 @@
 		(str) = tmp;        \
 	}
 
+// Print a message to places to aid in debugging and troubleshooting and stuff
+extern void util_log(const char *func, int line, const char *file, const char *fmt, ...);
+
+// Wrapper around util_log
+#define PURPL_LOG(...) util_log(PURPL_FUNCNAME, __LINE__, __FILE__, __VA_ARGS__)
+
 // Allocate or grow memory (growing invalidates old pointers)
 extern void *util_alloc(size_t count, size_t size, void *old);
 
@@ -71,3 +77,22 @@ extern uint64_t util_getaccuratetime(void);
 
 // Parse a version number
 extern uint32_t util_parse_version(const char *version);
+
+// Callback for util_list_check
+typedef int (*list_check_func_t)(const void *source, const void *others);
+
+// Parameters for util_list_check
+typedef struct list_check {
+	const void *source; // List to check
+	size_t source_count; // Number of elements in the source list
+	size_t source_elem_size; // Size of source elements
+
+	const void *other; // List with elements to check for
+	size_t other_count; // Number of elements to check for
+	size_t other_elem_size; // Size of elements to check for
+
+	list_check_func_t callback; // Called to compare elements
+} list_check_t;
+
+// Determine if a list has elements with the same values as another list
+extern bool util_list_check(list_check_t *params);

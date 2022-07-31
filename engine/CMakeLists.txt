@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.23)
+cmake_minimum_required(VERSION 3.22)
 
 set(ENGINE_HEADERS engine.h
 		   render.h)
@@ -49,3 +49,4 @@ if (${ENGINE_VULKAN})
 	target_include_directories(engine PRIVATE ${Vulkan_INCLUDE_DIRS})
 endif()
 
+set(ENGINE_LIBS engine flecs SDL2 libzstd_shared PARENT_SCOPE)

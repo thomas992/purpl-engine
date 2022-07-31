@@ -5,6 +5,41 @@
 
 #include "util.h"
 
+void util_log(const char *func, int line, const char *file, const char *fmt, ...)
+{
+	va_list args;
+	char *buf;
+	char *buf2;
+	char *file2;
+	char *filename;
+
+	if (!func || !file || !fmt)
+		return;
+
+	file2 = util_normalize_path(file);
+#ifdef PURPL_DEBUG
+	filename = file2;
+#else
+	filename = strstr(file2, "purpl-engine/") + 13;
+#endif
+
+	va_start(args, fmt);
+	buf = util_vstrfmt(fmt, args);
+	va_end(args);
+
+	buf2 = util_strfmt("[%s:%d:%s]\n%s", func, line, filename, buf);
+
+	free(buf);
+	free(file2);
+
+	printf("%s", buf2);
+#ifdef _WIN32
+	OutputDebugStringA(buf2);
+#endif
+
+	free(buf2);
+}
+
 void *util_alloc(size_t count, size_t size, void *old)
 {
 	void *buf;
@@ -47,7 +82,7 @@ bool util_fexist(const char *path)
 size_t util_fsize(FILE *stream)
 {
 	long offs;
-	size_t len = 0;
+	size_t len;
 
 	if (!stream)
 		return 0;
@@ -122,7 +157,7 @@ bool util_isabsolute(const char *path)
 
 	path2 = util_normalize_path(path);
 	path3 = util_absolute_path(path);
-	ret = strcmp(path2, path2) == 0;
+	ret = strcmp(path2, path3) == 0;
 
 	free(path2);
 	free(path3);
@@ -234,9 +269,15 @@ char *util_vstrfmt(const char *fmt, va_list args)
 
 	va_copy(args2, args);
 
+#ifdef PURPL_USE_STB_SPRINTF
 	len = stbsp_vsnprintf(NULL, 0, fmt, args2) + 1;
 	buf = util_alloc(len, sizeof(char), NULL);
 	stbsp_vsnprintf(buf, len, fmt, args2);
+#else
+	len = vsnprintf(NULL, 0, fmt, args2) + 1;
+	buf = util_alloc(len, sizeof(char), NULL);
+	vsnprintf(buf, len, fmt, args2);
+#endif
 
 	return buf;
 }
@@ -299,8 +340,10 @@ uint32_t util_parse_version(const char *version)
 	else
 		version2 = util_strdup(version);
 
-	if (!strlen(version2))
+	if (!strlen(version2)) {
+		free(version2);
 		return 0;
+	}
 
 	// strtok until 4 numbers or no more tokens
 	i = 0;
@@ -309,5 +352,22 @@ uint32_t util_parse_version(const char *version)
 	while (token && i < 4)
 		parts[i] = strtol(token, NULL, 10) & 0xFF;
 
+	free(version2);
 	return PURPL_MAKE_VERSION(parts[0], parts[1], parts[2], parts[3]);
+}
+
+bool util_list_check(list_check_t *params)
+{
+	size_t i;
+	bool have;
+
+	if (!params || !params->source || !params->other || !params->callback)
+		return false;
+
+	have = true;
+	for (i = 0; i < params->other_count && have; i += params->other_elem_size)
+		have = bsearch((const uint8_t *)params->other + i, params->source, params->source_count,
+			       params->source_elem_size, params->callback);
+
+	return have;
 }

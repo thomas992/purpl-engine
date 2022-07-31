@@ -1,5 +1,7 @@
-cmake_minimum_required(VERSION 3.23)
+cmake_minimum_required(VERSION 3.22)
 
+include(CheckIPOSupported)
+include(cmake/GetGitRevisionDescription.cmake)
 include(cmake/Util.cmake)
 
 # Declare the project
@@ -24,6 +26,9 @@ endif()
 
 # Enable compile_commands.json
 set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
+
+# PIC
+set(CMAKE_POSITION_INDEPENDENT_CODE TRUE)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
@@ -94,6 +99,12 @@ if ("${CMAKE_BUILD_TYPE}" MATCHES "Deb")
 elseif ("${CMAKE_BUILD_TYPE}" MATCHES "Rel")
 	add_compile_definitions(PURPL_RELEASE=1)
 endif()
+
+# LTO
+check_ipo_supported(RESULT CMAKE_INTERPROCEDURAL_OPTIMIZATION OUTPUT error)
+
+# Git revision
+git_describe(PURPL_GIT_DESC)
 
 # Subdirectories
 add_subdirectory(common)

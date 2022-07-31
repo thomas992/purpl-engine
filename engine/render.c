@@ -17,6 +17,20 @@ const char *engine_render_api_name(render_api_t api)
 	return "Unknown";
 }
 
+const char *engine_render_pci_vendor_name(pci_vendor_id_t vendor)
+{
+	switch (vendor) {
+	case PCI_VENDOR_AMD:
+		return "AMD";
+	case PCI_VENDOR_NVIDIA:
+		return "NVIDIA";
+	case PCI_VENDOR_INTEL:
+		return "Intel";
+	}
+
+	return "Unknown";
+}
+
 bool engine_render_init(render_api_t api)
 {
 	g_engine->render_api = api;

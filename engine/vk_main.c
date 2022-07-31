@@ -10,15 +10,14 @@ VkSurfaceKHR g_vulkan_surface;
 static const char **get_extensions(uint32_t *extension_count)
 {
 	const char **extensions;
-	uint32_t i;
 
 	if (!extension_count)
 		return NULL;
 
 	*extension_count = 0;
-	PURPL_ASSERT(SDL_Vulkan_GetInstanceExtensions(NULL, extension_count, NULL));
+	SDL_Vulkan_GetInstanceExtensions(g_engine->wnd, extension_count, NULL);
 	extensions = util_alloc(*extension_count, sizeof(const char *), NULL);
-	SDL_Vulkan_GetInstanceExtensions(NULL, extension_count, extensions);
+	SDL_Vulkan_GetInstanceExtensions(g_engine->wnd, extension_count, extensions);
 
 	return extensions;
 }
