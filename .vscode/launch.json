@@ -8,13 +8,18 @@
             "name": "(gdb) Launch",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/data/purpl_${}",
+            "program": "${workspaceFolder}/build/game/bin/launcher",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
-            "environment": [],
+            "environment": [
+		{
+			"name": "LD_LIBRARY_PATH",
+			"value": "${workspaceFolder}/build/game/bin"
+		}
+	    ],
             "externalConsole": false,
-            "MIMode": "lldb",
+            "MIMode": "gdb",
             "setupCommands": [
                 {
                     "description": "Enable pretty-printing for gdb",

@@ -138,9 +138,8 @@ char *util_absolute_path(const char *path)
 	buf = util_alloc(len, sizeof(char), NULL);
 	GetFullPathNameA(path, len, buf, NULL);
 #else
-	buf = realpath(path, NULL);
-	if (!buf)
-		buf = (char *)path;
+	buf = util_alloc(PATH_MAX, sizeof(char), NULL);
+	realpath(path, buf);
 #endif
 
 	path2 = util_normalize_path(buf);
@@ -269,15 +268,11 @@ char *util_vstrfmt(const char *fmt, va_list args)
 
 	va_copy(args2, args);
 
-#ifdef PURPL_USE_STB_SPRINTF
-	len = stbsp_vsnprintf(NULL, 0, fmt, args2) + 1;
+	len = stbsp_vsnprintf(NULL, 0, fmt, args) + 1;
 	buf = util_alloc(len, sizeof(char), NULL);
 	stbsp_vsnprintf(buf, len, fmt, args2);
-#else
-	len = vsnprintf(NULL, 0, fmt, args2) + 1;
-	buf = util_alloc(len, sizeof(char), NULL);
-	vsnprintf(buf, len, fmt, args2);
-#endif
+
+	va_end(args2);
 
 	return buf;
 }

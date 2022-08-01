@@ -124,6 +124,7 @@ install(TARGETS flecs
 		launcher
 
 		paktool
+	LIBRARY DESTINATION bin
 	RUNTIME DESTINATION bin)
 
 if ("${CMAKE_VS_PLATFORM_NAME}" MATCHES "Gaming")
