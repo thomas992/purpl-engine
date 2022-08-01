@@ -30,6 +30,11 @@
 // Get the offset of a new file's data
 #define PACK_OFFSET(pack) (PACK_LAST_ENTRY((pack)) ? PACK_LAST_ENTRY(pack)->offset + PACK_LAST_ENTRY(pack)->size : 0)
 
+// Windows.h pulls WinDef.h which contains the min function used by pack_split
+#ifndef min
+#define min(a,b)            (((a) < (b)) ? (a) : (b))
+#endif
+
 // Get the split number of a file given its offset
 #define PACK_SPLIT(offset) ((uint16_t)min((double)(offset), (double)(offset) / PACK_SPLIT_SIZE))
 
