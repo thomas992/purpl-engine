@@ -140,7 +140,7 @@ char *util_absolute_path(const char *path)
 #else
 	buf = realpath(path, NULL);
 	if (!buf)
-		buf = path;
+		buf = (char *)path;
 #endif
 
 	path2 = util_normalize_path(buf);

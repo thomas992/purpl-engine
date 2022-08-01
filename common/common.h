@@ -5,7 +5,7 @@
 
 // Feature macros for POSIX, no harm putting them outside an ifdef
 #define _BSD_SOURCE
-#define _DEFAULT_SOURCE
+#define _DEFAULT_SOURCE 1
 #define _GNU_SOURCE
 
 #include <assert.h>
