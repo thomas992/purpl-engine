@@ -11,6 +11,7 @@ typedef enum paktool_mode {
 	READ, // Read a file
 	EXTRACT, // Extract all the files
 	CREATE, // Create a file
+	ADD, // Add a file to an existing pack
 } paktool_mode_t;
 
 // Display the help message
@@ -50,6 +51,10 @@ int32_t main(int32_t argc, char *argv[])
 		if (argc < 4)
 			usage(false);
 		mode = CREATE;
+	} else if (strcmp(argv[1], "add") == 0 || strcmp(argv[1], "append") == 0) {
+		if (argc < 4)
+			usage(false);
+		mode = ADD;
 	} else {
 		usage(false);
 	}
@@ -67,9 +72,10 @@ int32_t main(int32_t argc, char *argv[])
 		}
 
 		for (i = 0; i < pack->header.entry_count; i++) {
-			printf("Path: %s\nHash: 0x%" PRIX64 "\nCompressed size: %u\nSize: %zu\nOffset: 0x%" PRIX64
-			       "\n\n",
-			       PACK_GET_NAME(pack, pack->entries + i), pack->entries[i].hash, pack->entries[i].size,
+			printf("Path: %s (hash 0x%" PRIX64 ", offset 0x%" PRIX64 ")\nHash: 0x%" PRIX64
+			       "\nCompressed size: %u\nSize: %zu\nOffset: 0x%" PRIX64 "\n\n",
+			       pack->pathbuf + pack->entries[i].path_offset, pack->entries[i].path_hash,
+			       pack->entries[i].path_offset, pack->entries[i].hash, pack->entries[i].size,
 			       pack->entries[i].real_size, pack->entries[i].offset);
 		}
 		printf("Total of %zu bytes compressed across %lf split files\n", pack->header.total_size,
@@ -146,7 +152,8 @@ int32_t main(int32_t argc, char *argv[])
 
 			buf = pack_read(pack, entry);
 			if (!buf) {
-				PURPL_LOG(PAKTOOL_LOG_PREFIX "Failed to read file %s from pack file %s\n", other, pack_name);
+				PURPL_LOG(PAKTOOL_LOG_PREFIX "Failed to read file %s from pack file %s\n", other,
+					  pack_name);
 				free(dst_path);
 				free(pack_name);
 				free(other);
@@ -189,11 +196,28 @@ int32_t main(int32_t argc, char *argv[])
 
 		pack = pack_create(pack_name, other);
 		if (!pack) {
-			PURPL_LOG(PAKTOOL_LOG_PREFIX "Failed to create pack file %s from directory %s\n", pack_name, other);
+			PURPL_LOG(PAKTOOL_LOG_PREFIX "Failed to create pack file %s from directory %s\n", pack_name,
+				  other);
 			free(pack_name);
 			free(other);
 			exit(1);
 		}
+
+		break;
+	}
+	case ADD: {
+		struct stat sb;
+
+		other = util_normalize_path(argv[3]);
+
+		pack = pack_load(pack_name);
+		stat(other, &sb);
+		if (S_ISDIR(sb.st_mode))
+			pack_add_dir(pack, other);
+		else
+			pack_add(pack, other, other);
+
+		pack_write(pack);
 
 		break;
 	}
@@ -210,11 +234,12 @@ int32_t main(int32_t argc, char *argv[])
 void usage(bool help)
 {
 	printf("paktool usage:\n"
-	       "\thelp\t\t\t\t\t- Print this message\n"
-	       "\tlist <pack file>\t\t\t- List the files in <pack file>\n"
-	       "\tread <pack file> <filename>\t\t- Extract <filename> from <pack file>\n"
-	       "\textract <pack file>\t\t\t- Extract <pack file>\n"
-	       "\tcreate <pack file> <source directory>\t- Create <pack file> from <source directory>\n"
+	       "\thelp\t\t\t\t\t\t- Print this message\n"
+	       "\tlist <pack file>\t\t\t\t- List the files in <pack file>\n"
+	       "\tread <pack file> <filename>\t\t\t- Extract <filename> from <pack file>\n"
+	       "\textract <pack file>\t\t\t\t- Extract <pack file>\n"
+	       "\tcreate <pack file> <source directory>\t\t- Create <pack file> from <source directory>\n"
+	       "\tadd <pack file> <source directory or file>\t- Add <source directory or file> to <pack file>\n"
 	       "\nNOTE: pack file names should not include the number or _dir or .pak, just the name that comes before\n");
 	exit(!help); // Error if help was not requested
 }

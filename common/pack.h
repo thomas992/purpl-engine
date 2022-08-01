@@ -1,5 +1,4 @@
-// Pack file. Pretty much a ripoff of Valve's VPK format but kinda different and also due to laziness you have to
-// recreate files when their contents change rather than them being updated, but I don't forsee that being a huge issue
+// Pack file. Pretty much a ripoff of Valve's VPK format but kinda different
 
 // All fields are little endian because fuck big endian (most architectures in wide use like x86, ARM, RISC-V are LE
 // anyway)
@@ -32,7 +31,7 @@
 #define PACK_OFFSET(pack) (PACK_LAST_ENTRY((pack)) ? PACK_LAST_ENTRY(pack)->offset + PACK_LAST_ENTRY(pack)->size : 0)
 
 // Get the split number of a file given its offset
-#define PACK_SPLIT(offset) ((uint16_t)fmin((double)(offset), (double)(offset) / PACK_SPLIT_SIZE))
+#define PACK_SPLIT(offset) ((uint16_t)min((double)(offset), (double)(offset) / PACK_SPLIT_SIZE))
 
 // Make an offset relative to a split
 #define PACK_SPLIT_OFFSET(offset) ((offset) % PACK_SPLIT_SIZE)
@@ -82,14 +81,14 @@ extern void pack_write(pack_file_t *pack);
 // Close a pack file, invalidating all entries
 extern void pack_close(pack_file_t *pack);
 
-// Get a file entry from a pack. Do not pass to pack_read, because you'll want the size of the buffer returned.
+// Get a file entry from a pack. Do not pass a call to this to pack_read, because you'll want the size of the buffer returned.
 extern pack_entry_t *pack_get(pack_file_t *pack, const char *path);
 
 // Read a file from a pack
 extern uint8_t *pack_read(pack_file_t *pack, pack_entry_t *entry);
 
-// Add a file to a pack file that was opened by pack_create
+// Add a file to a pack file
 extern pack_entry_t *pack_add(pack_file_t *pack, const char *path, const char *internal_path);
 
-// Add a directory to a pack file that was opened by pack_create
+// Add a directory to a pack file
 extern void pack_add_dir(pack_file_t *pack, const char *path);

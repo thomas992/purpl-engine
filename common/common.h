@@ -60,6 +60,17 @@
 // Get the tweak number of a version
 #define PURPL_VERSION_TWEAK(version) ((version)&0xFF)
 
+// Version number as bitfields
+typedef union purpl_version {
+	struct {
+		uint32_t major:8;
+		uint32_t minor:8;
+		uint32_t patch:8;
+		uint32_t tweak:8;
+	};
+	uint32_t version;
+} purpl_version_t;
+
 // Format string for versions
 #define PURPL_PRIVER "%u.%u.%u.%u"
 

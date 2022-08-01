@@ -1,7 +1,0 @@
-#!/bin/sh
-
-# Push to GitHub and Gitea at the same time
-
-git push --no-verify --mirror git@github.com:MobSlicer152/purpl-engine.git
-
-exit 0

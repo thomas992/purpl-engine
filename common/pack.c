@@ -50,9 +50,9 @@ pack_file_t *pack_load(const char *name)
 
 	path = util_strfmt("%s_dir.pak", pack->name);
 	pack->dir = fopen(path, "rb");
+	free(path);
 	if (!pack->dir)
 		return NULL;
-	free(path);
 
 	fread(&pack->header, sizeof(pack_header_t), 1, pack->dir);
 	PURPL_ASSERT(memcmp(pack->header.signature, PACK_SIGNATURE, PACK_SIGNATURE_LENGTH) == 0);
@@ -75,12 +75,21 @@ pack_file_t *pack_load(const char *name)
 
 void pack_write(pack_file_t *pack)
 {
+	char *path;
+
 	if (!pack)
 		return;
 
 	PURPL_LOG(COMMON_LOG_PREFIX "Writing pack %s_*.pak with %u %s and %zu %s in the path buffer\n", pack->name,
 		  pack->header.entry_count, PURPL_PLURALIZE(pack->header.entry_count, "entries", "entry"),
 		  pack->header.pathbuf_size, PURPL_PLURALIZE(pack->header.pathbuf_size, "bytes", "byte"));
+
+	// Clear out the directory
+	path = util_strfmt("%s_dir.pak", pack->name);
+	fclose(pack->dir);
+	pack->dir = fopen(path, "wb");
+	free(path);
+	PURPL_ASSERT(pack->dir);
 
 	fseek(pack->dir, 0, SEEK_SET);
 	fwrite(&pack->header, sizeof(pack_header_t), 1, pack->dir);
@@ -213,6 +222,12 @@ pack_entry_t *pack_add(pack_file_t *pack, const char *path, const char *internal
 
 	path2 = util_normalize_path(path);
 	internal_path2 = util_normalize_path(internal_path[0] == '/' ? internal_path + 1 : internal_path);
+	if (pack_get(pack, internal_path2)) {
+#ifdef PACK_DEBUG
+		PURPL_LOG(COMMON_LOG_PREFIX "Skipping file %s because it's already present\n", internal_path2);
+#endif
+		return pack_get(pack, internal_path2);
+	}
 #ifdef PACK_DEBUG
 	PURPL_LOG(COMMON_LOG_PREFIX "Adding file %s to pack %s_*.pak as %s\n", path2, pack->name, internal_path2);
 #endif
@@ -226,6 +241,7 @@ pack_entry_t *pack_add(pack_file_t *pack, const char *path, const char *internal
 	len = strlen(internal_path) + 1;
 	pack->pathbuf = util_alloc(pack->header.pathbuf_size + len, sizeof(char), pack->pathbuf);
 	strncpy(pack->pathbuf + pack->header.pathbuf_size, internal_path2, len);
+	entry.path_offset = pack->header.pathbuf_size;
 	pack->header.pathbuf_size += len;
 
 	src = fopen(path2, "rb");
