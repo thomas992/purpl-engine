@@ -42,6 +42,9 @@
 // Smaller of two numbers
 #define PURPL_MIN(a, b) ((a) < (b) ? (a) : (b))
 
+// Larger of two numbers
+#define PURPL_MAX(a, b) ((a) > (b) ? (a) : (b))
+
 // Pluralize
 #define PURPL_PLURALIZE(count, plural, singular) ((count) == 1 ? (singular) : (plural))
 
