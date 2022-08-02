@@ -15,8 +15,8 @@ bool engine_init(const char *basedir, const char *coredir, const char *gamedir, 
 	g_engine->game = game;
 
 	PURPL_LOG(ENGINE_LOG_PREFIX "Initializing SDL\n");
-	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-		PURPL_LOG(ENGINE_LOG_PREFIX "Failed to initialize SDL\n");
+	if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
+		PURPL_LOG(ENGINE_LOG_PREFIX "Failed to initialize SDL: %s\n", SDL_GetError());
 		return false;
 	}
 
