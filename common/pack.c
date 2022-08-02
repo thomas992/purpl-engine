@@ -249,7 +249,7 @@ pack_entry_t *pack_add(pack_file_t *pack, const char *path, const char *internal
 	free(path2);
 	free(internal_path2);
 	entry.real_size = util_fsize(src);
-	tmp = util_alloc(entry.real_size, sizeof(uint8_t), NULL);
+	tmp = util_alloc(entry.real_size, 1, NULL);
 
 	fread(tmp, 1, entry.real_size, src);
 	fclose(src);

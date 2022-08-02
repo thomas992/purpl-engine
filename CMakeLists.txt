@@ -100,6 +100,10 @@ elseif ("${CMAKE_BUILD_TYPE}" MATCHES "Rel")
 	add_compile_definitions(PURPL_RELEASE=1)
 endif()
 
+# Disable prefix on libraries
+set(CMAKE_SHARED_LIBRARY_PREFIX "")
+set(CMAKE_STATIC_LIBRARY_PREFIX "")
+
 # LTO
 check_ipo_supported(RESULT CMAKE_INTERPROCEDURAL_OPTIMIZATION OUTPUT error)
 

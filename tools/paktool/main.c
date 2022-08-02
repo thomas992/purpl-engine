@@ -108,7 +108,7 @@ int32_t main(int32_t argc, char *argv[])
 			exit(1);
 		}
 
-		dst_path = strrchr(other, '/') ? strrchr(other, '/') + 1 : "";
+		dst_path = strrchr(other, '/') ? strrchr(other, '/') + 1 : other;
 		PURPL_LOG(PAKTOOL_LOG_PREFIX "Writing contents of %s to %s\n", other, dst_path);
 		dst = fopen(dst_path, "wb+");
 		PURPL_ASSERT(dst);
